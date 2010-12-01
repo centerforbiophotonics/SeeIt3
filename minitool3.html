@@ -33,7 +33,7 @@
 
 
 
-<script type="text/javascript+protovis">
+<script type="text/javascript">
   function sortByXValues(data) {
     data.sort(function(a, b) {
       return a.incidence - b.incidence;
@@ -99,19 +99,22 @@
       if (!elem.incidence || !elem.otherFactor || 
         elem.incidence == "" || elem.otherFactor == "")
         return null;
-      else
+      else {
+        elem.incidence = parseFloat(elem.incidence);
+        elem.otherFactor = parseFloat(elem.otherFactor);
         return elem;
+      }
     });
   }
   
   function medianXValue(dataSet) {
     sortByXValues(dataSet);
     if (dataSet.length % 2 == 0) {
-      var middle1 = dataSet[Math.round(dataSet.length / 2)]; // round up
-      var middle2 = dataSet[parseInt(dataSet.length / 2)]; // round down
+      var middle1 = dataSet[(dataSet.length / 2) - 1]; // round up
+      var middle2 = dataSet[dataSet.length / 2]; // round down
       return (middle1.incidence + middle2.incidence) / 2;
     } else {
-      var middle = dataSet[Math.round(dataSet.length / 2)];
+      var middle = dataSet[parseInt(dataSet.length / 2)];
       return middle.incidence;
     }
   }
@@ -119,11 +122,11 @@
   function medianYValue(dataSet) {
     sortByYValues(dataSet);
     if (dataSet.length % 2 == 0) {
-      var middle1 = dataSet[Math.round(dataSet.length / 2)]; // round up
-      var middle2 = dataSet[parseInt(dataSet.length / 2)]; // round down
+      var middle1 = dataSet[(dataSet.length / 2) - 1]; // round up
+      var middle2 = dataSet[dataSet.length / 2]; // round down
       return (middle1.otherFactor + middle2.otherFactor) / 2;
     } else {
-      var middle = dataSet[Math.round(dataSet.length / 2)];
+      var middle = dataSet[parseInt(dataSet.length / 2)];
       return middle.otherFactor;
     }
   }
@@ -167,14 +170,14 @@
     
       var w = 600,
           h = 500,
-          xMax = pv.max(data, function(d) d.incidence),
-          yMax = pv.max(data, function(d) d.otherFactor),
+          xMax = pv.max(data, function(d) { return d.incidence }),
+          yMax = pv.max(data, function(d) { return d.otherFactor }),
           x = pv.Scale.linear(0, xMax).range(0, w),
           y = pv.Scale.linear(0, yMax).range(0, h);
           
       if (options.fitScalesToData) {
-        var xMin = pv.min(data, function(d) d.incidence),
-            yMin = pv.min(data, function(d) d.otherFactor);
+        var xMin = pv.min(data, function(d) { return d.incidence }),
+            yMin = pv.min(data, function(d) { return d.otherFactor });
         x = pv.Scale.linear(xMin, xMax).range(0, w);
         y = pv.Scale.linear(yMin, yMax).range(0, h);
       }
@@ -192,9 +195,9 @@
       vis.add(pv.Rule)
          .data(y.ticks())
          .bottom(y)
-         .strokeStyle(function(d) d ? "#eee" : "#000")
+         .strokeStyle(function(d) { return d ? "#eee" : "#000" })
          .anchor('left').add(pv.Label)
-           .visible(function(d) d > 0 && d < 100)
+           .visible(function(d) { return d > 0 && d < 100 })
            .text(x.tickFormat);
            
       vis.anchor('left')
@@ -207,9 +210,9 @@
       vis.add(pv.Rule)
          .data(x.ticks())
          .left(x)
-         .strokeStyle(function(d) d ? "#eee" : "#000")
+         .strokeStyle(function(d) { return d ? "#eee" : "#000" })
          .anchor("bottom").add(pv.Label)
-           .visible(function(d) d >= 0 && d < 100)
+           .visible(function(d) { return d >= 0 && d < 100 })
            .text(x.tickFormat);
 
       vis.anchor("bottom")
@@ -227,15 +230,15 @@
            /* rectangle around group */
            vis.add(pv.Line)
               .data(coords)
-              .left(function(d) x(d[0]) )
-              .bottom(function(d) y(d[1]) )
+              .left(function(d) { return x(d[0]) })
+              .bottom(function(d) { return y(d[1]) })
               .fillStyle(pv.rgb(255,165,0,0.5));
 
            /* median dot */
            vis.add(pv.Dot)
               .data([medians[i]]) // extra brackets so not to use x and y as seperate points
-              .left(function(d) x(d[0]) )
-              .bottom(function(d) y(d[1]) )
+              .left(function(d) { return x(d[0]) })
+              .bottom(function(d) { return y(d[1]) })
               .radius(10)
               .angle(Math.PI/4)
               .shape('cross')
@@ -255,11 +258,11 @@
          var farLeftYVal = getYValue(0, slope, adjustedIntercept);
          var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
          
-          /* line between median dots */
+          /* media-median line */
           vis.add(pv.Line)
              .data([[0, farLeftYVal], [xMax, farRightYVal]])
-             .left(function(d) x(d[0]) )
-             .bottom(function(d) y(d[1]) )
+             .left(function(d) { return x(d[0]) })
+             .bottom(function(d) { return y(d[1]) })
              .title("Median-median line");
        }
 
@@ -267,11 +270,11 @@
       vis.add(pv.Panel)
          .data(data)
          .add(pv.Dot)
-           .left(function(d) x(d.incidence))
-           .bottom(function(d) y(d.otherFactor))
+           .left(function(d) { return x(d.incidence) })
+           .bottom(function(d) { return y(d.otherFactor) })
            .radius(3)
            .fillStyle("#eee")
-           .title(function(d) d.state + ": " + d.incidence + ", " + d.otherFactor);
+           .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor });
            
       vis.render();
   }
