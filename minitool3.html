@@ -141,6 +141,22 @@
     return results;
   }
   
+  function findSlope(x1, x2, y1, y2) {
+    return (y1 - y2)/(x1 - x2);
+  }
+  
+  function findIntercept(x, y, slope) {
+    return y - (slope * x);
+  }
+  
+  function getYValue(x, slope, intercept) {
+    return slope * x + intercept;
+  }
+  
+  function getXValue(y, slope, intercept) {
+    return (y - intercept) / slope;
+  }
+  
   
   
   function renderIt(data, options) {
@@ -225,15 +241,20 @@
               .shape('cross')
               .fillStyle(pv.rgb(255,165,0,0.5))
               .title("Median dot");
-              
+         }
+         
+         var slope = findSlope(medians[0][0], medians[2][0], medians[0][1], medians[2][1]);
+         var intercept = findIntercept(medians[0][0], medians[0][1], slope);
+         
+         var farLeftYVal = getYValue(0, slope, intercept);
+         var farRightYVal = getYValue(xMax, slope, intercept);
+         
           /* line between median dots */
           vis.add(pv.Line)
-             .data([medians[0], medians[2]])
+             .data([[0, farLeftYVal], [xMax, farRightYVal]])
              .left(function(d) x(d[0]) )
              .bottom(function(d) y(d[1]) )
-             .title("Median-median line")
-                              
-         }
+             .title("Median-median line");
        }
 
       /* dot plot */
