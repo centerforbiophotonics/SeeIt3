@@ -246,8 +246,14 @@
          var slope = findSlope(medians[0][0], medians[2][0], medians[0][1], medians[2][1]);
          var intercept = findIntercept(medians[0][0], medians[0][1], slope);
          
-         var farLeftYVal = getYValue(0, slope, intercept);
-         var farRightYVal = getYValue(xMax, slope, intercept);
+         /* Is middle median dot higher or lower than line through outer median dots? 
+            That is, middle median dot's y value - y value at same x of original median line 
+            divided by three */
+         var medianYDelta = ((medians[1][1] - getYValue(medians[1][0], slope, intercept)) / 3);
+         var adjustedIntercept = intercept + medianYDelta;
+         
+         var farLeftYVal = getYValue(0, slope, adjustedIntercept);
+         var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
          
           /* line between median dots */
           vis.add(pv.Line)
