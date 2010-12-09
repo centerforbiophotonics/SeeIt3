@@ -193,7 +193,8 @@ function renderIt(data, options) {
             .data(coords)
             .left(function(d) { return x(d[0]) })
             .bottom(function(d) { return y(d[1]) })
-            .fillStyle(pv.rgb(255,165,0,0.5));
+            .lineWidth(1)
+            .fillStyle(pv.rgb(255,165,0,0.2));
 
          /* median dot */
          vis.add(pv.Dot)
@@ -203,7 +204,7 @@ function renderIt(data, options) {
             .radius(10)
             .angle(Math.PI/4)
             .shape('cross')
-            .fillStyle(pv.rgb(255,165,0,0.5))
+            .fillStyle(pv.rgb(255,165,0,1))
             .title("Median dot");
        }
        
