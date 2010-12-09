@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SeeIt3</title>
+  <link rel="stylesheet" type="text/css" href="seeit3.css"/>
+</head>
+<body>
+<script src="lib/protovis-3.2/protovis-d3.2.js"></script>
+<script src="lib/jquery-1.4.4.js"></script>
+
+
+<h1>SeeIt3: Distribution correlation:&mdash;are two factors related?</h1>
+
+<h3>Select a dataset: <select id="dataSelector"></select></h3>
+
+<div>
+  <input type="checkbox" id="checkboxMedianMedian"></input>
+  <label for="checkboxMedianMedian">Median-median plot</label>
+  <input type="checkbox" id="fitScalesToData"></input>
+  <label for="fitScalesToData">Fit scales to data</label>
+<div>
+  
+<br/>
+
+
+<script src="data/lungCancervsAtLeastBachelors.js" type="text/javascript" charset="utf-8"></script>
+<script src="data/lungCancervsAtLeastHS.js" type="text/javascript" charset="utf-8"></script>
+<script src="data/lungCancervsDivorceRate.js" type="text/javascript" charset="utf-8"></script>
+<script src="data/lungCancervsLessThanHS.js" type="text/javascript" charset="utf-8"></script>
+<script src="data/lungCancervsLifeExpectancy.js" type="text/javascript" charset="utf-8"></script>
+<script src="data/lungCancervsLungCancerMortality.js" type="text/javascript" charset="utf-8"></script>
+<script src="data/lungCancervsMedianEarnings.js" type="text/javascript" charset="utf-8"></script>
+<script src="data/lungCancervsPercentChildrenNoSmokers.js" type="text/javascript" charset="utf-8"></script>
+<script src="data/lungCancervsPercentSmoker.js" type="text/javascript" charset="utf-8"></script>
+<script src="data/lungCancervsSchoolEnroll.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript" src="seeit3.js"></script>
+
+</body>
+</html>
