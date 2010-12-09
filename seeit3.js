@@ -135,10 +135,11 @@ function renderIt(data, options) {
         yMax = pv.max(data, function(d) { return d.otherFactor }),
         x = pv.Scale.linear(0, xMax).range(0, w),
         y = pv.Scale.linear(0, yMax).range(0, h);
+
+    var xMin = pv.min(data, function(d) { return d.incidence }),
+        yMin = pv.min(data, function(d) { return d.otherFactor });
         
     if (options.fitScalesToData) {
-      var xMin = pv.min(data, function(d) { return d.incidence }),
-          yMin = pv.min(data, function(d) { return d.otherFactor });
       x = pv.Scale.linear(xMin, xMax).range(0, w);
       y = pv.Scale.linear(yMin, yMax).range(0, h);
     }
@@ -217,12 +218,12 @@ function renderIt(data, options) {
        var medianYDelta = ((medians[1][1] - getYValue(medians[1][0], slope, intercept)) / 3);
        var adjustedIntercept = intercept + medianYDelta;
        
-       var farLeftYVal = getYValue(0, slope, adjustedIntercept);
+       var farLeftYVal = getYValue(xMin, slope, adjustedIntercept);
        var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
        
         /* media-median line */
         vis.add(pv.Line)
-           .data([[0, farLeftYVal], [xMax, farRightYVal]])
+           .data([[xMin, farLeftYVal], [xMax, farRightYVal]])
            .left(function(d) { return x(d[0]) })
            .bottom(function(d) { return y(d[1]) })
            .title("Median-median line");
