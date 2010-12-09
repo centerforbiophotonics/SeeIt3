@@ -194,7 +194,7 @@ function renderIt(data, options) {
             .left(function(d) { return x(d[0]) })
             .bottom(function(d) { return y(d[1]) })
             .lineWidth(1)
-            .fillStyle(pv.rgb(255,165,0,0.2));
+            .fillStyle(pv.rgb(255,165,0,0.15));
 
          /* median dot */
          vis.add(pv.Dot)
