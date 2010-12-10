@@ -259,7 +259,7 @@ function renderUserDrawnLine() {
   var svg = $('svg').svg('get');
   
   /* if we've stored a line, add it back in */
-  if ($userDrawnLine && $('line#userDrawn').length == 0) {
+  if ($userDrawnLine && $('line.userDrawn').length == 0) {
     $('svg').append($userDrawnLine);
   }
   
@@ -267,12 +267,12 @@ function renderUserDrawnLine() {
     if (event.which == 1) {
       var xStart = event.pageX - this.offsetLeft;
       var yStart = event.pageY - this.offsetTop;
-      $userDrawnLine = $('line#userDrawn');
+      $userDrawnLine = $('line.userDrawn');
       
       if ($userDrawnLine.length > 0)
         $userDrawnLine.remove();
       
-      $userDrawnLine = svg.line(xStart, yStart, xStart, yStart, { strokeWidth:1, stroke:'black', id:'userDrawn' });
+      $userDrawnLine = svg.line(xStart, yStart, xStart, yStart, { strokeWidth:1, stroke:'black', class:'userDrawn' });
       event.preventDefault();
     
       $(this).mousemove(function(event) {
@@ -319,5 +319,12 @@ $('body').bind('eventMenuChange', function(event) {
 $('#menuOptions').change(function() {
   $('body').trigger('eventMenuChange');
 });
+
+$('input#checkboxShowUserShapes').change(function() {
+  if ($(this).is(':checked'))
+    $('.userDrawn').show();
+  else
+    $('.userDrawn').hide();
+})
 
 $('body').trigger('eventMenuChange'); // draw the initial plot
