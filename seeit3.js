@@ -246,7 +246,47 @@ function renderIt(data, options) {
     }
          
     vis.render();
+    renderUserDrawnLine();
+    
 }
+
+
+/* allow the user to draw their own line */
+var $userDrawnLine; // store the line so we can add it back in after menu changes
+
+function renderUserDrawnLine() {
+  $('svg').svg();
+  var svg = $('svg').svg('get');
+  
+  /* if we've stored a line, add it back in */
+  if ($userDrawnLine && $('line#userDrawn').length == 0) {
+    $('svg').append($userDrawnLine);
+  }
+  
+  $('svg').mousedown(function(event) {
+    if (event.which == 1) {
+      var xStart = event.pageX - this.offsetLeft;
+      var yStart = event.pageY - this.offsetTop;
+      $userDrawnLine = $('line#userDrawn');
+      
+      if ($userDrawnLine.length > 0)
+        $userDrawnLine.remove();
+      
+      $userDrawnLine = svg.line(xStart, yStart, xStart, yStart, { strokeWidth:1, stroke:'black', id:'userDrawn' });
+      event.preventDefault();
+    
+      $(this).mousemove(function(event) {
+        var x = event.pageX - this.offsetLeft;
+        var y = event.pageY - this.offsetTop;
+        svg.change($userDrawnLine, { x2:x, y2:y });
+        event.preventDefault();
+      })
+    }
+  }).mouseup(function(event) {
+    $(this).unbind('mousemove');
+  });
+}
+
 
 var datasetNames = [
   'lungCancervsAtLeastBachelors',
