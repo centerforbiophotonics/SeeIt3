@@ -11,14 +11,24 @@
 
 <h1>SeeIt3: Distribution correlation&mdash;are two factors related?</h1>
 
-<h3>Select a dataset: <select id="dataSelector"></select></h3>
-
-<div>
-  <input type="checkbox" id="checkboxMedianMedian"></input>
-  <label for="checkboxMedianMedian">Median-median plot</label>
-  <input type="checkbox" id="fitScalesToData"></input>
-  <label for="fitScalesToData">Fit scales to data</label>
-<div>
+<div id="menuOptions">
+  <h3>Select a dataset: <select id="dataSelector"></select></h3>
+  <div>
+    <input type="checkbox" id="fitScalesToData">
+    <label for="fitScalesToData">Fit scales to data</label>
+  <div>
+  
+  <div>
+    <input type="checkbox" id="checkboxShowData" checked>
+    <label for="checkboxShowData">Show data?</label>
+    <input type="checkbox" id="checkboxMMLine">
+    <label for="checkboxMMLine">Show median-median line?</label>
+    <input type="checkbox" id="checkboxMMDots">
+    <label for="checkboxMMDots">Show median-median dots?</label>
+    <input type="checkbox" id="checkboxMMRects">
+    <label for="checkboxMMRects">Show median-median rectangles?</label>
+  </div>
+</div>
   
 <br/>
 

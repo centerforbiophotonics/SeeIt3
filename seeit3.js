@@ -182,22 +182,24 @@ function renderIt(data, options) {
        .text('Incidence per 100k');
 
 
-     if (options.drawMedianMedian) {
-       var groups = divideDataInto3(data);
-       var medians = getMedianValuesFrom(groups);
-       for (var i = 0; i < groups.length; i++) {
-         var bounds = getBounds(groups[i]);
-         var coords = getBoundingCoords(bounds);
+    var groups = divideDataInto3(data);
+    var medians = getMedianValuesFrom(groups);
+    for (var i = 0; i < groups.length; i++) {
+       var bounds = getBounds(groups[i]);
+       var coords = getBoundingCoords(bounds);
 
-         /* rectangle around group */
+       /* rectangle around group */
+       if (options.showMMRects) {
          vis.add(pv.Line)
             .data(coords)
             .left(function(d) { return x(d[0]) })
             .bottom(function(d) { return y(d[1]) })
             .lineWidth(1)
             .fillStyle(pv.rgb(255,165,0,0.15));
+       }
 
-         /* median dot */
+       /* median dot */
+       if (options.showMMDots) {
          vis.add(pv.Dot)
             .data([medians[i]]) // extra brackets so not to use x and y as seperate points
             .left(function(d) { return x(d[0]) })
@@ -208,36 +210,40 @@ function renderIt(data, options) {
             .fillStyle(pv.rgb(255,165,0,1))
             .title("Median dot");
        }
-       
-       var slope = findSlope(medians[0][0], medians[2][0], medians[0][1], medians[2][1]);
-       var intercept = findIntercept(medians[0][0], medians[0][1], slope);
-       
-       /* Is middle median dot higher or lower than line through outer median dots? 
-          That is, middle median dot's y value - y value at same x of original median line 
-          divided by three */
-       var medianYDelta = ((medians[1][1] - getYValue(medians[1][0], slope, intercept)) / 3);
-       var adjustedIntercept = intercept + medianYDelta;
-       
-       var farLeftYVal = getYValue(xMin, slope, adjustedIntercept);
-       var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
-       
-        /* media-median line */
+     }
+   
+     var slope = findSlope(medians[0][0], medians[2][0], medians[0][1], medians[2][1]);
+     var intercept = findIntercept(medians[0][0], medians[0][1], slope);
+   
+     /* Is middle median dot higher or lower than line through outer median dots? 
+        That is, middle median dot's y value - y value at same x of original median line 
+        divided by three */
+     var medianYDelta = ((medians[1][1] - getYValue(medians[1][0], slope, intercept)) / 3);
+     var adjustedIntercept = intercept + medianYDelta;
+   
+     var farLeftYVal = getYValue(xMin, slope, adjustedIntercept);
+     var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
+   
+      /* media-median line */
+      if (options.showMMLine) {
         vis.add(pv.Line)
            .data([[xMin, farLeftYVal], [xMax, farRightYVal]])
            .left(function(d) { return x(d[0]) })
            .bottom(function(d) { return y(d[1]) })
            .title("Median-median line");
-     }
+      }
 
     /* dot plot */
-    vis.add(pv.Panel)
-       .data(data)
-       .add(pv.Dot)
-         .left(function(d) { return x(d.incidence) })
-         .bottom(function(d) { return y(d.otherFactor) })
-         .radius(3)
-         .fillStyle("#eee")
-         .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor });
+    if (options.showData) {
+      vis.add(pv.Panel)
+         .data(data)
+         .add(pv.Dot)
+           .left(function(d) { return x(d.incidence) })
+           .bottom(function(d) { return y(d.otherFactor) })
+           .radius(3)
+           .fillStyle("#eee")
+           .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor });
+    }
          
     vis.render();
 }
@@ -263,21 +269,15 @@ $.each(datasetNames, function() {
 
 $('body').bind('eventMenuChange', function(event) {
   $('body span').remove();
-  renderIt(eval($('#dataSelector').val()), { drawMedianMedian:$('#checkboxMedianMedian').is(':checked'),
-                                             fitScalesToData:$('#fitScalesToData').is(':checked') });
+  renderIt(eval($('#dataSelector').val()), { fitScalesToData:$('#fitScalesToData').is(':checked'),
+                                             showData:$('#checkboxShowData').is(':checked'),
+                                             showMMLine:$('#checkboxMMLine').is(':checked'),
+                                             showMMDots:$('#checkboxMMDots').is(':checked'),
+                                             showMMRects:$('#checkboxMMRects').is(':checked') });
 });
 
-$('#dataSelector').change(function() {
+$('#menuOptions').change(function() {
   $('body').trigger('eventMenuChange');
 });
-
-$('#checkboxMedianMedian').change(function() {
-  $('body').trigger('eventMenuChange');
-});
-
-$('#fitScalesToData').change(function() {
-  $('body').trigger('eventMenuChange');
-});
-
 
 $('body').trigger('eventMenuChange'); // draw the initial plot
