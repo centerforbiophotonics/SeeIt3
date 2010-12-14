@@ -2,12 +2,15 @@
 <html>
 <head>
   <title>SeeIt3</title>
+  <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.7.custom.css"/>
   <link rel="stylesheet" type="text/css" href="seeit3.css"/>
 </head>
 <body>
 <script src="lib/protovis-3.2/protovis-d3.2.js"></script>
 <script src="lib/jquery-1.4.4.js"></script>
+<script src="lib/jquery-ui-1.8.7.custom.min.js"></script>
 <script src="lib/jquery.svg.js"></script>
+<script src="lib/jquery.svgdom.js"></script>
 
 
 <h1>SeeIt3: Distribution correlation&mdash;are two factors related?</h1>
@@ -32,6 +35,8 @@
     <label for="checkboxMMRects">Show median-median rectangles?</label>
     <input type="checkbox" id="checkboxShowUserShapes" checked>
     <label for="checkboxShowUserShapes">Show user shapes?</label>
+    <input type="checkbox" id="checkboxMMEllipse">
+    <label for="checkboxMMEllipse">Show median-median ellipse?</label>
   </div>
 </div>
   

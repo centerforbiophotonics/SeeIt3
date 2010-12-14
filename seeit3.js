@@ -1,3 +1,20 @@
+/* make SVG tag (must use createElementNS to work in FF) */
+var ATTR_MAP = {"className": "class", "svgHref": "href"};
+var NS_MAP = {"svgHref": "http://www.w3.org/1999/xlink"};
+
+function makeSVGTag(tag, attributes) {
+    var elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (var attribute in attributes) {
+        var name = (attribute in ATTR_MAP ? ATTR_MAP[attribute] : attribute);
+        var value = attributes[attribute];
+        if (attribute in NS_MAP)
+            elem.setAttributeNS(NS_MAP[attribute], name, value);
+        else
+            elem.setAttribute(name, value);
+    }
+    return elem;
+}
+
 function sortByXValues(data) {
   data.sort(function(a, b) {
     return a.incidence - b.incidence;
@@ -210,28 +227,28 @@ function renderIt(data, options) {
             .fillStyle(pv.rgb(255,165,0,1))
             .title("Median dot");
        }
-     }
+    }
    
-     var slope = findSlope(medians[0][0], medians[2][0], medians[0][1], medians[2][1]);
-     var intercept = findIntercept(medians[0][0], medians[0][1], slope);
-   
-     /* Is middle median dot higher or lower than line through outer median dots? 
-        That is, middle median dot's y value - y value at same x of original median line 
-        divided by three */
-     var medianYDelta = ((medians[1][1] - getYValue(medians[1][0], slope, intercept)) / 3);
-     var adjustedIntercept = intercept + medianYDelta;
-   
-     var farLeftYVal = getYValue(xMin, slope, adjustedIntercept);
-     var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
-   
-      /* media-median line */
-      if (options.showMMLine) {
-        vis.add(pv.Line)
-           .data([[xMin, farLeftYVal], [xMax, farRightYVal]])
-           .left(function(d) { return x(d[0]) })
-           .bottom(function(d) { return y(d[1]) })
-           .title("Median-median line");
-      }
+    var slope = findSlope(medians[0][0], medians[2][0], medians[0][1], medians[2][1]);
+    var intercept = findIntercept(medians[0][0], medians[0][1], slope);
+    
+    /* Is middle median dot higher or lower than line through outer median dots? 
+       That is, middle median dot's y value - y value at same x of original median line 
+       divided by three */
+    var medianYDelta = ((medians[1][1] - getYValue(medians[1][0], slope, intercept)) / 3);
+    var adjustedIntercept = intercept + medianYDelta;
+    
+    var farLeftYVal = getYValue(xMin, slope, adjustedIntercept);
+    var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
+    
+    /* media-median line */
+    if (options.showMMLine) {
+      vis.add(pv.Line)
+         .data([[xMin, farLeftYVal], [xMax, farRightYVal]])
+         .left(function(d) { return x(d[0]) })
+         .bottom(function(d) { return y(d[1]) })
+         .title("Median-median line");
+    }
 
     /* dot plot */
     if (options.showData) {
@@ -244,42 +261,86 @@ function renderIt(data, options) {
            .fillStyle("#eee")
            .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor });
     }
-         
+    
     vis.render();
     renderUserDrawnLine();
+    
+    /* median-median ellipse, after vis.render() because we need to access $('svg') */
+    if (options.showMMEllipse) {
+      function calcDistance(x1, y1, x2, y2) {
+        return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
+      }
+      /* width of ellipse is the length of the median median line */
+      var radius = calcDistance(xMin, farLeftYVal, xMax, farRightYVal) / 2;
+      
+      var cx = (xMin + xMax) / 2;
+      var cy = (farLeftYVal + farRightYVal) / 2;
+
+      $('svg').svg();
+      var svg = $('svg').svg('get');
+
+      /* h - y(cy) because we need to invert the y coordinate system: (0,0) is lower left not upper left;
+         translate(20,5) because of protovis (unknown why) */
+      var degreeSlope = -Math.atan(slope) * 180 / Math.PI;
+      var ellipse = svg.ellipse(x(cx), h - y(cy), x(radius), 10, { 
+                          strokeWidth:2, stroke:'black', 
+                          transform:'translate(20,5) rotate(' + degreeSlope + ' ' + x(cx) + ' ' + (h - y(cy)) + ')' });
+      $(ellipse).appendTo('svg');
+      
+      $('<div id="ellipseSliders"></div>').appendTo('span');
+      
+      $('<div id="sliderEllipseRotation">Rotate ellipse</div>').appendTo('#ellipseSliders');
+      $('#sliderEllipseRotation').slider({ 
+        orientation:'vertical', min:0, max:180, value:degreeSlope,
+        slide:function(event, ui) {
+          $(ellipse).attr('transform', 'translate(20,5) rotate(' + 
+              (degreeSlope + ui.value) + ' ' + x(cx) + ' ' + (h - y(cy)) + ')');
+        }
+      });
+      
+      $('<div id="sliderEllipseYRadius">Ellipse y-radius</div>').appendTo('#ellipseSliders');
+      $('div#sliderEllipseYRadius').slider({
+        orientation:'vertical', min:10, max:y(yMax), value:10,
+        slide:function(event, ui) {
+          $(ellipse).attr('ry', ui.value);
+        }
+      });
+    }
     
 }
 
 
 /* allow the user to draw their own line */
-var $userDrawnLine; // store the line so we can add it back in after menu changes
+var $userDrawnLine; // store the line so we can add it back in after protovis redraws
 
 function renderUserDrawnLine() {
-  $('svg').svg();
-  var svg = $('svg').svg('get');
-  
+
   /* if we've stored a line, add it back in */
   if ($userDrawnLine && $('line.userDrawn').length == 0) {
     $('svg').append($userDrawnLine);
   }
   
   $('svg').mousedown(function(event) {
+    $svg = $(this);
     if (event.which == 1) {
-      var xStart = event.pageX - this.offsetLeft;
-      var yStart = event.pageY - this.offsetTop;
+      var xStart = event.pageX - $svg.offset().left;
+      var yStart = event.pageY - $svg.offset().top;
       $userDrawnLine = $('line.userDrawn');
       
       if ($userDrawnLine.length > 0)
         $userDrawnLine.remove();
       
-      $userDrawnLine = svg.line(xStart, yStart, xStart, yStart, { strokeWidth:1, stroke:'black', class:'userDrawn' });
-      event.preventDefault();
+      
+      $userDrawnLine = $(makeSVGTag('line', { x1:xStart, y1:yStart, x2:xStart, y2:yStart, stroke:'black', 
+                                           strokeWidth:2, class:'userDrawn' }))
+                              .appendTo($svg);
+      event.stopPropagation();
     
-      $(this).mousemove(function(event) {
-        var x = event.pageX - this.offsetLeft;
-        var y = event.pageY - this.offsetTop;
-        svg.change($userDrawnLine, { x2:x, y2:y });
-        event.preventDefault();
+      $svg.mousemove(function(event) {
+        var x = event.pageX - $svg.offset().left;
+        var y = event.pageY - $svg.offset().top;
+        $userDrawnLine.attr('x2', x).attr('y2', y);
+        event.stopPropagation();
       })
     }
   }).mouseup(function(event) {
@@ -313,7 +374,8 @@ $('body').bind('eventMenuChange', function(event) {
                                              showData:$('#checkboxShowData').is(':checked'),
                                              showMMLine:$('#checkboxMMLine').is(':checked'),
                                              showMMDots:$('#checkboxMMDots').is(':checked'),
-                                             showMMRects:$('#checkboxMMRects').is(':checked') });
+                                             showMMRects:$('#checkboxMMRects').is(':checked'),
+                                             showMMEllipse:$('#checkboxMMEllipse').is(':checked') });
 });
 
 $('#menuOptions').change(function() {
