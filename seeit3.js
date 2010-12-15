@@ -150,12 +150,12 @@ function renderIt(data, options) {
         h = 500,
         xMax = pv.max(data, function(d) { return d.incidence }),
         yMax = pv.max(data, function(d) { return d.otherFactor }),
+        xMin = pv.min(data, function(d) { return d.incidence }),
+        yMin = pv.min(data, function(d) { return d.otherFactor }),
         x = pv.Scale.linear(0, xMax).range(0, w),
-        y = pv.Scale.linear(0, yMax).range(0, h);
+        y = pv.Scale.linear(0, yMax).range(0, h),
+        c = pv.Scale.linear(0, xMax).range("brown", "orange");
 
-    var xMin = pv.min(data, function(d) { return d.incidence }),
-        yMin = pv.min(data, function(d) { return d.otherFactor });
-        
     if (options.fitScalesToData) {
       x = pv.Scale.linear(xMin, xMax).range(0, w);
       y = pv.Scale.linear(yMin, yMax).range(0, h);
@@ -168,7 +168,9 @@ function renderIt(data, options) {
         .bottom(20)
         .left(20)
         .right(10)
-        .top(5);
+        .top(5)
+        .events("all")
+        .event("mousemove", pv.Behavior.point());
   
     /* Y-axis ticks */
     vis.add(pv.Rule)
@@ -197,8 +199,7 @@ function renderIt(data, options) {
     vis.anchor("bottom")
        .add(pv.Label)
        .text('Incidence per 100k');
-
-
+       
     var groups = divideDataInto3(data);
     var medians = getMedianValuesFrom(groups);
     for (var i = 0; i < groups.length; i++) {
@@ -252,14 +253,22 @@ function renderIt(data, options) {
 
     /* dot plot */
     if (options.showData) {
-      vis.add(pv.Panel)
+      vis.add(pv.Dot)
          .data(data)
-         .add(pv.Dot)
-           .left(function(d) { return x(d.incidence) })
-           .bottom(function(d) { return y(d.otherFactor) })
-           .radius(3)
-           .fillStyle("#eee")
-           .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor });
+         .def("active", -1)
+         .event("point", function() { return this.active(this.index).parent })
+         .event("unpoint", function() { return this.active(-1).parent })
+         .left(function(d) { return x(d.incidence) })
+         .bottom(function(d) { return y(d.otherFactor) })
+         .radius(3)
+         .fillStyle("#eee")
+         .strokeStyle(function(d) { return c(d.incidence) })
+         .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
+         .anchor('right')
+            .add(pv.Label)
+              .visible(function() { return this.anchorTarget().active() == this.index })
+              .text(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
+              .fillStyle('white');
     }
     
     vis.render();
