@@ -1,20 +1,3 @@
-/* make SVG tag (must use createElementNS to work in FF) */
-var ATTR_MAP = {"className": "class", "svgHref": "href"};
-var NS_MAP = {"svgHref": "http://www.w3.org/1999/xlink"};
-
-function makeSVGTag(tag, attributes) {
-    var elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
-    for (var attribute in attributes) {
-        var name = (attribute in ATTR_MAP ? ATTR_MAP[attribute] : attribute);
-        var value = attributes[attribute];
-        if (attribute in NS_MAP)
-            elem.setAttributeNS(NS_MAP[attribute], name, value);
-        else
-            elem.setAttribute(name, value);
-    }
-    return elem;
-}
-
 function sortByXValues(data) {
   data.sort(function(a, b) {
     return a.incidence - b.incidence;
@@ -313,8 +296,8 @@ function constructVis() {
   /* user ellipse */
   vis.add(pv.Line)
      .visible(function() { return $('#checkboxShowMMEllipse').is(':checked') })
-     .def('xradius', function() { return $('#sliderEllipseYRadius').slider('value') })
-     .def('yradius', 50)
+     .def('xradius', function() { return $('#sliderEllipseXRadius').slider('value') })
+     .def('yradius', function() { return $('#sliderEllipseYRadius').slider('value') })
      .def('cx', x((xMin + xMax) / 2))
      .def('cy', y((yMin + yMax) / 2))
      .def('rot', function() { return $('#sliderEllipseRotation').slider('value') })
@@ -352,14 +335,21 @@ function constructVis() {
     }
   });
 
-  $('<div>Ellipse width</div><div id="sliderEllipseYRadius"></div>').appendTo('#ellipseSliders');
-  $('div#sliderEllipseYRadius').slider({
+  $('<div>Ellipse width</div><div id="sliderEllipseXRadius"></div>').appendTo('#ellipseSliders');
+  $('div#sliderEllipseXRadius').slider({
     orientation:'vertical', min:5, max:w / 2, value:w / 4,
     slide:function(event, ui) {
       vis.render();
     }
   });
   
+  $('<div>Ellipse height</div><div id="sliderEllipseYRadius"></div>').appendTo('#ellipseSliders');
+  $('div#sliderEllipseYRadius').slider({
+    orientation:'vertical', min:5, max:w / 2, value:w / 4,
+    slide:function(event, ui) {
+      vis.render();
+    }
+  });
   
 }
 
