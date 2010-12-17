@@ -138,226 +138,6 @@ function getXValue(y, slope, intercept) {
   return (y - intercept) / slope;
 }
 
-
-
-function renderIt(data, options) {
-    if (!options)
-      options = {};
-      
-    data = removeInvalidData(data);
-  
-    var w = 600,
-        h = 500,
-        xMax = pv.max(data, function(d) { return d.incidence }),
-        yMax = pv.max(data, function(d) { return d.otherFactor }),
-        xMin = pv.min(data, function(d) { return d.incidence }),
-        yMin = pv.min(data, function(d) { return d.otherFactor }),
-        x = pv.Scale.linear(0, xMax).range(0, w),
-        y = pv.Scale.linear(0, yMax).range(0, h),
-        c = pv.Scale.linear(0, xMax).range("brown", "orange");
-
-    if (options.fitScalesToData) {
-      x = pv.Scale.linear(xMin, xMax).range(0, w);
-      y = pv.Scale.linear(yMin, yMax).range(0, h);
-    }
-  
-    /* the main panel */
-    var vis = new pv.Panel()
-        .width(w)
-        .height(h)
-        .bottom(20)
-        .left(20)
-        .right(10)
-        .top(5)
-        .events("all")
-        .event("mousemove", pv.Behavior.point());
-  
-    /* Y-axis ticks */
-    vis.add(pv.Rule)
-       .data(y.ticks())
-       .bottom(y)
-       .strokeStyle(function(d) { return d ? "#eee" : "#000" })
-       .anchor('left').add(pv.Label)
-         .visible(function(d) { return d > 0 && d < 100 })
-         .text(x.tickFormat);
-         
-    vis.anchor('left')
-       .add(pv.Label)
-       .textAngle(0.5 * Math.PI)
-       .textBaseline('bottom')
-       .text('Other factor');
-   
-    /* X-axis ticks */
-    vis.add(pv.Rule)
-       .data(x.ticks())
-       .left(x)
-       .strokeStyle(function(d) { return d ? "#eee" : "#000" })
-       .anchor("bottom").add(pv.Label)
-         .visible(function(d) { return d >= 0 && d < 100 })
-         .text(x.tickFormat);
-
-    vis.anchor("bottom")
-       .add(pv.Label)
-       .text('Incidence per 100k');
-       
-    var groups = divideDataInto3(data);
-    var medians = getMedianValuesFrom(groups);
-    for (var i = 0; i < groups.length; i++) {
-       var bounds = getBounds(groups[i]);
-       var coords = getBoundingCoords(bounds);
-
-       /* rectangle around group */
-       if (options.showMMRects) {
-         vis.add(pv.Line)
-            .data(coords)
-            .left(function(d) { return x(d[0]) })
-            .bottom(function(d) { return y(d[1]) })
-            .lineWidth(1)
-            .fillStyle(pv.rgb(255,165,0,0.15));
-       }
-
-       /* median dot */
-       if (options.showMMDots) {
-         vis.add(pv.Dot)
-            .data([medians[i]]) // extra brackets so not to use x and y as seperate points
-            .left(function(d) { return x(d[0]) })
-            .bottom(function(d) { return y(d[1]) })
-            .radius(10)
-            .angle(Math.PI/4)
-            .shape('cross')
-            .fillStyle(pv.rgb(255,165,0,1))
-            .title("Median dot");
-       }
-    }
-   
-    var slope = findSlope(medians[0][0], medians[2][0], medians[0][1], medians[2][1]);
-    var intercept = findIntercept(medians[0][0], medians[0][1], slope);
-    
-    /* Is middle median dot higher or lower than line through outer median dots? 
-       That is, middle median dot's y value - y value at same x of original median line 
-       divided by three */
-    var medianYDelta = ((medians[1][1] - getYValue(medians[1][0], slope, intercept)) / 3);
-    var adjustedIntercept = intercept + medianYDelta;
-    
-    var farLeftYVal = getYValue(xMin, slope, adjustedIntercept);
-    var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
-    
-    /* media-median line */
-    if (options.showMMLine) {
-      vis.add(pv.Line)
-         .data([[xMin, farLeftYVal], [xMax, farRightYVal]])
-         .left(function(d) { return x(d[0]) })
-         .bottom(function(d) { return y(d[1]) })
-         .title("Median-median line");
-    }
-
-    /* dot plot */
-    if (options.showData) {
-      vis.add(pv.Dot)
-         .data(data)
-         .def("active", -1)
-         .event("point", function() { return this.active(this.index).parent })
-         .event("unpoint", function() { return this.active(-1).parent })
-         .left(function(d) { return x(d.incidence) })
-         .bottom(function(d) { return y(d.otherFactor) })
-         .radius(3)
-         .fillStyle("#eee")
-         .strokeStyle(function(d) { return c(d.incidence) })
-         .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
-         .anchor('right')
-            .add(pv.Label)
-              .visible(function() { return this.anchorTarget().active() == this.index })
-              .text(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
-              .fillStyle('white');
-    }
-    
-    vis.render();
-    renderUserDrawnLine();
-    
-    /* median-median ellipse, after vis.render() because we need to access $('svg') */
-    if (options.showMMEllipse) {
-      function calcDistance(x1, y1, x2, y2) {
-        return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
-      }
-      /* width of ellipse is the length of the median median line */
-      var radius = calcDistance(xMin, farLeftYVal, xMax, farRightYVal) / 2;
-      
-      var cx = (xMin + xMax) / 2;
-      var cy = (farLeftYVal + farRightYVal) / 2;
-
-      $('svg').svg();
-      var svg = $('svg').svg('get');
-
-      /* h - y(cy) because we need to invert the y coordinate system: (0,0) is lower left not upper left;
-         translate(20,5) because of protovis (unknown why) */
-      var degreeSlope = -Math.atan(slope) * 180 / Math.PI;
-      var ellipse = svg.ellipse(x(cx), h - y(cy), x(radius), 10, { 
-                          strokeWidth:2, stroke:'black', 
-                          transform:'translate(20,5) rotate(' + degreeSlope + ' ' + x(cx) + ' ' + (h - y(cy)) + ')' });
-      $(ellipse).appendTo('svg');
-      
-      $('<div id="ellipseSliders"></div>').appendTo('span');
-      
-      $('<div id="sliderEllipseRotation">Rotate ellipse</div>').appendTo('#ellipseSliders');
-      $('#sliderEllipseRotation').slider({ 
-        orientation:'vertical', min:0, max:180, value:degreeSlope,
-        slide:function(event, ui) {
-          $(ellipse).attr('transform', 'translate(20,5) rotate(' + 
-              (degreeSlope + ui.value) + ' ' + x(cx) + ' ' + (h - y(cy)) + ')');
-        }
-      });
-      
-      $('<div id="sliderEllipseYRadius">Ellipse y-radius</div>').appendTo('#ellipseSliders');
-      $('div#sliderEllipseYRadius').slider({
-        orientation:'vertical', min:10, max:y(yMax), value:10,
-        slide:function(event, ui) {
-          $(ellipse).attr('ry', ui.value);
-        }
-      });
-    }
-    
-}
-
-
-/* allow the user to draw their own line */
-var $userDrawnLine; // store the line so we can add it back in after protovis redraws
-
-function renderUserDrawnLine() {
-
-  /* if we've stored a line, add it back in */
-  if ($userDrawnLine && $('line.userDrawn').length == 0) {
-    $('svg').append($userDrawnLine);
-  }
-  
-  $('svg').mousedown(function(event) {
-    $svg = $(this);
-    if (event.which == 1) {
-      var xStart = event.pageX - $svg.offset().left;
-      var yStart = event.pageY - $svg.offset().top;
-      $userDrawnLine = $('line.userDrawn');
-      
-      if ($userDrawnLine.length > 0)
-        $userDrawnLine.remove();
-      
-      
-      $userDrawnLine = $(makeSVGTag('line', { x1:xStart, y1:yStart, x2:xStart, y2:yStart, stroke:'black', 
-                                           strokeWidth:2, class:'userDrawn' }))
-                              .appendTo($svg);
-      event.stopPropagation();
-    
-      $svg.mousemove(function(event) {
-        var x = event.pageX - $svg.offset().left;
-        var y = event.pageY - $svg.offset().top;
-        $userDrawnLine.attr('x2', x).attr('y2', y);
-        event.stopPropagation();
-      })
-    }
-  }).mouseup(function(event) {
-    $(this).unbind('mousemove');
-  });
-}
-
-
 var datasetNames = [
   'lungCancervsAtLeastBachelors',
   'lungCancervsAtLeastHS',
@@ -373,29 +153,236 @@ var datasetNames = [
 
 /* populate dataset drop down menu */
 $.each(datasetNames, function() {
-  // $.getScript("data/" + this + ".js");
   $('#dataSelector').append($("<option value='" + this + "'>" + this + "</option>"));
 });
 
-$('body').bind('eventMenuChange', function(event) {
-  $('body span').remove();
-  renderIt(eval($('#dataSelector').val()), { fitScalesToData:$('#fitScalesToData').is(':checked'),
-                                             showData:$('#checkboxShowData').is(':checked'),
-                                             showMMLine:$('#checkboxMMLine').is(':checked'),
-                                             showMMDots:$('#checkboxMMDots').is(':checked'),
-                                             showMMRects:$('#checkboxMMRects').is(':checked'),
-                                             showMMEllipse:$('#checkboxMMEllipse').is(':checked') });
-});
 
-$('#menuOptions').change(function() {
-  $('body').trigger('eventMenuChange');
-});
 
-$('input#checkboxShowUserShapes').change(function() {
-  if ($(this).is(':checked'))
-    $('.userDrawn').show();
-  else
-    $('.userDrawn').hide();
+/* the main panel */
+
+var vis = {}
+
+function constructVis() {
+  
+  var data = removeInvalidData(eval($('#dataSelector').val()));
+
+  var w = 600,
+      h = 500,
+      xMax = pv.max(data, function(d) { return d.incidence }),
+      yMax = pv.max(data, function(d) { return d.otherFactor }),
+      xMin = pv.min(data, function(d) { return d.incidence }),
+      yMin = pv.min(data, function(d) { return d.otherFactor }),
+      x = pv.Scale.linear(0, xMax).range(0, w),
+      y = pv.Scale.linear(0, yMax).range(0, h),
+      c = pv.Scale.linear(0, xMax).range("brown", "orange");
+
+  if ($('#fitScalesToData').is(':checked')) {
+    x = pv.Scale.linear(xMin, xMax).range(0, w);
+    y = pv.Scale.linear(yMin, yMax).range(0, h);
+  }
+
+  var userDrawnLinePoints = [{ x:w * 0.2, y:h / 2 }, 
+                             { x:w * 0.8, y:h / 2 }];
+
+  vis = new pv.Panel()
+          .width(w)
+          .height(h)
+          .bottom(20)
+          .left(20)
+          .right(10)
+          .top(5)
+          .events("all")
+          .event("mousemove", pv.Behavior.point());
+
+  /* Y-axis ticks */
+  vis.add(pv.Rule)
+     .data(function() { return y.ticks() })
+     .bottom(y)
+     .strokeStyle(function(d) { return d ? "#eee" : "#000" })
+     .anchor('left').add(pv.Label)
+       .text(x.tickFormat);
+
+  /* Y-axis label */
+  vis.anchor('left')
+     .add(pv.Label)
+     .textAngle(0.5 * Math.PI)
+     .textBaseline('bottom')
+     .text('Other factor');
+
+  /* X-axis ticks */
+  vis.add(pv.Rule)
+     .data(function() { return x.ticks() })
+     .left(x)
+     .strokeStyle(function(d) { return d ? "#eee" : "#000" })
+     .anchor("bottom").add(pv.Label)
+       .text(x.tickFormat);
+       
+  /* X-axis label */
+  vis.anchor("bottom")
+     .add(pv.Label)
+     .text('Incidence per 100k');
+     
+   
+  /* median median crosses and squares */
+  var groups = divideDataInto3(data);
+  var medians = getMedianValuesFrom(groups);
+
+  for (var i = 0; i < groups.length; i++) {
+     var bounds = getBounds(groups[i]);
+     var coords = getBoundingCoords(bounds);
+
+     /* rectangle around median group */
+     vis.add(pv.Line)
+        .visible(function() { return $('#checkboxShowMMRects').is(':checked') })
+        .data(coords)
+        .left(function(d) { return x(d[0]) })
+        .bottom(function(d) { return y(d[1]) })
+        .lineWidth(0.5)
+        .fillStyle(pv.rgb(255,165,0,0.05));
+
+     /* median cross */
+     vis.add(pv.Dot)
+        .visible(function() { return $('#checkboxShowMMDots').is(':checked') })
+        .data([medians[i]]) // extra brackets so not to use x and y as seperate points
+        .left(function(d) { return x(d[0]) })
+        .bottom(function(d) { return y(d[1]) })
+        .radius(10)
+        .angle(Math.PI / 4)
+        .shape('cross')
+        .fillStyle(pv.rgb(255,165,0,1))
+        .title("Median dot");
+  }
+
+
+  /* media-median line:
+       Is middle median dot higher or lower than line through outer median dots? 
+       That is, middle median dot's y value - y value at same x of original median line 
+       divided by three */
+  var slope = findSlope(medians[0][0], medians[2][0], medians[0][1], medians[2][1]);
+  var intercept = findIntercept(medians[0][0], medians[0][1], slope);
+  var medianYDelta = ((medians[1][1] - getYValue(medians[1][0], slope, intercept)) / 3);
+  var adjustedIntercept = intercept + medianYDelta;
+  var farLeftYVal = getYValue(xMin, slope, adjustedIntercept);
+  var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
+
+  vis.add(pv.Line)
+     .visible(function() { return $('#checkboxShowMMLine').is(':checked') })
+     .data([[xMin, farLeftYVal], [xMax, farRightYVal]])
+     .left(function(d) { return x(d[0]) })
+     .bottom(function(d) { return y(d[1]) })
+     .title("Median-median line");
+
+
+  /* dot plot */
+  vis.add(pv.Dot)
+     .data(data)
+     .visible(function() { return $('#checkboxShowData').is(':checked') })
+     .event("point", function() { return this.active(this.index).parent })
+     .event("unpoint", function() { return this.active(-1).parent })
+     .left(function(d) { return x(d.incidence) })
+     .bottom(function(d) { return y(d.otherFactor) })
+     .radius(function() { return 3 / this.scale })
+     .fillStyle("#eee")
+     .strokeStyle(function(d) { return c(d.incidence) })
+     .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
+     .def('active', -1)
+     .event("point", function() { return this.active(this.index).parent })
+     .event("unpoint", function() { return this.active(-1).parent })
+     .anchor("right").add(pv.Label)
+       .visible(function() { return this.anchorTarget().active() == this.index })
+       .text(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor });
+
+     
+  /* user drawn line */
+  vis.add(pv.Line)
+     .data(userDrawnLinePoints)
+     .left(function(d) { return d.x })
+     .top(function(d) { return d.y })
+     .visible(function() { return $('#checkboxShowUserLine').is(':checked') })
+     .add(pv.Dot)
+        .fillStyle("blue")
+        .shape('square')
+        .event("mousedown", pv.Behavior.drag())
+        .event("drag", vis)
+        
+  
+  function calcDistance(x1, y1, x2, y2) {
+    return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
+  }
+  
+  /* user ellipse */
+  vis.add(pv.Line)
+     .visible(function() { return $('#checkboxShowMMEllipse').is(':checked') })
+     .def('xradius', function() { return $('#sliderEllipseYRadius').slider('value') })
+     .def('yradius', 50)
+     .def('cx', x((xMin + xMax) / 2))
+     .def('cy', y((yMin + yMax) / 2))
+     .def('rot', function() { return $('#sliderEllipseRotation').slider('value') })
+     .data(pv.range(0, 2 * Math.PI, .01))
+     .bottom(function(i) { return this.cy() + this.yradius() * Math.sin(i + this.rot()) })
+     .left(function(i) { return this.cx() + this.xradius() * Math.cos(i + this.rot()) })
+   
+  vis.render();
+  
+  
+  // /* width of ellipse is the length of the median median line */
+  // var radius = calcDistance(xMin, farLeftYVal, xMax, farRightYVal) / 2;
+  // 
+  // var cx = (xMin + xMax) / 2;
+  // var cy = (farLeftYVal + farRightYVal) / 2;
+  // 
+  // $('svg').svg();
+  // var svg = $('svg').svg('get');
+  // 
+  // /* h - y(cy) because we need to invert the y coordinate system: (0,0) is lower left not upper left;
+  //    translate(20,5) because of protovis (unknown why) */
+  // var degreeSlope = -Math.atan(slope) * 180 / Math.PI;
+  // var ellipse = svg.ellipse(x(cx), h - y(cy), x(radius), 10, { 
+  //                     strokeWidth:2, stroke:'black', 
+  //                     transform:'translate(20,5) rotate(' + degreeSlope + ' ' + x(cx) + ' ' + (h - y(cy)) + ')' });
+  // $(ellipse).appendTo('svg');
+
+  $('<div id="ellipseSliders" style="display:none"></div>').appendTo('span');
+
+  $('<div>Rotate ellipse</div><div id="sliderEllipseRotation"></div>').appendTo('#ellipseSliders');
+  $('#sliderEllipseRotation').slider({ 
+    orientation:'vertical', min:0, max:2 * Math.PI, value:0,
+    slide:function(event, ui) {
+      vis.render();
+    }
+  });
+
+  $('<div>Ellipse width</div><div id="sliderEllipseYRadius"></div>').appendTo('#ellipseSliders');
+  $('div#sliderEllipseYRadius').slider({
+    orientation:'vertical', min:5, max:w / 2, value:w / 4,
+    slide:function(event, ui) {
+      vis.render();
+    }
+  });
+  
+  
+}
+
+
+constructVis();
+
+$('#menu').change(function(event) {
+  $('span').remove();
+  constructVis();
+  event.stopPropagation();
 })
 
-$('body').trigger('eventMenuChange'); // draw the initial plot
+$('#menuOptions').change(function(event) {
+  vis.render();
+  event.stopPropagation();
+});
+
+function toggleEllipseSliders() {
+  if ($('#checkboxShowMMEllipse').is(':checked')) {
+    $('#ellipseSliders').show();
+  } else {
+    $('#ellipseSliders').hide();
+  }
+}
+toggleEllipseSliders(); // in case the page loads with the ellipse checkbox checked
+$('#checkboxShowMMEllipse').change(toggleEllipseSliders);

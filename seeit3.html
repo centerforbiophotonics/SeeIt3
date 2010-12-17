@@ -15,33 +15,27 @@
 
 <h1>SeeIt3: Distribution correlation&mdash;are two factors related?</h1>
 
-<div id="menuOptions">
-  <h3>Select a dataset: <select id="dataSelector"></select></h3>
-  <div>
-    <input type="checkbox" id="fitScalesToData">
-    <label for="fitScalesToData">Fit scales to data</label>
-  <div>
-    
-    <br>
-  
-  <div>
-    <input type="checkbox" id="checkboxShowData" checked>
-    <label for="checkboxShowData">Show data?</label>
-    <input type="checkbox" id="checkboxMMLine">
-    <label for="checkboxMMLine">Show median-median line?</label>
-    <input type="checkbox" id="checkboxMMDots">
-    <label for="checkboxMMDots">Show median-median dots?</label><br/>
-    <input type="checkbox" id="checkboxMMRects">
-    <label for="checkboxMMRects">Show median-median rectangles?</label>
-    <input type="checkbox" id="checkboxShowUserShapes" checked>
-    <label for="checkboxShowUserShapes">Show user shapes?</label>
-    <input type="checkbox" id="checkboxMMEllipse">
-    <label for="checkboxMMEllipse">Show median-median ellipse?</label>
-  </div>
-</div>
-  
-<br/>
 
+<div id="menu" class="menu">
+  <h3>Select a dataset: <select id="dataSelector"></select></h3>
+  <input type="checkbox" id="fitScalesToData"/>
+  <label for="fitScalesToData">Fit scales to data</label>
+</div>
+
+<div id="menuOptions" class="menu">
+  <input type="checkbox" id="checkboxShowData" checked>
+  <label for="checkboxShowData">Show data?</label>
+  <input type="checkbox" id="checkboxShowMMLine">
+  <label for="checkboxShowMMLine">Show median-median line?</label>
+  <input type="checkbox" id="checkboxShowMMDots">
+  <label for="checkboxShowMMDots">Show median-median dots?</label><br/>
+  <input type="checkbox" id="checkboxShowMMRects">
+  <label for="checkboxShowMMRects">Show median-median rectangles?</label>
+  <input type="checkbox" id="checkboxShowUserLine">
+  <label for="checkboxShowUserLine">Show your line?</label>
+  <input type="checkbox" id="checkboxShowMMEllipse">
+  <label for="checkboxShowMMEllipse">Show median-median ellipse?</label>
+</div>
 
 <script src="data/lungCancervsAtLeastBachelors.js" type="text/javascript" charset="utf-8"></script>
 <script src="data/lungCancervsAtLeastHS.js" type="text/javascript" charset="utf-8"></script>
