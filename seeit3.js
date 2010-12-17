@@ -157,7 +157,8 @@ function constructVis() {
       yMin = pv.min(data, function(d) { return d.otherFactor }),
       x = pv.Scale.linear(0, xMax).range(0, w),
       y = pv.Scale.linear(0, yMax).range(0, h),
-      c = pv.Scale.linear(0, xMax).range("brown", "orange");
+      colorScale = pv.Scale.linear(0, 1/4, 1/2, 1).range("red", "blue", "green", "yellow");
+      c = $.map(data, function() { return colorScale(Math.random()) })
 
   if ($('#fitScalesToData').is(':checked')) {
     x = pv.Scale.linear(xMin, xMax).range(0, w);
@@ -266,7 +267,7 @@ function constructVis() {
      .bottom(function(d) { return y(d.otherFactor) })
      .radius(function() { return 3 / this.scale })
      .fillStyle("#eee")
-     .strokeStyle(function(d) { return c(d.incidence) })
+     .strokeStyle(function(d) { return c[this.index] })
      .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
      .def('active', -1)
      .event("point", function() { return this.active(this.index).parent })
@@ -302,8 +303,11 @@ function constructVis() {
      .def('cy', y((yMin + yMax) / 2))
      .def('rot', function() { return $('#sliderEllipseRotation').slider('value') })
      .data(pv.range(0, 2 * Math.PI, .01))
-     .bottom(function(i) { return this.cy() + this.yradius() * Math.sin(i + this.rot()) })
-     .left(function(i) { return this.cx() + this.xradius() * Math.cos(i + this.rot()) })
+     .left(function(i) { return this.cx() + this.xradius() * Math.cos(i) })
+     .bottom(function(i) { return this.cy() + this.yradius() * Math.sin(i) });
+     //.left(function(i) { return 10 * Math.cos(i) - 10 * Math.sin(i) })
+     //.bottom(function(i) { return 10 * Math.sin(i) - 10 * Math.cos(i) })
+     
    
   vis.render();
   
@@ -329,26 +333,20 @@ function constructVis() {
 
   $('<div>Rotate ellipse</div><div id="sliderEllipseRotation"></div>').appendTo('#ellipseSliders');
   $('#sliderEllipseRotation').slider({ 
-    orientation:'vertical', min:0, max:2 * Math.PI, value:0,
-    slide:function(event, ui) {
-      vis.render();
-    }
+    orientation:'vertical', min:0, max:Math.PI, value:0, step:0.01,
+    slide:function(event, ui) { vis.render(); }
   });
 
   $('<div>Ellipse width</div><div id="sliderEllipseXRadius"></div>').appendTo('#ellipseSliders');
   $('div#sliderEllipseXRadius').slider({
     orientation:'vertical', min:5, max:w / 2, value:w / 4,
-    slide:function(event, ui) {
-      vis.render();
-    }
+    slide:function(event, ui) { vis.render(); }
   });
   
   $('<div>Ellipse height</div><div id="sliderEllipseYRadius"></div>').appendTo('#ellipseSliders');
   $('div#sliderEllipseYRadius').slider({
     orientation:'vertical', min:5, max:w / 2, value:w / 4,
-    slide:function(event, ui) {
-      vis.render();
-    }
+    slide:function(event, ui) { vis.render(); }
   });
   
 }
