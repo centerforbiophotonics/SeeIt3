@@ -4,6 +4,7 @@ svg {
 
 #ellipseSliders {
   float:right;
+  display:none;
   padding-left:15px;
 }
 

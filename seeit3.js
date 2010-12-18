@@ -59,7 +59,7 @@ function getBoundingCoords(minsAndMaxs) {
 }
 
 function removeInvalidData(data) {
-  return $.map(data, function(elem, index) {
+  return jQuery.map(data, function(elem, index) {
     if (!elem.incidence || !elem.otherFactor || 
       elem.incidence == "" || elem.otherFactor == "")
       return null;
@@ -135,8 +135,8 @@ var datasetNames = [
 ];
 
 /* populate dataset drop down menu */
-$.each(datasetNames, function() {
-  $('#dataSelector').append($("<option value='" + this + "'>" + this + "</option>"));
+jQuery.each(datasetNames, function() {
+  jQuery('#dataSelector').append(jQuery("<option value='" + this + "'>" + this + "</option>"));
 });
 
 
@@ -147,7 +147,7 @@ var vis = {}
 
 function constructVis() {
   
-  var data = removeInvalidData(eval($('#dataSelector').val()));
+  var data = removeInvalidData(eval(jQuery('#dataSelector').val()));
 
   var w = 600,
       h = 500,
@@ -157,10 +157,10 @@ function constructVis() {
       yMin = pv.min(data, function(d) { return d.otherFactor }),
       x = pv.Scale.linear(0, xMax).range(0, w),
       y = pv.Scale.linear(0, yMax).range(0, h),
-      colorScale = pv.Scale.linear(0, 1/4, 1/2, 1).range("red", "blue", "green", "yellow");
-      c = $.map(data, function() { return colorScale(Math.random()) })
+      colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black");
+      c = jQuery.map(data, function() { return colorScale(Math.random()) })
 
-  if ($('#fitScalesToData').is(':checked')) {
+  if (jQuery('#fitScalesToData').is(':checked')) {
     x = pv.Scale.linear(xMin, xMax).range(0, w);
     y = pv.Scale.linear(yMin, yMax).range(0, h);
   }
@@ -217,7 +217,7 @@ function constructVis() {
 
      /* rectangle around median group */
      vis.add(pv.Line)
-        .visible(function() { return $('#checkboxShowMMRects').is(':checked') })
+        .visible(function() { return jQuery('#checkboxShowMMRects').is(':checked') })
         .data(coords)
         .left(function(d) { return x(d[0]) })
         .bottom(function(d) { return y(d[1]) })
@@ -226,7 +226,7 @@ function constructVis() {
 
      /* median cross */
      vis.add(pv.Dot)
-        .visible(function() { return $('#checkboxShowMMDots').is(':checked') })
+        .visible(function() { return jQuery('#checkboxShowMMDots').is(':checked') })
         .data([medians[i]]) // extra brackets so not to use x and y as seperate points
         .left(function(d) { return x(d[0]) })
         .bottom(function(d) { return y(d[1]) })
@@ -250,7 +250,7 @@ function constructVis() {
   var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
 
   vis.add(pv.Line)
-     .visible(function() { return $('#checkboxShowMMLine').is(':checked') })
+     .visible(function() { return jQuery('#checkboxShowMMLine').is(':checked') })
      .data([[xMin, farLeftYVal], [xMax, farRightYVal]])
      .left(function(d) { return x(d[0]) })
      .bottom(function(d) { return y(d[1]) })
@@ -260,7 +260,7 @@ function constructVis() {
   /* dot plot */
   vis.add(pv.Dot)
      .data(data)
-     .visible(function() { return $('#checkboxShowData').is(':checked') })
+     .visible(function() { return jQuery('#checkboxShowData').is(':checked') })
      .event("point", function() { return this.active(this.index).parent })
      .event("unpoint", function() { return this.active(-1).parent })
      .left(function(d) { return x(d.incidence) })
@@ -282,7 +282,7 @@ function constructVis() {
      .data(userDrawnLinePoints)
      .left(function(d) { return d.x })
      .top(function(d) { return d.y })
-     .visible(function() { return $('#checkboxShowUserLine').is(':checked') })
+     .visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
      .add(pv.Dot)
         .fillStyle("blue")
         .shape('square')
@@ -294,21 +294,53 @@ function constructVis() {
     return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
   }
   
+
   /* user ellipse */
+  jQuery('#sliderEllipseRotation').slider({ 
+    orientation:'vertical', min:0, max:Math.PI, value:0, step:0.01,
+    slide:function(event, ui) { vis.render(); }
+  });
+
+  jQuery('div#sliderEllipseXRadius').slider({
+    orientation:'vertical', min:5, max:w / 2, value:w / 4,
+    slide:function(event, ui) { vis.render(); }
+  });
+  
+  jQuery('div#sliderEllipseYRadius').slider({
+    orientation:'vertical', min:5, max:w / 2, value:w / 4,
+    slide:function(event, ui) { vis.render(); }
+  });
+  
+  var fullRot = pv.range(0, 2 * Math.PI, 0.01);
+  var ellipseCX = x((xMin + xMax) / 2);
+  var ellipseCY = y((yMin + yMax) / 2);
+  
+  function getRotatedEllipseCoords() {
+    var ellipseXRadius = jQuery('#sliderEllipseXRadius').slider('value');
+    var ellipseYRadius = jQuery('#sliderEllipseYRadius').slider('value');
+    
+    var coords = [];
+    for (i = 0; i < fullRot.length; i++) {
+      coords.push([ ellipseXRadius * Math.cos(fullRot[i]),
+                    ellipseYRadius * Math.sin(fullRot[i]) ]);
+    }
+    var angle = jQuery('#sliderEllipseRotation').slider('value');
+    
+    for (var i = 0; i < coords.length; i++) {
+      coords[i] = ([ coords[i][0] * Math.cos(angle) - coords[i][1] * Math.sin(angle) + ellipseCX,
+                     coords[i][0] * Math.sin(angle) + coords[i][1] * Math.cos(angle) + ellipseCY ]);
+    }
+    return coords;
+  }
+  
   vis.add(pv.Line)
-     .visible(function() { return $('#checkboxShowMMEllipse').is(':checked') })
-     .def('xradius', function() { return $('#sliderEllipseXRadius').slider('value') })
-     .def('yradius', function() { return $('#sliderEllipseYRadius').slider('value') })
-     .def('cx', x((xMin + xMax) / 2))
-     .def('cy', y((yMin + yMax) / 2))
-     .def('rot', function() { return $('#sliderEllipseRotation').slider('value') })
-     .data(pv.range(0, 2 * Math.PI, .01))
-     .left(function(i) { return this.cx() + this.xradius() * Math.cos(i) })
-     .bottom(function(i) { return this.cy() + this.yradius() * Math.sin(i) });
-     //.left(function(i) { return 10 * Math.cos(i) - 10 * Math.sin(i) })
-     //.bottom(function(i) { return 10 * Math.sin(i) - 10 * Math.cos(i) })
+     .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
+     .data(getRotatedEllipseCoords)
+     .left(function(i) { return i[0] })
+     .bottom(function(i) { return i[1] });
      
    
+
   vis.render();
   
   
@@ -318,8 +350,8 @@ function constructVis() {
   // var cx = (xMin + xMax) / 2;
   // var cy = (farLeftYVal + farRightYVal) / 2;
   // 
-  // $('svg').svg();
-  // var svg = $('svg').svg('get');
+  // jQuery('svg').svg();
+  // var svg = jQuery('svg').svg('get');
   // 
   // /* h - y(cy) because we need to invert the y coordinate system: (0,0) is lower left not upper left;
   //    translate(20,5) because of protovis (unknown why) */
@@ -327,50 +359,30 @@ function constructVis() {
   // var ellipse = svg.ellipse(x(cx), h - y(cy), x(radius), 10, { 
   //                     strokeWidth:2, stroke:'black', 
   //                     transform:'translate(20,5) rotate(' + degreeSlope + ' ' + x(cx) + ' ' + (h - y(cy)) + ')' });
-  // $(ellipse).appendTo('svg');
-
-  $('<div id="ellipseSliders" style="display:none"></div>').appendTo('span');
-
-  $('<div>Rotate ellipse</div><div id="sliderEllipseRotation"></div>').appendTo('#ellipseSliders');
-  $('#sliderEllipseRotation').slider({ 
-    orientation:'vertical', min:0, max:Math.PI, value:0, step:0.01,
-    slide:function(event, ui) { vis.render(); }
-  });
-
-  $('<div>Ellipse width</div><div id="sliderEllipseXRadius"></div>').appendTo('#ellipseSliders');
-  $('div#sliderEllipseXRadius').slider({
-    orientation:'vertical', min:5, max:w / 2, value:w / 4,
-    slide:function(event, ui) { vis.render(); }
-  });
-  
-  $('<div>Ellipse height</div><div id="sliderEllipseYRadius"></div>').appendTo('#ellipseSliders');
-  $('div#sliderEllipseYRadius').slider({
-    orientation:'vertical', min:5, max:w / 2, value:w / 4,
-    slide:function(event, ui) { vis.render(); }
-  });
+  // jQuery(ellipse).appendTo('svg');
   
 }
 
 
 constructVis();
 
-$('#menu').change(function(event) {
-  $('span').remove();
+jQuery('#menu').change(function(event) {
+  jQuery('span').remove();
   constructVis();
   event.stopPropagation();
 })
 
-$('#menuOptions').change(function(event) {
+jQuery('#menuOptions').change(function(event) {
   vis.render();
   event.stopPropagation();
 });
 
 function toggleEllipseSliders() {
-  if ($('#checkboxShowMMEllipse').is(':checked')) {
-    $('#ellipseSliders').show();
+  if (jQuery('#checkboxShowMMEllipse').is(':checked')) {
+    jQuery('#ellipseSliders').show();
   } else {
-    $('#ellipseSliders').hide();
+    jQuery('#ellipseSliders').hide();
   }
 }
 toggleEllipseSliders(); // in case the page loads with the ellipse checkbox checked
-$('#checkboxShowMMEllipse').change(toggleEllipseSliders);
+jQuery('#checkboxShowMMEllipse').change(toggleEllipseSliders);
