@@ -420,6 +420,14 @@ jQuery('#menu').change(function(event) {
   event.stopPropagation();
 })
 
+jQuery('#editInGoogleDocs').click(function(event) {
+  var key = jQuery('#dataSelector').val();
+  if (!key || key == "")
+    alert("There is no worksheet loaded");
+  else
+    window.open('https://spreadsheets.google.com/ccc?key=' + key);
+});
+
 jQuery('#menuOptions').change(function(event) {
   vis.render();
   event.stopPropagation();
