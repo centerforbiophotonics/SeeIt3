@@ -372,7 +372,7 @@ Spreadsheet.prototype = {
   fetchWorksheet: function() {
     var worksheet = this;
     jQuery.getJSON(worksheet.listFeedURL(), function(feedData) {
-      worksheet.data = transformFeedData(feedData);
+      worksheet.data = worksheet.transformFeedData(feedData);
       worksheet.title = feedData.feed.title.$t;
       jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
     });
@@ -419,6 +419,7 @@ jQuery('#editInGoogleDocs').click(function(event) {
     alert("There is no worksheet loaded");
   else
     window.open('https://spreadsheets.google.com/ccc?key=' + key);
+  event.preventDefault();
 });
 
 jQuery('#menuOptions').change(function(event) {
