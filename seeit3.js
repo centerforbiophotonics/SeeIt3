@@ -121,33 +121,15 @@ function getXValue(y, slope, intercept) {
   return (y - intercept) / slope;
 }
 
-var datasetNames = [
-  'lungCancervsAtLeastBachelors',
-  'lungCancervsAtLeastHS',
-  'lungCancervsDivorceRate',
-  'lungCancervsLessThanHS',
-  'lungCancervsLifeExpectancy',
-  'lungCancervsLungCancerMortality',
-  'lungCancervsMedianEarnings',
-  'lungCancervsPercentChildrenNoSmokers',
-  'lungCancervsPercentSmoker',
-  'lungCancervsSchoolEnroll'
-];
-
-/* populate dataset drop down menu */
-jQuery.each(datasetNames, function() {
-  jQuery('#dataSelector').append(jQuery("<option value='" + this + "'>" + this + "</option>"));
-});
-
 
 
 /* the main panel */
 
 var vis = {}
 
-function constructVis() {
+function constructVis(data) {
   
-  var data = removeInvalidData(eval(jQuery('#dataSelector').val()));
+  //var data = removeInvalidData(eval(jQuery('#dataSelector').val()));
 
   var w = 600,
       h = 500,
@@ -363,12 +345,78 @@ function constructVis() {
   
 }
 
+function Spreadsheet(key) {
+  this.key = key;
+  this.fetchWorksheet();
+}
 
-constructVis();
+Spreadsheet.prototype = { 
+  listFeedURL: function() {
+    return 'https://spreadsheets.google.com/feeds/list/' + this.key + '/od6/public/basic?alt=json&callback=?'
+  },
+  
+  fetchWorksheet: function() {
+    var worksheet = this;
+    jQuery.getJSON(worksheet.listFeedURL(), function(feedData) {
+      worksheet.data = transformFeedData(feedData);
+      worksheet.title = feedData.feed.title.$t;
+      jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
+    });
+  }
+  
+};
+
+var exampleSpreadsheets = [
+  new Spreadsheet('0AlqUG_LhxDPZdDlJSHFoc3M0Mzg4ZnZRZHNVYllCX1E'),
+  new Spreadsheet('0AlqUG_LhxDPZdEJWZDBjcXhZZXcwMlVONWR3VlhqU0E'),
+  new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
+  new Spreadsheet('0AlqUG_LhxDPZdFdDMFJwNmsyel8xNkh6bk1tUFBqalE'),
+  new Spreadsheet('0AlqUG_LhxDPZdEtwbmduS3hOeGhSS29HZXZFZU1CTlE'),
+  new Spreadsheet('0AlqUG_LhxDPZdER5X3RkZ3VKYnpGU1lVRXJOa0JJYkE'),
+  new Spreadsheet('0AlqUG_LhxDPZdElOOU4wWExSdl9uUjZOcmc5UnhjeXc'),
+  new Spreadsheet('0AlqUG_LhxDPZdEJyRUVKa2RRSHhEZm0zRTlzSlZ0MVE'),
+  new Spreadsheet('0AlqUG_LhxDPZdGpnSHh4THREZEtlNGxCRTVsUWN2aFE'),
+  new Spreadsheet('0AlqUG_LhxDPZdGppdDh6Z01TeTM3eGRlbkJQM09JSUE')
+]
+
+function transformFeedData(feedData) {
+  var data = [];
+  for (var i = 0; i < feedData.feed.entry.length; i++) {
+    var cells = feedData.feed.entry[i].content.$t.split(',');
+    var firstMatch = /\:\s+([\d|\.]+)/.exec(cells[0]);
+    var secondMatch = /\:\s+([\d|\.]+)/.exec(cells[1]);
+    if (!firstMatch || !secondMatch)
+      ; // ignore bad or blank data
+    else
+      data.push({state: feedData.feed.entry[i].title.$t, incidence: firstMatch[1], otherFactor: secondMatch[1]});
+  }
+  return data;
+}
+
+// /* load the data from the server */
+// jQuery.getJSON(exampleSpreadsheets[0].listFeedURL(), function(feedData) {
+//   var data = transformFeedData(feedData);
+//   constructVis(data);
+// });
+
+function getWorksheetByKey(key) {
+  for (var i = 0; i < exampleSpreadsheets.length; i++) {
+    if (exampleSpreadsheets[i].key == key)
+      return exampleSpreadsheets[i];
+  }
+}
+
+
+/* populate dataset drop down menu */
+jQuery('body').bind('WorksheetLoaded', function(event) {
+  jQuery('#dataSelector').append(jQuery("<option value='" + event.worksheet.key + "'>" + event.worksheet.title + "</option>"));
+  constructVis(event.worksheet.data);
+});
 
 jQuery('#menu').change(function(event) {
   jQuery('span').remove();
-  constructVis();
+  var key = jQuery('#dataSelector').val();
+  constructVis(getWorksheetByKey(key).data);
   event.stopPropagation();
 })
 
