@@ -355,6 +355,20 @@ Spreadsheet.prototype = {
     return 'https://spreadsheets.google.com/feeds/list/' + this.key + '/od6/public/basic?alt=json&callback=?'
   },
   
+  transformFeedData: function(feedData) {
+    var data = [];
+    for (var i = 0; i < feedData.feed.entry.length; i++) {
+      var cells = feedData.feed.entry[i].content.$t.split(',');
+      var firstMatch = /\:\s+([\d|\.]+)/.exec(cells[0]);
+      var secondMatch = /\:\s+([\d|\.]+)/.exec(cells[1]);
+      if (!firstMatch || !secondMatch)
+        ; // ignore bad or blank data
+      else
+        data.push({state: feedData.feed.entry[i].title.$t, incidence: firstMatch[1], otherFactor: secondMatch[1]});
+    }
+    return data;
+  },
+  
   fetchWorksheet: function() {
     var worksheet = this;
     jQuery.getJSON(worksheet.listFeedURL(), function(feedData) {
@@ -379,33 +393,12 @@ var exampleSpreadsheets = [
   new Spreadsheet('0AlqUG_LhxDPZdGppdDh6Z01TeTM3eGRlbkJQM09JSUE')
 ]
 
-function transformFeedData(feedData) {
-  var data = [];
-  for (var i = 0; i < feedData.feed.entry.length; i++) {
-    var cells = feedData.feed.entry[i].content.$t.split(',');
-    var firstMatch = /\:\s+([\d|\.]+)/.exec(cells[0]);
-    var secondMatch = /\:\s+([\d|\.]+)/.exec(cells[1]);
-    if (!firstMatch || !secondMatch)
-      ; // ignore bad or blank data
-    else
-      data.push({state: feedData.feed.entry[i].title.$t, incidence: firstMatch[1], otherFactor: secondMatch[1]});
-  }
-  return data;
-}
-
-// /* load the data from the server */
-// jQuery.getJSON(exampleSpreadsheets[0].listFeedURL(), function(feedData) {
-//   var data = transformFeedData(feedData);
-//   constructVis(data);
-// });
-
 function getWorksheetByKey(key) {
   for (var i = 0; i < exampleSpreadsheets.length; i++) {
     if (exampleSpreadsheets[i].key == key)
       return exampleSpreadsheets[i];
   }
 }
-
 
 /* populate dataset drop down menu */
 jQuery('body').bind('WorksheetLoaded', function(event) {
