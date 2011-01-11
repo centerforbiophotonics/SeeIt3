@@ -321,29 +321,9 @@ function constructVis(data) {
      .left(function(i) { return i[0] })
      .bottom(function(i) { return i[1] });
      
-   
-
   vis.render();
-  
-  
-  // /* width of ellipse is the length of the median median line */
-  // var radius = calcDistance(xMin, farLeftYVal, xMax, farRightYVal) / 2;
-  // 
-  // var cx = (xMin + xMax) / 2;
-  // var cy = (farLeftYVal + farRightYVal) / 2;
-  // 
-  // jQuery('svg').svg();
-  // var svg = jQuery('svg').svg('get');
-  // 
-  // /* h - y(cy) because we need to invert the y coordinate system: (0,0) is lower left not upper left;
-  //    translate(20,5) because of protovis (unknown why) */
-  // var degreeSlope = -Math.atan(slope) * 180 / Math.PI;
-  // var ellipse = svg.ellipse(x(cx), h - y(cy), x(radius), 10, { 
-  //                     strokeWidth:2, stroke:'black', 
-  //                     transform:'translate(20,5) rotate(' + degreeSlope + ' ' + x(cx) + ' ' + (h - y(cy)) + ')' });
-  // jQuery(ellipse).appendTo('svg');
-  
 }
+
 
 function Spreadsheet(key) {
   this.key = key;
@@ -399,6 +379,19 @@ function getWorksheetByKey(key) {
       return exampleSpreadsheets[i];
   }
 }
+
+jQuery('#newSpreadsheetURL').keyup(function(event) {
+  if (event.keyCode == '13') {
+    var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec($(this).val());
+    if (!matches)
+      alert("That doesn't appear to be a valid URL");
+    else {
+      var key = matches[1];
+      $(this).val('');
+      exampleSpreadsheets.push(new Spreadsheet(key));
+    }
+  }
+});
 
 /* populate dataset drop down menu */
 jQuery('body').bind('WorksheetLoaded', function(event) {

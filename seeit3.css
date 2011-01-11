@@ -15,3 +15,7 @@ svg {
 .menu {
   padding-bottom:20px;
 }
+
+#newSpreadsheetURL {
+  width:400px;
+}

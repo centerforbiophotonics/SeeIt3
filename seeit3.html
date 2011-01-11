@@ -16,8 +16,14 @@
 <div id="menu" class="menu">
   <h3>
     Select a dataset: <select id="dataSelector"></select>
-    <a href="#" id="editInGoogleDocs">Edit in Google Docs</a>
+    <a href="#" id="editInGoogleDocs">Open in Google Docs</a>
   </h3>
+  
+  <h4>
+    <div><label for="newSpreadsheetURL">Add a new spreadsheet by pasting its URL:</label></div>
+    <input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
+  </h4>
+  
   <input type="checkbox" id="fitScalesToData"/>
   <label for="fitScalesToData">Fit scales to data</label>
 </div>
@@ -36,17 +42,6 @@
   <input type="checkbox" id="checkboxShowMMEllipse">
   <label for="checkboxShowMMEllipse">Show median-median ellipse?</label>
 </div>
-
-<script src="data/lungCancervsAtLeastBachelors.js" type="text/javascript" charset="utf-8"></script>
-<script src="data/lungCancervsAtLeastHS.js" type="text/javascript" charset="utf-8"></script>
-<script src="data/lungCancervsDivorceRate.js" type="text/javascript" charset="utf-8"></script>
-<script src="data/lungCancervsLessThanHS.js" type="text/javascript" charset="utf-8"></script>
-<script src="data/lungCancervsLifeExpectancy.js" type="text/javascript" charset="utf-8"></script>
-<script src="data/lungCancervsLungCancerMortality.js" type="text/javascript" charset="utf-8"></script>
-<script src="data/lungCancervsMedianEarnings.js" type="text/javascript" charset="utf-8"></script>
-<script src="data/lungCancervsPercentChildrenNoSmokers.js" type="text/javascript" charset="utf-8"></script>
-<script src="data/lungCancervsPercentSmoker.js" type="text/javascript" charset="utf-8"></script>
-<script src="data/lungCancervsSchoolEnroll.js" type="text/javascript" charset="utf-8"></script>
 
 <div id="ellipseSliders">
   <div>Rotate ellipse</div><div id="sliderEllipseRotation"></div>
