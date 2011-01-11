@@ -332,7 +332,7 @@ function Spreadsheet(key) {
 
 Spreadsheet.prototype = { 
   listFeedURL: function() {
-    return 'https://spreadsheets.google.com/feeds/list/' + this.key + '/od6/public/basic?alt=json&callback=?'
+    return 'https://spreadsheets.google.com/feeds/list/' + this.key + '/od6/public/basic?alt=json'
   },
   
   transformFeedData: function(feedData) {
@@ -351,10 +351,15 @@ Spreadsheet.prototype = {
   
   fetchWorksheet: function() {
     var worksheet = this;
-    jQuery.getJSON(worksheet.listFeedURL(), function(feedData) {
-      worksheet.data = worksheet.transformFeedData(feedData);
-      worksheet.title = feedData.feed.title.$t;
-      jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
+    jQuery.jsonp({ url:worksheet.listFeedURL(), callbackParameter: "callback", 
+      success:function(feedData) {
+        worksheet.data = worksheet.transformFeedData(feedData);
+        worksheet.title = feedData.feed.title.$t;
+        jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
+      },
+      error:function() {
+        alert("Could not retrieve the spreadsheet. Is it published?");
+      }
     });
   }
   
