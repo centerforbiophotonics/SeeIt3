@@ -400,14 +400,17 @@ jQuery('#newSpreadsheetURL').keyup(function(event) {
 
 /* populate dataset drop down menu */
 jQuery('body').bind('WorksheetLoaded', function(event) {
-  jQuery('#dataSelector').append(jQuery("<option value='" + event.worksheet.key + "'>" + event.worksheet.title + "</option>"));
+  jQuery('#dataSelector').append(jQuery("<option value='" + event.worksheet.key + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.key);
+  jQuery('#worksheetTitle').html(event.worksheet.title);
   constructVis(event.worksheet.data);
 });
 
 jQuery('#menu').change(function(event) {
   jQuery('span').remove();
   var key = jQuery('#dataSelector').val();
-  constructVis(getWorksheetByKey(key).data);
+  var worksheet = getWorksheetByKey(key);
+  jQuery('#worksheetTitle').html(worksheet.title);
+  constructVis(worksheet.data);
   event.stopPropagation();
 })
 
