@@ -21,6 +21,7 @@ function divideDataInto3(data) {
   var groups = [];
   
   if (data.length < 3) {
+    alert("The data selected has less than three rows of data.  Please add more.")
     console.error('Data length must be greater than 3')
     return;
   }
@@ -127,9 +128,9 @@ function getXValue(y, slope, intercept) {
 
 var vis = {}
 
-function constructVis(data) {
+function constructVis(worksheet) {
   
-  //var data = removeInvalidData(eval(jQuery('#dataSelector').val()));
+  var data = worksheet.data;
 
   var w = 600,
       h = 500,
@@ -173,7 +174,7 @@ function constructVis(data) {
      .add(pv.Label)
      .textAngle(0.5 * Math.PI)
      .textBaseline('bottom')
-     .text('Other factor');
+     .text(worksheet.yAxisTitle);
 
   /* X-axis ticks */
   vis.add(pv.Rule)
@@ -186,7 +187,7 @@ function constructVis(data) {
   /* X-axis label */
   vis.anchor("bottom")
      .add(pv.Label)
-     .text('Incidence per 100k');
+     .text(worksheet.xAxisTitle);
      
    
   /* median median crosses and squares */
@@ -327,14 +328,60 @@ function constructVis(data) {
 
 function Spreadsheet(key) {
   this.key = key;
-  this.fetchWorksheet();
+  this.worksheets = [];
+  this.fetchWorksheets();
 }
 
-Spreadsheet.prototype = { 
-  listFeedURL: function() {
-    return 'https://spreadsheets.google.com/feeds/list/' + this.key + '/od6/public/basic?alt=json'
+Spreadsheet.prototype = {
+  getWorksheetURLs: function(callback) {
+    jQuery.jsonp({ url:'https://spreadsheets.google.com/feeds/worksheets/' + this.key + '/public/basic?alt=json',
+      callbackParameter: "callback",
+      success:callback,
+      error:function() {
+        alert("Could not retrieve worksheets from the spreadsheet. Is it published?");
+      }});
   },
   
+  fetchWorksheets: function() {
+    var spreadsheet = this;
+    this.getWorksheetURLs(function(feedData) {
+      for (var i = 0; i < feedData.feed.entry.length; i++) {
+        spreadsheet.worksheets.push(new Worksheet(feedData.feed.entry[i].link[0].href));
+      }
+    });
+  },
+  
+};
+
+function Worksheet(URL) {
+  this.URL = URL;
+  this.fetchWorksheetData();
+}
+
+Worksheet.prototype = {
+  fetchWorksheetData: function() {
+    var worksheet = this;
+    jQuery.jsonp({ url:this.URL + '?alt=json', callbackParameter: "callback", 
+      success:function(feedData) {
+        worksheet.data = worksheet.transformFeedData(feedData);
+        worksheet.xAxisTitle = worksheet.getXAxisTitle(feedData);
+        worksheet.yAxisTitle = worksheet.getYAxisTitle(feedData);        
+        worksheet.title = feedData.feed.title.$t;
+        jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
+      },
+      error:function() {
+        alert("Could not retrieve worksheet. Is it published?");
+      }
+    });
+  },
+  getXAxisTitle: function(feedData) {
+    var titles = feedData.feed.entry[0].content.$t.split(",");
+    return /[\w|\d]+/.exec(titles[0]);
+  },
+  getYAxisTitle: function(feedData) {
+    var titles = feedData.feed.entry[0].content.$t.split(",");
+    return /[\w|\d]+/.exec(titles[1]);
+  },
   transformFeedData: function(feedData) {
     var data = [];
     for (var i = 0; i < feedData.feed.entry.length; i++) {
@@ -348,78 +395,57 @@ Spreadsheet.prototype = {
     }
     return data;
   },
-  
-  fetchWorksheet: function() {
-    var worksheet = this;
-    jQuery.jsonp({ url:worksheet.listFeedURL(), callbackParameter: "callback", 
-      success:function(feedData) {
-        worksheet.data = worksheet.transformFeedData(feedData);
-        worksheet.title = feedData.feed.title.$t;
-        jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
-      },
-      error:function() {
-        alert("Could not retrieve the spreadsheet. Is it published?");
-      }
-    });
-  }
-  
-};
+}
 
 var exampleSpreadsheets = [
-  new Spreadsheet('0AlqUG_LhxDPZdDlJSHFoc3M0Mzg4ZnZRZHNVYllCX1E'),
-  new Spreadsheet('0AlqUG_LhxDPZdEJWZDBjcXhZZXcwMlVONWR3VlhqU0E'),
   new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
-  new Spreadsheet('0AlqUG_LhxDPZdFdDMFJwNmsyel8xNkh6bk1tUFBqalE'),
-  new Spreadsheet('0AlqUG_LhxDPZdEtwbmduS3hOeGhSS29HZXZFZU1CTlE'),
-  new Spreadsheet('0AlqUG_LhxDPZdER5X3RkZ3VKYnpGU1lVRXJOa0JJYkE'),
-  new Spreadsheet('0AlqUG_LhxDPZdElOOU4wWExSdl9uUjZOcmc5UnhjeXc'),
-  new Spreadsheet('0AlqUG_LhxDPZdEJyRUVKa2RRSHhEZm0zRTlzSlZ0MVE'),
-  new Spreadsheet('0AlqUG_LhxDPZdGpnSHh4THREZEtlNGxCRTVsUWN2aFE'),
-  new Spreadsheet('0AlqUG_LhxDPZdGppdDh6Z01TeTM3eGRlbkJQM09JSUE')
 ]
 
-function getWorksheetByKey(key) {
-  for (var i = 0; i < exampleSpreadsheets.length; i++) {
-    if (exampleSpreadsheets[i].key == key)
-      return exampleSpreadsheets[i];
+function getWorksheetByURL(URL) {
+  for (var h = 0; h < exampleSpreadsheets.length; h++) {
+    for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
+      if (exampleSpreadsheets[h].worksheets[i].URL == URL)
+        return exampleSpreadsheets[h].worksheets[i];
+    }
   }
 }
 
 jQuery('#newSpreadsheetURL').keyup(function(event) {
   if (event.keyCode == '13') {
-    var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec($(this).val());
-    if (!matches)
-      alert("That doesn't appear to be a valid URL");
-    else {
-      var key = matches[1];
-      $(this).val('');
-      exampleSpreadsheets.push(new Spreadsheet(key));
-    }
+    var key = parseSpreadsheetKeyFromURL($(this).val());
+    $(this).val('');
+    exampleSpreadsheets.push(new Spreadsheet(key));
   }
 });
 
+function parseSpreadsheetKeyFromURL(URL) {
+  var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+  if (!matches)
+    alert("That doesn't appear to be a valid URL");
+  else
+    return matches[1];
+}
+
 /* populate dataset drop down menu */
 jQuery('body').bind('WorksheetLoaded', function(event) {
-  jQuery('#dataSelector').append(jQuery("<option value='" + event.worksheet.key + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.key);
+  jQuery('#dataSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
   jQuery('#worksheetTitle').html(event.worksheet.title);
-  constructVis(event.worksheet.data);
+  constructVis(event.worksheet);
 });
 
 jQuery('#menu').change(function(event) {
   jQuery('span').remove();
-  var key = jQuery('#dataSelector').val();
-  var worksheet = getWorksheetByKey(key);
+  var URL = jQuery('#dataSelector').val();
+  var worksheet = getWorksheetByURL(URL);
   jQuery('#worksheetTitle').html(worksheet.title);
-  constructVis(worksheet.data);
+  constructVis(worksheet);
   event.stopPropagation();
 })
 
 jQuery('#editInGoogleDocs').click(function(event) {
-  var key = jQuery('#dataSelector').val();
-  if (!key || key == "")
-    alert("There is no worksheet loaded");
-  else
-    window.open('https://spreadsheets.google.com/ccc?key=' + key);
+  var URL = jQuery('#dataSelector').val();
+  var matches = /feeds\/list\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+  window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
   event.preventDefault();
 });
 
