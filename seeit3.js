@@ -4,7 +4,7 @@ function sortByXValues(data) {
   });
   return data;
 }
-//Test Comment
+
 function sortByYValues(data) {
   data.sort(function(a, b) {
     return a.otherFactor - b.otherFactor;
@@ -158,8 +158,8 @@ function constructVis(worksheet) {
           .left(20)
           .right(10)
           .top(5)
-          .events("all")
-          .event("mousemove", pv.Behavior.point());
+          .events("all");
+          //.event("mousemove", pv.Behavior.point());
 
   /* Y-axis ticks */
   vis.add(pv.Rule)
@@ -254,7 +254,7 @@ function constructVis(worksheet) {
      .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
      .def('active', -1)
      .event("point", function() { return this.active(this.index).parent })
-     .event("unpoint", function() { return this.active(-1).parent })
+     .event("unpoint", function() { return this.active(-1).parent });
      //.anchor("right").add(pv.Label)
        //.visible(function() { return this.anchorTarget().active() == this.index })
        //.text(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor });
