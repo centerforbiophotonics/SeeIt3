@@ -255,9 +255,9 @@ function constructVis(worksheet) {
      .def('active', -1)
      .event("point", function() { return this.active(this.index).parent })
      .event("unpoint", function() { return this.active(-1).parent })
-     .anchor("right").add(pv.Label)
-       .visible(function() { return this.anchorTarget().active() == this.index })
-       .text(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor });
+     //.anchor("right").add(pv.Label)
+       //.visible(function() { return this.anchorTarget().active() == this.index })
+       //.text(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor });
 
      
   /* user drawn line */
