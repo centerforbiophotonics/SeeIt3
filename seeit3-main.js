@@ -1,4 +1,7 @@
-	
+jQuery('p#loadingMsg').show();
+
+$(document).ready(function(){
+	jQuery('p#loadingMsg').hide();	
 	var vis = {}
 
 	function constructVis(worksheet, width, height) {
