@@ -1,7 +1,3 @@
-jQuery('p#loadingMsg').show();
-
-$(document).ready(function(){
-	jQuery('p#loadingMsg').hide();
 	
 	var vis = {}
 
