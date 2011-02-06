@@ -11,48 +11,53 @@
 </head>
 <body>
 
-<h1>SeeIt3: Distribution correlation&mdash;are two factors related?</h1>
+<div id="notGraph" class="notGraph">
+	<h1>SeeIt3: Distribution correlation&mdash;are two factors related?</h1>
 
+	<div id="menu" class="menu">
+	  <h3>
+		Select a dataset (worksheet): <select id="dataSelector"></select>
+		<a href="#" id="editInGoogleDocs">Open in Google Docs</a>
+	  </h3>
+	  
+	  <h4>
+		<div><label for="newSpreadsheetURL">Add a new spreadsheet by pasting its URL:</label></div>
+		<input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
+	  </h4>
+	  
+	  <input type="checkbox" id="fitScalesToData"/>
+	  <label for="fitScalesToData">Fit scales to data</label>
+	</div>
 
-<div id="menu" class="menu">
-  <h3>
-    Select a dataset (worksheet): <select id="dataSelector"></select>
-    <a href="#" id="editInGoogleDocs">Open in Google Docs</a>
-  </h3>
-  
-  <h4>
-    <div><label for="newSpreadsheetURL">Add a new spreadsheet by pasting its URL:</label></div>
-    <input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
-  </h4>
-  
-  <input type="checkbox" id="fitScalesToData"/>
-  <label for="fitScalesToData">Fit scales to data</label>
+	<div id="menuOptions" class="menu">
+	  <input type="checkbox" id="checkboxShowData" checked>
+	  <label for="checkboxShowData">Show data?</label>
+	  <input type="checkbox" id="checkboxShowMMLine">
+	  <label for="checkboxShowMMLine">Show median-median line?</label>
+	  <input type="checkbox" id="checkboxShowMMDots">
+	  <label for="checkboxShowMMDots">Show median-median dots?</label><br/>
+	  <input type="checkbox" id="checkboxShowMMRects">
+	  <label for="checkboxShowMMRects">Show median-median rectangles?</label>
+	  <input type="checkbox" id="checkboxShowUserLine">
+	  <label for="checkboxShowUserLine">Show your line?</label>
+	  <input type="checkbox" id="checkboxShowMMEllipse">
+	  <label for="checkboxShowMMEllipse">Show median-median ellipse?</label>
+	</div>
+
+	<div id="ellipseSliders">
+	  <div>Rotate ellipse</div><div id="sliderEllipseRotation"></div>
+	  <div>Ellipse width</div><div id="sliderEllipseXRadius"></div>
+	  <div>Ellipse height</div><div id="sliderEllipseYRadius"></div>
+	</div>
+
+	<h1 id="worksheetTitle"></h1>
+
 </div>
 
-<div id="menuOptions" class="menu">
-  <input type="checkbox" id="checkboxShowData" checked>
-  <label for="checkboxShowData">Show data?</label>
-  <input type="checkbox" id="checkboxShowMMLine">
-  <label for="checkboxShowMMLine">Show median-median line?</label>
-  <input type="checkbox" id="checkboxShowMMDots">
-  <label for="checkboxShowMMDots">Show median-median dots?</label><br/>
-  <input type="checkbox" id="checkboxShowMMRects">
-  <label for="checkboxShowMMRects">Show median-median rectangles?</label>
-  <input type="checkbox" id="checkboxShowUserLine">
-  <label for="checkboxShowUserLine">Show your line?</label>
-  <input type="checkbox" id="checkboxShowMMEllipse">
-  <label for="checkboxShowMMEllipse">Show median-median ellipse?</label>
-</div>
+<p id="loadingMsg">Loading...</p>
 
-<div id="ellipseSliders">
-  <div>Rotate ellipse</div><div id="sliderEllipseRotation"></div>
-  <div>Ellipse width</div><div id="sliderEllipseXRadius"></div>
-  <div>Ellipse height</div><div id="sliderEllipseYRadius"></div>
-</div>
-
-<h1 id="worksheetTitle"></h1>
-
-<script type="text/javascript" src="seeit3.js"></script>
+<script type="text/javascript" src="seeit3-util.js"></script>
+<script type="text/javascript" src="seeit3-main.js"></script>
 
 </body>
 </html>
