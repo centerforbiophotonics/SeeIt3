@@ -128,12 +128,14 @@ function getXValue(y, slope, intercept) {
 
 var vis = {}
 
-function constructVis(worksheet) {
+function constructVis(worksheet, width, height) {
   
   var data = worksheet.data;
 
-  var w = 600,
-      h = 500,
+  var w = width || 600,
+      h = height || 300,
+      
+      
       xMax = pv.max(data, function(d) { return d.incidence }),
       yMax = pv.max(data, function(d) { return d.otherFactor }),
       xMin = pv.min(data, function(d) { return d.incidence }),
@@ -159,7 +161,6 @@ function constructVis(worksheet) {
           .right(10)
           .top(5)
           .events("all");
-          //.event("mousemove", pv.Behavior.point());
 
   /* Y-axis ticks */
   vis.add(pv.Rule)
@@ -255,10 +256,7 @@ function constructVis(worksheet) {
      .def('active', -1)
      .event("point", function() { return this.active(this.index).parent })
      .event("unpoint", function() { return this.active(-1).parent });
-     //.anchor("right").add(pv.Label)
-       //.visible(function() { return this.anchorTarget().active() == this.index })
-       //.text(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor });
-
+     
      
   /* user drawn line */
   vis.add(pv.Line)
@@ -297,6 +295,7 @@ function constructVis(worksheet) {
   var fullRot = pv.range(0, 2 * Math.PI, 0.01);
   var ellipseCX = x((xMin + xMax) / 2);
   var ellipseCY = y((yMin + yMax) / 2);
+       
   
   function getRotatedEllipseCoords() {
     var ellipseXRadius = jQuery('#sliderEllipseXRadius').slider('value');
@@ -426,6 +425,20 @@ function parseSpreadsheetKeyFromURL(URL) {
     return matches[1];
 }
 
+function getWorksheet(){
+  var URL = jQuery('#dataSelector').val();
+  var worksheet = getWorksheetByURL(URL);
+  //jQuery('#worksheetTitle').html(worksheet.title);
+  return worksheet;
+}
+/* Dynamic Graph Resizing */
+$(window).resize(function() {
+	var width = $('body').width() * 0.95;
+	var height = $(window).height * 0.95;
+	$('span').remove();
+	constructVis(getWorksheet(), width, height);
+})
+
 /* populate dataset drop down menu */
 jQuery('body').bind('WorksheetLoaded', function(event) {
   jQuery('#dataSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
@@ -435,10 +448,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 
 jQuery('#menu').change(function(event) {
   jQuery('span').remove();
-  var URL = jQuery('#dataSelector').val();
-  var worksheet = getWorksheetByURL(URL);
-  jQuery('#worksheetTitle').html(worksheet.title);
-  constructVis(worksheet);
+  constructVis(getWorksheet());
   event.stopPropagation();
 })
 
