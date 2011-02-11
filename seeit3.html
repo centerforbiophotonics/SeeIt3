@@ -30,18 +30,53 @@
 	</div>
 
 	<div id="menuOptions" class="menu">
-	  <input type="checkbox" id="checkboxShowData" checked>
-	  <label for="checkboxShowData">Show data?</label>
-	  <input type="checkbox" id="checkboxShowMMLine">
-	  <label for="checkboxShowMMLine">Show median-median line?</label>
-	  <input type="checkbox" id="checkboxShowMMDots">
-	  <label for="checkboxShowMMDots">Show median-median dots?</label><br/>
-	  <input type="checkbox" id="checkboxShowMMRects">
-	  <label for="checkboxShowMMRects">Show median-median rectangles?</label>
-	  <input type="checkbox" id="checkboxShowUserLine">
-	  <label for="checkboxShowUserLine">Show your line?</label>
-	  <input type="checkbox" id="checkboxShowMMEllipse">
-	  <label for="checkboxShowMMEllipse">Show median-median ellipse?</label>
+	  <table border="1">
+	    <tr>
+	      <td valign="top">
+	        <h3>Draw</h3>
+	        <input type="checkbox" id="checkboxShowUserLine">
+      	  <label for="checkboxShowUserLine">Show line?</label><br>
+      	  <input type="checkbox" id="checkboxShowMMEllipse">
+      	  <label for="checkboxShowMMEllipse">Show ellipse?</label><br>
+      	  <input type="checkbox" id="checkboxShowData" checked>
+      	  <label for="checkboxShowData">Show data?</label>
+	      </td>
+	      <td valign="top">
+	        <h3>Median-median</h3>
+	        <input type="checkbox" id="checkboxShowMMDots">
+      	  <label for="checkboxShowMMDots">Show dots?</label><br>
+      	  <input type="checkbox" id="checkboxShowMMRects">
+      	  <label for="checkboxShowMMRects">Show divisions?</label><br>
+      	  <input type="checkbox" id="checkboxShowMMLine">
+      	  <label for="checkboxShowMMLine">Show line?</label><br>
+      	  <input type="checkbox" id="checkboxShowMMEqn">
+      	  <label for="checkboxShowMMEqn">Show equation?</label>
+	      </td>
+	      <td valign="top">
+	        <h3>Least squares</h3>
+	        <input type="checkbox" id="checkboxShowLeastSquaresLine">
+	        <label for="checkboxShowLeastSquaresLine">Show line?</label><br>
+	        <input type="checkbox" id="checkboxShowLeastSquaresSquares">
+	        <label for="checkboxShowLeastSquaresSquares">Show squares?</label><br>
+	        <input type="checkbox" id="checkboxShowLeastSquaresEquation">
+	        <label for="checkboxShowLeastSquaresEquation">Show equation?</label><br>
+	        <input type="checkbox" id="checkboxShowLeastSquaresRValue">
+	        <label for="checkboxShowLeastSquaresRValue">Show r value?</label>
+	      </td>
+	      <td valign="top">
+	        <h3>Distribution</h3>
+	        <input type="checkbox" id="checkboxDropDataOntoX">
+	        <label for="checkboxDropDataOntoX">Drop data on X axis?</label><br>
+	        <input type="checkbox" id="checkboxDropDataOntoY">
+	        <label for="checkboxDropDataOntoY">Drop data on Y axis?</label>
+	      </td>
+	    </tr>
+	  </table>
+
+
+
+
+
 	</div>
 
 	<div id="ellipseSliders">
