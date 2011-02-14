@@ -16,14 +16,14 @@ $(document).ready(function(){
 		  yMax = pv.max(data, function(d) { return d.otherFactor }),
 		  xMin = pv.min(data, function(d) { return d.incidence }),
 		  yMin = pv.min(data, function(d) { return d.otherFactor }),
-		  x = pv.Scale.linear(0, xMax).range(0, w),
-		  y = pv.Scale.linear(0, yMax).range(0, h),
+		  x = pv.Scale.linear(0, Math.ceil(xMax)).range(0, w),
+		  y = pv.Scale.linear(0, Math.ceil(yMax)).range(0, h),
 		  colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black")
 		  c = jQuery.map(data, function() { return colorScale(Math.random()) });
 
 	  if (jQuery('#fitScalesToData').is(':checked')) {
-		x = pv.Scale.linear(xMin, xMax).range(0, w);
-		y = pv.Scale.linear(yMin, yMax).range(0, h);
+		x = pv.Scale.linear(Math.floor(xMin), Math.ceil(xMax)).range(0, w);
+		y = pv.Scale.linear(Math.floor(yMin), Math.ceil(yMax)).range(0, h);
 	  }
 
 	  var userDrawnLinePoints = [{ x:w * 0.2, y:h / 2 }, 
@@ -34,10 +34,19 @@ $(document).ready(function(){
 			  .height(h)
 			  .bottom(60)
 			  .left(60)
-			  .right(10)
-			  .top(5)
+			  .right(20)
+			  .top(60)
 			  .events("all");
 	  
+	  /*Graph Title*/		  
+	  vis.add(pv.Label)
+		.left(w / 2)
+		.top(-40)
+		.textAlign("center")
+		.textAngle(0)
+		.text(worksheet.title)
+		.font("bold 20px sans-serif");
+
 	  /* Y-axis label */		  
 	  vis.add(pv.Label)
 		.data(worksheet.yAxisTitle)
@@ -51,7 +60,7 @@ $(document).ready(function(){
 	  vis.add(pv.Rule)
 		 .data(function() { return y.ticks() })
 		 .bottom(y)
-		 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
+		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor('left').add(pv.Label)
 		   .text(x.tickFormat);
 
@@ -59,7 +68,7 @@ $(document).ready(function(){
 	  vis.add(pv.Rule)
 		 .data(function() { return x.ticks() })
 		 .left(x)
-		 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
+		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor("bottom").add(pv.Label)
 		   .text(x.tickFormat);
 		   
@@ -152,10 +161,6 @@ $(document).ready(function(){
 			.event("mousedown", pv.Behavior.drag())
 			.event("drag", vis)
 			
-	  
-	  function calcDistance(x1, y1, x2, y2) {
-		return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
-	  }
 	  
 
 	  /* user ellipse */
@@ -305,22 +310,10 @@ $(document).ready(function(){
 	  }
 	});
 
-	function parseSpreadsheetKeyFromURL(URL) {
-	  var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
-	  if (!matches)
-		alert("That doesn't appear to be a valid URL");
-	  else
-		return matches[1];
-	}
-
-
-	function calcGraphWidth(){
-		return window.innerWidth * 0.90;
-	}
 	
-	function calcGraphHeight(){
-		return (window.innerHeight - jQuery('div#notGraph').height()) * 0.80; 
-	}
+
+
+	
 
 	/* Dynamic Graph Resizing */
 	$(window).resize(function() {
@@ -331,7 +324,7 @@ $(document).ready(function(){
 	/* populate dataset drop down menu */
 	jQuery('body').bind('WorksheetLoaded', function(event) {
 	  jQuery('#dataSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
-	  jQuery('#worksheetTitle').html(event.worksheet.title);
+	  jQuery('span').remove();
 	  constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
 	});
 
@@ -350,16 +343,12 @@ $(document).ready(function(){
 
 	jQuery('#menuOptions').change(function(event) {
 	  vis.render();
+	  jQuery('span').remove();
+	  constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
 	  event.stopPropagation();
 	});
 
-	function toggleEllipseSliders() {
-	  if (jQuery('#checkboxShowMMEllipse').is(':checked')) {
-		jQuery('#ellipseSliders').show();
-	  } else {
-		jQuery('#ellipseSliders').hide();
-	  }
-	}
+	
 	toggleEllipseSliders(); // in case the page loads with the ellipse checkbox checked
 	jQuery('#checkboxShowMMEllipse').change(toggleEllipseSliders);
 });

@@ -1,4 +1,32 @@
 /* Data Manipulation Functions */
+	function calcDistance(x1, y1, x2, y2) {
+		return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
+	}
+
+
+	function toggleEllipseSliders() {
+	  if (jQuery('#checkboxShowMMEllipse').is(':checked')) {
+		jQuery('#ellipseSliders').show();
+	  } else {
+		jQuery('#ellipseSliders').hide();
+	  }
+	}
+
+	function parseSpreadsheetKeyFromURL(URL) {
+	  var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+	  if (!matches)
+		alert("That doesn't appear to be a valid URL");
+	  else
+		return matches[1];
+	}
+	
+	function calcGraphWidth(){
+		return window.innerWidth * 0.90;
+	}
+	
+	function calcGraphHeight(){
+		return (window.innerHeight - jQuery('div#notGraph').height()) * 0.80; 
+	}
 
 	function sortByXValues(data) {
 	  data.sort(function(a, b) {
