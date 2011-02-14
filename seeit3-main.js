@@ -164,6 +164,9 @@ $(document).ready(function(){
 	  
 
 	  /* user ellipse */
+	  var angle = 0;
+	  var xRadius = w/4;
+	  var yRadius = w/4;
 	  jQuery('#sliderEllipseRotation').slider({ 
 		orientation:'vertical', min:0, max:Math.PI, value:0, step:0.01,
 		slide:function(event, ui) { vis.render(); }
@@ -185,15 +188,16 @@ $(document).ready(function(){
 		   
 	  
 	  function getRotatedEllipseCoords() {
-		var ellipseXRadius = jQuery('#sliderEllipseXRadius').slider('value');
-		var ellipseYRadius = jQuery('#sliderEllipseYRadius').slider('value');
+		var ellipseXRadius = xRadius;
+		var ellipseYRadius = yRadius;
 		
 		var coords = [];
 		for (i = 0; i < fullRot.length; i++) {
 		  coords.push([ ellipseXRadius * Math.cos(fullRot[i]),
 						ellipseYRadius * Math.sin(fullRot[i]) ]);
 		}
-		var angle = jQuery('#sliderEllipseRotation').slider('value');
+
+		//var angle = jQuery('#sliderEllipseRotation').slider('value');
 		
 		for (var i = 0; i < coords.length; i++) {
 		  coords[i] = ([ coords[i][0] * Math.cos(angle) - coords[i][1] * Math.sin(angle) + ellipseCX,
@@ -208,6 +212,44 @@ $(document).ready(function(){
 		 .left(function(i) { return i[0] })
 		 .bottom(function(i) { return i[1] });
 		 
+	  function getEllipseManipCoords(){
+		  var coords = getRotatedEllipseCoords();
+		  var manipCoords = [];
+		  manipCoords.push([coords[0][0], coords[0][1]]);
+		  manipCoords.push([coords[Math.floor(coords.length * 0.25)][0], coords[parseInt(coords.length * 0.25)][1]]);
+		  manipCoords.push([coords[Math.floor(coords.length * 0.50)][0], coords[parseInt(coords.length * 0.50)][1]]);
+		  manipCoords.push([coords[Math.floor(coords.length * 0.75)][0], coords[parseInt(coords.length * 0.75)][1]]);
+		  return manipCoords;
+	  }
+	  
+	 
+	  vis.add(pv.Dot)
+	     .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
+	     .data(getEllipseManipCoords)
+	     .left(function(i) { return i[0] })
+	     .bottom(function(i) { return i[1] })
+	     .cursor('move')
+	     .shape('square')
+	     .radius(5)
+	     .fillStyle("#1f77b4")
+	     .event("mousedown", pv.Behavior.drag())
+		 .event("drag", function(){
+			 var mouseX = vis.mouse().x;
+			 var mouseY = h - vis.mouse().y;
+			 var handleX = getEllipseManipCoords()[this.index][0];
+			 var handleY = getEllipseManipCoords()[this.index][1];
+			 var mouseVec = pv.vector(ellipseCX - mouseX, ellipseCY - mouseY); 
+			 var handleVec = pv.vector(ellipseCX - handleX, ellipseCY - handleY);
+			 angle = Math.acos(mouseVec.dot(handleVec.x, handleVec.y)/(mouseVec.length()*handleVec.length()));
+			 
+			 if (this.index % 2 == 0){
+				 xRadius = mouseVec.length();
+			 }else{
+				 yRadius = mouseVec.length();
+			 }
+			 vis.render();
+		 });
+	     
 	  vis.render();
 	}
 
@@ -350,5 +392,5 @@ $(document).ready(function(){
 
 	
 	toggleEllipseSliders(); // in case the page loads with the ellipse checkbox checked
-	jQuery('#checkboxShowMMEllipse').change(toggleEllipseSliders);
+	//jQuery('#checkboxShowMMEllipse').change(toggleEllipseSliders);
 });
