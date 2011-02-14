@@ -32,11 +32,20 @@ $(document).ready(function(){
 	  vis = new pv.Panel()
 			  .width(w)
 			  .height(h)
-			  .bottom(20)
-			  .left(20)
+			  .bottom(60)
+			  .left(60)
 			  .right(10)
 			  .top(5)
 			  .events("all");
+	  
+	  /* Y-axis label */		  
+	  vis.add(pv.Label)
+		.data(worksheet.yAxisTitle)
+		.left(-40)
+		.top(h / 2)
+		.textAlign("center")
+		.textAngle(-Math.PI / 2)
+		.font("bold 14px sans-serif");
 
 	  /* Y-axis ticks */
 	  vis.add(pv.Rule)
@@ -45,13 +54,6 @@ $(document).ready(function(){
 		 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
 		 .anchor('left').add(pv.Label)
 		   .text(x.tickFormat);
-
-	  /* Y-axis label */
-	  vis.anchor('left')
-		 .add(pv.Label)
-		 .textAngle(0.5 * Math.PI)
-		 .textBaseline('bottom')
-		 .text(worksheet.yAxisTitle);
 
 	  /* X-axis ticks */
 	  vis.add(pv.Rule)
@@ -62,9 +64,13 @@ $(document).ready(function(){
 		   .text(x.tickFormat);
 		   
 	  /* X-axis label */
-	  vis.anchor("bottom")
-		 .add(pv.Label)
-		 .text(worksheet.xAxisTitle);
+	  vis.add(pv.Label)
+		.data(worksheet.xAxisTitle)
+		.left(w / 2)
+		.bottom(-40)
+		.textAlign("center")
+		.textAngle(0)
+		.font("bold 14px sans-serif");
 		 
 	   
 	  /* median median crosses and squares */
@@ -313,7 +319,7 @@ $(document).ready(function(){
 	}
 	
 	function calcGraphHeight(){
-		return (window.innerHeight - jQuery('div#notGraph').height()) * 0.85; 
+		return (window.innerHeight - jQuery('div#notGraph').height()) * 0.80; 
 	}
 
 	/* Dynamic Graph Resizing */
