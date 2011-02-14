@@ -3,15 +3,6 @@
 		return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
 	}
 
-
-	function toggleEllipseSliders() {
-	  if (jQuery('#checkboxShowMMEllipse').is(':checked')) {
-		jQuery('#ellipseSliders').show();
-	  } else {
-		jQuery('#ellipseSliders').hide();
-	  }
-	}
-
 	function parseSpreadsheetKeyFromURL(URL) {
 	  var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
 	  if (!matches)

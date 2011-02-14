@@ -167,21 +167,6 @@ $(document).ready(function(){
 	  var angle = 0;
 	  var xRadius = w/4;
 	  var yRadius = w/4;
-	  jQuery('#sliderEllipseRotation').slider({ 
-		orientation:'vertical', min:0, max:Math.PI, value:0, step:0.01,
-		slide:function(event, ui) { vis.render(); }
-	  });
-
-	  jQuery('div#sliderEllipseXRadius').slider({
-		orientation:'vertical', min:5, max:w / 2, value:w / 4,
-		slide:function(event, ui) { vis.render(); }
-	  });
-	  
-	  jQuery('div#sliderEllipseYRadius').slider({
-		orientation:'vertical', min:5, max:w / 2, value:w / 4,
-		slide:function(event, ui) { vis.render(); }
-	  });
-	  
 	  var fullRot = pv.range(0, 2 * Math.PI, 0.01);
 	  var ellipseCX = x((xMin + xMax) / 2);
 	  var ellipseCY = y((yMin + yMax) / 2);
@@ -196,8 +181,6 @@ $(document).ready(function(){
 		  coords.push([ ellipseXRadius * Math.cos(fullRot[i]),
 						ellipseYRadius * Math.sin(fullRot[i]) ]);
 		}
-
-		//var angle = jQuery('#sliderEllipseRotation').slider('value');
 		
 		for (var i = 0; i < coords.length; i++) {
 		  coords[i] = ([ coords[i][0] * Math.cos(angle) - coords[i][1] * Math.sin(angle) + ellipseCX,
@@ -389,8 +372,4 @@ $(document).ready(function(){
 	  constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
 	  event.stopPropagation();
 	});
-
-	
-	toggleEllipseSliders(); // in case the page loads with the ellipse checkbox checked
-	//jQuery('#checkboxShowMMEllipse').change(toggleEllipseSliders);
 });
