@@ -5,6 +5,7 @@ $(document).ready(function(){
 	var vis = {}
 
 	function constructVis(worksheet, width, height) {
+	  jQuery('span').remove();
 	  
 	  var data = worksheet.data;
 
@@ -217,20 +218,29 @@ $(document).ready(function(){
 	     .fillStyle("#1f77b4")
 	     .event("mousedown", pv.Behavior.drag())
 		 .event("drag", function(){
-			 var mouseX = vis.mouse().x;
-			 var mouseY = h - vis.mouse().y;
-			 var handleX = getEllipseManipCoords()[this.index][0];
-			 var handleY = getEllipseManipCoords()[this.index][1];
-			 var mouseVec = pv.vector(ellipseCX - mouseX, ellipseCY - mouseY); 
-			 var handleVec = pv.vector(ellipseCX - handleX, ellipseCY - handleY);
-			 angle = Math.acos(mouseVec.dot(handleVec.x, handleVec.y)/(mouseVec.length()*handleVec.length()));
+			var mouseX = vis.mouse().x,
+				mouseY = h - vis.mouse().y,
+				handleX = getEllipseManipCoords()[this.index][0],
+				handleY = getEllipseManipCoords()[this.index][1],
+				mouseVec = pv.vector(ellipseCX - mouseX, ellipseCY - mouseY), 
+				handleVec = pv.vector(ellipseCX - handleX, ellipseCY - handleY).norm(),
+				referenceVec = pv.vector(1,0);
 			 
-			 if (this.index % 2 == 0){
-				 xRadius = mouseVec.length();
-			 }else{
-				 yRadius = mouseVec.length();
-			 }
-			 vis.render();
+			var detHndlMs = handleVec.x*mouseVec.y - mouseVec.x*handleVec.y;
+			
+			
+			if (detHndlMs > 0){
+				angle += Math.acos(mouseVec.norm().dot(handleVec.x, handleVec.y));
+			}else{
+				angle -= Math.acos(mouseVec.norm().dot(handleVec.x, handleVec.y));
+			}
+			 
+			if (this.index % 2 == 0){
+				xRadius = mouseVec.length();
+			}else{
+				yRadius = mouseVec.length();
+			}
+			vis.render();
 		 });
 	     
 	  vis.render();
@@ -334,27 +344,20 @@ $(document).ready(function(){
 		exampleSpreadsheets.push(new Spreadsheet(key));
 	  }
 	});
-
-	
-
-
 	
 
 	/* Dynamic Graph Resizing */
 	$(window).resize(function() {
-		$('span').remove();
 		constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
 	})
 
 	/* populate dataset drop down menu */
 	jQuery('body').bind('WorksheetLoaded', function(event) {
 	  jQuery('#dataSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
-	  jQuery('span').remove();
 	  constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
 	});
 
 	jQuery('#menu').change(function(event) {
-	  jQuery('span').remove();
 	  constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
 	  event.stopPropagation();
 	})
@@ -367,8 +370,6 @@ $(document).ready(function(){
 	});
 
 	jQuery('#menuOptions').change(function(event) {
-	  vis.render();
-	  jQuery('span').remove();
 	  constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
 	  event.stopPropagation();
 	});
