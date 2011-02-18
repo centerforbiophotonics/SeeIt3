@@ -96,24 +96,24 @@
 	function medianXValue(dataSet) {
 	  sortByXValues(dataSet);
 	  if (dataSet.length % 2 == 0) {
-		var middle1 = dataSet[(dataSet.length / 2) - 1]; // round up
-		var middle2 = dataSet[dataSet.length / 2]; // round down
-		return (middle1.incidence + middle2.incidence) / 2;
+		var middle1 = dataSet[Math.floor((dataSet.length / 2) - 1)]; // round up
+		var middle2 = dataSet[Math.floor(dataSet.length / 2)]; // round down
+		return (parseInt(middle1.incidence + middle2.incidence)) / 2;
 	  } else {
 		var middle = dataSet[parseInt(dataSet.length / 2)];
-		return middle.incidence;
+		return parseInt(middle.incidence);
 	  }
 	}
 
 	function medianYValue(dataSet) {
 	  sortByYValues(dataSet);
 	  if (dataSet.length % 2 == 0) {
-		var middle1 = dataSet[(dataSet.length / 2) - 1]; // round up
-		var middle2 = dataSet[dataSet.length / 2]; // round down
-		return (middle1.otherFactor + middle2.otherFactor) / 2;
+		var middle1 = dataSet[Math.floor((dataSet.length / 2) - 1)]; // round up
+		var middle2 = dataSet[Math.floor(dataSet.length / 2)]; // round down
+		return (parseInt(middle1.otherFactor + middle2.otherFactor)) / 2;
 	  } else {
 		var middle = dataSet[parseInt(dataSet.length / 2)];
-		return middle.otherFactor;
+		return parseInt(middle.otherFactor);
 	  }
 	}
 
