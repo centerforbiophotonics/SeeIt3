@@ -8,14 +8,20 @@ svg {
   padding-left:15px;
 }
 
-#ellipseSliders .ui-slider {
-  margin-bottom:15px;
-}
-
-.menu {
-  padding-bottom:20px;
-}
-
 #newSpreadsheetURL {
   width:400px;
+}
+
+table#menuItems {
+  width:100%;
+  margin-bottom:10px;
+}
+
+table#menuItems h3 {
+  margin-top:0;
+  margin-bottom:2px;
+}
+
+.menuItemCategory {
+  
 }
