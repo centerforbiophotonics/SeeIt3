@@ -12,11 +12,11 @@
 	}
 	
 	function calcGraphWidth(){
-		return window.innerWidth * 0.90;
+		return window.innerWidth - 120;
 	}
 	
 	function calcGraphHeight(){
-		return (window.innerHeight - jQuery('div#notGraph').height()) * 0.80; 
+		return (window.innerHeight - jQuery('div#notGraph').height()) - 140; 
 	}
 
 	function sortByXValues(data) {
