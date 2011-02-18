@@ -229,19 +229,22 @@ $(document).ready(function(){
 			var detHndlMs = handleVec.x*mouseVec.y - mouseVec.x*handleVec.y;
 			
 			var rotDist = Math.acos(mouseVec.norm().dot(handleVec.x, handleVec.y));
-			console.log(rotDist, mouseVec.length());
-			if (!isNaN(rotDist)){
-				if (detHndlMs > 0){
-					angle = (angle + rotDist) % (2*Math.PI);
-				}else{
-					angle = (angle - rotDist) % (2*Math.PI);
+			
+			
+			if (mouseX > 0 && mouseX < w && mouseY > 0 && mouseY < h){
+				if (!isNaN(rotDist)){
+					if (detHndlMs > 0){
+						angle = (angle + rotDist) % (2*Math.PI);
+					}else{
+						angle = (angle - rotDist) % (2*Math.PI);
+					}
 				}
-			}
-			 
-			if (this.index % 2 == 0){
-				xRadius = mouseVec.length();
-			}else{
-				yRadius = mouseVec.length();
+				 
+				if (this.index % 2 == 0){
+					xRadius = mouseVec.length();
+				}else{
+					yRadius = mouseVec.length();
+				}
 			}
 			vis.render();
 		 });
