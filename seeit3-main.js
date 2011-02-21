@@ -2,37 +2,93 @@ jQuery('p#loadingMsg').show();
 
 $(document).ready(function(){
 	jQuery('p#loadingMsg').hide();	
-	var vis = {}
+	var vis = {};
+	var graphics = {};
 
-	function constructVis(worksheet, width, height) {
+	function Graphics(worksheet, width, height){
+		var graphics = this;
+		this.worksheet = worksheet;
+		
+		this.data = worksheet.data;
+
+		this.w = width || 600;
+		this.h = height || 300;
+		this.xMax = pv.max(this.data, function(d) { return d.incidence });
+		this.yMax = pv.max(this.data, function(d) { return d.otherFactor });
+		this.xMin = pv.min(this.data, function(d) { return d.incidence });
+		this.yMin = pv.min(this.data, function(d) { return d.otherFactor });
+		this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
+		this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
+		this.colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black");
+		this.c = jQuery.map(this.data, function() { return graphics.colorScale(Math.random()) });
+
+		if (jQuery('#fitScalesToData').is(':checked')) {
+			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);
+			this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);
+		};
+
+		this.userDrawnLinePoints = [{ x:this.w * 0.2, y:this.h / 2 }, 
+								 { x:this.w * 0.8, y:this.h / 2 }];
+								 
+		/* median median crosses and squares */
+		this.groups = divideDataInto3(this.data);
+		this.medians = getMedianValuesFrom(this.groups);
+		
+		/* median-median line */
+		this.slope = findSlope(this.medians[0][0], this.medians[2][0], this.medians[0][1], this.medians[2][1]);
+		this.intercept = findIntercept(this.medians[0][0], this.medians[0][1], this.slope);
+		this.medianYDelta = ((this.medians[1][1] - getYValue(this.medians[1][0], this.slope, this.intercept)) / 3);
+		this.adjustedIntercept = this.intercept + this.medianYDelta;
+		this.farLeftYVal = getYValue(this.xMin, this.slope, this.adjustedIntercept);
+		this.farRightYVal = getYValue(this.xMax, this.slope, this.adjustedIntercept);
+		
+		/* user ellipse */
+		this.angle = 0;
+		this.xRadius = this.w/4;
+		this.yRadius = this.w/4;
+		this.fullRot = pv.range(0, 2 * Math.PI, 0.01);
+		this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
+		this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
+	}
+	
+	Graphics.prototype = {
+		setW: function(wVal){		//updates the scale and the user defined ellipse and line
+			var oldW = this.w;
+			this.w = wVal;
+			if (jQuery('#fitScalesToData').is(':checked')) {
+				this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
+			}else{			
+				this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
+			}
+			this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
+			this.xRadius = (this.xRadius)*(this.w/oldW);//*Math.cos(this.angle);
+			//this.yRadius = (this.yRadius)*(this.w/oldW);//*Math.sin(this.angle);
+			this.userDrawnLinePoints[0].x = (this.userDrawnLinePoints[0].x)*(this.w/oldW);
+			this.userDrawnLinePoints[1].x = (this.userDrawnLinePoints[1].x)*(this.w/oldW);
+		},
+		
+		setH: function(hVal){		//updates the scale and the user defined ellipse and line
+			var oldH = this.h;
+			this.h = hVal;			
+			if (jQuery('#fitScalesToData').is(':checked')) {
+				this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
+			}else{
+				this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
+			}
+			this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
+			this.yRadius = (this.yRadius)*(this.h/oldH);//*Math.cos(this.angle);
+			//this.xRadius = (this.xRadius)*(this.h/oldH);//*Math.sin(this.angle);
+			this.userDrawnLinePoints[0].y = (this.userDrawnLinePoints[0].y)*(this.h/oldH);
+			this.userDrawnLinePoints[1].y = (this.userDrawnLinePoints[1].y)*(this.h/oldH);
+		},
+		
+	}
+	function constructVis() {
 	  jQuery('span').remove();
-	  
-	  var data = worksheet.data;
-
-	  var w = width || 600,
-		  h = height || 300,
-		  
-		  
-		  xMax = pv.max(data, function(d) { return d.incidence }),
-		  yMax = pv.max(data, function(d) { return d.otherFactor }),
-		  xMin = pv.min(data, function(d) { return d.incidence }),
-		  yMin = pv.min(data, function(d) { return d.otherFactor }),
-		  x = pv.Scale.linear(0, Math.ceil(xMax)).range(0, w),
-		  y = pv.Scale.linear(0, Math.ceil(yMax)).range(0, h),
-		  colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black")
-		  c = jQuery.map(data, function() { return colorScale(Math.random()) });
-
-	  if (jQuery('#fitScalesToData').is(':checked')) {
-		x = pv.Scale.linear(Math.floor(xMin), Math.ceil(xMax)).range(0, w);
-		y = pv.Scale.linear(Math.floor(yMin), Math.ceil(yMax)).range(0, h);
-	  }
-
-	  var userDrawnLinePoints = [{ x:w * 0.2, y:h / 2 }, 
-								 { x:w * 0.8, y:h / 2 }];
 
 	  vis = new pv.Panel()
-			  .width(w)
-			  .height(h)
+			  .width(graphics.w)
+			  .height(graphics.h)
 			  .bottom(60)
 			  .left(60)
 			  .right(20)
@@ -41,42 +97,42 @@ $(document).ready(function(){
 	  
 	  /*Graph Title*/		  
 	  vis.add(pv.Label)
-		.left(w / 2)
+		.left(graphics.w / 2)
 		.top(-40)
 		.textAlign("center")
 		.textAngle(0)
-		.text(worksheet.title)
+		.text(graphics.worksheet.title)
 		.font("bold 20px sans-serif");
 
 	  /* Y-axis label */		  
 	  vis.add(pv.Label)
-		.data(worksheet.yAxisTitle)
+		.data(graphics.worksheet.yAxisTitle)
 		.left(-40)
-		.top(h / 2)
+		.top(graphics.h / 2)
 		.textAlign("center")
 		.textAngle(-Math.PI / 2)
 		.font("bold 14px sans-serif");
 
 	  /* Y-axis ticks */
 	  vis.add(pv.Rule)
-		 .data(function() { return y.ticks() })
-		 .bottom(y)
+		 .data(function() { return graphics.y.ticks() })
+		 .bottom(graphics.y)
 		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor('left').add(pv.Label)
-		   .text(x.tickFormat);
+		   .text(graphics.x.tickFormat);
 
 	  /* X-axis ticks */
 	  vis.add(pv.Rule)
-		 .data(function() { return x.ticks() })
-		 .left(x)
+		 .data(function() { return graphics.x.ticks() })
+		 .left(graphics.x)
 		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor("bottom").add(pv.Label)
-		   .text(x.tickFormat);
+		   .text(graphics.x.tickFormat);
 		   
 	  /* X-axis label */
 	  vis.add(pv.Label)
-		.data(worksheet.xAxisTitle)
-		.left(w / 2)
+		.data(graphics.worksheet.xAxisTitle)
+		.left(graphics.w / 2)
 		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
@@ -84,28 +140,26 @@ $(document).ready(function(){
 		 
 	   
 	  /* median median crosses and squares */
-	  var groups = divideDataInto3(data);
-	  var medians = getMedianValuesFrom(groups);
 
-	  for (var i = 0; i < groups.length; i++) {
-		 var bounds = getBounds(groups[i]);
+	  for (var i = 0; i < graphics.groups.length; i++) {
+		 var bounds = getBounds(graphics.groups[i]);
 		 var coords = getBoundingCoords(bounds);
 
 		 /* rectangle around median group */
 		 vis.add(pv.Line)
 			.visible(function() { return jQuery('#checkboxShowMMRects').is(':checked') })
 			.data(coords)
-			.left(function(d) { return x(d[0]) })
-			.bottom(function(d) { return y(d[1]) })
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return graphics.y(d[1]) })
 			.lineWidth(0.5)
 			.fillStyle(pv.rgb(255,165,0,0.05));
 
 		 /* median cross */
 		 vis.add(pv.Dot)
 			.visible(function() { return jQuery('#checkboxShowMMDots').is(':checked') })
-			.data([medians[i]]) // extra brackets so not to use x and y as seperate points
-			.left(function(d) { return x(d[0]) })
-			.bottom(function(d) { return y(d[1]) })
+			.data([graphics.medians[i]]) // extra brackets so not to use x and y as seperate points
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return graphics.y(d[1]) })
 			.radius(10)
 			.angle(Math.PI / 4)
 			.shape('cross')
@@ -114,36 +168,30 @@ $(document).ready(function(){
 	  }
 
 
-	  /* media-median line:
+	  /* median-median line:
 		   Is middle median dot higher or lower than line through outer median dots? 
 		   That is, middle median dot's y value - y value at same x of original median line 
 		   divided by three */
-	  var slope = findSlope(medians[0][0], medians[2][0], medians[0][1], medians[2][1]);
-	  var intercept = findIntercept(medians[0][0], medians[0][1], slope);
-	  var medianYDelta = ((medians[1][1] - getYValue(medians[1][0], slope, intercept)) / 3);
-	  var adjustedIntercept = intercept + medianYDelta;
-	  var farLeftYVal = getYValue(xMin, slope, adjustedIntercept);
-	  var farRightYVal = getYValue(xMax, slope, adjustedIntercept);
 
 	  vis.add(pv.Line)
 		 .visible(function() { return jQuery('#checkboxShowMMLine').is(':checked') })
-		 .data([[xMin, farLeftYVal], [xMax, farRightYVal]])
-		 .left(function(d) { return x(d[0]) })
-		 .bottom(function(d) { return y(d[1]) })
+		 .data([[graphics.xMin, graphics.farLeftYVal], [graphics.xMax, graphics.farRightYVal]])
+		 .left(function(d) { return graphics.x(d[0]) })
+		 .bottom(function(d) { return graphics.y(d[1]) })
 		 .title("Median-median line");
 
 
 	  /* dot plot */
 	  vis.add(pv.Dot)
-		 .data(data)
+		 .data(graphics.data)
 		 .visible(function() { return jQuery('#checkboxShowData').is(':checked') })
 		 .event("point", function() { return this.active(this.index).parent })
 		 .event("unpoint", function() { return this.active(-1).parent })
-		 .left(function(d) { return x(d.incidence) })
-		 .bottom(function(d) { return y(d.otherFactor) })
+		 .left(function(d) { return graphics.x(d.incidence) })
+		 .bottom(function(d) { return graphics.y(d.otherFactor) })
 		 .radius(function() { return 3 / this.scale })
 		 .fillStyle("#eee")
-		 .strokeStyle(function(d) { return c[this.index] })
+		 .strokeStyle(function(d) { return graphics.c[this.index] })
 		 .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
 		 .def('active', -1)
 		 .event("point", function() { return this.active(this.index).parent })
@@ -152,7 +200,7 @@ $(document).ready(function(){
 		 
 	  /* user drawn line */
 	  vis.add(pv.Line)
-		 .data(userDrawnLinePoints)
+		 .data(graphics.userDrawnLinePoints)
 		 .left(function(d) { return d.x })
 		 .top(function(d) { return d.y })
 		 .visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
@@ -165,27 +213,19 @@ $(document).ready(function(){
 	  
 
 	  /* user ellipse */
-	  var angle = 0;
-	  var xRadius = w/4;
-	  var yRadius = w/4;
-	  var fullRot = pv.range(0, 2 * Math.PI, 0.01);
-	  var ellipseCX = x((xMin + xMax) / 2);
-	  var ellipseCY = y((yMin + yMax) / 2);
-		   
-	  
 	  function getRotatedEllipseCoords() {
-		var ellipseXRadius = xRadius;
-		var ellipseYRadius = yRadius;
+		var ellipseXRadius = graphics.xRadius;
+		var ellipseYRadius = graphics.yRadius;
 		
 		var coords = [];
-		for (i = 0; i < fullRot.length; i++) {
-		  coords.push([ ellipseXRadius * Math.cos(fullRot[i]),
-						ellipseYRadius * Math.sin(fullRot[i]) ]);
+		for (i = 0; i < graphics.fullRot.length; i++) {
+		  coords.push([ ellipseXRadius * Math.cos(graphics.fullRot[i]),
+						ellipseYRadius * Math.sin(graphics.fullRot[i]) ]);
 		}
 		
 		for (var i = 0; i < coords.length; i++) {
-		  coords[i] = ([ coords[i][0] * Math.cos(angle) - coords[i][1] * Math.sin(angle) + ellipseCX,
-						 coords[i][0] * Math.sin(angle) + coords[i][1] * Math.cos(angle) + ellipseCY ]);
+		  coords[i] = ([ coords[i][0] * Math.cos(graphics.angle) - coords[i][1] * Math.sin(graphics.angle) + graphics.ellipseCX,
+						 coords[i][0] * Math.sin(graphics.angle) + coords[i][1] * Math.cos(graphics.angle) + graphics.ellipseCY ]);
 		}
 		return coords;
 	  }
@@ -219,11 +259,11 @@ $(document).ready(function(){
 	     .event("mousedown", pv.Behavior.drag())
 		 .event("drag", function(){
 			var mouseX = vis.mouse().x,
-				mouseY = h - vis.mouse().y,
+				mouseY = graphics.h - vis.mouse().y,
 				handleX = getEllipseManipCoords()[this.index][0],
 				handleY = getEllipseManipCoords()[this.index][1],
-				mouseVec = pv.vector(ellipseCX - mouseX, ellipseCY - mouseY), 
-				handleVec = pv.vector(ellipseCX - handleX, ellipseCY - handleY).norm(),
+				mouseVec = pv.vector(graphics.ellipseCX - mouseX, graphics.ellipseCY - mouseY), 
+				handleVec = pv.vector(graphics.ellipseCX - handleX, graphics.ellipseCY - handleY).norm(),
 				referenceVec = pv.vector(1,0);
 			 
 			var detHndlMs = handleVec.x*mouseVec.y - mouseVec.x*handleVec.y;
@@ -231,19 +271,19 @@ $(document).ready(function(){
 			var rotDist = Math.acos(mouseVec.norm().dot(handleVec.x, handleVec.y));
 			
 			
-			if (mouseX > 0 && mouseX < w && mouseY > 0 && mouseY < h){
+			if (mouseX > 0 && mouseX < graphics.w && mouseY > 0 && mouseY < graphics.h){
 				if (!isNaN(rotDist)){
 					if (detHndlMs > 0){
-						angle = (angle + rotDist) % (2*Math.PI);
+						graphics.angle = (graphics.angle + rotDist) % (2*Math.PI);
 					}else{
-						angle = (angle - rotDist) % (2*Math.PI);
+						graphics.angle = (graphics.angle - rotDist) % (2*Math.PI);
 					}
 				}
 				 
 				if (this.index % 2 == 0){
-					xRadius = mouseVec.length();
+					graphics.xRadius = mouseVec.length();
 				}else{
-					yRadius = mouseVec.length();
+					graphics.yRadius = mouseVec.length();
 				}
 			}
 			vis.render();
@@ -354,17 +394,20 @@ $(document).ready(function(){
 
 	/* Dynamic Graph Resizing */
 	$(window).resize(function() {
-		constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
+		graphics.setW(calcGraphWidth());
+		graphics.setH(calcGraphHeight());
+		constructVis();
 	})
 
 	/* populate dataset drop down menu */
 	jQuery('body').bind('WorksheetLoaded', function(event) {
 	  jQuery('#dataSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
-	  constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
+	  graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
+	  constructVis();
 	});
 
 	jQuery('#menu').change(function(event) {
-	  constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
+	  constructVis();
 	  event.stopPropagation();
 	})
 
@@ -376,7 +419,12 @@ $(document).ready(function(){
 	});
 
 	jQuery('#menuOptions').change(function(event) {
-	  constructVis(getWorksheet(), calcGraphWidth(), calcGraphHeight());
+	  constructVis();
 	  event.stopPropagation();
+	});
+	
+	jQuery('#dataSelector').change(function(event) {
+	  graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
+	  constructVis();
 	});
 });
