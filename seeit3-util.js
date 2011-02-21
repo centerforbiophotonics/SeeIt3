@@ -1,4 +1,50 @@
 /* Data Manipulation Functions */
+	function getMean(data){
+		var sum = 0;
+		for (var i = 0; i < data.length; i++){
+			sum += parseFloat(data[i]);
+		}
+		return sum/data.length;
+	}
+	
+	function getSD(data){
+		var mean = getMean(data);
+		var deviations = [];
+		for (var i = 0; i < data.length; i++){
+			deviations.push(parseFloat(data[i]) - mean);
+		}
+		var sqrDeviations = [];
+		for (var i = 0; i < deviations.length; i++){
+			sqrDeviations.push(Math.pow(deviations[i],2));
+		}
+		var sum = 0;
+		for (var i = 0; i < sqrDeviations.length; i++){
+			sum += sqrDeviations[i];
+		}
+		
+		return Math.sqrt(sum/(data.length - 1));
+	}
+	
+	function getR(data){
+		var sumXY = 0,
+			sumX = 0,
+			sumY = 0,
+			sumXsqrd = 0,
+			sumYsqrd = 0,
+			n = data.length;
+			
+		for (var i = 0; i < data.length; i++){
+			sumXY += parseFloat(data[i].incidence) * parseFloat(data[i].otherFactor);
+			sumX += parseFloat(data[i].incidence);
+			sumY += parseFloat(data[i].otherFactor);
+			sumXsqrd += Math.pow(parseFloat(data[i].incidence), 2);
+			sumYsqrd += Math.pow(parseFloat(data[i].otherFactor), 2);
+		}
+		
+		var r = (sumXY - (sumX * sumY)/n)/Math.sqrt((sumXsqrd-Math.pow(sumX,2)/n)*(sumYsqrd-Math.pow(sumY,2)/n))
+		return r;
+	}
+	
 	function calcDistance(x1, y1, x2, y2) {
 		return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
 	}

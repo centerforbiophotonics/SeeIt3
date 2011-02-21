@@ -5,84 +5,6 @@ $(document).ready(function(){
 	var vis = {};
 	var graphics = {};
 
-	function Graphics(worksheet, width, height){
-		var graphics = this;
-		this.worksheet = worksheet;
-		
-		this.data = worksheet.data;
-
-		this.w = width || 600;
-		this.h = height || 300;
-		this.xMax = pv.max(this.data, function(d) { return d.incidence });
-		this.yMax = pv.max(this.data, function(d) { return d.otherFactor });
-		this.xMin = pv.min(this.data, function(d) { return d.incidence });
-		this.yMin = pv.min(this.data, function(d) { return d.otherFactor });
-		this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
-		this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
-		this.colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black");
-		this.c = jQuery.map(this.data, function() { return graphics.colorScale(Math.random()) });
-
-		if (jQuery('#fitScalesToData').is(':checked')) {
-			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);
-			this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);
-		};
-
-		this.userDrawnLinePoints = [{ x:this.w * 0.2, y:this.h / 2 }, 
-								 { x:this.w * 0.8, y:this.h / 2 }];
-								 
-		/* median median crosses and squares */
-		this.groups = divideDataInto3(this.data);
-		this.medians = getMedianValuesFrom(this.groups);
-		
-		/* median-median line */
-		this.slope = findSlope(this.medians[0][0], this.medians[2][0], this.medians[0][1], this.medians[2][1]);
-		this.intercept = findIntercept(this.medians[0][0], this.medians[0][1], this.slope);
-		this.medianYDelta = ((this.medians[1][1] - getYValue(this.medians[1][0], this.slope, this.intercept)) / 3);
-		this.adjustedIntercept = this.intercept + this.medianYDelta;
-		this.farLeftYVal = getYValue(this.xMin, this.slope, this.adjustedIntercept);
-		this.farRightYVal = getYValue(this.xMax, this.slope, this.adjustedIntercept);
-		
-		/* user ellipse */
-		this.angle = 0;
-		this.xRadius = this.w/4;
-		this.yRadius = this.w/4;
-		this.fullRot = pv.range(0, 2 * Math.PI, 0.01);
-		this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
-		this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
-	}
-	
-	Graphics.prototype = {
-		setW: function(wVal){		//updates the scale and the user defined ellipse and line
-			var oldW = this.w;
-			this.w = wVal;
-			if (jQuery('#fitScalesToData').is(':checked')) {
-				this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
-			}else{			
-				this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
-			}
-			this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
-			this.xRadius = (this.xRadius)*(this.w/oldW);//*Math.cos(this.angle);
-			//this.yRadius = (this.yRadius)*(this.w/oldW);//*Math.sin(this.angle);
-			this.userDrawnLinePoints[0].x = (this.userDrawnLinePoints[0].x)*(this.w/oldW);
-			this.userDrawnLinePoints[1].x = (this.userDrawnLinePoints[1].x)*(this.w/oldW);
-		},
-		
-		setH: function(hVal){		//updates the scale and the user defined ellipse and line
-			var oldH = this.h;
-			this.h = hVal;			
-			if (jQuery('#fitScalesToData').is(':checked')) {
-				this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
-			}else{
-				this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
-			}
-			this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
-			this.yRadius = (this.yRadius)*(this.h/oldH);//*Math.cos(this.angle);
-			//this.xRadius = (this.xRadius)*(this.h/oldH);//*Math.sin(this.angle);
-			this.userDrawnLinePoints[0].y = (this.userDrawnLinePoints[0].y)*(this.h/oldH);
-			this.userDrawnLinePoints[1].y = (this.userDrawnLinePoints[1].y)*(this.h/oldH);
-		},
-		
-	}
 	function constructVis() {
 	  jQuery('span').remove();
 
@@ -179,6 +101,15 @@ $(document).ready(function(){
 		 .left(function(d) { return graphics.x(d[0]) })
 		 .bottom(function(d) { return graphics.y(d[1]) })
 		 .title("Median-median line");
+		 
+	  /* Least Squares Regression Line */
+
+	  vis.add(pv.Line)
+		 .visible(function() { return jQuery('#checkboxShowLeastSquaresLine').is(':checked') })
+		 .data([[graphics.xMin, graphics.lsFarLeftYVal], [graphics.xMax, graphics.lsFarRightYVal]])
+		 .left(function(d) { return graphics.x(d[0]) })
+		 .bottom(function(d) { return graphics.y(d[1]) })
+		 .title("Least-Squares Regression Line");
 
 
 	  /* dot plot */
@@ -205,7 +136,7 @@ $(document).ready(function(){
 		 .top(function(d) { return d.y })
 		 .visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
 		 .add(pv.Dot)
-			.fillStyle("blue")
+			.fillStyle("#1f77b4")
 			.shape('square')
 			.event("mousedown", pv.Behavior.drag())
 			.event("drag", vis)
@@ -292,7 +223,97 @@ $(document).ready(function(){
 	  vis.render();
 	}
 
+	function Graphics(worksheet, width, height){
+		var graphics = this;
+		this.worksheet = worksheet;
+		
+		this.data = worksheet.data;
 
+		this.w = width || 600;
+		this.h = height || 300;
+		this.xMax = pv.max(this.data, function(d) { return d.incidence });
+		this.yMax = pv.max(this.data, function(d) { return d.otherFactor });
+		this.xMin = pv.min(this.data, function(d) { return d.incidence });
+		this.yMin = pv.min(this.data, function(d) { return d.otherFactor });
+		this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
+		this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
+		this.colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black");
+		this.c = jQuery.map(this.data, function() { return graphics.colorScale(Math.random()) });
+
+		if (jQuery('#fitScalesToData').is(':checked')) {
+			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);
+			this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);
+		};
+
+		this.userDrawnLinePoints = [{ x:this.w * 0.2, y:this.h / 2 }, 
+								 { x:this.w * 0.8, y:this.h / 2 }];
+								 
+		/* median median crosses and squares */
+		this.groups = divideDataInto3(this.data);
+		this.medians = getMedianValuesFrom(this.groups);
+		
+		/* median-median line */
+		this.slope = findSlope(this.medians[0][0], this.medians[2][0], this.medians[0][1], this.medians[2][1]);
+		this.intercept = findIntercept(this.medians[0][0], this.medians[0][1], this.slope);
+		this.medianYDelta = ((this.medians[1][1] - getYValue(this.medians[1][0], this.slope, this.intercept)) / 3);
+		this.adjustedIntercept = this.intercept + this.medianYDelta;
+		this.farLeftYVal = getYValue(this.xMin, this.slope, this.adjustedIntercept);
+		this.farRightYVal = getYValue(this.xMax, this.slope, this.adjustedIntercept);
+		
+		/* Least-Squares Regression Line */
+		var incidences = [];
+		var otherFactors = [];
+		for (var i = 0; i < this.data.length; i++){
+			incidences.push(this.data[i].incidence);
+			otherFactors.push(this.data[i].otherFactor);
+		}
+		this.lsSlope = getR(this.data)*(getSD(otherFactors)/getSD(incidences));
+		this.lsIntercept = getMean(otherFactors) - this.lsSlope*getMean(incidences);
+		this.lsFarLeftYVal = getYValue(this.xMin, this.lsSlope, this.lsIntercept);
+		this.lsFarRightYVal = getYValue(this.xMax, this.lsSlope, this.lsIntercept);
+		
+		/* user ellipse */
+		this.angle = 0;
+		this.xRadius = this.w/4;
+		this.yRadius = this.w/4;
+		this.fullRot = pv.range(0, 2 * Math.PI, 0.01);
+		this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
+		this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
+	}
+	
+	Graphics.prototype = {
+		setW: function(wVal){		//updates the scale and the user defined ellipse and line
+			var oldW = this.w;
+			this.w = wVal;
+			if (jQuery('#fitScalesToData').is(':checked')) {
+				this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
+			}else{			
+				this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
+			}
+			this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
+			this.xRadius = (this.xRadius)*(this.w/oldW);//*Math.cos(this.angle);
+			//this.yRadius = (this.yRadius)*(this.w/oldW);//*Math.sin(this.angle);
+			this.userDrawnLinePoints[0].x = (this.userDrawnLinePoints[0].x)*(this.w/oldW);
+			this.userDrawnLinePoints[1].x = (this.userDrawnLinePoints[1].x)*(this.w/oldW);
+		},
+		
+		setH: function(hVal){		//updates the scale and the user defined ellipse and line
+			var oldH = this.h;
+			this.h = hVal;			
+			if (jQuery('#fitScalesToData').is(':checked')) {
+				this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
+			}else{
+				this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
+			}
+			this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
+			this.yRadius = (this.yRadius)*(this.h/oldH);//*Math.cos(this.angle);
+			//this.xRadius = (this.xRadius)*(this.h/oldH);//*Math.sin(this.angle);
+			this.userDrawnLinePoints[0].y = (this.userDrawnLinePoints[0].y)*(this.h/oldH);
+			this.userDrawnLinePoints[1].y = (this.userDrawnLinePoints[1].y)*(this.h/oldH);
+		},
+		
+	}
+	
 	function Spreadsheet(key) {
 	  this.key = key;
 	  this.worksheets = [];
