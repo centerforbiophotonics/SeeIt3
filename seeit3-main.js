@@ -239,12 +239,8 @@ $(document).ready(function(){
 		this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
 		this.colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black");
 		this.c = jQuery.map(this.data, function() { return graphics.colorScale(Math.random()) });
-
-		if (jQuery('#fitScalesToData').is(':checked')) {
-			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);
-			this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);
-		};
-
+		
+		/* User Drawn Line*/
 		this.userDrawnLinePoints = [{ x:this.w * 0.2, y:this.h / 2 }, 
 								 { x:this.w * 0.8, y:this.h / 2 }];
 								 
@@ -310,6 +306,32 @@ $(document).ready(function(){
 			//this.xRadius = (this.xRadius)*(this.h/oldH);//*Math.sin(this.angle);
 			this.userDrawnLinePoints[0].y = (this.userDrawnLinePoints[0].y)*(this.h/oldH);
 			this.userDrawnLinePoints[1].y = (this.userDrawnLinePoints[1].y)*(this.h/oldH);
+		},
+		
+		setXScale: function(){		//updates the scale and the user defined ellipse and line		
+			if (jQuery('#fitScalesToData').is(':checked')) {
+				this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
+			}else{			
+				this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
+			}
+			this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
+			this.xRadius = (this.xRadius);//*Math.cos(this.angle);
+			//this.yRadius = (this.yRadius)*(this.w/oldW);//*Math.sin(this.angle);
+			this.userDrawnLinePoints[0].x = (this.userDrawnLinePoints[0].x);
+			this.userDrawnLinePoints[1].x = (this.userDrawnLinePoints[1].x);
+		},
+		
+		setYScale: function(){		//updates the scale and the user defined ellipse and line		
+			if (jQuery('#fitScalesToData').is(':checked')) {
+				this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
+			}else{
+				this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
+			}
+			this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
+			this.yRadius = (this.yRadius);//*Math.cos(this.angle);
+			//this.xRadius = (this.xRadius)*(this.h/oldH);//*Math.sin(this.angle);
+			this.userDrawnLinePoints[0].y = this.y(this.userDrawnLinePoints[0].y);
+			this.userDrawnLinePoints[1].y = this.y(this.userDrawnLinePoints[1].y);
 		},
 		
 	}
@@ -441,11 +463,19 @@ $(document).ready(function(){
 
 	jQuery('#menuOptions').change(function(event) {
 	  constructVis();
-	  event.stopPropagation();
+	  //event.stopPropagation();
 	});
 	
 	jQuery('#dataSelector').change(function(event) {
 	  graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
 	  constructVis();
 	});
+	
+	
+	jQuery('#fitScalesToData').change(function(event) {
+	  graphics.setXScale();
+	  graphics.setYScale();
+	  constructVis();
+	});
+	
 });
