@@ -280,6 +280,8 @@ $(document).ready(function(){
 	  vis.render();
 	}
 
+	/* Contains variables required for graphics
+	 * DO NOT MODIFY DIRECTLY */
 	function Graphics(worksheet, width, height){
 		var graphics = this;
 		this.worksheet = worksheet;
