@@ -101,7 +101,8 @@ $(document).ready(function(){
 		 .bottom(function(d) { return graphics.y(d[1]) })
 		 .title("Median-median line")
 		 .add(pv.Label)
-			.visible(function () { return jQuery('#checkboxShowMMEqn').is(':checked') })
+			.visible(function () { return (jQuery('#checkboxShowMMEqn').is(':checked') 
+											&& jQuery('#checkboxShowMMLine').is(':checked') )})
 			.text(function(d) {
 				if (this.index == 0) { return "y = "+graphics.slope.toFixed(3)+"x + "+graphics.intercept.toFixed(3);}
 				else{return "";}
@@ -139,7 +140,8 @@ $(document).ready(function(){
 		 .title("Least-Squares Regression Line")
 		 .strokeStyle("green")
 		 .add(pv.Label)
-			.visible(function () { return jQuery('#checkboxShowLeastSquaresEquation').is(':checked') })
+			.visible(function () { return (jQuery('#checkboxShowLeastSquaresEquation').is(':checked')
+											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
 			.text(function(d) {
 				if (this.index == 0) { return "y = "+graphics.lsSlope.toFixed(3)+"x + "+graphics.lsIntercept.toFixed(3);}
 				else{return "";}
