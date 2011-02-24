@@ -104,7 +104,7 @@ $(document).ready(function(){
 			.visible(function () { return (jQuery('#checkboxShowMMEqn').is(':checked') 
 											&& jQuery('#checkboxShowMMLine').is(':checked') )})
 			.text(function(d) {
-				if (this.index == 0) { return "y = "+graphics.slope.toFixed(3)+"x + "+graphics.intercept.toFixed(3);}
+				if (this.index == 0) { return "Y = "+graphics.slope.toFixed(3)+"X + "+graphics.intercept.toFixed(3);}
 				else{return "";}
 			})
 			.textAlign("left")
@@ -143,7 +143,7 @@ $(document).ready(function(){
 			.visible(function () { return (jQuery('#checkboxShowLeastSquaresEquation').is(':checked')
 											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
 			.text(function(d) {
-				if (this.index == 0) { return "y = "+graphics.lsSlope.toFixed(3)+"x + "+graphics.lsIntercept.toFixed(3);}
+				if (this.index == 0) { return "Y = "+graphics.lsSlope.toFixed(3)+"X + "+graphics.lsIntercept.toFixed(3);}
 				else{return "";}
 			})
 			.textAlign("left")
