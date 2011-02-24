@@ -94,22 +94,77 @@ $(document).ready(function(){
 		   Is middle median dot higher or lower than line through outer median dots? 
 		   That is, middle median dot's y value - y value at same x of original median line 
 		   divided by three */
-
 	  vis.add(pv.Line)
 		 .visible(function() { return jQuery('#checkboxShowMMLine').is(':checked') })
 		 .data([[graphics.xMin, graphics.farLeftYVal], [graphics.xMax, graphics.farRightYVal]])
 		 .left(function(d) { return graphics.x(d[0]) })
 		 .bottom(function(d) { return graphics.y(d[1]) })
-		 .title("Median-median line");
+		 .title("Median-median line")
+		 .add(pv.Label)
+			.visible(function () { return jQuery('#checkboxShowMMEqn').is(':checked') })
+			.text(function(d) {
+				if (this.index == 0) { return "y = "+graphics.slope.toFixed(3)+"x + "+graphics.intercept.toFixed(3);}
+				else{return "";}
+			})
+			.textAlign("left")
+			.textBaseline("top")
+			.textStyle("#1f77b4")
+			.textAngle(function () {
+				if (graphics.slope <= 0){
+					return Math.atan(Math.abs(
+											graphics.y(graphics.farRightYVal) - graphics.y(graphics.farLeftYVal)
+										) / Math.abs(
+											graphics.x(graphics.xMax) - graphics.x(graphics.xMin)
+										)
+									);
+				} else {
+					return -Math.atan(Math.abs(
+											graphics.y(graphics.farRightYVal) - graphics.y(graphics.farLeftYVal)
+										) / Math.abs(
+											graphics.x(graphics.xMax) - graphics.x(graphics.xMin)
+										)
+									);
+				}
+									
+			});
+		 
+		 
 		 
 	  /* Least Squares Regression Line */
-
 	  vis.add(pv.Line)
 		 .visible(function() { return jQuery('#checkboxShowLeastSquaresLine').is(':checked') })
 		 .data([[graphics.xMin, graphics.lsFarLeftYVal], [graphics.xMax, graphics.lsFarRightYVal]])
 		 .left(function(d) { return graphics.x(d[0]) })
 		 .bottom(function(d) { return graphics.y(d[1]) })
-		 .title("Least-Squares Regression Line");
+		 .title("Least-Squares Regression Line")
+		 .strokeStyle("green")
+		 .add(pv.Label)
+			.visible(function () { return jQuery('#checkboxShowLeastSquaresEquation').is(':checked') })
+			.text(function(d) {
+				if (this.index == 0) { return "y = "+graphics.lsSlope.toFixed(3)+"x + "+graphics.lsIntercept.toFixed(3);}
+				else{return "";}
+			})
+			.textAlign("left")
+			.textBaseline("top")
+			.textStyle("green")
+			.textAngle(function () {
+				if (graphics.lsSlope <= 0){
+					return Math.atan(Math.abs(
+											graphics.y(graphics.lsFarRightYVal) - graphics.y(graphics.lsFarLeftYVal)
+										) / Math.abs(
+											graphics.x(graphics.xMax) - graphics.x(graphics.xMin)
+										)
+									);
+				} else {
+					return -Math.atan(Math.abs(
+											graphics.y(graphics.lsFarRightYVal) - graphics.y(graphics.lsFarLeftYVal)
+										) / Math.abs(
+											graphics.x(graphics.xMax) - graphics.x(graphics.xMin)
+										)
+									);
+				}
+									
+			});
 
 
 	  /* dot plot */
