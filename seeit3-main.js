@@ -296,7 +296,7 @@ $(document).ready(function(){
 	}
 
 	function getWorksheet(){
-	  var URL = jQuery('#dataSelector').val();
+	  var URL = jQuery('#workSheetSelector').val();
 	  var worksheet = getWorksheetByURL(URL);
 	  return worksheet;
 	}
@@ -319,7 +319,7 @@ $(document).ready(function(){
 
 	/* populate dataset drop down menu */
 	jQuery('body').bind('WorksheetLoaded', function(event) {
-	  jQuery('#dataSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
+	  jQuery('#workSheetSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
 	  graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
 	  constructVis();
 	});
@@ -330,7 +330,7 @@ $(document).ready(function(){
 	})
 
 	jQuery('#editInGoogleDocs').click(function(event) {
-	  var URL = jQuery('#dataSelector').val();
+	  var URL = jQuery('#workSheetSelector').val();
 	  var matches = /feeds\/list\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
 	  window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
 	  event.preventDefault();
@@ -341,8 +341,10 @@ $(document).ready(function(){
 	  //event.stopPropagation();
 	});
 	
-	jQuery('#dataSelector').change(function(event) {
+	jQuery('#workSheetSelector').change(function(event) {
 	  graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
+	  graphics.setXScale();
+	  graphics.setYScale();
 	  constructVis();
 	});
 	
