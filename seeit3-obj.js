@@ -25,13 +25,13 @@
 		this.groups = divideDataInto3(this.data);
 		this.medians = getMedianValuesFrom(this.groups);
 		
-		/* median-median line */
-		this.slope = findSlope(this.medians[0][0], this.medians[2][0], this.medians[0][1], this.medians[2][1]);
-		this.intercept = findIntercept(this.medians[0][0], this.medians[0][1], this.slope);
-		this.medianYDelta = ((this.medians[1][1] - getYValue(this.medians[1][0], this.slope, this.intercept)) / 3);
-		this.adjustedIntercept = this.intercept + this.medianYDelta;
-		this.farLeftYVal = getYValue(this.xMin, this.slope, this.adjustedIntercept);
-		this.farRightYVal = getYValue(this.xMax, this.slope, this.adjustedIntercept);
+		/* median-median line */ 
+		this.mmSlope = findSlope(this.medians[0][0], this.medians[2][0], this.medians[0][1], this.medians[2][1]); 
+		this.mmIntercept = findIntercept(this.medians[0][0], this.medians[0][1], this.mmSlope);
+		this.medianYDelta = ((this.medians[1][1] - getYValue(this.medians[1][0], this.mmSlope, this.mmIntercept)) / 3); 
+		this.adjustedIntercept = this.mmIntercept + this.medianYDelta; 
+		this.mmFarLeftYVal = getYValue(this.xMin, this.mmSlope, this.adjustedIntercept); 
+		this.mmFarRightYVal = getYValue(this.xMax, this.mmSlope, this.adjustedIntercept);
 		
 		/* Least-Squares Regression Line */
 		var incidences = [];
