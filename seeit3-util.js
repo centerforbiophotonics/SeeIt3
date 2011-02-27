@@ -57,6 +57,26 @@ function getLSLineLabelAngle(graphics) {
 
 
 /* Data Manipulation Functions */
+function getClosestPointOnLSLine(point, graphics){
+	
+	var x = parseFloat(point.incidence);
+	var y = parseFloat(point.otherFactor);
+	var pntOnLine = [(graphics.lsSlope*y + x
+						- graphics.lsSlope*graphics.lsIntercept
+					)
+					/(Math.pow(graphics.lsSlope,2)+1),
+					
+					(Math.pow(graphics.lsSlope,2)*y 
+						+ graphics.lsSlope*x
+						+ graphics.lsIntercept
+					)
+					/(Math.pow(graphics.lsSlope,2)+1)]
+					
+	return pntOnLine;
+}
+
+
+
 function getMean(data){
 	var sum = 0;
 	for (var i = 0; i < data.length; i++){
@@ -183,6 +203,7 @@ function getBoundingCoords(minsAndMaxs) {
 		  [minsAndMaxs.minX, minsAndMaxs.minY],
 		  [minsAndMaxs.minX, minsAndMaxs.maxY]]; // repeated last line to close the square
 }
+
 
 function removeInvalidData(data) {
   return jQuery.map(data, function(elem, index) {

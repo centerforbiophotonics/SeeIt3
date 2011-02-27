@@ -64,8 +64,6 @@
 				this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 			}
 			this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
-			this.xRadius = (this.xRadius)*(this.w/oldW);//*Math.cos(this.angle);
-			//this.yRadius = (this.yRadius)*(this.w/oldW);//*Math.sin(this.angle);
 			this.userDrawnLinePoints[0].x = (this.userDrawnLinePoints[0].x)*(this.w/oldW);
 			this.userDrawnLinePoints[1].x = (this.userDrawnLinePoints[1].x)*(this.w/oldW);
 		},
@@ -79,8 +77,6 @@
 				this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
 			}
 			this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
-			this.yRadius = (this.yRadius)*(this.h/oldH);//*Math.cos(this.angle);
-			//this.xRadius = (this.xRadius)*(this.h/oldH);//*Math.sin(this.angle);
 			this.userDrawnLinePoints[0].y = (this.userDrawnLinePoints[0].y)*(this.h/oldH);
 			this.userDrawnLinePoints[1].y = (this.userDrawnLinePoints[1].y)*(this.h/oldH);
 		},
@@ -92,8 +88,6 @@
 				this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 			}
 			this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
-			this.xRadius = (this.xRadius);//*Math.cos(this.angle);
-			//this.yRadius = (this.yRadius)*(this.w/oldW);//*Math.sin(this.angle);
 			this.userDrawnLinePoints[0].x = (this.userDrawnLinePoints[0].x);
 			this.userDrawnLinePoints[1].x = (this.userDrawnLinePoints[1].x);
 		},
@@ -105,8 +99,6 @@
 				this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
 			}
 			this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
-			this.yRadius = (this.yRadius);//*Math.cos(this.angle);
-			//this.xRadius = (this.xRadius)*(this.h/oldH);//*Math.sin(this.angle);
 			this.userDrawnLinePoints[0].y = this.y(this.userDrawnLinePoints[0].y);
 			this.userDrawnLinePoints[1].y = this.y(this.userDrawnLinePoints[1].y);
 		},

@@ -143,6 +143,32 @@ $(document).ready(function(){
 			.textBaseline("bottom")
 			.textStyle("green")
 			.textAngle(getLSLineLabelAngle(graphics));
+			
+			
+	  /*R Squares*/
+	  for (var i=0; i < graphics.data.length; i++){
+		  var dataX = parseFloat(graphics.data[i].incidence);
+		  var dataY = parseFloat(graphics.data[i].otherFactor);
+		  var lsPoint = getClosestPointOnLSLine(graphics.data[i], graphics);
+		  
+		  
+		  
+		  var sqrBounds = [[dataX, dataY],
+						   [lsPoint[0], dataY],
+						   [lsPoint[0], lsPoint[1]],
+						   [dataX, lsPoint[1]],
+						   [dataX, dataY]];
+						   
+						   
+		  vis.add(pv.Line)
+			.visible(function() { return jQuery('#checkboxShowLeastSquaresSquares').is(':checked') })
+			.data(sqrBounds)
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return graphics.y(d[1]) })
+			.lineWidth(0.5)
+			.fillStyle(pv.rgb(255,165,0,0.05));
+		  	  
+	 }
 
 
 
@@ -316,7 +342,7 @@ $(document).ready(function(){
 
 	jQuery('#menuOptions').change(function(event) {
 	  constructVis();
-	  //event.stopPropagation();
+	  event.stopPropagation();
 	});
 	
 	jQuery('#workSheetSelector').change(function(event) {
