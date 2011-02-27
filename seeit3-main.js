@@ -41,7 +41,7 @@ $(document).ready(function(){
 		 .bottom(graphics.y)
 		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor('left').add(pv.Label)
-		   .text(graphics.x.tickFormat);
+		   .text(graphics.y.tickFormat);
 
 	  /* X-axis ticks */
 	  vis.add(pv.Rule)
