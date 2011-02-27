@@ -73,7 +73,8 @@ $(document).ready(function(){
 			.left(function(d) { return graphics.x(d[0]) })
 			.bottom(function(d) { return graphics.y(d[1]) })
 			.lineWidth(0.5)
-			.fillStyle(pv.rgb(255,165,0,0.05));
+			.strokeStyle("#1f77b4")
+			.fillStyle(pv.rgb(31,119,180,0.05));
 
 		 /* median cross */
 		 vis.add(pv.Dot)
@@ -150,23 +151,21 @@ $(document).ready(function(){
 		  var dataX = parseFloat(graphics.data[i].incidence);
 		  var dataY = parseFloat(graphics.data[i].otherFactor);
 		  var lsPoint = getClosestPointOnLSLine(graphics.data[i], graphics);
-		  
-		  
-		  
+
 		  var sqrBounds = [[dataX, dataY],
 						   [lsPoint[0], dataY],
 						   [lsPoint[0], lsPoint[1]],
 						   [dataX, lsPoint[1]],
 						   [dataX, dataY]];
-						   
-						   
+						  						   
 		  vis.add(pv.Line)
 			.visible(function() { return jQuery('#checkboxShowLeastSquaresSquares').is(':checked') })
 			.data(sqrBounds)
 			.left(function(d) { return graphics.x(d[0]) })
 			.bottom(function(d) { return graphics.y(d[1]) })
 			.lineWidth(0.5)
-			.fillStyle(pv.rgb(255,165,0,0.05));
+			.strokeStyle("green")
+			.fillStyle(pv.rgb(0,255,0,0.05));
 		  	  
 	 }
 
