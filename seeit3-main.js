@@ -74,6 +74,7 @@ $(document).ready(function(){
 	  for (var i = 0; i < graphics.groups.length; i++) {
 		 var bounds = getBounds(graphics.groups[i]);
 		 var coords = getBoundingCoords(bounds);
+		 var n = graphics.groups[i].length;
 
 		 /* rectangle around median group */
 		 vis.add(pv.Line)
@@ -83,7 +84,17 @@ $(document).ready(function(){
 			.bottom(function(d) { return graphics.y(d[1]) })
 			.lineWidth(0.5)
 			.strokeStyle("#1f77b4")
-			.fillStyle(pv.rgb(31,119,180,0.05));
+			.fillStyle(pv.rgb(31,119,180,0.05))
+			.add(pv.Label)								
+			.text(function(d) {
+				if (this.index == 0) { return "N = "+ n;}
+				else {return ""}
+			})
+			.textAlign("left")
+			.textBaseline("top")
+			.textStyle("#1f77b4")
+			.textAngle(0)
+			.font("bold 12px sans-serif");;
 
 		 /* median cross */
 		 vis.add(pv.Dot)
@@ -132,7 +143,7 @@ $(document).ready(function(){
 		.bottom(function(d) { return graphics.y(d[1]) })
 		.title("Least-Squares Regression Line")
 		.strokeStyle("green")
-		.add(pv.Label)				//Line Equation
+		.add(pv.Label)									//Line Equation
 			.visible(function () { return (jQuery('#checkboxShowLeastSquaresEquation').is(':checked')
 											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
 			.text(function(d) {
@@ -144,7 +155,7 @@ $(document).ready(function(){
 			.textStyle("green")
 			.textAngle(getLSLineLabelAngle(graphics))
 			.font("bold 12px sans-serif")
-		.add(pv.Label)				//R Value
+		.add(pv.Label)									//R Value
 			.visible(function () { return (jQuery('#checkboxShowLeastSquaresRValue').is(':checked')
 											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
 			.text(function(d) {
