@@ -137,7 +137,7 @@ $(document).ready(function(){
 			.visible(function () { return (jQuery('#checkboxShowLeastSquaresRValue').is(':checked')
 											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
 			.text(function(d) {
-				if (this.index == 0) { return "R = "+ getR(graphics.data);}
+				if (this.index == 0) { return "R = "+ getR(graphics.data).toFixed(2);}
 				else {return ""}
 			})
 			.textAlign("left")
@@ -159,7 +159,8 @@ $(document).ready(function(){
 						   [dataX, dataY]];
 						  						   
 		  vis.add(pv.Line)
-			.visible(function() { return jQuery('#checkboxShowLeastSquaresSquares').is(':checked') })
+			.visible(function() { return (jQuery('#checkboxShowLeastSquaresSquares').is(':checked')
+									&& jQuery('#checkboxShowLeastSquaresLine').is(':checked')) })
 			.data(sqrBounds)
 			.left(function(d) { return graphics.x(d[0]) })
 			.bottom(function(d) { return graphics.y(d[1]) })
