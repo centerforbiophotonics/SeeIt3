@@ -1,5 +1,4 @@
 /*Drawing Related Functions*/
-
 function getMMLineLabelAngle(graphics) {
 	if (graphics.mmSlope <= 0){
 		return Math.atan(
@@ -57,6 +56,13 @@ function getLSLineLabelAngle(graphics) {
 
 
 /* Data Manipulation Functions */
+
+function getYOnLSByX(x, graphics){
+	 var y = graphics.lsSlope * x + graphics.lsIntercept;
+	 return y;
+}
+
+
 function getClosestPointOnLSLine(point, graphics){
 	
 	var x = parseFloat(point.incidence);

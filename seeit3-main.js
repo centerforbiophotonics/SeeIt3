@@ -150,13 +150,23 @@ $(document).ready(function(){
 	  for (var i=0; i < graphics.data.length; i++){
 		  var dataX = parseFloat(graphics.data[i].incidence);
 		  var dataY = parseFloat(graphics.data[i].otherFactor);
-		  var lsPoint = getClosestPointOnLSLine(graphics.data[i], graphics);
-
-		  var sqrBounds = [[dataX, dataY],
-						   [lsPoint[0], dataY],
-						   [lsPoint[0], lsPoint[1]],
-						   [dataX, lsPoint[1]],
+		  //var lsPoint = getClosestPointOnLSLine(graphics.data[i], graphics);
+		  var vertDistToLS = dataY - getYOnLSByX(dataX, graphics);
+		  var sqrBounds = [];
+		  
+		  if (graphics.lsSlope >=0){
+			  sqrBounds = [[dataX, dataY],
+						   [dataX, dataY - vertDistToLS],
+						   [dataX - vertDistToLS, dataY - vertDistToLS],
+						   [dataX - vertDistToLS, dataY],
 						   [dataX, dataY]];
+		  } else {
+			  sqrBounds = [[dataX, dataY],
+						   [dataX, dataY - vertDistToLS],
+						   [dataX + vertDistToLS, dataY - vertDistToLS],
+						   [dataX + vertDistToLS, dataY],
+						   [dataX, dataY]];			  
+		  } 
 						  						   
 		  vis.add(pv.Line)
 			.visible(function() { return (jQuery('#checkboxShowLeastSquaresSquares').is(':checked')
