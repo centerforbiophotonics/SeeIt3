@@ -119,7 +119,8 @@ $(document).ready(function(){
 			.textAlign("left")
 			.textBaseline("top")
 			.textStyle("#1f77b4")
-			.textAngle(getMMLineLabelAngle(graphics));
+			.textAngle(getMMLineLabelAngle(graphics))
+			.font("bold 12px sans-serif");
 		 
 		 
 		 
@@ -142,6 +143,7 @@ $(document).ready(function(){
 			.textBaseline("top")
 			.textStyle("green")
 			.textAngle(getLSLineLabelAngle(graphics))
+			.font("bold 12px sans-serif")
 		.add(pv.Label)				//R Value
 			.visible(function () { return (jQuery('#checkboxShowLeastSquaresRValue').is(':checked')
 											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
@@ -152,8 +154,8 @@ $(document).ready(function(){
 			.textAlign("left")
 			.textBaseline("bottom")
 			.textStyle("green")
-			.textAngle(getLSLineLabelAngle(graphics));
-			
+			.textAngle(getLSLineLabelAngle(graphics))
+			.font("bold 12px sans-serif");
 			
 	  /*R Squares*/
 	  for (var i=0; i < graphics.data.length; i++){
