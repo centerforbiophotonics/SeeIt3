@@ -25,6 +25,15 @@ $(document).ready(function(){
 		.textAngle(0)
 		.text(graphics.worksheet.title)
 		.font("bold 20px sans-serif");
+	  
+	  /* Number of datapoints N */
+	  vis.add(pv.Label)
+		.right(0)
+		.top(-10)
+		.textAlign("right")
+		.textAngle(0)
+		.text("N = " + graphics.data.length)
+		.font("bold 12px sans-serif");
 
 	  /* Y-axis label */		  
 	  vis.add(pv.Label)
@@ -150,7 +159,6 @@ $(document).ready(function(){
 	  for (var i=0; i < graphics.data.length; i++){
 		  var dataX = parseFloat(graphics.data[i].incidence);
 		  var dataY = parseFloat(graphics.data[i].otherFactor);
-		  //var lsPoint = getClosestPointOnLSLine(graphics.data[i], graphics);
 		  var vertDistToLS = dataY - getYOnLSByX(dataX, graphics);
 		  var sqrBounds = [];
 		  
