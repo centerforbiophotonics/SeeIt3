@@ -223,14 +223,22 @@ $(document).ready(function(){
 	  /* user drawn line */
 	  vis.add(pv.Line)
 		 .data(graphics.userDrawnLinePoints)
-		 .left(function(d) { return d.x })
-		 .top(function(d) { return d.y })
+		 .left(function(d) { return graphics.x(d.x) })
+		 .bottom(function(d) { return graphics.y(d.y) })
 		 .visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
 		 .add(pv.Dot)
 			.fillStyle("#1f77b4")
 			.shape('square')
 			.event("mousedown", pv.Behavior.drag())
-			.event("drag", vis);
+			.event("drag", function() {
+				var mouseX = graphics.x.invert(vis.mouse().x),
+					mouseY = graphics.y.invert(graphics.h - vis.mouse().y);
+				
+				graphics.userDrawnLinePoints[this.index].x = mouseX;
+				graphics.userDrawnLinePoints[this.index].y = mouseY;
+				
+				vis.render();
+			});
 	  
 	   
 	   
@@ -255,37 +263,55 @@ $(document).ready(function(){
 	  vis.add(pv.Line)
 		 .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
 		 .data(getRotatedEllipseCoords)
-		 .left(function(i) { return i[0] })
-		 .bottom(function(i) { return i[1] });
+		 .left(function(d) { return graphics.x(d[0])})
+		 .bottom(function(d) { return graphics.y(d[1]) });
 		 
 	  function getEllipseManipCoords(){
-		  var coords = getRotatedEllipseCoords();
-		  var manipCoords = [];
-		  manipCoords.push([coords[0][0], coords[0][1]]);
-		  manipCoords.push([coords[Math.floor(coords.length * 0.25)][0], coords[parseInt(coords.length * 0.25)][1]]);
-		  manipCoords.push([coords[Math.floor(coords.length * 0.50)][0], coords[parseInt(coords.length * 0.50)][1]]);
-		  manipCoords.push([coords[Math.floor(coords.length * 0.75)][0], coords[parseInt(coords.length * 0.75)][1]]);
-		  return manipCoords;
+		var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
+		var ellipseXRadius = graphics.xRadius;
+		var ellipseYRadius = graphics.yRadius;
+		
+		var coords = [];
+		for (i = 0; i < cardinalAngs.length; i++) {
+		  coords.push([ ellipseXRadius * Math.cos(cardinalAngs[i]),
+						ellipseYRadius * Math.sin(cardinalAngs[i]) ]);
+		}
+		
+		for (var i = 0; i < coords.length; i++) {
+		  coords[i] = ([ coords[i][0] * Math.cos(graphics.angle) - coords[i][1] * Math.sin(graphics.angle) + graphics.ellipseCX,
+						 coords[i][0] * Math.sin(graphics.angle) + coords[i][1] * Math.cos(graphics.angle) + graphics.ellipseCY ]);
+		}
+		return coords;
+		  
+		  //var coords = getRotatedEllipseCoords();
+		  //var manipCoords = [];
+		  //manipCoords.push([coords[0][0], coords[0][1]]);
+		  //manipCoords.push([coords[Math.floor(coords.length * 0.25)][0], coords[parseInt(coords.length * 0.25)][1]]);
+		  //manipCoords.push([coords[Math.floor(coords.length * 0.50)][0], coords[parseInt(coords.length * 0.50)][1]]);
+		  //manipCoords.push([coords[Math.floor(coords.length * 0.75)][0], coords[parseInt(coords.length * 0.75)][1]]);
+		  //return manipCoords;
 	  }
 	  
 	 
 	  vis.add(pv.Dot)
 	     .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
 	     .data(getEllipseManipCoords)
-	     .left(function(i) { return i[0] })
-	     .bottom(function(i) { return i[1] })
+	     .left(function(d) { return graphics.x(d[0]) })
+	     .bottom(function(d) { return graphics.y(d[1]) })
 	     .cursor('move')
 	     .shape('square')
 	     .radius(5)
 	     .fillStyle("#1f77b4")
 	     .event("mousedown", pv.Behavior.drag())
 		 .event("drag", function(){
-			var mouseX = vis.mouse().x,
-				mouseY = graphics.h - vis.mouse().y,
+			var mouseX = graphics.x.invert(vis.mouse().x),
+				mouseY = graphics.y.invert(graphics.h - vis.mouse().y),
 				handleX = getEllipseManipCoords()[this.index][0],
 				handleY = getEllipseManipCoords()[this.index][1],
-				mouseVec = pv.vector(graphics.ellipseCX - mouseX, graphics.ellipseCY - mouseY), 
-				handleVec = pv.vector(graphics.ellipseCX - handleX, graphics.ellipseCY - handleY).norm(),
+				mouseVec = pv.vector(graphics.ellipseCX - mouseX
+									,graphics.ellipseCY - mouseY), 
+				handleVec = pv.vector(graphics.ellipseCX - handleX
+									,graphics.ellipseCY - handleY).norm(),
 				referenceVec = pv.vector(1,0);
 			 
 			var detHndlMs = handleVec.x*mouseVec.y - mouseVec.x*handleVec.y;

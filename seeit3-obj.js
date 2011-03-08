@@ -2,8 +2,8 @@
 	 * DO NOT MODIFY DIRECTLY */
 	function Graphics(worksheet, width, height){
 		var graphics = this;
+
 		this.worksheet = worksheet;
-		
 		this.data = worksheet.data;
 
 		this.w = width || 600;
@@ -16,11 +16,8 @@
 		this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
 		this.colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black");
 		this.c = jQuery.map(this.data, function() { return graphics.colorScale(Math.random()) });
-		
-		/* User Drawn Line*/
-		this.userDrawnLinePoints = [{ x:this.w * 0.2, y:this.h / 2 }, 
-								 { x:this.w * 0.8, y:this.h / 2 }];
-								 
+			
+		/* Variables defined in normalized coordinates */						 
 		/* median median crosses and squares */
 		this.groups = divideDataInto3(this.data);
 		this.medians = getMedianValuesFrom(this.groups);
@@ -45,64 +42,47 @@
 		this.lsFarLeftYVal = getYValue(this.xMin, this.lsSlope, this.lsIntercept);
 		this.lsFarRightYVal = getYValue(this.xMax, this.lsSlope, this.lsIntercept);
 		
-		/* user ellipse */
+		/* User Drawn Line*/
+		this.userDrawnLinePoints = [{ x:this.xMin, y:this.yMin + (this.yMax - this.yMin)/2 }, 
+								 { x:this.xMax, y:this.yMin + (this.yMax - this.yMin)/2 }];
+								 
+		/* User Ellipse */
 		this.angle = 0;
-		this.xRadius = this.w/4;
-		this.yRadius = this.w/4;
+		this.xRadius = (this.xMax - this.xMin)/2;
+		this.yRadius = (this.yMax - this.yMin)/2;
 		this.fullRot = pv.range(0, 2 * Math.PI, 0.01);
-		this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
-		this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
+		this.ellipseCX = this.medians[1][0];
+		this.ellipseCY = this.medians[1][1];
 	}
 	
 	Graphics.prototype = {
-		setW: function(wVal){		//updates the scale and the user defined ellipse and line
+		setW: function(wVal){		
 			var oldW = this.w;
 			this.w = wVal;
-			if (jQuery('#fitScalesToData').is(':checked')) {
-				this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
-			}else{			
-				this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
-			}
-			this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
-			this.userDrawnLinePoints[0].x = (this.userDrawnLinePoints[0].x)*(this.w/oldW);
-			this.userDrawnLinePoints[1].x = (this.userDrawnLinePoints[1].x)*(this.w/oldW);
+			this.setXScale();
 		},
 		
-		setH: function(hVal){		//updates the scale and the user defined ellipse and line
+		setH: function(hVal){
 			var oldH = this.h;
-			this.h = hVal;			
-			if (jQuery('#fitScalesToData').is(':checked')) {
-				this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
-			}else{
-				this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
-			}
-			this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
-			this.userDrawnLinePoints[0].y = (this.userDrawnLinePoints[0].y)*(this.h/oldH);
-			this.userDrawnLinePoints[1].y = (this.userDrawnLinePoints[1].y)*(this.h/oldH);
+			this.h = hVal;
+			this.setYScale();
 		},
 		
-		setXScale: function(){		//updates the scale and the user defined ellipse and line		
+		setXScale: function(){
 			if (jQuery('#fitScalesToData').is(':checked')) {
 				this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
 			}else{			
 				this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 			}
-			this.ellipseCX = this.x((this.xMin + this.xMax) / 2);
-			this.userDrawnLinePoints[0].x = (this.userDrawnLinePoints[0].x);
-			this.userDrawnLinePoints[1].x = (this.userDrawnLinePoints[1].x);
 		},
 		
-		setYScale: function(){		//updates the scale and the user defined ellipse and line		
+		setYScale: function(){
 			if (jQuery('#fitScalesToData').is(':checked')) {
 				this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
 			}else{
 				this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
-			}
-			this.ellipseCY = this.y((this.yMin + this.yMax) / 2);
-			this.userDrawnLinePoints[0].y = this.y(this.userDrawnLinePoints[0].y);
-			this.userDrawnLinePoints[1].y = this.y(this.userDrawnLinePoints[1].y);
+			}			
 		},
-		
 	}
 	
 	function Spreadsheet(key) {

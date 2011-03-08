@@ -1,62 +1,44 @@
 /*Drawing Related Functions*/
 function getMMLineLabelAngle(graphics) {
+	var angle = Math.atan(
+						Math.abs(
+							graphics.y(graphics.mmFarRightYVal) 
+							- graphics.y(graphics.mmFarLeftYVal)
+						) 
+						/ Math.abs(
+							graphics.x(graphics.xMax) 
+							- graphics.x(graphics.xMin)
+						)
+					);
+
 	if (graphics.mmSlope <= 0){
-		return Math.atan(
-						Math.abs(
-							graphics.y(graphics.mmFarRightYVal) 
-							- graphics.y(graphics.mmFarLeftYVal)
-						) 
-						/ Math.abs(
-							graphics.x(graphics.xMax) 
-							- graphics.x(graphics.xMin)
-						)
-					);
+		return angle; 
 	} else {
-		return -Math.atan(
-						Math.abs(
-							graphics.y(graphics.mmFarRightYVal) 
-							- graphics.y(graphics.mmFarLeftYVal)
-						) 
-						/ Math.abs(
-							graphics.x(graphics.xMax) 
-							- graphics.x(graphics.xMin)
-						)
-					);
-	}
-							
+		return -angle;
+	}	
 }
 
-
 function getLSLineLabelAngle(graphics) {
+	var angle = Math.atan(
+						Math.abs(
+							graphics.y(graphics.lsFarRightYVal) 
+							- graphics.y(graphics.lsFarLeftYVal)
+						) 
+						/ Math.abs(
+							graphics.x(graphics.xMax) 
+							- graphics.x(graphics.xMin)
+						)
+					);
+					
 	if (graphics.lsSlope <= 0){
-		return Math.atan(
-						Math.abs(
-							graphics.y(graphics.lsFarRightYVal) 
-							- graphics.y(graphics.lsFarLeftYVal)
-						) 
-						/ Math.abs(
-							graphics.x(graphics.xMax) 
-							- graphics.x(graphics.xMin)
-						)
-					);
+		return angle;
 	} else {
-		return -Math.atan(
-						Math.abs(
-							graphics.y(graphics.lsFarRightYVal) 
-							- graphics.y(graphics.lsFarLeftYVal)
-						) 
-						/ Math.abs(
-							graphics.x(graphics.xMax) 
-							- graphics.x(graphics.xMin)
-						)
-					);
-	}
-							
+		return -angle;
+	}	
 }
 
 
 /* Data Manipulation Functions */
-
 function getYOnLSByX(x, graphics){
 	 var y = graphics.lsSlope * x + graphics.lsIntercept;
 	 return y;
