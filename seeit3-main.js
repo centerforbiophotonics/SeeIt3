@@ -416,4 +416,17 @@ $(document).ready(function(){
 	  constructVis();
 	});
 	
+	jQuery('#checkboxShowMMEqn').change(function(event) {
+	  if (jQuery('#checkboxShowMMEqn').is(':checked'))
+		jQuery('#checkboxShowMMLine').attr('checked', true);
+	  constructVis();
+	});
+	
+	jQuery('#checkboxShowLeastSquaresEquation').change(function(event) {
+	  if (jQuery('#checkboxShowLeastSquaresEquation').is(':checked'))
+		jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
+	  constructVis();
+	});
+	
+
 });
