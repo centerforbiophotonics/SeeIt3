@@ -178,14 +178,14 @@ $(document).ready(function(){
 		  if (graphics.lsSlope >=0){
 			  sqrBounds = [[dataX, dataY],
 						   [dataX, dataY - vertDistToLS],
-						   [dataX - vertDistToLS, dataY - vertDistToLS],
-						   [dataX - vertDistToLS, dataY],
+						   [graphics.x.invert(graphics.x(dataX) - graphics.y(vertDistToLS)), dataY - vertDistToLS],
+						   [graphics.x.invert(graphics.x(dataX) - graphics.y(vertDistToLS)), dataY],
 						   [dataX, dataY]];
 		  } else {
 			  sqrBounds = [[dataX, dataY],
 						   [dataX, dataY - vertDistToLS],
-						   [dataX + vertDistToLS, dataY - vertDistToLS],
-						   [dataX + vertDistToLS, dataY],
+						   [graphics.x.invert(graphics.x(dataX) + graphics.y(vertDistToLS)), dataY - vertDistToLS],
+						   [graphics.x.invert(graphics.x(dataX) + graphics.y(vertDistToLS)), dataY],
 						   [dataX, dataY]];			  
 		  } 
 						  						   
