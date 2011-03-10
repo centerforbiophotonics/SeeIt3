@@ -86,15 +86,15 @@ $(document).ready(function(){
 			.strokeStyle("#1f77b4")
 			.fillStyle(pv.rgb(31,119,180,0.05))
 			.add(pv.Label)								
-			.text(function(d) {
-				if (this.index == 0) { return "N = "+ n;}
-				else {return ""}
-			})
-			.textAlign("left")
-			.textBaseline("top")
-			.textStyle("#1f77b4")
-			.textAngle(0)
-			.font("bold 12px sans-serif");;
+				.text(function(d) {
+					if (this.index == 0) { return "N = "+ n;}
+					else {return ""}
+				})
+				.textAlign("left")
+				.textBaseline("top")
+				.textStyle("#1f77b4")
+				.textAngle(0)
+				.font("bold 12px sans-serif");
 
 		 /* median cross */
 		 vis.add(pv.Dot)
@@ -302,6 +302,7 @@ $(document).ready(function(){
 	     .shape('square')
 	     .radius(5)
 	     .fillStyle("#1f77b4")
+		 
 	     .event("mousedown", pv.Behavior.drag())
 		 .event("drag", function(){
 			var mouseX = graphics.x.invert(vis.mouse().x),
@@ -314,9 +315,9 @@ $(document).ready(function(){
 									,graphics.ellipseCY - handleY).norm(),
 				referenceVec = pv.vector(1,0);
 			 
-			var detHndlMs = handleVec.x*mouseVec.y - mouseVec.x*handleVec.y;
+			var detHndlMs = determinantBtwnVec(handleVec, mouseVec);
 			
-			var rotDist = Math.acos(mouseVec.norm().dot(handleVec.x, handleVec.y));
+			var rotDist = angleBtwnVec(mouseVec, handleVec);
 			
 			
 			if (mouseX > 0 && mouseX < graphics.w && mouseY > 0 && mouseY < graphics.h){
@@ -334,8 +335,22 @@ $(document).ready(function(){
 					graphics.yRadius = mouseVec.length();
 				}
 			}
+			
+			graphics.pointsInEllipse = numPointsInEllipse(graphics);
+					
 			vis.render();
-		 });
+		 })
+		 .add(pv.Label)								
+			.text(function(d) {
+				if (this.index == 3) { return "N = "+ graphics.pointsInEllipse }
+				else {return ""}
+			})
+			.textAlign("left")
+			.textBaseline("bottom")
+			.textStyle("#1f77b4")
+			.textAngle(0)
+			.font("bold 12px sans-serif");
+		 
 	  
 	  
 	  vis.render();

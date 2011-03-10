@@ -39,6 +39,51 @@ function getLSLineLabelAngle(graphics) {
 
 
 /* Data Manipulation Functions */
+function angleBtwnVec(vec1, vec2){
+	return Math.acos(vec1.dot(vec2.x, vec2.y)
+					/(vec1.length() * vec2.length()));
+}
+
+function determinantBtwnVec(vec1, vec2){
+	return vec1.x*vec2.y - vec2.x*vec1.y;
+}
+
+
+function ellipseRadiusAtAngle(graphics, angle){
+	var ellipseXRadius = graphics.xRadius,
+		ellipseYRadius = graphics.yRadius,
+		
+		pointOnEllipse = [ ellipseXRadius * Math.cos(angle),
+				ellipseYRadius * Math.sin(angle) ];
+				
+		return calcDistance(graphics.ellipseCX, graphics.ellipseCY
+							, pointOnEllipse[0], pointOnEllipse[1]);
+}
+
+/* note: vectors originate from ellipse center */
+function numPointsInEllipse(graphics){
+	var count = 0;
+	for (var i = 0; i < graphics.data.length; i++){
+		var dataVec = pv.vector(graphics.data[i].incidence - graphics.ellipseCX
+								,graphics.data[i].otherFactor - graphics.ellipseCY),
+								
+			rotAngleVec = pv.vector(Math.cos(graphics.angle), Math.sin(graphics.angle)).norm(),
+			
+			relAngle = angleBtwnVec(dataVec, rotAngleVec),
+			
+			ellipseR = ellipseRadiusAtAngle(graphics, relAngle);
+			
+		if (ellipseR >= dataVec.length()){
+			count++;
+		}
+	}
+	
+	console.log(count);
+	return count;
+}
+
+
+
 function getYOnLSByX(x, graphics){
 	 var y = graphics.lsSlope * x + graphics.lsIntercept;
 	 return y;

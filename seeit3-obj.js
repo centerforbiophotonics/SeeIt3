@@ -53,6 +53,7 @@
 		this.fullRot = pv.range(0, 2 * Math.PI, 0.01);
 		this.ellipseCX = this.medians[1][0];
 		this.ellipseCY = this.medians[1][1];
+		this.pointsInEllipse = numPointsInEllipse(this);
 	}
 	
 	Graphics.prototype = {
