@@ -68,8 +68,23 @@ $(document).ready(function(){
 		.textAlign("center")
 		.textAngle(0)
 		.font("bold 14px sans-serif");
-		 
-	   
+		
+	  /* dot plot */
+	  vis.add(pv.Dot)
+		 .data(graphics.data)
+		 .visible(function() { return jQuery('#checkboxShowData').is(':checked') })
+		 .event("point", function() { return this.active(this.index).parent })
+		 .event("unpoint", function() { return this.active(-1).parent })
+		 .left(function(d) { return graphics.x(d.incidence) })
+		 .bottom(function(d) { return graphics.y(d.otherFactor) })
+		 .radius(function() { return 3 / this.scale })
+		 .fillStyle("#eee")
+		 .strokeStyle(function(d) { return graphics.c[this.index] })
+		 .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
+		 .def('active', -1)
+		 .event("point", function() { return this.active(this.index).parent })
+		 .event("unpoint", function() { return this.active(-1).parent });
+		  
 	  /* median median crosses and squares */
 	  for (var i = 0; i < graphics.groups.length; i++) {
 		 var bounds = getBounds(graphics.groups[i]);
@@ -200,25 +215,6 @@ $(document).ready(function(){
 			.fillStyle(pv.rgb(0,255,0,0.05));
 		  	  
 	 }
-
-
-
-	  /* dot plot */
-	  vis.add(pv.Dot)
-		 .data(graphics.data)
-		 .visible(function() { return jQuery('#checkboxShowData').is(':checked') })
-		 .event("point", function() { return this.active(this.index).parent })
-		 .event("unpoint", function() { return this.active(-1).parent })
-		 .left(function(d) { return graphics.x(d.incidence) })
-		 .bottom(function(d) { return graphics.y(d.otherFactor) })
-		 .radius(function() { return 3 / this.scale })
-		 .fillStyle("#eee")
-		 .strokeStyle(function(d) { return graphics.c[this.index] })
-		 .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
-		 .def('active', -1)
-		 .event("point", function() { return this.active(this.index).parent })
-		 .event("unpoint", function() { return this.active(-1).parent });
-		 
 		 
 	  /* user drawn line */
 	  vis.add(pv.Line)
