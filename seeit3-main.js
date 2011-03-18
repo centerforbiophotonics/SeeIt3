@@ -6,6 +6,16 @@ $(document).ready(function(){
 	var graphics = {};
 
 	function constructVis() {
+		if (jQuery('#checkboxNormalView').is(':checked')) { 
+			constructNormVis();
+		}else if (jQuery('#checkboxDropDataOntoX').is(':checked')) {
+			constructXStackedVis();
+		}else if (jQuery('#checkboxDropDataOntoY').is(':checked')) {
+			constructYStackedVis();
+		}
+	}
+
+	function constructNormVis(){
 	  jQuery('span').remove();
 
 	  vis = new pv.Panel()
@@ -203,7 +213,7 @@ $(document).ready(function(){
 						   [graphics.x.invert(graphics.x(dataX) + graphics.y(vertDistToLS)), dataY],
 						   [dataX, dataY]];			  
 		  } 
-						  						   
+												   
 		  vis.add(pv.Line)
 			.visible(function() { return (jQuery('#checkboxShowLeastSquaresSquares').is(':checked')
 									&& jQuery('#checkboxShowLeastSquaresLine').is(':checked')) })
@@ -213,7 +223,7 @@ $(document).ready(function(){
 			.lineWidth(0.5)
 			.strokeStyle("green")
 			.fillStyle(pv.rgb(0,255,0,0.05));
-		  	  
+			  
 	 }
 		 
 	  /* user drawn line */
@@ -278,28 +288,19 @@ $(document).ready(function(){
 						 coords[i][0] * Math.sin(graphics.angle) + coords[i][1] * Math.cos(graphics.angle) + graphics.ellipseCY ]);
 		}
 		return coords;
-		  
-		  //var coords = getRotatedEllipseCoords();
-		  //var manipCoords = [];
-		  //manipCoords.push([coords[0][0], coords[0][1]]);
-		  //manipCoords.push([coords[Math.floor(coords.length * 0.25)][0], coords[parseInt(coords.length * 0.25)][1]]);
-		  //manipCoords.push([coords[Math.floor(coords.length * 0.50)][0], coords[parseInt(coords.length * 0.50)][1]]);
-		  //manipCoords.push([coords[Math.floor(coords.length * 0.75)][0], coords[parseInt(coords.length * 0.75)][1]]);
-		  //return manipCoords;
 	  }
 	  
 	 
 	  vis.add(pv.Dot)
-	     .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
-	     .data(getEllipseManipCoords)
-	     .left(function(d) { return graphics.x(d[0]) })
-	     .bottom(function(d) { return graphics.y(d[1]) })
-	     .cursor('move')
-	     .shape('square')
-	     .radius(5)
-	     .fillStyle("#1f77b4")
-		 
-	     .event("mousedown", pv.Behavior.drag())
+		 .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
+		 .data(getEllipseManipCoords)
+		 .left(function(d) { return graphics.x(d[0]) })
+		 .bottom(function(d) { return graphics.y(d[1]) })
+		 .cursor('move')
+		 .shape('square')
+		 .radius(5)
+		 .fillStyle("#1f77b4")
+		 .event("mousedown", pv.Behavior.drag())
 		 .event("drag", function(){
 			var mouseX = graphics.x.invert(vis.mouse().x),
 				mouseY = graphics.y.invert(graphics.h - vis.mouse().y),
@@ -350,9 +351,121 @@ $(document).ready(function(){
 	  
 	  
 	  vis.render();
+			
 	}
-
 	
+	function constructXStackedVis(){
+		jQuery('span').remove();
+		
+		vis = new pv.Panel()
+			  .width(graphics.w)
+			  .height(graphics.h)
+			  .bottom(60)
+			  .left(60)
+			  .right(20)
+			  .top(60)
+			  .events("all");
+			  
+		/*Graph Title*/		  
+		vis.add(pv.Label)
+			.left(graphics.w / 2)
+			.top(-40)
+			.textAlign("center")
+			.textAngle(0)
+			.text(graphics.worksheet.title + " (Dropped onto X-axis)")
+			.font("bold 20px sans-serif");
+		  
+		/* Number of datapoints N */
+		vis.add(pv.Label)
+			.right(0)
+			.top(-10)
+			.textAlign("right")
+			.textAngle(0)
+			.text("N = " + graphics.data.length)
+			.font("bold 12px sans-serif");
+			
+		/* X-axis ticks */
+		vis.add(pv.Rule)
+			.data(function() { return graphics.x.ticks() })
+			.left(graphics.x)
+			.strokeStyle("#eee")
+			.anchor("bottom").add(pv.Label)
+			  .text(graphics.x.tickFormat);
+			   
+		/* X-axis label */
+		vis.add(pv.Label)
+			.data(graphics.worksheet.xAxisTitle)
+			.left(graphics.w / 2)
+			.bottom(-40)
+			.textAlign("center")
+			.textAngle(0)
+			.font("bold 14px sans-serif");
+			
+		/* Y-axis ticks */
+		vis.add(pv.Rule)
+			.data(function() { return graphics.y.ticks() })
+			.bottom(graphics.y)
+			.strokeStyle(function(d) { return Math.floor(d) ? "#fff" : "#000" })
+			
+		vis.render();
+	}
+		
+	function constructYStackedVis(){
+		jQuery('span').remove();
+		
+		vis = new pv.Panel()
+			  .width(graphics.w)
+			  .height(graphics.h)
+			  .bottom(60)
+			  .left(60)
+			  .right(20)
+			  .top(60)
+			  .events("all");
+			  
+		/*Graph Title*/		  
+		vis.add(pv.Label)
+			.left(graphics.w / 2)
+			.top(-40)
+			.textAlign("center")
+			.textAngle(0)
+			.text(graphics.worksheet.title + " (Dropped onto Y-axis)")
+			.font("bold 20px sans-serif");
+		  
+		/* Number of datapoints N */
+		vis.add(pv.Label)
+			.right(0)
+			.top(-10)
+			.textAlign("right")
+			.textAngle(0)
+			.text("N = " + graphics.data.length)
+			.font("bold 12px sans-serif");
+			
+			
+		/* Y-axis label */		  
+		vis.add(pv.Label)
+			.data(graphics.worksheet.yAxisTitle)
+			.left(-40)
+			.top(graphics.h / 2)
+			.textAlign("center")
+			.textAngle(-Math.PI / 2)
+			.font("bold 14px sans-serif");
+
+		/* Y-axis ticks */
+		vis.add(pv.Rule)
+			.data(function() { return graphics.y.ticks() })
+			.bottom(graphics.y)
+			.strokeStyle("#eee")
+			.anchor('left').add(pv.Label)
+			.text(graphics.y.tickFormat);
+			
+		/* X-axis ticks */
+		vis.add(pv.Rule)
+			.data(function() { return graphics.x.ticks() })
+			.left(graphics.x)
+			.strokeStyle(function(d) { return Math.floor(d) ? "#fff" : "#000" })
+		
+		vis.render();
+	}
 
 	var exampleSpreadsheets = [
 	  new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
