@@ -386,11 +386,11 @@ $(document).ready(function(){
 			
 		/* X-axis ticks */
 		vis.add(pv.Rule)
-			.data(function() { return graphics.x.ticks() })
-			.left(graphics.x)
-			.strokeStyle("#eee")
+			.data(function() { return getXBuckets(graphics) })
+			.left(function(d) {return graphics.x(d)})
+			.strokeStyle("#aaa")
 			.anchor("bottom").add(pv.Label)
-			  .text(graphics.x.tickFormat);
+			  .text(function(d) {return d.toFixed(1)});
 			   
 		/* X-axis label */
 		vis.add(pv.Label)
@@ -406,7 +406,16 @@ $(document).ready(function(){
 			.data(function() { return graphics.y.ticks() })
 			.bottom(graphics.y)
 			.strokeStyle(function(d) { return Math.floor(d) ? "#fff" : "#000" })
-			
+		
+		/* Dots */	
+		vis.add(pv.Dot)
+			.data(xDistributionPoints(graphics))
+			.left(function(d) { return d[0] })
+			.bottom(function(d) { return graphics.dotSize + graphics.dotSize * d[1] * 2 })
+			.radius(graphics.dotSize)
+			.fillStyle("#eee")
+			.strokeStyle(function(d) { return graphics.c[this.index] });
+			 			
 		vis.render();
 	}
 		
@@ -452,17 +461,27 @@ $(document).ready(function(){
 
 		/* Y-axis ticks */
 		vis.add(pv.Rule)
-			.data(function() { return graphics.y.ticks() })
-			.bottom(graphics.y)
-			.strokeStyle("#eee")
-			.anchor('left').add(pv.Label)
-			.text(graphics.y.tickFormat);
+			.data(function() { return getYBuckets(graphics) })
+			.left(function(d) {return graphics.y(d)})
+			.strokeStyle("#aaa")
+			.anchor("bottom").add(pv.Label)
+			  .text(function(d) {return d.toFixed(1)});
 			
 		/* X-axis ticks */
 		vis.add(pv.Rule)
 			.data(function() { return graphics.x.ticks() })
 			.left(graphics.x)
 			.strokeStyle(function(d) { return Math.floor(d) ? "#fff" : "#000" })
+		
+		/* Dots */	
+		vis.add(pv.Dot)
+			.data(yDistributionPoints(graphics))
+			.left(function(d) { return graphics.dotSize + graphics.dotSize * d[0] * 2 })
+			.bottom(function(d) { return d[1] })
+			.radius(graphics.dotSize)
+			.fillStyle("#eee")
+			.strokeStyle(function(d) { return graphics.c[this.index] });
+			 	
 		
 		vis.render();
 	}

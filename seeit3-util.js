@@ -37,7 +37,114 @@ function getLSLineLabelAngle(graphics) {
 	}	
 }
 
+function getXBuckets(graphics){
+	var xDomain = graphics.x.domain();
+	var bucketSize = xDomain[1]/graphics.buckets;
+	var points = [];
+	
+	points.push(xDomain[0]);
+	
+	for (var i = 1; i <= graphics.buckets; i++){
+		points.push(xDomain[0] + (bucketSize * i));
+	}
+	
+	return points;
+}
 
+function getYBuckets(graphics){
+	var yDomain = graphics.y.domain();
+	var bucketSize = yDomain[1]/graphics.buckets;
+	var points = [];
+	
+	points.push(yDomain[0]);
+	
+	for (var i = 1; i <= graphics.buckets; i++){
+		points.push(yDomain[0] + (bucketSize * i));
+	}
+	
+	return points;
+}
+
+function xDistributionPoints(graphics){
+	var xDomain = graphics.x.domain();
+	var bucketSize = xDomain[1]/graphics.buckets;
+	var points = [];
+	
+	for (var i = 0; i < graphics.buckets; i++){
+		var bucketMin = xDomain[0] + (bucketSize * i);
+		var bucketMax = xDomain[0] + (bucketSize * (i+1));
+		var pointsInBucket = [];
+		
+		for (var j = 0; j < graphics.data.length; j++){
+			var dataPoint = graphics.data[j],
+				xVal = parseFloat(dataPoint.incidence);
+				
+			if (xVal >= bucketMin 
+				&& xVal < bucketMax)
+			{
+				pointsInBucket.push([graphics.x(xVal), 0]);
+			}
+		}
+		
+		for (var j = 0; j < pointsInBucket.length; j++){
+			var comparePoint = pointsInBucket[j];
+			for (k = (j-1); k > 0; k--){
+				var otherPoint = pointsInBucket[k];
+				if (Math.abs(comparePoint[0]-otherPoint[0]) < 10
+					&& otherPoint[1] >= comparePoint[1])
+				{
+					comparePoint[1] = otherPoint[1] + 1;
+				}
+			}
+			//comparePoint[1] = graphics.dotSize 
+							  //+ comparePoint[1]*graphics.dotSize;
+			points.push(comparePoint);
+		}
+	}
+	
+	return points;
+}
+
+function yDistributionPoints(graphics){
+	var yDomain = graphics.y.domain();
+	var bucketSize = yDomain[1]/graphics.buckets;
+	var points = [];
+	
+	for (var i = 0; i < graphics.buckets; i++){
+		var bucketMin = yDomain[0] + (bucketSize * i);
+		var bucketMax = yDomain[0] + (bucketSize * (i+1));
+		var pointsInBucket = [];
+		
+		for (var j = 0; j < graphics.data.length; j++){
+			var dataPoint = graphics.data[j],
+				yVal = parseFloat(dataPoint.otherFactor);
+				
+			if (yVal >= bucketMin 
+				&& yVal < bucketMax)
+			{
+				pointsInBucket.push([0, graphics.y(yVal)]);
+			}
+		}
+		
+		for (var j = 0; j < pointsInBucket.length; j++){
+			var comparePoint = pointsInBucket[j];
+			for (k = (j-1); k > 0; k--){
+				var otherPoint = pointsInBucket[k];
+				if (Math.abs(comparePoint[1]-otherPoint[1]) < 10
+					&& otherPoint[0] >= comparePoint[0])
+				{
+					comparePoint[0] = otherPoint[0] + 1;
+				}
+			}
+			//comparePoint[1] = graphics.dotSize 
+							  //+ comparePoint[1]*graphics.dotSize;
+			points.push(comparePoint);
+		}
+	}
+	
+	return points;
+	
+}
 /* Data Manipulation Functions */
 function angleBtwnVec(vec1, vec2){
 	return Math.acos(vec1.dot(vec2.x, vec2.y)
@@ -73,12 +180,14 @@ function numPointsInEllipse(graphics){
 			
 			ellipseR = ellipseRadiusAtAngle(graphics, relAngle);
 			
+		//console.log(relAngle + " " + ellipseR);
+			
 		if (ellipseR >= dataVec.length()){
 			count++;
 		}
 	}
 	
-	console.log(count);
+	//console.log(count);
 	return count;
 }
 

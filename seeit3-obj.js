@@ -54,6 +54,10 @@
 		this.ellipseCX = this.medians[1][0];
 		this.ellipseCY = this.medians[1][1];
 		this.pointsInEllipse = numPointsInEllipse(this);
+		
+		/* X/Y Distribution Variables */
+		this.buckets = 10;
+		this.dotSize = 5;
 	}
 	
 	Graphics.prototype = {
