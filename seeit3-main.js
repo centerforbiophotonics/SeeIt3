@@ -426,7 +426,7 @@ $(document).ready(function(){
 			  .width(graphics.w)
 			  .height(graphics.h)
 			  .bottom(60)
-			  .left(60)
+			  .left(70)
 			  .right(20)
 			  .top(60)
 			  .events("all");
@@ -453,7 +453,7 @@ $(document).ready(function(){
 		/* Y-axis label */		  
 		vis.add(pv.Label)
 			.data(graphics.worksheet.yAxisTitle)
-			.left(-40)
+			.left(-50)
 			.top(graphics.h / 2)
 			.textAlign("center")
 			.textAngle(-Math.PI / 2)
@@ -462,9 +462,9 @@ $(document).ready(function(){
 		/* Y-axis ticks */
 		vis.add(pv.Rule)
 			.data(function() { return getYBuckets(graphics) })
-			.left(function(d) {return graphics.y(d)})
+			.bottom(function(d) {return graphics.y(d)})
 			.strokeStyle("#aaa")
-			.anchor("bottom").add(pv.Label)
+			.anchor("left").add(pv.Label)
 			  .text(function(d) {return d.toFixed(1)});
 			
 		/* X-axis ticks */
@@ -482,7 +482,6 @@ $(document).ready(function(){
 			.fillStyle("#eee")
 			.strokeStyle(function(d) { return graphics.c[this.index] });
 			 	
-		
 		vis.render();
 	}
 
