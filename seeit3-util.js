@@ -39,7 +39,7 @@ function getLSLineLabelAngle(graphics) {
 
 function getXBuckets(graphics){
 	var xDomain = graphics.x.domain();
-	var bucketSize = xDomain[1]/graphics.buckets;
+	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
 	var points = [];
 	
 	points.push(xDomain[0]);
@@ -53,7 +53,7 @@ function getXBuckets(graphics){
 
 function getYBuckets(graphics){
 	var yDomain = graphics.y.domain();
-	var bucketSize = yDomain[1]/graphics.buckets;
+	var bucketSize = (yDomain[1]-yDomain[0])/graphics.buckets;
 	var points = [];
 	
 	points.push(yDomain[0]);
@@ -67,7 +67,7 @@ function getYBuckets(graphics){
 
 function xDistributionPoints(graphics){
 	var xDomain = graphics.x.domain();
-	var bucketSize = xDomain[1]/graphics.buckets;
+	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
 	var points = [];
 	
 	for (var i = 0; i < graphics.buckets; i++){
@@ -96,8 +96,6 @@ function xDistributionPoints(graphics){
 					comparePoint[1] = otherPoint[1] + 1;
 				}
 			}
-			//comparePoint[1] = graphics.dotSize 
-							  //+ comparePoint[1]*graphics.dotSize;
 			points.push(comparePoint);
 		}
 	}
@@ -107,7 +105,7 @@ function xDistributionPoints(graphics){
 
 function yDistributionPoints(graphics){
 	var yDomain = graphics.y.domain();
-	var bucketSize = yDomain[1]/graphics.buckets;
+	var bucketSize = (yDomain[1]-yDomain[0])/graphics.buckets;
 	var points = [];
 	
 	for (var i = 0; i < graphics.buckets; i++){
@@ -136,8 +134,6 @@ function yDistributionPoints(graphics){
 					comparePoint[0] = otherPoint[0] + 1;
 				}
 			}
-			//comparePoint[1] = graphics.dotSize 
-							  //+ comparePoint[1]*graphics.dotSize;
 			points.push(comparePoint);
 		}
 	}
