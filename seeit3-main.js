@@ -588,10 +588,11 @@ $(document).ready(function(){
 	$('#textYMin').keypress(function(event) {
 		if (event.which == '13') {
 			var textBoxVal = parseFloat($('#textYMin').val());
-			if (isNaN(textBoxVal)){
+			var curMax = graphics.y.domain()[1];
+			if (isNaN(textBoxVal) || textBoxVal >= curMax){
 				updateScaleTextBoxes(graphics);
 			} else {
-				graphics.setYScale(textBoxVal, graphics.y.domain()[1]);
+				graphics.setYScale(textBoxVal, curMax);
 				constructVis();
 			}
 		}
@@ -600,10 +601,11 @@ $(document).ready(function(){
 	$('#textYMax').keypress(function(event) {
 		if (event.which == '13') {
 			var textBoxVal = parseFloat($('#textYMax').val());
-			if (isNaN(textBoxVal)){
+			var curMin = graphics.y.domain()[0];
+			if (isNaN(textBoxVal) || textBoxVal <= curMin){
 				updateScaleTextBoxes(graphics);
 			} else {
-				graphics.setYScale(graphics.y.domain()[0], textBoxVal);
+				graphics.setYScale(curMin, textBoxVal);
 				constructVis();
 			}
 		}
@@ -612,10 +614,11 @@ $(document).ready(function(){
 	$('#textXMin').keypress(function(event) {
 		if (event.which == '13') {
 			var textBoxVal = parseFloat($('#textXMin').val());
-			if (isNaN(textBoxVal)){
+			var curMax = graphics.x.domain()[1];
+			if (isNaN(textBoxVal) || textBoxVal >= curMax){
 				updateScaleTextBoxes(graphics);
 			} else {
-				graphics.setXScale(textBoxVal, graphics.x.domain()[1]);
+				graphics.setXScale(textBoxVal, curMax);
 				constructVis();
 			}
 		}
@@ -624,10 +627,11 @@ $(document).ready(function(){
 	$('#textXMax').keypress(function(event) {
 		if (event.which == '13') {
 			var textBoxVal = parseFloat($('#textXMax').val());
-			if (isNaN(textBoxVal)){
+			var curMin = graphics.x.domain()[0];
+			if (isNaN(textBoxVal) || textBoxVal <= curMin){
 				updateScaleTextBoxes(graphics);
 			} else {
-				graphics.setXScale(graphics.x.domain()[0], textBoxVal);
+				graphics.setXScale(curMin, textBoxVal);
 				constructVis();
 			}
 		}
