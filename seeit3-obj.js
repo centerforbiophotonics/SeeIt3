@@ -73,19 +73,25 @@
 			this.setYScale();
 		},
 		
-		setXScale: function(){
+		setXScale: function(min, max){
+			var newMin = min || 0;
+			var newMax = max || Math.ceil(this.xMax);
+			
 			if (jQuery('#fitScalesToData').is(':checked')) {
 				this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
 			}else{			
-				this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
+				this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
 			}
 		},
 		
-		setYScale: function(){
+		setYScale: function(min, max){
+			var newMin = min || 0;
+			var newMax = max || Math.ceil(this.yMax);
+			
 			if (jQuery('#fitScalesToData').is(':checked')) {
 				this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
 			}else{
-				this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
+				this.y = pv.Scale.linear(newMin, newMax).range(0, this.h);
 			}			
 		},
 	}

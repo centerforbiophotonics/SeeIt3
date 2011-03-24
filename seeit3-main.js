@@ -520,10 +520,21 @@ $(document).ready(function(){
 		constructVis();
 	})
 
+
+	/* Updates value of x/y-axis scale text boxes */
+	function updateScaleTextBoxes(graphics){
+		$('#textYMin').val(graphics.y.domain()[0]);
+		$('#textYMax').val(graphics.y.domain()[1]);
+		$('#textXMin').val(graphics.x.domain()[0]);
+		$('#textXMax').val(graphics.x.domain()[1]);	
+	}
+
+
 	/* populate dataset drop down menu */
 	jQuery('body').bind('WorksheetLoaded', function(event) {
 	  jQuery('#workSheetSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
 	  graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
+	  updateScaleTextBoxes(graphics);
 	  constructVis();
 	});
 
@@ -544,10 +555,13 @@ $(document).ready(function(){
 	  event.stopPropagation();
 	});
 	
+	
+	
 	jQuery('#workSheetSelector').change(function(event) {
 	  graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
 	  graphics.setXScale();
 	  graphics.setYScale();
+	  updateScaleTextBoxes(graphics)
 	  constructVis();
 	});
 	
@@ -555,6 +569,7 @@ $(document).ready(function(){
 	jQuery('#fitScalesToData').change(function(event) {
 	  graphics.setXScale();
 	  graphics.setYScale();
+	  updateScaleTextBoxes(graphics)
 	  constructVis();
 	});
 	
@@ -570,5 +585,52 @@ $(document).ready(function(){
 	  constructVis();
 	});
 	
-
+	$('#textYMin').keypress(function(event) {
+		if (event.which == '13') {
+			var textBoxVal = parseFloat($('#textYMin').val());
+			if (isNaN(textBoxVal)){
+				updateScaleTextBoxes(graphics);
+			} else {
+				graphics.setYScale(textBoxVal, graphics.y.domain()[1]);
+				constructVis();
+			}
+		}
+	});
+	
+	$('#textYMax').keypress(function(event) {
+		if (event.which == '13') {
+			var textBoxVal = parseFloat($('#textYMax').val());
+			if (isNaN(textBoxVal)){
+				updateScaleTextBoxes(graphics);
+			} else {
+				graphics.setYScale(graphics.y.domain()[0], textBoxVal);
+				constructVis();
+			}
+		}
+	});
+	
+	$('#textXMin').keypress(function(event) {
+		if (event.which == '13') {
+			var textBoxVal = parseFloat($('#textXMin').val());
+			if (isNaN(textBoxVal)){
+				updateScaleTextBoxes(graphics);
+			} else {
+				graphics.setXScale(textBoxVal, graphics.x.domain()[1]);
+				constructVis();
+			}
+		}
+	});
+	
+	$('#textXMax').keypress(function(event) {
+		if (event.which == '13') {
+			var textBoxVal = parseFloat($('#textXMax').val());
+			if (isNaN(textBoxVal)){
+				updateScaleTextBoxes(graphics);
+			} else {
+				graphics.setXScale(graphics.x.domain()[0], textBoxVal);
+				constructVis();
+			}
+		}
+	});
+	
 });

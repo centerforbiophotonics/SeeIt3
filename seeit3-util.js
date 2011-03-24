@@ -120,6 +120,7 @@ function yDistributionPoints(graphics){
 		var bucketMax = yDomain[0] + (bucketSize * (i+1));
 		var pointsInBucket = [];
 		
+		//finds data points in the bucket
 		for (var j = 0; j < graphics.data.length; j++){
 			var dataPoint = graphics.data[j],
 				yVal = parseFloat(dataPoint.otherFactor);
@@ -127,10 +128,12 @@ function yDistributionPoints(graphics){
 			if (yVal >= bucketMin 
 				&& yVal < bucketMax)
 			{
-				pointsInBucket.push([0, graphics.y(yVal)]);
+				pointsInBucket.push([0, graphics.y(yVal)]);   //Converts to window coordinates here to simplify stacking computation
 			}
 		}
 		
+		
+		//Computes Stack height for each point in the bucket
 		for (var j = 0; j < pointsInBucket.length; j++){
 			var comparePoint = pointsInBucket[j];
 			var overlaps = true;
