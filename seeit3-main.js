@@ -411,7 +411,7 @@ $(document).ready(function(){
 		vis.add(pv.Dot)
 			.data(xDistributionPoints(graphics))
 			.left(function(d) { return d[0] })
-			.bottom(function(d) { return graphics.dotSize + graphics.dotSize * d[1] * 2 })
+			.bottom(function(d) { return d[1] })
 			.radius(graphics.dotSize)
 			.fillStyle("#eee")
 			.strokeStyle(function(d) { return graphics.c[this.index] });
@@ -476,8 +476,8 @@ $(document).ready(function(){
 		/* Dots */	
 		vis.add(pv.Dot)
 			.data(yDistributionPoints(graphics))
-			.left(function(d) { return graphics.dotSize + graphics.dotSize * d[0] * 2 })
-			.bottom(function(d) { return d[1] })
+			.left(function(d) {return d[0]})
+			.bottom(function(d) {return d[1]})
 			.radius(graphics.dotSize)
 			.fillStyle("#eee")
 			.strokeStyle(function(d) { return graphics.c[this.index] });
