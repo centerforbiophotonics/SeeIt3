@@ -222,7 +222,7 @@ $(document).ready(function(){
 			.textAlign("left")
 			.textBaseline("top")
 			.textStyle("#1f77b4")
-			.textAngle(getUserLineLabelAngle(graphics))
+			.textAngle(function() { return getUserLineLabelAngle(graphics)})
 			.font("bold 12px sans-serif")
 		.add(pv.Label)									//R Value
 			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
@@ -233,9 +233,9 @@ $(document).ready(function(){
 			.textAlign("left")
 			.textBaseline("bottom")
 			.textStyle("#1f77b4")
-			.textAngle(getUserLineLabelAngle(graphics))
+			.textAngle(function() {return getUserLineLabelAngle(graphics)})
 			.font("bold 12px sans-serif")
-		.add(pv.Dot)
+		.add(pv.Dot)									//Endpoints
 			.fillStyle("#1f77b4")
 			.shape('square')
 			.event("mousedown", pv.Behavior.drag())
