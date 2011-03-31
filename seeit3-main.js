@@ -213,6 +213,8 @@ $(document).ready(function(){
 		.left(function(d) { return graphics.x(d.x) })
 		.bottom(function(d) { return graphics.y(d.y) })
 		.visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
+		.fillStyle("purple")
+		.strokeStyle("purple")
 		.add(pv.Label)									//Line Equation
 			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
 			.text(function(d) {
@@ -221,22 +223,22 @@ $(document).ready(function(){
 			})
 			.textAlign("left")
 			.textBaseline("top")
-			.textStyle("#1f77b4")
+			.textStyle("purple")
 			.textAngle(function() { return getUserLineLabelAngle(graphics)})
 			.font("bold 12px sans-serif")
-		.add(pv.Label)									//R Value
+		.add(pv.Label)									//R Squared Value
 			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
 			.text(function(d) {
-				if (this.index == 0) { return "R = "+ getUserLineR(graphics).toFixed(2);}
+				if (this.index == 0) { return "Sum of Squares = "+ getUserLineR(graphics).toFixed(2);}
 				else {return ""}
 			})
 			.textAlign("left")
 			.textBaseline("bottom")
-			.textStyle("#1f77b4")
+			.textStyle("purple")
 			.textAngle(function() {return getUserLineLabelAngle(graphics)})
 			.font("bold 12px sans-serif")
 		.add(pv.Dot)									//Endpoints
-			.fillStyle("#1f77b4")
+			.fillStyle("purple")
 			.shape('square')
 			.event("mousedown", pv.Behavior.drag())
 			.event("drag", function() {
@@ -274,7 +276,8 @@ $(document).ready(function(){
 		 .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
 		 .data(getRotatedEllipseCoords)
 		 .left(function(d) { return graphics.x(d[0])})
-		 .bottom(function(d) { return graphics.y(d[1]) });
+		 .bottom(function(d) { return graphics.y(d[1]) })
+		 .strokeStyle("purple");
 		 
 	  function getEllipseManipCoords(){
 		var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
@@ -303,7 +306,8 @@ $(document).ready(function(){
 		 .cursor('move')
 		 .shape('square')
 		 .radius(5)
-		 .fillStyle("#1f77b4")
+		 .fillStyle("purple")
+		 .strokeStyle("purple")
 		 .event("mousedown", pv.Behavior.drag())
 		 .event("drag", function(){
 			var mouseX = graphics.x.invert(vis.mouse().x),
@@ -343,12 +347,12 @@ $(document).ready(function(){
 		 })
 		 .add(pv.Label)								
 			.text(function(d) {
-				if (this.index == 3) { return "N = "+ graphics.pointsInEllipse }
-				else {return ""}
+				if (this.index == 3) { return "N = "+ graphics.pointsInEllipse; }
+				else {return "";}
 			})
 			.textAlign("left")
 			.textBaseline("bottom")
-			.textStyle("#1f77b4")
+			.textStyle("purple")
 			.textAngle(0)
 			.font("bold 12px sans-serif");
 		 

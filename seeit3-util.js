@@ -104,10 +104,8 @@ function getUserLineLabelAngle(graphics) {
 					);
 					
 	if (getUserLineSlope(graphics) <= 0){
-		console.log(angle);
 		return angle;
 	} else {
-		console.log(-angle);
 		return -angle;
 	}	
 }
@@ -358,6 +356,7 @@ function getUserLineR(graphics){
 	var r = 0;
 	for (var i = 0; i < graphics.data.length; i++)
 		r += Math.pow(getVertDistToUserLine(graphics, i), 2);
+	
 	return r;
 }
 
