@@ -91,6 +91,28 @@ function getLSLineLabelAngle(graphics) {
 	}	
 }
 
+function getUserLineLabelAngle(graphics) {
+	var angle = Math.atan(
+						Math.abs(
+							graphics.y(graphics.userDrawnLinePoints[1].y) 
+							- graphics.y(graphics.userDrawnLinePoints[0].y)
+						) 
+						/ Math.abs(
+							graphics.x(graphics.userDrawnLinePoints[1].x) 
+							- graphics.x(graphics.userDrawnLinePoints[0].x)
+						)
+					);
+					
+	if (getUserLineSlope(graphics) <= 0){
+		console.log(angle);
+		return angle;
+	} else {
+		console.log(-angle);
+		return -angle;
+	}	
+}
+
+
 function getXBuckets(graphics){
 	var xDomain = graphics.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
@@ -332,6 +354,24 @@ function getR(data){
 	return r;
 }
 
+function getUserLineR(graphics){
+	var r = 0;
+	for (var i = 0; i < graphics.data.length; i++)
+		r += Math.pow(getVertDistToUserLine(graphics, i), 2);
+	return r;
+}
+
+function getYOnUserLineByX(x, graphics){
+	 var y = getUserLineSlope(graphics) * x + getUserLineIntercept(graphics);
+	 return y;
+}
+
+function getVertDistToUserLine(graphics, i){
+	var dataX = parseFloat(graphics.data[i].incidence);
+	var dataY = parseFloat(graphics.data[i].otherFactor);
+	return Math.abs(dataY - getYOnUserLineByX(dataX, graphics));
+}
+
 function calcDistance(x1, y1, x2, y2) {
 	return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
 }
@@ -459,6 +499,19 @@ function getMedianValuesFrom(groups) {
 	results.push([medX, medY]);
   }
   return results;
+}
+
+function getUserLineSlope(graphics){
+	return findSlope(graphics.userDrawnLinePoints[0].x
+			 ,graphics.userDrawnLinePoints[1].x
+			 ,graphics.userDrawnLinePoints[0].y
+			 ,graphics.userDrawnLinePoints[1].y);
+}
+
+function getUserLineIntercept(graphics){
+	return findIntercept(graphics.userDrawnLinePoints[0].x
+						,graphics.userDrawnLinePoints[0].y
+						,getUserLineSlope(graphics));
 }
 
 function findSlope(x1, x2, y1, y2) {

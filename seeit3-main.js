@@ -209,11 +209,33 @@ $(document).ready(function(){
 		 
 	  /* user drawn line */
 	  vis.add(pv.Line)
-		 .data(graphics.userDrawnLinePoints)
-		 .left(function(d) { return graphics.x(d.x) })
-		 .bottom(function(d) { return graphics.y(d.y) })
-		 .visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
-		 .add(pv.Dot)
+		.data(graphics.userDrawnLinePoints)
+		.left(function(d) { return graphics.x(d.x) })
+		.bottom(function(d) { return graphics.y(d.y) })
+		.visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
+		.add(pv.Label)									//Line Equation
+			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
+			.text(function(d) {
+				if (this.index == 0) { return "Y = "+getUserLineSlope(graphics).toFixed(3)+"X + "+getUserLineIntercept(graphics).toFixed(3);}
+				else {return ""}
+			})
+			.textAlign("left")
+			.textBaseline("top")
+			.textStyle("#1f77b4")
+			.textAngle(getUserLineLabelAngle(graphics))
+			.font("bold 12px sans-serif")
+		.add(pv.Label)									//R Value
+			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
+			.text(function(d) {
+				if (this.index == 0) { return "R = "+ getUserLineR(graphics).toFixed(2);}
+				else {return ""}
+			})
+			.textAlign("left")
+			.textBaseline("bottom")
+			.textStyle("#1f77b4")
+			.textAngle(getUserLineLabelAngle(graphics))
+			.font("bold 12px sans-serif")
+		.add(pv.Dot)
 			.fillStyle("#1f77b4")
 			.shape('square')
 			.event("mousedown", pv.Behavior.drag())
@@ -226,6 +248,7 @@ $(document).ready(function(){
 				
 				vis.render();
 			});
+		
 	  
 	   
 	   
