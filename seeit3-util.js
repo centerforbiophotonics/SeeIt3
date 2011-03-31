@@ -1,4 +1,58 @@
 /*Drawing Related Functions*/
+function getVertDistToLS (graphics, i){
+	var dataX = parseFloat(graphics.data[i].incidence);
+	var dataY = parseFloat(graphics.data[i].otherFactor);
+	return Math.abs(dataY - getYOnLSByX(dataX, graphics));
+}
+
+function getRSquareBounds(graphics, i){
+
+	var dataX = parseFloat(graphics.data[i].incidence);
+	var dataY = parseFloat(graphics.data[i].otherFactor);
+	var vertDistToLS = getVertDistToLS(graphics,i);
+	
+	var above = (dataY - getYOnLSByX(dataX, graphics)) >= 0;
+	
+	var dataXWindow = graphics.x(dataX);
+	var dataYWindow = graphics.y(dataY);
+	var vertDistToLSWindow = Math.abs(dataYWindow - graphics.y(getYOnLSByX(dataX, graphics)));
+	
+	var sqrBounds = [];
+	
+	if (graphics.lsSlope >=0){
+		if (above){
+			sqrBounds = [[dataXWindow, dataYWindow],
+						[dataXWindow, dataYWindow - vertDistToLSWindow],
+						[dataXWindow - vertDistToLSWindow, dataYWindow - vertDistToLSWindow],
+						[dataXWindow - vertDistToLSWindow, dataYWindow],
+						[dataXWindow, dataYWindow]];
+		} else {
+			sqrBounds = [[dataXWindow, dataYWindow],
+						[dataXWindow, dataYWindow + vertDistToLSWindow],
+						[dataXWindow + vertDistToLSWindow, dataYWindow + vertDistToLSWindow],
+						[dataXWindow + vertDistToLSWindow, dataYWindow],
+						[dataXWindow, dataYWindow]];
+		}
+	} else {
+		if (above){
+			sqrBounds = [[dataXWindow, dataYWindow],
+						[dataXWindow, dataYWindow - vertDistToLSWindow],
+						[dataXWindow + vertDistToLSWindow, dataYWindow - vertDistToLSWindow],
+						[dataXWindow + vertDistToLSWindow, dataYWindow],
+						[dataXWindow, dataYWindow]];
+		} else {
+			sqrBounds = [[dataXWindow, dataYWindow],
+						[dataXWindow, dataYWindow + vertDistToLSWindow],
+						[dataXWindow - vertDistToLSWindow, dataYWindow + vertDistToLSWindow],
+						[dataXWindow - vertDistToLSWindow, dataYWindow],
+						[dataXWindow, dataYWindow]]; 
+		}			  
+	} 
+	return sqrBounds;
+}
+
+
+
 function getMMLineLabelAngle(graphics) {
 	var angle = Math.atan(
 						Math.abs(

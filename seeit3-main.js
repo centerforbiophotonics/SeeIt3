@@ -194,37 +194,18 @@ $(document).ready(function(){
 			.font("bold 12px sans-serif");
 			
 	  /*R Squares*/
-	  for (var i=0; i < graphics.data.length; i++){
-		  var dataX = parseFloat(graphics.data[i].incidence);
-		  var dataY = parseFloat(graphics.data[i].otherFactor);
-		  var vertDistToLS = dataY - getYOnLSByX(dataX, graphics);
-		  var sqrBounds = [];
-		  
-		  if (graphics.lsSlope >=0){
-			  sqrBounds = [[dataX, dataY],
-						   [dataX, dataY - vertDistToLS],
-						   [graphics.x.invert(graphics.x(dataX) - graphics.y(vertDistToLS)), dataY - vertDistToLS],
-						   [graphics.x.invert(graphics.x(dataX) - graphics.y(vertDistToLS)), dataY],
-						   [dataX, dataY]];
-		  } else {
-			  sqrBounds = [[dataX, dataY],
-						   [dataX, dataY - vertDistToLS],
-						   [graphics.x.invert(graphics.x(dataX) + graphics.y(vertDistToLS)), dataY - vertDistToLS],
-						   [graphics.x.invert(graphics.x(dataX) + graphics.y(vertDistToLS)), dataY],
-						   [dataX, dataY]];			  
-		  } 
-												   
-		  vis.add(pv.Line)
+	  for (var i=0; i < graphics.data.length; i++){	
+		var sqrBounds = getRSquareBounds(graphics, i);  									   
+		vis.add(pv.Line)
 			.visible(function() { return (jQuery('#checkboxShowLeastSquaresSquares').is(':checked')
 									&& jQuery('#checkboxShowLeastSquaresLine').is(':checked')) })
 			.data(sqrBounds)
-			.left(function(d) { return graphics.x(d[0]) })
-			.bottom(function(d) { return graphics.y(d[1]) })
+			.left(function(d) { return d[0] })
+			.bottom(function(d) { return d[1] })
 			.lineWidth(0.5)
 			.strokeStyle("green")
 			.fillStyle(pv.rgb(0,255,0,0.05));
-			  
-	 }
+	  }
 		 
 	  /* user drawn line */
 	  vis.add(pv.Line)
