@@ -1,6 +1,6 @@
 jQuery('p#loadingMsg').show();
 
-$(document).ready(function(){
+$(function(){
 	jQuery('p#loadingMsg').hide();	
 	var vis = {};
 	var graphics = {};
@@ -13,6 +13,7 @@ $(document).ready(function(){
 		}else if (jQuery('#checkboxDropDataOntoY').is(':checked')) {
 			constructYStackedVis();
 		}
+		positionAxisMinMaxWidgets();
 	}
 
 	function constructNormVis(){

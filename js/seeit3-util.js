@@ -388,7 +388,7 @@ function calcGraphWidth(){
 }
 
 function calcGraphHeight(){
-	return (window.innerHeight - jQuery('div#notGraph').height()) - 155; 
+	return (window.innerHeight - jQuery('div#notGraph').height()) - 185; 
 }
 
 function sortByXValues(data) {
@@ -527,4 +527,10 @@ function getYValue(x, slope, intercept) {
 
 function getXValue(y, slope, intercept) {
   return (y - intercept) / slope;
+}
+
+function positionAxisMinMaxWidgets() {
+  $('#yMin').css('position', 'absolute').css('bottom', '30px');
+  $('#xMin').css('position', 'absolute').css('bottom', '5px').css('left', '30px');
+  $('#xMax').css('position', 'absolute').css('bottom', '5px').css('right', '5px')
 }
