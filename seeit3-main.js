@@ -593,56 +593,50 @@ $(document).ready(function(){
 	  constructVis();
 	});
 	
-	$('#textYMin').keypress(function(event) {
-		if (event.which == '13') {
-			var textBoxVal = parseFloat($('#textYMin').val());
-			var curMax = graphics.y.domain()[1];
-			if (isNaN(textBoxVal) || textBoxVal >= curMax){
-				updateScaleTextBoxes(graphics);
-			} else {
-				graphics.setYScale(textBoxVal, curMax);
-				constructVis();
-			}
+	$('#textYMin').change(function(event) {
+		var textBoxVal = parseFloat($('#textYMin').val());
+		var curMax = graphics.y.domain()[1];
+		if (isNaN(textBoxVal) || textBoxVal >= curMax){
+			updateScaleTextBoxes(graphics);
+		} else {
+			graphics.setYScale(textBoxVal, curMax);
+			constructVis();
+		}	
+	});
+	
+	$('#textYMax').change(function(event) {
+		var textBoxVal = parseFloat($('#textYMax').val());
+		var curMin = graphics.y.domain()[0];
+		if (isNaN(textBoxVal) || textBoxVal <= curMin){
+			updateScaleTextBoxes(graphics);
+		} else {
+			graphics.setYScale(curMin, textBoxVal);
+			constructVis();
+		}
+	
+	});
+	
+	$('#textXMin').change(function(event) {
+		var textBoxVal = parseFloat($('#textXMin').val());
+		var curMax = graphics.x.domain()[1];
+		if (isNaN(textBoxVal) || textBoxVal >= curMax){
+			updateScaleTextBoxes(graphics);
+		} else {
+			graphics.setXScale(textBoxVal, curMax);
+			constructVis();
 		}
 	});
 	
-	$('#textYMax').keypress(function(event) {
-		if (event.which == '13') {
-			var textBoxVal = parseFloat($('#textYMax').val());
-			var curMin = graphics.y.domain()[0];
-			if (isNaN(textBoxVal) || textBoxVal <= curMin){
-				updateScaleTextBoxes(graphics);
-			} else {
-				graphics.setYScale(curMin, textBoxVal);
-				constructVis();
-			}
+	$('#textXMax').change(function(event) {
+		var textBoxVal = parseFloat($('#textXMax').val());
+		var curMin = graphics.x.domain()[0];
+		if (isNaN(textBoxVal) || textBoxVal <= curMin){
+			updateScaleTextBoxes(graphics);
+		} else {
+			graphics.setXScale(curMin, textBoxVal);
+			constructVis();
 		}
-	});
-	
-	$('#textXMin').keypress(function(event) {
-		if (event.which == '13') {
-			var textBoxVal = parseFloat($('#textXMin').val());
-			var curMax = graphics.x.domain()[1];
-			if (isNaN(textBoxVal) || textBoxVal >= curMax){
-				updateScaleTextBoxes(graphics);
-			} else {
-				graphics.setXScale(textBoxVal, curMax);
-				constructVis();
-			}
-		}
-	});
-	
-	$('#textXMax').keypress(function(event) {
-		if (event.which == '13') {
-			var textBoxVal = parseFloat($('#textXMax').val());
-			var curMin = graphics.x.domain()[0];
-			if (isNaN(textBoxVal) || textBoxVal <= curMin){
-				updateScaleTextBoxes(graphics);
-			} else {
-				graphics.setXScale(curMin, textBoxVal);
-				constructVis();
-			}
-		}
+		
 	});
 	
 });
