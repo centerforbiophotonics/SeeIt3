@@ -600,6 +600,7 @@ $(function(){
 		if (isNaN(textBoxVal) || textBoxVal >= curMax){
 			updateScaleTextBoxes(graphics);
 		} else {
+			jQuery('#fitScalesToData').attr('checked', false);
 			graphics.setYScale(textBoxVal, curMax);
 			constructVis();
 		}	
@@ -611,6 +612,7 @@ $(function(){
 		if (isNaN(textBoxVal) || textBoxVal <= curMin){
 			updateScaleTextBoxes(graphics);
 		} else {
+			jQuery('#fitScalesToData').attr('checked', false);
 			graphics.setYScale(curMin, textBoxVal);
 			constructVis();
 		}
@@ -623,6 +625,7 @@ $(function(){
 		if (isNaN(textBoxVal) || textBoxVal >= curMax){
 			updateScaleTextBoxes(graphics);
 		} else {
+			jQuery('#fitScalesToData').attr('checked', false);
 			graphics.setXScale(textBoxVal, curMax);
 			constructVis();
 		}
@@ -634,6 +637,7 @@ $(function(){
 		if (isNaN(textBoxVal) || textBoxVal <= curMin){
 			updateScaleTextBoxes(graphics);
 		} else {
+			jQuery('#fitScalesToData').attr('checked', false);
 			graphics.setXScale(curMin, textBoxVal);
 			constructVis();
 		}
