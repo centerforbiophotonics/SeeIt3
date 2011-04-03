@@ -160,6 +160,8 @@ function xDistributionPoints(graphics){
 			}
 		}
 		
+		pointsInBucket = shuffle(pointsInBucket);
+		
 		for (var j = 0; j < pointsInBucket.length; j++){
 			points.push([pointsInBucket[j][0], graphics.dotSize + j*2*graphics.dotSize]);
 		}
@@ -190,6 +192,8 @@ function yDistributionPoints(graphics){
 			}
 		}
 		
+		pointsInBucket = shuffle(pointsInBucket);
+		
 		
 		//Computes Stack height for each point in the bucket
 		for (var j = 0; j < pointsInBucket.length; j++){
@@ -202,6 +206,13 @@ function yDistributionPoints(graphics){
 	
 }
 /* Data Manipulation Functions */
+
+function shuffle(o){
+	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	return o;
+};
+
+
 function angleBtwnVec(vec1, vec2){
 	return Math.acos(vec1.dot(vec2.x, vec2.y)
 					/(vec1.length() * vec2.length()));
