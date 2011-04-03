@@ -109,8 +109,8 @@ $(function(){
 			.left(function(d) { return graphics.x(d[0]) })
 			.bottom(function(d) { return graphics.y(d[1]) })
 			.lineWidth(0.5)
-			.strokeStyle("#1f77b4")
-			.fillStyle(pv.rgb(31,119,180,0.05))
+			.strokeStyle("blue")
+			.fillStyle(pv.rgb(0,0,255,0.05))
 			.add(pv.Label)								
 				.text(function(d) {
 					if (this.index == 0) { return "N = "+ n;}
@@ -118,7 +118,7 @@ $(function(){
 				})
 				.textAlign("left")
 				.textBaseline("top")
-				.textStyle("#1f77b4")
+				.textStyle("blue")
 				.textAngle(0)
 				.font("bold 12px sans-serif");
 
@@ -131,7 +131,7 @@ $(function(){
 			.radius(10)
 			.angle(Math.PI / 4)
 			.shape('cross')
-			.fillStyle(pv.rgb(255,165,0,1))
+			.strokeStyle("blue")
 			.title("Median dot");
 	  }
 
@@ -146,6 +146,7 @@ $(function(){
 		 .left(function(d) { return graphics.x(d[0]) })
 		 .bottom(function(d) { return graphics.y(d[1]) })
 		 .title("Median-median line")
+		 .strokeStyle("blue")
 		 .add(pv.Label)
 			.visible(function () { return (jQuery('#checkboxShowMMEqn').is(':checked') 
 											&& jQuery('#checkboxShowMMLine').is(':checked') )})
@@ -155,7 +156,7 @@ $(function(){
 			})
 			.textAlign("left")
 			.textBaseline("top")
-			.textStyle("#1f77b4")
+			.textStyle("blue")
 			.textAngle(getMMLineLabelAngle(graphics))
 			.font("bold 12px sans-serif");
 		 
@@ -214,8 +215,8 @@ $(function(){
 		.left(function(d) { return graphics.x(d.x) })
 		.bottom(function(d) { return graphics.y(d.y) })
 		.visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
-		.fillStyle("purple")
-		.strokeStyle("purple")
+		.fillStyle("red")
+		.strokeStyle("red")
 		.add(pv.Label)									//Line Equation
 			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
 			.text(function(d) {
@@ -224,7 +225,7 @@ $(function(){
 			})
 			.textAlign("left")
 			.textBaseline("top")
-			.textStyle("purple")
+			.textStyle("red")
 			.textAngle(function() { return getUserLineLabelAngle(graphics)})
 			.font("bold 12px sans-serif")
 		.add(pv.Label)									//R Squared Value
@@ -235,11 +236,11 @@ $(function(){
 			})
 			.textAlign("left")
 			.textBaseline("bottom")
-			.textStyle("purple")
+			.textStyle("red")
 			.textAngle(function() {return getUserLineLabelAngle(graphics)})
 			.font("bold 12px sans-serif")
 		.add(pv.Dot)									//Endpoints
-			.fillStyle("purple")
+			.fillStyle("red")
 			.shape('square')
 			.event("mousedown", pv.Behavior.drag())
 			.event("drag", function() {
@@ -278,7 +279,7 @@ $(function(){
 		 .data(getRotatedEllipseCoords)
 		 .left(function(d) { return graphics.x(d[0])})
 		 .bottom(function(d) { return graphics.y(d[1]) })
-		 .strokeStyle("purple");
+		 .strokeStyle("red");
 		 
 	  function getEllipseManipCoords(){
 		var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
@@ -307,8 +308,8 @@ $(function(){
 		 .cursor('move')
 		 .shape('square')
 		 .radius(5)
-		 .fillStyle("purple")
-		 .strokeStyle("purple")
+		 .fillStyle("red")
+		 .strokeStyle("red")
 		 .event("mousedown", pv.Behavior.drag())
 		 .event("drag", function(){
 			var mouseX = graphics.x.invert(vis.mouse().x),
@@ -353,7 +354,7 @@ $(function(){
 			})
 			.textAlign("left")
 			.textBaseline("bottom")
-			.textStyle("purple")
+			.textStyle("red")
 			.textAngle(0)
 			.font("bold 12px sans-serif");
 		 
