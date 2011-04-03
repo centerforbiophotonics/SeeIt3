@@ -56,7 +56,7 @@
 		this.pointsInEllipse = numPointsInEllipse(this);
 		
 		/* X/Y Distribution Variables */
-		this.buckets = 10;
+		this.buckets = 20;
 		this.dotSize = 5;
 	}
 	

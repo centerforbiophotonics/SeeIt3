@@ -161,23 +161,7 @@ function xDistributionPoints(graphics){
 		}
 		
 		for (var j = 0; j < pointsInBucket.length; j++){
-			var comparePoint = pointsInBucket[j];
-			var overlaps = true;
-			
-			while (overlaps){
-				var foundOverlap = false;
-				for (k = (j-1); k > 0; k--){
-					var otherPoint = pointsInBucket[k];
-					if (Math.abs(comparePoint[0]-otherPoint[0]) < 10
-					&& otherPoint[1] == comparePoint[1]){
-						comparePoint[1]++;
-						foundOverlap = true;
-					}
-				}
-				if (!foundOverlap) overlaps = false;
-			}
-			
-			points.push([comparePoint[0], graphics.dotSize + comparePoint[1]*2*graphics.dotSize]);
+			points.push([pointsInBucket[j][0], graphics.dotSize + j*2*graphics.dotSize]);
 		}
 	}
 	
@@ -209,22 +193,7 @@ function yDistributionPoints(graphics){
 		
 		//Computes Stack height for each point in the bucket
 		for (var j = 0; j < pointsInBucket.length; j++){
-			var comparePoint = pointsInBucket[j];
-			var overlaps = true;
-			
-			while (overlaps){
-				var foundOverlap = false;
-				for (k = (j-1); k > 0; k--){
-					var otherPoint = pointsInBucket[k];
-					if (Math.abs(comparePoint[1]-otherPoint[1]) < 10
-					&& otherPoint[0] == comparePoint[0]){
-						comparePoint[0]++;
-						foundOverlap = true;
-					}
-				}
-				if (!foundOverlap) overlaps = false;
-			}
-			points.push([graphics.dotSize + comparePoint[0]*2*graphics.dotSize, comparePoint[1] ]);
+			points.push([graphics.dotSize + j*2*graphics.dotSize, pointsInBucket[j][1] ]);
 			
 		}
 	}

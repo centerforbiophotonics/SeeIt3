@@ -57,7 +57,7 @@ $(function(){
 
 	  /* Y-axis ticks */
 	  vis.add(pv.Rule)
-		 .data(function() { return graphics.y.ticks() })
+		 .data(function() { return graphics.y.ticks(20) })
 		 .bottom(graphics.y)
 		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor('left').add(pv.Label)
@@ -65,7 +65,7 @@ $(function(){
 
 	  /* X-axis ticks */
 	  vis.add(pv.Rule)
-		 .data(function() { return graphics.x.ticks() })
+		 .data(function() { return graphics.x.ticks(20) })
 		 .left(graphics.x)
 		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor("bottom").add(pv.Label)
