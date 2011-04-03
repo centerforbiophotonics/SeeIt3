@@ -316,18 +316,45 @@ $(function(){
 				mouseY = graphics.y.invert(graphics.h - vis.mouse().y),
 				handleX = getEllipseManipCoords()[this.index][0],
 				handleY = getEllipseManipCoords()[this.index][1],
+				
 				mouseVec = pv.vector(graphics.ellipseCX - mouseX
-									,graphics.ellipseCY - mouseY), 
+									,graphics.ellipseCY - mouseY),
+				
 				handleVec = pv.vector(graphics.ellipseCX - handleX
-									,graphics.ellipseCY - handleY).norm(),
-				referenceVec = pv.vector(1,0);
-			 
+									,graphics.ellipseCY - handleY).norm();
+
 			var detHndlMs = determinantBtwnVec(handleVec, mouseVec);
-			
 			var rotDist = angleBtwnVec(mouseVec, handleVec);
+									
+									
+			/* The length of the perpendicular radii is updated so that 
+			 * it never changes on screen as ellipse is rotated.
+			 * That's the idea anyway. 
+			 */	
+			var perpHandleX = getEllipseManipCoords()[(this.index+1)%4][0],
+				perpHandleY = getEllipseManipCoords()[(this.index+1)%4][1],
+				perpHandleVec = pv.vector(graphics.ellipseCX - perpHandleX
+									,graphics.ellipseCY - perpHandleY);
+									
+			var perpHandleWindowLength = Math.sqrt(Math.pow(graphics.x(graphics.ellipseCX) - graphics.x(graphics.ellipseCX + perpHandleVec.x),2)
+												  +Math.pow(graphics.y(graphics.ellipseCY) - graphics.y(graphics.ellipseCY + perpHandleVec.y),2)
+												  );
+			
+			var	perpMouseVec = mouseVec.perp();
+			perpMouseVec = perpMouseVec.norm();
+			perpMouseVec = perpMouseVec.times(perpHandleWindowLength);
+			
+			
+			var	newPerpRadiusLength =  Math.sqrt(
+										Math.pow(graphics.ellipseCX - graphics.x.invert(graphics.x(graphics.ellipseCX) + perpMouseVec.x), 2)
+									   +Math.pow(graphics.ellipseCY - graphics.y.invert(graphics.y(graphics.ellipseCY) + perpMouseVec.y), 2)
+									   );			   
+			//End code that is broken
 			
 			
 			if (mouseX > 0 && mouseX < graphics.w && mouseY > 0 && mouseY < graphics.h){
+				
+				//Rotation
 				if (!isNaN(rotDist)){
 					if (detHndlMs > 0){
 						graphics.angle = (graphics.angle + rotDist) % (2*Math.PI);
@@ -336,10 +363,13 @@ $(function(){
 					}
 				}
 				 
+				//Radius Inc/Dec
 				if (this.index % 2 == 0){
 					graphics.xRadius = mouseVec.length();
+					//graphics.yRadius = newPerpRadiusLength;
 				}else{
 					graphics.yRadius = mouseVec.length();
+					//graphics.xRadius = newPerpRadiusLength;
 				}
 			}
 			
