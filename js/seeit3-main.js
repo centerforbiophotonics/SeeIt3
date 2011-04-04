@@ -57,7 +57,7 @@ $(function(){
 
 	  /* Y-axis ticks */
 	  vis.add(pv.Rule)
-		 .data(function() { return graphics.y.ticks() })
+		 .data(function() { return graphics.y.ticks(20) })
 		 .bottom(graphics.y)
 		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor('left').add(pv.Label)
@@ -65,7 +65,7 @@ $(function(){
 
 	  /* X-axis ticks */
 	  vis.add(pv.Rule)
-		 .data(function() { return graphics.x.ticks() })
+		 .data(function() { return graphics.x.ticks(20) })
 		 .left(graphics.x)
 		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor("bottom").add(pv.Label)
@@ -109,8 +109,8 @@ $(function(){
 			.left(function(d) { return graphics.x(d[0]) })
 			.bottom(function(d) { return graphics.y(d[1]) })
 			.lineWidth(0.5)
-			.strokeStyle("#1f77b4")
-			.fillStyle(pv.rgb(31,119,180,0.05))
+			.strokeStyle("blue")
+			.fillStyle(pv.rgb(0,0,255,0.05))
 			.add(pv.Label)								
 				.text(function(d) {
 					if (this.index == 0) { return "N = "+ n;}
@@ -118,7 +118,7 @@ $(function(){
 				})
 				.textAlign("left")
 				.textBaseline("top")
-				.textStyle("#1f77b4")
+				.textStyle("blue")
 				.textAngle(0)
 				.font("bold 12px sans-serif");
 
@@ -131,7 +131,7 @@ $(function(){
 			.radius(10)
 			.angle(Math.PI / 4)
 			.shape('cross')
-			.fillStyle(pv.rgb(255,165,0,1))
+			.strokeStyle("blue")
 			.title("Median dot");
 	  }
 
@@ -146,6 +146,7 @@ $(function(){
 		 .left(function(d) { return graphics.x(d[0]) })
 		 .bottom(function(d) { return graphics.y(d[1]) })
 		 .title("Median-median line")
+		 .strokeStyle("blue")
 		 .add(pv.Label)
 			.visible(function () { return (jQuery('#checkboxShowMMEqn').is(':checked') 
 											&& jQuery('#checkboxShowMMLine').is(':checked') )})
@@ -155,7 +156,7 @@ $(function(){
 			})
 			.textAlign("left")
 			.textBaseline("top")
-			.textStyle("#1f77b4")
+			.textStyle("blue")
 			.textAngle(getMMLineLabelAngle(graphics))
 			.font("bold 12px sans-serif");
 		 
@@ -214,8 +215,8 @@ $(function(){
 		.left(function(d) { return graphics.x(d.x) })
 		.bottom(function(d) { return graphics.y(d.y) })
 		.visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
-		.fillStyle("purple")
-		.strokeStyle("purple")
+		.fillStyle("red")
+		.strokeStyle("red")
 		.add(pv.Label)									//Line Equation
 			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
 			.text(function(d) {
@@ -224,7 +225,7 @@ $(function(){
 			})
 			.textAlign("left")
 			.textBaseline("top")
-			.textStyle("purple")
+			.textStyle("red")
 			.textAngle(function() { return getUserLineLabelAngle(graphics)})
 			.font("bold 12px sans-serif")
 		.add(pv.Label)									//R Squared Value
@@ -235,11 +236,11 @@ $(function(){
 			})
 			.textAlign("left")
 			.textBaseline("bottom")
-			.textStyle("purple")
+			.textStyle("red")
 			.textAngle(function() {return getUserLineLabelAngle(graphics)})
 			.font("bold 12px sans-serif")
 		.add(pv.Dot)									//Endpoints
-			.fillStyle("purple")
+			.fillStyle("red")
 			.shape('square')
 			.event("mousedown", pv.Behavior.drag())
 			.event("drag", function() {
@@ -278,7 +279,7 @@ $(function(){
 		 .data(getRotatedEllipseCoords)
 		 .left(function(d) { return graphics.x(d[0])})
 		 .bottom(function(d) { return graphics.y(d[1]) })
-		 .strokeStyle("purple");
+		 .strokeStyle("red");
 		 
 	  function getEllipseManipCoords(){
 		var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
@@ -307,26 +308,53 @@ $(function(){
 		 .cursor('move')
 		 .shape('square')
 		 .radius(5)
-		 .fillStyle("purple")
-		 .strokeStyle("purple")
+		 .fillStyle("red")
+		 .strokeStyle("red")
 		 .event("mousedown", pv.Behavior.drag())
 		 .event("drag", function(){
 			var mouseX = graphics.x.invert(vis.mouse().x),
 				mouseY = graphics.y.invert(graphics.h - vis.mouse().y),
 				handleX = getEllipseManipCoords()[this.index][0],
 				handleY = getEllipseManipCoords()[this.index][1],
+				
 				mouseVec = pv.vector(graphics.ellipseCX - mouseX
-									,graphics.ellipseCY - mouseY), 
+									,graphics.ellipseCY - mouseY),
+				
 				handleVec = pv.vector(graphics.ellipseCX - handleX
-									,graphics.ellipseCY - handleY).norm(),
-				referenceVec = pv.vector(1,0);
-			 
+									,graphics.ellipseCY - handleY).norm();
+
 			var detHndlMs = determinantBtwnVec(handleVec, mouseVec);
-			
 			var rotDist = angleBtwnVec(mouseVec, handleVec);
+									
+									
+			/* The length of the perpendicular radii is updated so that 
+			 * it never changes on screen as ellipse is rotated.
+			 * That's the idea anyway. 
+			 */	
+			var perpHandleX = getEllipseManipCoords()[(this.index+1)%4][0],
+				perpHandleY = getEllipseManipCoords()[(this.index+1)%4][1],
+				perpHandleVec = pv.vector(graphics.ellipseCX - perpHandleX
+									,graphics.ellipseCY - perpHandleY);
+									
+			var perpHandleWindowLength = Math.sqrt(Math.pow(graphics.x(graphics.ellipseCX) - graphics.x(graphics.ellipseCX + perpHandleVec.x),2)
+												  +Math.pow(graphics.y(graphics.ellipseCY) - graphics.y(graphics.ellipseCY + perpHandleVec.y),2)
+												  );
+			
+			var	perpMouseVec = mouseVec.perp();
+			perpMouseVec = perpMouseVec.norm();
+			perpMouseVec = perpMouseVec.times(perpHandleWindowLength);
+			
+			
+			var	newPerpRadiusLength =  Math.sqrt(
+										Math.pow(graphics.ellipseCX - graphics.x.invert(graphics.x(graphics.ellipseCX) + perpMouseVec.x), 2)
+									   +Math.pow(graphics.ellipseCY - graphics.y.invert(graphics.y(graphics.ellipseCY) + perpMouseVec.y), 2)
+									   );			   
+			//End code that is broken
 			
 			
 			if (mouseX > 0 && mouseX < graphics.w && mouseY > 0 && mouseY < graphics.h){
+				
+				//Rotation
 				if (!isNaN(rotDist)){
 					if (detHndlMs > 0){
 						graphics.angle = (graphics.angle + rotDist) % (2*Math.PI);
@@ -335,10 +363,13 @@ $(function(){
 					}
 				}
 				 
+				//Radius Inc/Dec
 				if (this.index % 2 == 0){
 					graphics.xRadius = mouseVec.length();
+					//graphics.yRadius = newPerpRadiusLength;
 				}else{
 					graphics.yRadius = mouseVec.length();
+					//graphics.xRadius = newPerpRadiusLength;
 				}
 			}
 			
@@ -353,7 +384,7 @@ $(function(){
 			})
 			.textAlign("left")
 			.textBaseline("bottom")
-			.textStyle("purple")
+			.textStyle("red")
 			.textAngle(0)
 			.font("bold 12px sans-serif");
 		 
@@ -600,6 +631,7 @@ $(function(){
 		if (isNaN(textBoxVal) || textBoxVal >= curMax){
 			updateScaleTextBoxes(graphics);
 		} else {
+			jQuery('#fitScalesToData').attr('checked', false);
 			graphics.setYScale(textBoxVal, curMax);
 			constructVis();
 		}	
@@ -611,6 +643,7 @@ $(function(){
 		if (isNaN(textBoxVal) || textBoxVal <= curMin){
 			updateScaleTextBoxes(graphics);
 		} else {
+			jQuery('#fitScalesToData').attr('checked', false);
 			graphics.setYScale(curMin, textBoxVal);
 			constructVis();
 		}
@@ -623,6 +656,7 @@ $(function(){
 		if (isNaN(textBoxVal) || textBoxVal >= curMax){
 			updateScaleTextBoxes(graphics);
 		} else {
+			jQuery('#fitScalesToData').attr('checked', false);
 			graphics.setXScale(textBoxVal, curMax);
 			constructVis();
 		}
@@ -634,6 +668,7 @@ $(function(){
 		if (isNaN(textBoxVal) || textBoxVal <= curMin){
 			updateScaleTextBoxes(graphics);
 		} else {
+			jQuery('#fitScalesToData').attr('checked', false);
 			graphics.setXScale(curMin, textBoxVal);
 			constructVis();
 		}
