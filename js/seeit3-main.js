@@ -675,4 +675,9 @@ $(function(){
 		
 	});
 	
+	$('#refreshWorksheet').click(function(event){
+		getWorksheet().fetchWorksheetData();
+		
+	});
+	
 });
