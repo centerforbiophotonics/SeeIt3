@@ -62,7 +62,7 @@ $(function(){
 	  vis.add(pv.Rule)
 		 .data(function() { return graphics.y.ticks(20) })
 		 .bottom(graphics.y)
-		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
+		 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
 		 .anchor('left').add(pv.Label)
 		   .text(graphics.y.tickFormat)
 		   .visible(function(){return this.index != 0});
@@ -71,7 +71,7 @@ $(function(){
 	  vis.add(pv.Rule)
 		 .data(function() { return graphics.x.ticks(20) })
 		 .left(graphics.x)
-		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
+		 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
 		 .anchor("bottom").add(pv.Label)
 		   .text(graphics.x.tickFormat)
 		   .visible(function(){return this.index != 0});
