@@ -96,6 +96,8 @@
 		},
 	}
 	
+	var numWorksheets = 0;
+	
 	function Spreadsheet(key) {
 	  this.key = key;
 	  this.worksheets = [];
@@ -118,6 +120,7 @@
 		  for (var i = 0; i < feedData.feed.entry.length; i++) {
 			spreadsheet.worksheets.push(new Worksheet(feedData.feed.entry[i].link[0].href));
 		  }
+		  numWorksheets += feedData.feed.entry.length;
 		});
 	  },
 	  
@@ -126,6 +129,25 @@
 	function Worksheet(URL) {
 	  this.URL = URL;
 	  this.fetchWorksheetData();
+	}
+	
+	var exampleSpreadsheets = [
+	  new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
+	]
+
+	function getWorksheetByURL(URL) {
+	  for (var h = 0; h < exampleSpreadsheets.length; h++) {
+		for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
+		  if (exampleSpreadsheets[h].worksheets[i].URL == URL)
+			return exampleSpreadsheets[h].worksheets[i];
+		}
+	  }
+	}
+
+	function getWorksheet(){
+	  var URL = jQuery('#workSheetSelector').val();
+	  var worksheet = getWorksheetByURL(URL);
+	  return worksheet;
 	}
 
 	Worksheet.prototype = {

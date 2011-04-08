@@ -1,11 +1,14 @@
-jQuery('p#loadingMsg').show();
-
 $(function(){
-	jQuery('p#loadingMsg').hide();	
 	var vis = {};
 	var graphics = {};
+	
+	$('#textYMin').hide();
+	$('#textYMax').hide();
+	$('#textXMin').hide();
+	$('#textXMax').hide();
 
 	function constructVis() {
+		positionAxisMinMaxWidgets();
 		if (jQuery('#checkboxNormalView').is(':checked')) { 
 			constructNormVis();
 		}else if (jQuery('#checkboxDropDataOntoX').is(':checked')) {
@@ -13,7 +16,7 @@ $(function(){
 		}else if (jQuery('#checkboxDropDataOntoY').is(':checked')) {
 			constructYStackedVis();
 		}
-		positionAxisMinMaxWidgets();
+		
 	}
 
 	function constructNormVis(){
@@ -525,25 +528,8 @@ $(function(){
 		vis.render();
 	}
 
-	var exampleSpreadsheets = [
-	  new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
-	]
-
-	function getWorksheetByURL(URL) {
-	  for (var h = 0; h < exampleSpreadsheets.length; h++) {
-		for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
-		  if (exampleSpreadsheets[h].worksheets[i].URL == URL)
-			return exampleSpreadsheets[h].worksheets[i];
-		}
-	  }
-	}
-
-	function getWorksheet(){
-	  var URL = jQuery('#workSheetSelector').val();
-	  var worksheet = getWorksheetByURL(URL);
-	  return worksheet;
-	}
-
+	
+	/* Events */	
 	jQuery('#newSpreadsheetURL').keyup(function(event) {
 	  if (event.keyCode == '13') {
 		var key = parseSpreadsheetKeyFromURL($(this).val());
@@ -571,11 +557,20 @@ $(function(){
 
 
 	/* populate dataset drop down menu */
+	var numWorksheetsLoaded = 0;
 	jQuery('body').bind('WorksheetLoaded', function(event) {
 	  jQuery('#workSheetSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
-	  graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
-	  updateScaleTextBoxes(graphics);
-	  constructVis();
+	  numWorksheetsLoaded++;
+	  if (numWorksheetsLoaded >= numWorksheets){
+		jQuery('p#loadingMsg').hide();	
+		$('#textYMin').show();
+		$('#textYMax').show();
+		$('#textXMin').show();
+		$('#textXMax').show();
+		graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
+		updateScaleTextBoxes(graphics);
+		constructVis();
+	  }
 	});
 
 	jQuery('#menu').change(function(event) {
