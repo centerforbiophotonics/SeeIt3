@@ -510,9 +510,9 @@ function getXValue(y, slope, intercept) {
 }
 
 function positionAxisMinMaxWidgets() {
-  $('#xMin input,#xMax input,#yMin input,#yMax input').css('width', '30px');
-  $('#yMin').css('position', 'absolute').css('bottom', '70px').css('left', '30px');
-  $('#yMax').css('position', 'absolute').css('top', '225px').css('left', '30px');
-  $('#xMin').css('position', 'absolute').css('bottom', '52px').css('left', '66px');
-  $('#xMax').css('position', 'absolute').css('bottom', '50px').css('right', '25px')
+  $('#xMin input,#xMax input,#yMin input,#yMax input').css('width', '40px');
+  $('#yMin').css('position', 'absolute').css('bottom', '70px').css('left', '22px');
+  $('#yMax').css('position', 'absolute').css('top', '227px').css('left', '22px');
+  $('#xMin').css('position', 'absolute').css('bottom', '50px').css('left', '68px');
+  $('#xMax').css('position', 'absolute').css('bottom', '50px').css('right', '20px')
 }

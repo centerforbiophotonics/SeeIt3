@@ -65,6 +65,7 @@ $(function(){
 		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor('left').add(pv.Label)
 		   .text(graphics.y.tickFormat)
+		   .visible(function(){return this.index != 0});
 
 	  /* X-axis ticks */
 	  vis.add(pv.Rule)
@@ -72,7 +73,8 @@ $(function(){
 		 .left(graphics.x)
 		 .strokeStyle(function(d) { return Math.floor(d) ? "#eee" : "#000" })
 		 .anchor("bottom").add(pv.Label)
-		   .text(graphics.x.tickFormat);
+		   .text(graphics.x.tickFormat)
+		   .visible(function(){return this.index != 0});
 		   
 	  /* X-axis label */
 	  vis.add(pv.Label)
