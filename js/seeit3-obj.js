@@ -48,11 +48,11 @@
 								 
 		/* User Ellipse */
 		this.angle = 0;
-		this.xRadius = (this.xMax - this.xMin)/2;
-		this.yRadius = (this.yMax - this.yMin)/2;
+		this.xRadius = this.w/4;
+		this.yRadius = this.h/4;
 		this.fullRot = pv.range(0, 2 * Math.PI, 0.01);
-		this.ellipseCX = this.medians[1][0];
-		this.ellipseCY = this.medians[1][1];
+		this.ellipseCX = this.w/2;
+		this.ellipseCY = this.h/2;
 		this.pointsInEllipse = numPointsInEllipse(this);
 		
 		/* X/Y Distribution Variables */

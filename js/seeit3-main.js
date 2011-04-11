@@ -282,8 +282,8 @@ $(function(){
 	  vis.add(pv.Line)
 		 .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
 		 .data(getRotatedEllipseCoords)
-		 .left(function(d) { return graphics.x(d[0])})
-		 .bottom(function(d) { return graphics.y(d[1]) })
+		 .left(function(d) { return d[0] })
+		 .bottom(function(d) { return d[1] })
 		 .strokeStyle("red");
 		 
 	  function getEllipseManipCoords(){
@@ -308,8 +308,8 @@ $(function(){
 	  vis.add(pv.Dot)
 		 .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
 		 .data(getEllipseManipCoords)
-		 .left(function(d) { return graphics.x(d[0]) })
-		 .bottom(function(d) { return graphics.y(d[1]) })
+		 .left(function(d) { return d[0] })
+		 .bottom(function(d) { return d[1] })
 		 .cursor('move')
 		 .shape('square')
 		 .radius(5)
@@ -317,8 +317,8 @@ $(function(){
 		 .strokeStyle("red")
 		 .event("mousedown", pv.Behavior.drag())
 		 .event("drag", function(){
-			var mouseX = graphics.x.invert(vis.mouse().x),
-				mouseY = graphics.y.invert(graphics.h - vis.mouse().y),
+			var mouseX = vis.mouse().x,
+				mouseY = graphics.h - vis.mouse().y,
 				handleX = getEllipseManipCoords()[this.index][0],
 				handleY = getEllipseManipCoords()[this.index][1],
 				
@@ -329,33 +329,7 @@ $(function(){
 									,graphics.ellipseCY - handleY).norm();
 
 			var detHndlMs = determinantBtwnVec(handleVec, mouseVec);
-			var rotDist = angleBtwnVec(mouseVec, handleVec);
-									
-									
-			/* The length of the perpendicular radii is updated so that 
-			 * it never changes on screen as ellipse is rotated.
-			 * That's the idea anyway. 
-			 */	
-			var perpHandleX = getEllipseManipCoords()[(this.index+1)%4][0],
-				perpHandleY = getEllipseManipCoords()[(this.index+1)%4][1],
-				perpHandleVec = pv.vector(graphics.ellipseCX - perpHandleX
-									,graphics.ellipseCY - perpHandleY);
-									
-			var perpHandleWindowLength = Math.sqrt(Math.pow(graphics.x(graphics.ellipseCX) - graphics.x(graphics.ellipseCX + perpHandleVec.x),2)
-												  +Math.pow(graphics.y(graphics.ellipseCY) - graphics.y(graphics.ellipseCY + perpHandleVec.y),2)
-												  );
-			
-			var	perpMouseVec = mouseVec.perp();
-			perpMouseVec = perpMouseVec.norm();
-			perpMouseVec = perpMouseVec.times(perpHandleWindowLength);
-			
-			
-			var	newPerpRadiusLength =  Math.sqrt(
-										Math.pow(graphics.ellipseCX - graphics.x.invert(graphics.x(graphics.ellipseCX) + perpMouseVec.x), 2)
-									   +Math.pow(graphics.ellipseCY - graphics.y.invert(graphics.y(graphics.ellipseCY) + perpMouseVec.y), 2)
-									   );			   
-			//End code that is broken
-			
+			var rotDist = angleBtwnVec(mouseVec, handleVec);			
 			
 			if (mouseX > 0 && mouseX < graphics.w && mouseY > 0 && mouseY < graphics.h){
 				
@@ -371,10 +345,8 @@ $(function(){
 				//Radius Inc/Dec
 				if (this.index % 2 == 0){
 					graphics.xRadius = mouseVec.length();
-					//graphics.yRadius = newPerpRadiusLength;
 				}else{
 					graphics.yRadius = mouseVec.length();
-					//graphics.xRadius = newPerpRadiusLength;
 				}
 			}
 			
@@ -393,7 +365,30 @@ $(function(){
 			.textAngle(0)
 			.font("bold 12px sans-serif");
 		 
-	  
+	   vis.add(pv.Dot)
+		 .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
+		 .data(function() {return [[graphics.ellipseCX, graphics.ellipseCY]]})
+		 .left(function(d) { return d[0] })
+		 .bottom(function(d) { return d[1] })
+		 .cursor('move')
+		 .shape('square')
+		 .radius(8)
+		 .fillStyle(pv.rgb(255,0,0,0.20))
+		 .strokeStyle(pv.rgb(255,0,0,0.50))
+		 .event("mousedown", pv.Behavior.drag())
+		 .event("drag", function(){
+			var mouseX = vis.mouse().x,
+				mouseY = graphics.h - vis.mouse().y;
+			
+			if (mouseX > 0 && mouseX < graphics.w && mouseY > 0 && mouseY < graphics.h){
+				graphics.ellipseCX = mouseX;
+				graphics.ellipseCY = mouseY;
+			}
+			
+			graphics.pointsInEllipse = numPointsInEllipse(graphics);
+					
+			vis.render();
+		 });
 	  
 	  vis.render();
 			
