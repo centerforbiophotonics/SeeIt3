@@ -426,9 +426,8 @@ $(function(){
 			
 		/* Y-axis ticks */
 		vis.add(pv.Rule)
-			.data(function() { return graphics.y.ticks() })
-			.bottom(graphics.y)
-			.strokeStyle(function(d) { return Math.floor(d) ? "#fff" : "#000" })
+			.bottom(0)
+			.strokeStyle("#000")
 		
 		/* Dots */	
 		vis.add(pv.Dot)
@@ -492,9 +491,8 @@ $(function(){
 			
 		/* X-axis ticks */
 		vis.add(pv.Rule)
-			.data(function() { return graphics.x.ticks() })
-			.left(graphics.x)
-			.strokeStyle(function(d) { return Math.floor(d) ? "#fff" : "#000" })
+			.left(0)
+			.strokeStyle("#000");
 		
 		/* Dots */	
 		vis.add(pv.Dot)
