@@ -1,4 +1,22 @@
 /*Drawing Related Functions*/
+function getRotatedEllipseCoords(graphics) {
+	var ellipseXRadius = graphics.xRadius;
+	var ellipseYRadius = graphics.yRadius;
+	
+	var coords = [];
+	for (i = 0; i < graphics.fullRot.length; i++) {
+	  coords.push([ ellipseXRadius * Math.cos(graphics.fullRot[i]),
+					ellipseYRadius * Math.sin(graphics.fullRot[i]) ]);
+	}
+	
+	for (var i = 0; i < coords.length; i++) {
+	  coords[i] = ([ coords[i][0] * Math.cos(graphics.angle) - coords[i][1] * Math.sin(graphics.angle) + graphics.ellipseCX,
+					 coords[i][0] * Math.sin(graphics.angle) + coords[i][1] * Math.cos(graphics.angle) + graphics.ellipseCY ]);
+	}
+	return coords;
+}
+
+
 function getVertDistToLS (graphics, i){
 	var dataX = parseFloat(graphics.data[i].incidence);
 	var dataY = parseFloat(graphics.data[i].otherFactor);
@@ -234,27 +252,52 @@ function ellipseRadiusAtAngle(graphics, angle){
 							, pointOnEllipse[0], pointOnEllipse[1]);
 }
 
+function invertEllipseCoords(graphics, coords){
+	var invertedCoords = [];
+	for (var i = 0; i < coords.length; i++){
+		invertedCoords.push([graphics.x.invert(coords[i][0])
+								,graphics.y.invert(coords[i][1])]);
+	}
+	return invertedCoords;
+}
+
+function isPointBetweenTwoPoints(testPoint, refPoint1, refPoint2){
+	var lineSlope = findSlope(refPoint1[0], refPoint2[0],
+							  refPoint1[1], refPoint2[1]);						  
+	var lineIntercept = findIntercept(refPoint1[0], refPoint1[1], lineSlope);
+	
+	var yValOfLineAtTestX = lineSlope * testPoint[0] + lineIntercept;
+	
+	if (Math.abs(testPoint[1] - yValOfLineAtTestX) < 15){
+		if((testPoint[0] <= refPoint1[0] && testPoint[0] >= refPoint2[0]
+				|| testPoint[0] >= refPoint1[0] && testPoint[0] <= refPoint2[0])
+			&& (testPoint[1] <= refPoint1[1] && testPoint[1] >= refPoint2[1]
+				|| testPoint[1] >= refPoint1[1] && testPoint[1] <= refPoint2[1])){
+					
+					return true;
+		} else return false;
+	}
+}
+
+
 /* note: vectors originate from ellipse center */
 function numPointsInEllipse(graphics){
 	var count = 0;
+	var ellipsePoints = getRotatedEllipseCoords(graphics);
 	for (var i = 0; i < graphics.data.length; i++){
-		var dataVec = pv.vector(graphics.data[i].incidence - graphics.ellipseCX
-								,graphics.data[i].otherFactor - graphics.ellipseCY),
-								
-			rotAngleVec = pv.vector(Math.cos(graphics.angle), Math.sin(graphics.angle)).norm(),
+		var dataPoint = [graphics.x(parseFloat(graphics.data[i].incidence))
+						 ,graphics.y(parseFloat(graphics.data[i].otherFactor))]; 
+		for (var j = 0; j < parseInt(ellipsePoints.length/2); j++){
+			var ellPoint1 = ellipsePoints[j];
+			var ellPoint2 = ellipsePoints[(j + parseInt(ellipsePoints.length/2)) % ellipsePoints.length];
 			
-			relAngle = angleBtwnVec(dataVec, rotAngleVec),
-			
-			ellipseR = ellipseRadiusAtAngle(graphics, relAngle);
-			
-		//console.log(relAngle + " " + ellipseR);
-			
-		if (ellipseR >= dataVec.length()){
-			count++;
+			if (isPointBetweenTwoPoints(dataPoint, ellPoint1, ellPoint2)){
+				count++;
+				break;
+			}
 		}
 	}
 	
-	//console.log(count);
 	return count;
 }
 

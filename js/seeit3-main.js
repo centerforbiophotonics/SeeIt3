@@ -262,26 +262,9 @@ $(function(){
 	   
 	   
 	  /* user ellipse */
-	  function getRotatedEllipseCoords() {
-		var ellipseXRadius = graphics.xRadius;
-		var ellipseYRadius = graphics.yRadius;
-		
-		var coords = [];
-		for (i = 0; i < graphics.fullRot.length; i++) {
-		  coords.push([ ellipseXRadius * Math.cos(graphics.fullRot[i]),
-						ellipseYRadius * Math.sin(graphics.fullRot[i]) ]);
-		}
-		
-		for (var i = 0; i < coords.length; i++) {
-		  coords[i] = ([ coords[i][0] * Math.cos(graphics.angle) - coords[i][1] * Math.sin(graphics.angle) + graphics.ellipseCX,
-						 coords[i][0] * Math.sin(graphics.angle) + coords[i][1] * Math.cos(graphics.angle) + graphics.ellipseCY ]);
-		}
-		return coords;
-	  }
-	  
 	  vis.add(pv.Line)
 		 .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
-		 .data(getRotatedEllipseCoords)
+		 .data(function() { return getRotatedEllipseCoords(graphics) })
 		 .left(function(d) { return d[0] })
 		 .bottom(function(d) { return d[1] })
 		 .strokeStyle("red");
@@ -356,10 +339,10 @@ $(function(){
 		 })
 		 .add(pv.Label)								
 			.text(function(d) {
-				if (this.index == 3) { return "N = "+ graphics.pointsInEllipse; }
+				if (this.index == 3) { return "Number of Points Inside = "+ numPointsInEllipse(graphics) }
 				else {return "";}
 			})
-			.textAlign("left")
+			.textAlign("center")
 			.textBaseline("bottom")
 			.textStyle("red")
 			.textAngle(0)
