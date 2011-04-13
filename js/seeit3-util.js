@@ -268,7 +268,7 @@ function isPointBetweenTwoPoints(testPoint, refPoint1, refPoint2){
 	
 	var yValOfLineAtTestX = lineSlope * testPoint[0] + lineIntercept;
 	
-	if (Math.abs(testPoint[1] - yValOfLineAtTestX) < 15){
+	if (Math.abs(testPoint[1] - yValOfLineAtTestX) < 20){
 		if((testPoint[0] <= refPoint1[0] && testPoint[0] >= refPoint2[0]
 				|| testPoint[0] >= refPoint1[0] && testPoint[0] <= refPoint2[0])
 			&& (testPoint[1] <= refPoint1[1] && testPoint[1] >= refPoint2[1]
@@ -280,7 +280,6 @@ function isPointBetweenTwoPoints(testPoint, refPoint1, refPoint2){
 }
 
 
-/* note: vectors originate from ellipse center */
 function numPointsInEllipse(graphics){
 	var count = 0;
 	var ellipsePoints = getRotatedEllipseCoords(graphics);
@@ -289,7 +288,7 @@ function numPointsInEllipse(graphics){
 						 ,graphics.y(parseFloat(graphics.data[i].otherFactor))]; 
 		for (var j = 0; j < parseInt(ellipsePoints.length/2); j++){
 			var ellPoint1 = ellipsePoints[j];
-			var ellPoint2 = ellipsePoints[(j + parseInt(ellipsePoints.length/2)) % ellipsePoints.length];
+			var ellPoint2 = ellipsePoints[(j + parseInt(ellipsePoints.length/2)) % ellipsePoints.length];  //Point on opposite side of the ellipse
 			
 			if (isPointBetweenTwoPoints(dataPoint, ellPoint1, ellPoint2)){
 				count++;
