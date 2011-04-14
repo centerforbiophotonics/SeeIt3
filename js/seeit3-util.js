@@ -268,7 +268,7 @@ function isPointBetweenTwoPoints(testPoint, refPoint1, refPoint2){
 	
 	var yValOfLineAtTestX = lineSlope * testPoint[0] + lineIntercept;
 	
-	if (Math.abs(testPoint[1] - yValOfLineAtTestX) < 20){
+	if (Math.abs(testPoint[1] - yValOfLineAtTestX) < 25){
 		if((testPoint[0] <= refPoint1[0] && testPoint[0] >= refPoint2[0]
 				|| testPoint[0] >= refPoint1[0] && testPoint[0] <= refPoint2[0])
 			&& (testPoint[1] <= refPoint1[1] && testPoint[1] >= refPoint2[1]
