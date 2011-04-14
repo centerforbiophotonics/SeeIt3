@@ -21,6 +21,14 @@ $(function(){
 		}
 		
 	}
+	
+	/*Padding around main panel*/
+	var padBot = 60,
+		padTop = 60,
+		padLeft = 60,
+		padRight = 20;
+	
+
 
 	function constructNormVis(){
 	  jQuery('span').remove();
@@ -28,10 +36,10 @@ $(function(){
 	  vis = new pv.Panel()
 			  .width(graphics.w)
 			  .height(graphics.h)
-			  .bottom(60)
-			  .left(60)
-			  .right(20)
-			  .top(60)
+			  .bottom(padBot)
+			  .left(padLeft)
+			  .right(padRight)
+			  .top(padTop)
 			  .events("all");
 	  
 	  /*Graph Title*/		  
@@ -317,7 +325,10 @@ $(function(){
 			var detHndlMs = determinantBtwnVec(handleVec, mouseVec);
 			var rotDist = angleBtwnVec(mouseVec, handleVec);			
 			
-			if (mouseX > 0 && mouseX < graphics.w && mouseY > 0 && mouseY < graphics.h){
+			if (mouseX > (0 - padLeft) 
+				&& mouseX < (graphics.w + padRight) 
+				&& mouseY > (0 - padBot) 
+				&& mouseY < (graphics.h + padTop)){
 				
 				//Rotation
 				if (!isNaN(rotDist)){
@@ -386,10 +397,10 @@ $(function(){
 		vis = new pv.Panel()
 			  .width(graphics.w)
 			  .height(graphics.h)
-			  .bottom(60)
-			  .left(60)
-			  .right(20)
-			  .top(60)
+			  .bottom(padBot)
+			  .left(padLeft)
+			  .right(padRight)
+			  .top(padTop)
 			  .events("all");
 			  
 		/*Graph Title*/		  
@@ -451,10 +462,10 @@ $(function(){
 		vis = new pv.Panel()
 			  .width(graphics.w)
 			  .height(graphics.h)
-			  .bottom(60)
-			  .left(60)
-			  .right(20)
-			  .top(60)
+			  .bottom(padBot)
+			  .left(padLeft)
+			  .right(padRight)
+			  .top(padTop)
 			  .events("all");
 			  
 		/*Graph Title*/		  
@@ -479,7 +490,7 @@ $(function(){
 		/* Y-axis label */		  
 		vis.add(pv.Label)
 			.data(graphics.worksheet.yAxisTitle)
-			.left(-50)
+			.left(-42)
 			.top(graphics.h / 2)
 			.textAlign("center")
 			.textAngle(-Math.PI / 2)

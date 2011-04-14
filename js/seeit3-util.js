@@ -303,7 +303,8 @@ function isPointBetweenTwoPoints(testPoint, refPoint1, refPoint2){
 	
 	var yValOfLineAtTestX = lineSlope * testPoint[0] + lineIntercept;
 	
-	if (Math.abs(testPoint[1] - yValOfLineAtTestX) < 25){
+	var tolerance = 22;  //tolerance for considering a point on the line
+	if (Math.abs(testPoint[1] - yValOfLineAtTestX) < tolerance){  
 		if((testPoint[0] <= refPoint1[0] && testPoint[0] >= refPoint2[0]
 				|| testPoint[0] >= refPoint1[0] && testPoint[0] <= refPoint2[0])
 			&& (testPoint[1] <= refPoint1[1] && testPoint[1] >= refPoint2[1]
@@ -316,20 +317,29 @@ function isPointBetweenTwoPoints(testPoint, refPoint1, refPoint2){
 
 
 function numPointsInEllipse(graphics){
+	var tolerance = 10;
 	var count = 0;
 	var ellipsePoints = getRotatedEllipseCoords(graphics);
 	for (var i = 0; i < graphics.data.length; i++){
 		var dataPoint = [graphics.x(parseFloat(graphics.data[i].incidence))
-						 ,graphics.y(parseFloat(graphics.data[i].otherFactor))]; 
-		for (var j = 0; j < parseInt(ellipsePoints.length/2); j++){
-			var ellPoint1 = ellipsePoints[j];
-			var ellPoint2 = ellipsePoints[(j + parseInt(ellipsePoints.length/2)) % ellipsePoints.length];  //Point on opposite side of the ellipse
-			
-			if (isPointBetweenTwoPoints(dataPoint, ellPoint1, ellPoint2)){
-				count++;
-				break;
+						 ,graphics.y(parseFloat(graphics.data[i].otherFactor))];
+		var left = right = above = below = false; 
+		for (var j = 0; j < ellipsePoints.length; j++){
+			if (dataPoint[0] <= ellipsePoints[j][0]  && Math.abs(dataPoint[1] - ellipsePoints[j][1]) < tolerance){
+				right = true;
+			}
+			if (dataPoint[0] >= ellipsePoints[j][0]  && Math.abs(dataPoint[1] - ellipsePoints[j][1]) < tolerance){
+				left = true;
+			}
+			if (dataPoint[1] <= ellipsePoints[j][1]  && Math.abs(dataPoint[0] - ellipsePoints[j][0]) < tolerance){
+				above = true;
+			}
+			if (dataPoint[1] >= ellipsePoints[j][1]  && Math.abs(dataPoint[0] - ellipsePoints[j][0]) < tolerance){
+				below = true;
 			}
 		}
+		
+		if (right && left && below && above) count++;
 	}
 	
 	return count;
