@@ -1,3 +1,38 @@
+/*HTML Element Manipulation*/
+function toggleNormalViewOptions(){
+	if (jQuery('#checkboxNormalView').is(':checked')) { 
+		$('#checkboxShowUserLine').removeAttr('disabled');
+		$('#checkboxShowMMEllipse').removeAttr('disabled');
+		$('#checkboxShowData').removeAttr('disabled');
+		$('#fitScalesToData').removeAttr('disabled');
+		
+		$('#checkboxShowMMDots').removeAttr('disabled');
+		$('#checkboxShowMMRects').removeAttr('disabled');
+		$('#checkboxShowMMLine').removeAttr('disabled');
+		$('#checkboxShowMMEqn').removeAttr('disabled');
+		
+		$('#checkboxShowLeastSquaresLine').removeAttr('disabled');
+		$('#checkboxShowLeastSquaresSquares').removeAttr('disabled');
+		$('#checkboxShowLeastSquaresEquation').removeAttr('disabled');
+		$('#checkboxShowLeastSquaresRValue').removeAttr('disabled');
+	} else {
+		$('#checkboxShowUserLine').attr('disabled', true);
+		$('#checkboxShowMMEllipse').attr('disabled', true);
+		$('#checkboxShowData').attr('disabled', true);
+		$('#fitScalesToData').attr('disabled', true);
+		
+		$('#checkboxShowMMDots').attr('disabled', true);
+		$('#checkboxShowMMRects').attr('disabled', true);
+		$('#checkboxShowMMLine').attr('disabled', true);
+		$('#checkboxShowMMEqn').attr('disabled', true);
+		
+		$('#checkboxShowLeastSquaresLine').attr('disabled', true);
+		$('#checkboxShowLeastSquaresSquares').attr('disabled', true);
+		$('#checkboxShowLeastSquaresEquation').attr('disabled', true);
+		$('#checkboxShowLeastSquaresRValue').attr('disabled', true);
+	}
+}
+
 /*Drawing Related Functions*/
 function getRotatedEllipseCoords(graphics) {
 	var ellipseXRadius = graphics.xRadius;

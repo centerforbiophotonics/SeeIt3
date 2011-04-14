@@ -6,15 +6,18 @@ $(function(){
 	$('#textYMax').hide();
 	$('#textXMin').hide();
 	$('#textXMax').hide();
-
+	
 	function constructVis() {
 		positionAxisMinMaxWidgets();
 		if (jQuery('#checkboxNormalView').is(':checked')) { 
 			constructNormVis();
+			toggleNormalViewOptions();
 		}else if (jQuery('#checkboxDropDataOntoX').is(':checked')) {
 			constructXStackedVis();
+			toggleNormalViewOptions();
 		}else if (jQuery('#checkboxDropDataOntoY').is(':checked')) {
 			constructYStackedVis();
+			toggleNormalViewOptions();
 		}
 		
 	}
