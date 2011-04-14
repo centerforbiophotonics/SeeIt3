@@ -413,7 +413,8 @@ $(function(){
 			.left(function(d) {return graphics.x(d)})
 			.strokeStyle("#aaa")
 			.anchor("bottom").add(pv.Label)
-			  .text(function(d) {return d.toFixed(1)});
+			  .text(function(d) {return d.toFixed(1)})
+			  .visible(function(){return this.index != 0});
 			   
 		/* X-axis label */
 		vis.add(pv.Label)
@@ -448,7 +449,7 @@ $(function(){
 			  .width(graphics.w)
 			  .height(graphics.h)
 			  .bottom(60)
-			  .left(70)
+			  .left(60)
 			  .right(20)
 			  .top(60)
 			  .events("all");
@@ -487,7 +488,8 @@ $(function(){
 			.bottom(function(d) {return graphics.y(d)})
 			.strokeStyle("#aaa")
 			.anchor("left").add(pv.Label)
-			  .text(function(d) {return d.toFixed(1)});
+			  .text(function(d) {return d.toFixed(1)})
+			  .visible(function(){return this.index != 0});
 			
 		/* X-axis ticks */
 		vis.add(pv.Rule)
