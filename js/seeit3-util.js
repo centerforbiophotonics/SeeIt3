@@ -204,19 +204,20 @@ function xDistributionPoints(graphics){
 		
 		for (var j = 0; j < graphics.data.length; j++){
 			var dataPoint = graphics.data[j],
-				xVal = parseFloat(dataPoint.incidence);
+				xVal = parseFloat(dataPoint.incidence),
+				state = graphics.data[j].state;
 				
 			if (xVal >= bucketMin 
 				&& xVal < bucketMax)
 			{
-				pointsInBucket.push([graphics.x(xVal), 0]);
+				pointsInBucket.push([graphics.x(xVal), 0, state]);
 			}
 		}
 		
 		pointsInBucket = shuffle(pointsInBucket);
 		
 		for (var j = 0; j < pointsInBucket.length; j++){
-			points.push([pointsInBucket[j][0], graphics.dotSize + j*2*graphics.dotSize]);
+			points.push([pointsInBucket[j][0], graphics.dotSize + j*2*graphics.dotSize, pointsInBucket[j][2]]);
 		}
 	}
 	
@@ -236,12 +237,13 @@ function yDistributionPoints(graphics){
 		//finds data points in the bucket
 		for (var j = 0; j < graphics.data.length; j++){
 			var dataPoint = graphics.data[j],
-				yVal = parseFloat(dataPoint.otherFactor);
+				yVal = parseFloat(dataPoint.otherFactor),
+				state = graphics.data[j].state;
 				
 			if (yVal >= bucketMin 
 				&& yVal < bucketMax)
 			{
-				pointsInBucket.push([0, graphics.y(yVal)]);   //Converts to window coordinates here to simplify stacking computation
+				pointsInBucket.push([0, graphics.y(yVal), state]);   //Converts to window coordinates here to simplify stacking computation
 			}
 		}
 		
@@ -250,7 +252,7 @@ function yDistributionPoints(graphics){
 		
 		//Computes Stack height for each point in the bucket
 		for (var j = 0; j < pointsInBucket.length; j++){
-			points.push([graphics.dotSize + j*2*graphics.dotSize, pointsInBucket[j][1] ]);
+			points.push([graphics.dotSize + j*2*graphics.dotSize, pointsInBucket[j][1], pointsInBucket[j][2] ]);
 			
 		}
 	}

@@ -56,8 +56,8 @@
 		this.pointsInEllipse = numPointsInEllipse(this);
 		
 		/* X/Y Distribution Variables */
-		this.buckets = 20;
-		this.dotSize = 5;
+		this.buckets = 40;
+		this.dotSize = 10;
 	}
 	
 	Graphics.prototype = {

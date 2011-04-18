@@ -163,6 +163,7 @@ $(function(){
 		 .bottom(function(d) { return graphics.y(d[1]) })
 		 .title("Median-median line")
 		 .strokeStyle("blue")
+		 .lineWidth(2)
 		 .add(pv.Label)
 			.visible(function () { return (jQuery('#checkboxShowMMEqn').is(':checked') 
 											&& jQuery('#checkboxShowMMLine').is(':checked') )})
@@ -185,7 +186,8 @@ $(function(){
 		.left(function(d) { return graphics.x(d[0]) })
 		.bottom(function(d) { return graphics.y(d[1]) })
 		.title("Least-Squares Regression Line")
-		.strokeStyle("green")
+		.strokeStyle(pv.rgb(0,225,0,1))
+		.lineWidth(2)
 		.add(pv.Label)									//Line Equation
 			.visible(function () { return (jQuery('#checkboxShowLeastSquaresEquation').is(':checked')
 											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
@@ -195,7 +197,7 @@ $(function(){
 			})
 			.textAlign("left")
 			.textBaseline("top")
-			.textStyle("green")
+			.textStyle(pv.rgb(0,225,0,1))
 			.textAngle(getLSLineLabelAngle(graphics))
 			.font("bold 12px sans-serif")
 		.add(pv.Label)									//R Value
@@ -207,7 +209,7 @@ $(function(){
 			})
 			.textAlign("left")
 			.textBaseline("bottom")
-			.textStyle("green")
+			.textStyle(pv.rgb(0,225,0,1))
 			.textAngle(getLSLineLabelAngle(graphics))
 			.font("bold 12px sans-serif");
 			
@@ -233,6 +235,7 @@ $(function(){
 		.visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
 		.fillStyle("red")
 		.strokeStyle("red")
+		.lineWidth(2)
 		.add(pv.Label)									//Line Equation
 			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
 			.text(function(d) {
@@ -451,7 +454,8 @@ $(function(){
 			.bottom(function(d) { return d[1] })
 			.radius(graphics.dotSize)
 			.fillStyle("#eee")
-			.strokeStyle(function(d) { return graphics.c[this.index] });
+			.strokeStyle(function(d) { return graphics.c[this.index] })
+			.title(function(d) { return d[2] });
 			 			
 		vis.render();
 	}
@@ -610,6 +614,12 @@ $(function(){
 	
 	jQuery('#checkboxShowLeastSquaresEquation').change(function(event) {
 	  if (jQuery('#checkboxShowLeastSquaresEquation').is(':checked'))
+		jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
+	  constructVis();
+	});
+	
+	jQuery('#checkboxShowLeastSquaresRValue').change(function(event) {
+	  if (jQuery('#checkboxShowLeastSquaresRValue').is(':checked'))
 		jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
 	  constructVis();
 	});
