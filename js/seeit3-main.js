@@ -71,7 +71,7 @@ $(function(){
 
 	  /* Y-axis ticks */
 	  vis.add(pv.Rule)
-		 .data(function() { return graphics.y.ticks(20) })
+		 .data(function() { return graphics.y.ticks(graphics.normViewAxisDivisions) })
 		 .bottom(graphics.y)
 		 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
 		 .anchor('left').add(pv.Label)
@@ -80,7 +80,7 @@ $(function(){
 
 	  /* X-axis ticks */
 	  vis.add(pv.Rule)
-		 .data(function() { return graphics.x.ticks(20) })
+		 .data(function() { return graphics.x.ticks(graphics.normViewAxisDivisions) })
 		 .left(graphics.x)
 		 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
 		 .anchor("bottom").add(pv.Label)
@@ -104,7 +104,7 @@ $(function(){
 		 .event("unpoint", function() { return this.active(-1).parent })
 		 .left(function(d) { return graphics.x(d.incidence) })
 		 .bottom(function(d) { return graphics.y(d.otherFactor) })
-		 .radius(function() { return 3 / this.scale })
+		 .radius(function() { return graphics.normViewDotSize })
 		 .fillStyle("#eee")
 		 .strokeStyle(function(d) { return graphics.c[this.index] })
 		 .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
@@ -390,6 +390,23 @@ $(function(){
 			vis.render();
 		 });
 	  
+	  jQuery('#sliderDotSize').slider({ 
+		orientation:'vertical', min:1, max:10, value:graphics.normViewDotSize, step:1,
+		slide:function(event, ui) {
+			graphics.normViewDotSize = ui.value; 
+			vis.render(); 
+		}
+	  });
+	  
+	  jQuery('#sliderDivisions').slider({ 
+		orientation:'vertical', min:2, max:40, value:graphics.normViewAxisDivisions, step:1,
+		slide:function(event, ui) { 
+			graphics.normViewAxisDivisions = ui.value;
+			vis.render(); 
+		}
+	  });
+	  
+	  
 	  vis.render();
 			
 	}
@@ -449,13 +466,29 @@ $(function(){
 		
 		/* Dots */	
 		vis.add(pv.Dot)
-			.data(xDistributionPoints(graphics))
+			.data(function() {return xDistributionPoints(graphics)})
 			.left(function(d) { return d[0] })
 			.bottom(function(d) { return d[1] })
-			.radius(graphics.dotSize)
+			.radius(function() {return graphics.bucketDotSize})
 			.fillStyle("#eee")
 			.strokeStyle(function(d) { return graphics.c[this.index] })
 			.title(function(d) { return d[2] });
+			
+		jQuery('#sliderDotSize').slider({ 
+			orientation:'vertical', min:1, max:10, value:graphics.bucketDotSize, step:1,
+			slide:function(event, ui) {
+				graphics.bucketDotSize = ui.value; 
+				vis.render(); 
+			}
+		});
+	  
+		jQuery('#sliderDivisions').slider({ 
+			orientation:'vertical', min:2, max:40, value:graphics.buckets, step:1,
+			slide:function(event, ui) { 
+				graphics.buckets = ui.value;
+				vis.render(); 
+			}
+		});
 			 			
 		vis.render();
 	}
@@ -516,12 +549,29 @@ $(function(){
 		
 		/* Dots */	
 		vis.add(pv.Dot)
-			.data(yDistributionPoints(graphics))
+			.data(function() {return yDistributionPoints(graphics)})
 			.left(function(d) {return d[0]})
 			.bottom(function(d) {return d[1]})
-			.radius(graphics.dotSize)
+			.radius(function() {return graphics.bucketDotSize})
 			.fillStyle("#eee")
-			.strokeStyle(function(d) { return graphics.c[this.index] });
+			.strokeStyle(function(d) { return graphics.c[this.index] })
+			.title(function(d) { return d[2] });
+			
+		jQuery('#sliderDotSize').slider({ 
+			orientation:'vertical', min:1, max:10, value:graphics.bucketDotSize, step:1,
+			slide:function(event, ui) {
+				graphics.bucketDotSize = ui.value; 
+				vis.render(); 
+			}
+		});
+	  
+		jQuery('#sliderDivisions').slider({ 
+			orientation:'vertical', min:2, max:40, value:graphics.buckets, step:1,
+			slide:function(event, ui) { 
+				graphics.buckets = ui.value;
+				vis.render(); 
+			}
+		});
 			 	
 		vis.render();
 	}

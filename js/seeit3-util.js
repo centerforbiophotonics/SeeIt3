@@ -217,7 +217,7 @@ function xDistributionPoints(graphics){
 		pointsInBucket = shuffle(pointsInBucket);
 		
 		for (var j = 0; j < pointsInBucket.length; j++){
-			points.push([pointsInBucket[j][0], graphics.dotSize + j*2*graphics.dotSize, pointsInBucket[j][2]]);
+			points.push([pointsInBucket[j][0], graphics.bucketDotSize + j*2*graphics.bucketDotSize, pointsInBucket[j][2]]);
 		}
 	}
 	
@@ -252,7 +252,7 @@ function yDistributionPoints(graphics){
 		
 		//Computes Stack height for each point in the bucket
 		for (var j = 0; j < pointsInBucket.length; j++){
-			points.push([graphics.dotSize + j*2*graphics.dotSize, pointsInBucket[j][1], pointsInBucket[j][2] ]);
+			points.push([graphics.bucketDotSize + j*2*graphics.bucketDotSize, pointsInBucket[j][1], pointsInBucket[j][2] ]);
 			
 		}
 	}
