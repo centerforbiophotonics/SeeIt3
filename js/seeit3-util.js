@@ -4,7 +4,6 @@ function toggleNormalViewOptions(){
 		$('#checkboxShowUserLine').removeAttr('disabled');
 		$('#checkboxShowMMEllipse').removeAttr('disabled');
 		$('#checkboxShowData').removeAttr('disabled');
-		$('#fitScalesToData').removeAttr('disabled');
 		
 		$('#checkboxShowMMDots').removeAttr('disabled');
 		$('#checkboxShowMMRects').removeAttr('disabled');
@@ -19,7 +18,6 @@ function toggleNormalViewOptions(){
 		$('#checkboxShowUserLine').attr('disabled', true);
 		$('#checkboxShowMMEllipse').attr('disabled', true);
 		$('#checkboxShowData').attr('disabled', true);
-		$('#fitScalesToData').attr('disabled', true);
 		
 		$('#checkboxShowMMDots').attr('disabled', true);
 		$('#checkboxShowMMRects').attr('disabled', true);

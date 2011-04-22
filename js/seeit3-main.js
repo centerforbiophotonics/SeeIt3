@@ -9,13 +9,20 @@ $(function(){
 	
 	function constructVis() {
 		positionAxisMinMaxWidgets();
-		if (jQuery('#checkboxNormalView').is(':checked')) { 
+		if (jQuery('#checkboxNormalView').is(':checked')) {
+			graphics.setXScale();
+			graphics.setYScale();
+			updateScaleTextBoxes(graphics);
 			constructNormVis();
 			toggleNormalViewOptions();
 		}else if (jQuery('#checkboxDropDataOntoX').is(':checked')) {
+			graphics.setXScale();
+			updateScaleTextBoxes(graphics);
 			constructXStackedVis();
 			toggleNormalViewOptions();
 		}else if (jQuery('#checkboxDropDataOntoY').is(':checked')) {
+			graphics.setYScale();
+			updateScaleTextBoxes(graphics);
 			constructYStackedVis();
 			toggleNormalViewOptions();
 		}
@@ -662,9 +669,15 @@ $(function(){
 	
 	
 	jQuery('#fitScalesToData').change(function(event) {
-	  graphics.setXScale();
-	  graphics.setYScale();
-	  updateScaleTextBoxes(graphics)
+	  if (jQuery('#checkboxNormalView').is(':checked')){
+		graphics.setXScale();
+		graphics.setYScale();
+	  } else if (jQuery('#checkboxDropDataOntoX').is(':checked')){
+		graphics.setXScale();  
+	  } else {
+		graphics.setYScale();
+	  }
+	  updateScaleTextBoxes(graphics);
 	  constructVis();
 	});
 	
