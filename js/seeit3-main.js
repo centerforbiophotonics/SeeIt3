@@ -106,7 +106,11 @@ $(function(){
 		 .bottom(function(d) { return graphics.y(d.otherFactor) })
 		 .radius(function() { return graphics.normViewDotSize })
 		 .fillStyle("#eee")
-		 .strokeStyle(function(d) { return graphics.c[this.index] })
+		 .strokeStyle(function(d) {  if (jQuery('#checkboxBWView').is(':checked')){
+											return "black";
+										} else {
+											return graphics.c[this.index];
+										}})
 		 .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
 		 .def('active', -1)
 		 .event("point", function() { return this.active(this.index).parent })
@@ -224,7 +228,7 @@ $(function(){
 			.bottom(function(d) { return d[1] })
 			.lineWidth(0.5)
 			.strokeStyle("green")
-			.fillStyle(pv.rgb(0,255,0,0.05));
+			.fillStyle(pv.rgb(0,225,0,0.05));
 	  }
 		 
 	  /* user drawn line */
@@ -471,7 +475,11 @@ $(function(){
 			.bottom(function(d) { return d[1] })
 			.radius(function() {return graphics.bucketDotSize})
 			.fillStyle("#eee")
-			.strokeStyle(function(d) { return graphics.c[this.index] })
+			.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
+											return "black";
+										} else {
+											return graphics.c[this.index];
+										}})
 			.title(function(d) { return d[2] });
 			
 		jQuery('#sliderDotSize').slider({ 
@@ -554,7 +562,11 @@ $(function(){
 			.bottom(function(d) {return d[1]})
 			.radius(function() {return graphics.bucketDotSize})
 			.fillStyle("#eee")
-			.strokeStyle(function(d) { return graphics.c[this.index] })
+			.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
+											return "black"; 
+										} else {
+											return graphics.c[this.index];
+										}})
 			.title(function(d) { return d[2] });
 			
 		jQuery('#sliderDotSize').slider({ 
@@ -728,5 +740,7 @@ $(function(){
 		getWorksheet().fetchWorksheetData();
 		
 	});
+	
+	$('#checkboxBWView').change(constructVis());
 	
 });
