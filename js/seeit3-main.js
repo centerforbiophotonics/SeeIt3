@@ -741,6 +741,6 @@ $(function(){
 		
 	});
 	
-	$('#checkboxBWView').change(constructVis());
+	$('#checkboxBWView').change(function() { return constructVis(); });
 	
 });

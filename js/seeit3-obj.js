@@ -101,9 +101,13 @@
 	var numWorksheets = 0;
 	
 	function Spreadsheet(key) {
-	  this.key = key;
 	  this.worksheets = [];
-	  this.fetchWorksheets();
+	  if( typeof key == 'string'){
+		this.key = key;
+		this.fetchWorksheets();
+	  } else {
+		this.constructLocalWorksheets(key);
+	  }
 	}
 
 	Spreadsheet.prototype = {
@@ -127,10 +131,18 @@
 		});
 	  },
 	  
+	  constructLocalWorksheets: function(local) {
+		for (var i = 0; i < local.length; i++){
+			this.worksheets.push(new Worksheet(localData[i]));
+		}
+		numWorksheets += local.length;  
+	  },
+	  
 	};
 	
 	var exampleSpreadsheets = [
 	  new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
+	  new Spreadsheet(localData),
 	]
 
 	function getWorksheetByURL(URL) {
@@ -148,9 +160,13 @@
 	  return worksheet;
 	}
 
-	function Worksheet(URL) {
-	  this.URL = URL;
-	  this.fetchWorksheetData();
+	function Worksheet(worksheet) {
+	  if (typeof worksheet == 'string'){
+		this.URL = worksheet;
+		this.fetchWorksheetData();
+	  } else {
+		this.parseLocalData(worksheet);
+	  }
 	}
 
 	Worksheet.prototype = {
@@ -169,14 +185,26 @@
 		  }
 		});
 	  },
+	  
+	  parseLocalData: function(feedData) {
+			var worksheet = this;
+			worksheet.data = worksheet.transformFeedData(feedData);
+			worksheet.xAxisTitle = worksheet.getXAxisTitle(feedData);
+			worksheet.yAxisTitle = worksheet.getYAxisTitle(feedData);        
+			worksheet.title = feedData.feed.title.$t;
+			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
+	  },
+	  
 	  getXAxisTitle: function(feedData) {
 		var titles = feedData.feed.entry[0].content.$t.split(",");
 		return /[\w|\d]+/.exec(titles[0]);
 	  },
+	  
 	  getYAxisTitle: function(feedData) {
 		var titles = feedData.feed.entry[0].content.$t.split(",");
 		return /[\w|\d]+/.exec(titles[1]);
 	  },
+	  
 	  transformFeedData: function(feedData) {
 		var data = [];
 		for (var i = 0; i < feedData.feed.entry.length; i++) {
