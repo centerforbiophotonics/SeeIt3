@@ -662,14 +662,8 @@ $(function(){
 	
 	
 	jQuery('#fitScalesToData').change(function(event) {
-	  if (jQuery('#checkboxNormalView').is(':checked')){
-		graphics.setXScale();
-		graphics.setYScale();
-	  } else if (jQuery('#checkboxDropDataOntoX').is(':checked')){
-		graphics.setXScale();  
-	  } else {
-		graphics.setYScale();
-	  }
+	  graphics.setXScale();
+	  graphics.setYScale();
 	  updateScaleTextBoxes(graphics);
 	  constructVis();
 	});
