@@ -106,6 +106,7 @@
 		this.key = key;
 		this.fetchWorksheets();
 	  } else {
+		this.key == 'local'
 		this.constructLocalWorksheets(key);
 	  }
 	}
@@ -133,7 +134,7 @@
 	  
 	  constructLocalWorksheets: function(local) {
 		for (var i = 0; i < local.length; i++){
-			this.worksheets.push(new Worksheet(localData[i]));
+			this.worksheets.push(new Worksheet(local[i]));
 		}
 		numWorksheets += local.length;  
 	  },
@@ -165,6 +166,7 @@
 		this.URL = worksheet;
 		this.fetchWorksheetData();
 	  } else {
+		this.URL = worksheet.feed.link[0].href;
 		this.parseLocalData(worksheet);
 	  }
 	}
