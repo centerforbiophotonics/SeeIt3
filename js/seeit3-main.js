@@ -378,13 +378,14 @@ function constructNormVis(){
 	 })
 	 .add(pv.Label)								
 		.text(function(d) {
-			if (this.index == 3) { return "Number of Points Inside = "+ numPointsInEllipse(graphics) }
+			if (this.index == 3) { return "# of Points Inside = "+ numPointsInEllipse(graphics) }
 			else {return "";}
 		})
 		.textAlign("center")
 		.textBaseline("bottom")
 		.textStyle("red")
 		.textAngle(0)
+		.textMargin(10)
 		.font("bold 12px sans-serif");
 	 
    vis.add(pv.Dot)
