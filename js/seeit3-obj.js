@@ -15,9 +15,11 @@
 		this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 		this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
 		this.colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black");
-		this.c = jQuery.map(this.data, function() { return graphics.colorScale(Math.random()) }),
-		this.normViewDotSize = 3,
+		this.c = jQuery.map(this.data, function() { return graphics.colorScale(Math.random()) });
+		this.normViewDotSize = 3;
 		this.normViewAxisDivisions = 20;
+		this.labelTextSize = "16";
+		this.tickTextSize = "12";
 			
 		/* Variables defined in normalized coordinates */						 
 		/* median median crosses and squares */

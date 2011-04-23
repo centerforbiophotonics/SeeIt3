@@ -19,12 +19,21 @@ function constructVis() {
 		toggleNormalViewOptions();
 	}
 	
+	jQuery('#sliderTextSize').slider({ 
+	orientation:'vertical', min:12, max:20, value:parseInt(graphics.tickTextSize), step:1,
+	slide:function(event, ui) { 
+		graphics.labelTextSize = (ui.value + 4).toString();
+		graphics.tickTextSize = ui.value.toString();
+		vis.render(); 
+	}
+	});
+	
 }
 
 /*Padding around main panel*/
-var padBot = 60,
+var padBot = 70,
 	padTop = 60,
-	padLeft = 60,
+	padLeft = 90,
 	padRight = 20;
 
 
@@ -62,11 +71,11 @@ function constructNormVis(){
   /* Y-axis label */		  
   vis.add(pv.Label)
 	.data(graphics.worksheet.yAxisTitle)
-	.left(-40)
+	.left(-65)
 	.top(graphics.h / 2)
 	.textAlign("center")
 	.textAngle(-Math.PI / 2)
-	.font("bold 14px sans-serif");
+	.font(function(){return "bold "+graphics.labelTextSize+"px sans-serif"});
 
   /* Y-axis ticks */
   vis.add(pv.Rule)
@@ -75,6 +84,7 @@ function constructNormVis(){
 	 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
 	 .anchor('left').add(pv.Label)
 	   .text(graphics.y.tickFormat)
+	   .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
 	   .visible(function(){return this.index != 0});
 
   /* X-axis ticks */
@@ -84,16 +94,17 @@ function constructNormVis(){
 	 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
 	 .anchor("bottom").add(pv.Label)
 	   .text(graphics.x.tickFormat)
+	   .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
 	   .visible(function(){return this.index != 0});
 	   
   /* X-axis label */
   vis.add(pv.Label)
 	.data(graphics.worksheet.xAxisTitle)
 	.left(graphics.w / 2)
-	.bottom(-40)
+	.bottom(-50)
 	.textAlign("center")
 	.textAngle(0)
-	.font("bold 14px sans-serif");
+	.font(function(){return "bold "+graphics.labelTextSize+"px sans-serif"});
 	
   /* dot plot */
   vis.add(pv.Dot)
@@ -459,16 +470,17 @@ function constructXStackedVis(){
 		.strokeStyle("#aaa")
 		.anchor("bottom").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
+		  .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
 		  .visible(function(){return this.index != 0});
 		   
 	/* X-axis label */
 	vis.add(pv.Label)
 		.data(graphics.worksheet.xAxisTitle)
 		.left(graphics.w / 2)
-		.bottom(-40)
+		.bottom(-50)
 		.textAlign("center")
 		.textAngle(0)
-		.font("bold 14px sans-serif");
+		.font(function(){return "bold "+graphics.labelTextSize+"px sans-serif"});
 		
 	/* Y-axis ticks */
 	vis.add(pv.Rule)
@@ -550,11 +562,11 @@ function constructYStackedVis(){
 	/* Y-axis label */		  
 	vis.add(pv.Label)
 		.data(graphics.worksheet.yAxisTitle)
-		.left(-42)
+		.left(-65)
 		.top(graphics.h / 2)
 		.textAlign("center")
 		.textAngle(-Math.PI / 2)
-		.font("bold 14px sans-serif");
+		.font(function(){return "bold "+graphics.labelTextSize+"px sans-serif"});
 
 	/* Y-axis ticks */
 	vis.add(pv.Rule)
@@ -563,6 +575,7 @@ function constructYStackedVis(){
 		.strokeStyle("#aaa")
 		.anchor("left").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
+		  .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
 		  .visible(function(){return this.index != 0});
 		
 	/* X-axis ticks */

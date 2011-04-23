@@ -451,11 +451,11 @@ function parseSpreadsheetKeyFromURL(URL) {
 }
 
 function calcGraphWidth(){
-	return window.innerWidth - 100;
+	return window.innerWidth - 135;
 }
 
 function calcGraphHeight(){
-	return (window.innerHeight - jQuery('div#notGraph').height()) - 155; 
+	return (window.innerHeight - jQuery('div#notGraph').height()) - 165; 
 }
 
 function sortByXValues(data) {
@@ -598,8 +598,8 @@ function getXValue(y, slope, intercept) {
 
 function positionAxisMinMaxWidgets() {
   $('#xMin input,#xMax input,#yMin input,#yMax input').css('width', '40px');
-  $('#yMin').css('position', 'absolute').css('bottom', '70px').css('left', '22px');
-  $('#yMax').css('position', 'absolute').css('top', '227px').css('left', '22px');
-  $('#xMin').css('position', 'absolute').css('bottom', '50px').css('left', '68px');
-  $('#xMax').css('position', 'absolute').css('bottom', '50px').css('right', '20px')
+  $('#yMin').css('position', 'absolute').css('bottom', '75px').css('left', '52px');
+  $('#yMax').css('position', 'absolute').css('top', '235px').css('left', '52px');
+  $('#xMin').css('position', 'absolute').css('bottom', '60px').css('left', '99px');
+  $('#xMax').css('position', 'absolute').css('bottom', '60px').css('right', '24px')
 }
