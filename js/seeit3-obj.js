@@ -100,6 +100,83 @@
 	
 	var numWorksheets = 0;
 	
+	function getWorksheetByURL(URL) {
+	  for (var h = 0; h < exampleSpreadsheets.length; h++) {
+		for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
+		  if (exampleSpreadsheets[h].worksheets[i].URL == URL)
+			return exampleSpreadsheets[h].worksheets[i];
+		}
+	  }
+	}
+
+	function getWorksheet(){
+	  var URL = jQuery('#workSheetSelector').val();
+	  var worksheet = getWorksheetByURL(URL);
+	  return worksheet;
+	}
+
+	function Worksheet(param) {
+	  if (typeof param == 'string'){
+		this.URL = param;
+		this.fetchWorksheetData();
+	  } else {
+		this.URL = param.feed.link[0].href;
+		this.fetchLocalData(param);
+	  }
+	}
+
+	Worksheet.prototype = {
+	  fetchWorksheetData: function() {
+		var worksheet = this;
+		jQuery.jsonp({ url:this.URL + '?alt=json', callbackParameter: "callback", 
+		  success:function(feedData) {
+			worksheet.data = worksheet.transformFeedData(feedData);
+			worksheet.xAxisTitle = worksheet.getXAxisTitle(feedData);
+			worksheet.yAxisTitle = worksheet.getYAxisTitle(feedData);        
+			worksheet.title = feedData.feed.title.$t;
+			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
+		  },
+		  error:function() {
+			alert("Could not retrieve worksheet. Is it published?");
+		  }
+		});
+	  },
+	  
+	  fetchLocalData: function(feedData) {
+			this.data = this.transformFeedData(feedData);
+			this.xAxisTitle = this.getXAxisTitle(feedData);
+			this.yAxisTitle = this.getYAxisTitle(feedData);        
+			this.title = feedData.feed.title.$t;
+			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:this });
+			return null;
+	  },
+	  
+	  getXAxisTitle: function(feedData) {
+		var titles = feedData.feed.entry[0].content.$t.split(",");
+		return /[\w|\d]+/.exec(titles[0]);
+	  },
+	  
+	  getYAxisTitle: function(feedData) {
+		var titles = feedData.feed.entry[0].content.$t.split(",");
+		return /[\w|\d]+/.exec(titles[1]);
+	  },
+	  
+	  transformFeedData: function(feedData) {
+		var data = [];
+		for (var i = 0; i < feedData.feed.entry.length; i++) {
+		  var cells = feedData.feed.entry[i].content.$t.split(',');
+		  var firstMatch = /\:\s+([\d|\.]+)/.exec(cells[0]);
+		  var secondMatch = /\:\s+([\d|\.]+)/.exec(cells[1]);
+		  if (!firstMatch || !secondMatch)
+			; // ignore bad or blank data
+		  else
+			data.push({state: feedData.feed.entry[i].title.$t, incidence: firstMatch[1], otherFactor: secondMatch[1]});
+		}
+		return data;
+	  },
+	};
+
+	
 	function Spreadsheet(key) {
 	  this.worksheets = [];
 	  if( typeof key == 'string'){
@@ -143,81 +220,7 @@
 	
 	var exampleSpreadsheets = [
 	  new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
-	  new Spreadsheet(localData),
+	  //new Spreadsheet(localData),
 	]
 
-	function getWorksheetByURL(URL) {
-	  for (var h = 0; h < exampleSpreadsheets.length; h++) {
-		for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
-		  if (exampleSpreadsheets[h].worksheets[i].URL == URL)
-			return exampleSpreadsheets[h].worksheets[i];
-		}
-	  }
-	}
-
-	function getWorksheet(){
-	  var URL = jQuery('#workSheetSelector').val();
-	  var worksheet = getWorksheetByURL(URL);
-	  return worksheet;
-	}
-
-	function Worksheet(worksheet) {
-	  if (typeof worksheet == 'string'){
-		this.URL = worksheet;
-		this.fetchWorksheetData();
-	  } else {
-		this.URL = worksheet.feed.link[0].href;
-		this.parseLocalData(worksheet);
-	  }
-	}
-
-	Worksheet.prototype = {
-	  fetchWorksheetData: function() {
-		var worksheet = this;
-		jQuery.jsonp({ url:this.URL + '?alt=json', callbackParameter: "callback", 
-		  success:function(feedData) {
-			worksheet.data = worksheet.transformFeedData(feedData);
-			worksheet.xAxisTitle = worksheet.getXAxisTitle(feedData);
-			worksheet.yAxisTitle = worksheet.getYAxisTitle(feedData);        
-			worksheet.title = feedData.feed.title.$t;
-			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
-		  },
-		  error:function() {
-			alert("Could not retrieve worksheet. Is it published?");
-		  }
-		});
-	  },
-	  
-	  parseLocalData: function(feedData) {
-			var worksheet = this;
-			worksheet.data = worksheet.transformFeedData(feedData);
-			worksheet.xAxisTitle = worksheet.getXAxisTitle(feedData);
-			worksheet.yAxisTitle = worksheet.getYAxisTitle(feedData);        
-			worksheet.title = feedData.feed.title.$t;
-			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
-	  },
-	  
-	  getXAxisTitle: function(feedData) {
-		var titles = feedData.feed.entry[0].content.$t.split(",");
-		return /[\w|\d]+/.exec(titles[0]);
-	  },
-	  
-	  getYAxisTitle: function(feedData) {
-		var titles = feedData.feed.entry[0].content.$t.split(",");
-		return /[\w|\d]+/.exec(titles[1]);
-	  },
-	  
-	  transformFeedData: function(feedData) {
-		var data = [];
-		for (var i = 0; i < feedData.feed.entry.length; i++) {
-		  var cells = feedData.feed.entry[i].content.$t.split(',');
-		  var firstMatch = /\:\s+([\d|\.]+)/.exec(cells[0]);
-		  var secondMatch = /\:\s+([\d|\.]+)/.exec(cells[1]);
-		  if (!firstMatch || !secondMatch)
-			; // ignore bad or blank data
-		  else
-			data.push({state: feedData.feed.entry[i].title.$t, incidence: firstMatch[1], otherFactor: secondMatch[1]});
-		}
-		return data;
-	  },
-	}
+	
