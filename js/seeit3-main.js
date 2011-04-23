@@ -8,6 +8,7 @@ $('#textXMax').hide();
 
 function constructVis() {
 	positionAxisMinMaxWidgets();
+		
 	if (jQuery('#checkboxNormalView').is(':checked')) {
 		constructNormVis();
 		toggleNormalViewOptions();
@@ -27,7 +28,6 @@ function constructVis() {
 		vis.render(); 
 	}
 	});
-	
 }
 
 /*Padding around main panel*/
@@ -58,7 +58,7 @@ function constructNormVis(){
 	.textAngle(0)
 	.text(graphics.worksheet.title)
 	.font("bold 20px sans-serif");
-  
+	
   /* Number of datapoints N */
   vis.add(pv.Label)
 	.right(0)
@@ -66,7 +66,7 @@ function constructNormVis(){
 	.textAlign("right")
 	.textAngle(0)
 	.text("N = " + graphics.data.length)
-	.font("bold 12px sans-serif");
+	.font("bold 14px sans-serif");
 
   /* Y-axis label */		  
   vis.add(pv.Label)
@@ -454,7 +454,7 @@ function constructXStackedVis(){
 		.textAngle(0)
 		.text(graphics.worksheet.title + " (Dropped onto X-axis)")
 		.font("bold 20px sans-serif");
-	  
+	
 	/* Number of datapoints N */
 	vis.add(pv.Label)
 		.right(0)
@@ -462,7 +462,8 @@ function constructXStackedVis(){
 		.textAlign("right")
 		.textAngle(0)
 		.text("N = " + graphics.data.length)
-		.font("bold 12px sans-serif");
+		.font("bold 14px sans-serif");
+
 		
 	/* X-axis ticks */
 	vis.add(pv.Rule)
@@ -549,7 +550,7 @@ function constructYStackedVis(){
 		.textAngle(0)
 		.text(graphics.worksheet.title + " (Dropped onto Y-axis)")
 		.font("bold 20px sans-serif");
-	  
+		
 	/* Number of datapoints N */
 	vis.add(pv.Label)
 		.right(0)
@@ -557,8 +558,8 @@ function constructYStackedVis(){
 		.textAlign("right")
 		.textAngle(0)
 		.text("N = " + graphics.data.length)
-		.font("bold 12px sans-serif");
-		
+		.font("bold 14px sans-serif");
+
 		
 	/* Y-axis label */		  
 	vis.add(pv.Label)
