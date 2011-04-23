@@ -1,4 +1,4 @@
-/* Contains variables required for graphics
+	/* Contains variables required for graphics
 	 * DO NOT MODIFY DIRECTLY */
 	function Graphics(worksheet, width, height){
 		var graphics = this;
@@ -98,13 +98,15 @@
 		},
 	}
 	
-	var numWorksheets = 0;
 	
+
 	function getWorksheetByURL(URL) {
 	  for (var h = 0; h < exampleSpreadsheets.length; h++) {
 		for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
-		  if (exampleSpreadsheets[h].worksheets[i].URL == URL)
+		  if (exampleSpreadsheets[h].worksheets[i].URL == URL){
+			console.log("url match");
 			return exampleSpreadsheets[h].worksheets[i];
+		  }
 		}
 	  }
 	}
@@ -114,13 +116,16 @@
 	  var worksheet = getWorksheetByURL(URL);
 	  return worksheet;
 	}
+	
+
+	var numWorksheets = 0;
 
 	function Worksheet(param) {
 	  if (typeof param == 'string'){
 		this.URL = param;
 		this.fetchWorksheetData();
 	  } else {
-		this.URL = param.feed.link[0].href;
+		this.URL = param.feed.link[1].href;
 		this.fetchLocalData(param);
 	  }
 	}
@@ -143,12 +148,13 @@
 	  },
 	  
 	  fetchLocalData: function(feedData) {
-			this.data = this.transformFeedData(feedData);
-			this.xAxisTitle = this.getXAxisTitle(feedData);
-			this.yAxisTitle = this.getYAxisTitle(feedData);        
-			this.title = feedData.feed.title.$t;
-			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:this });
-			return null;
+			var worksheet = this;
+			worksheet.data = worksheet.transformFeedData(feedData);
+			worksheet.xAxisTitle = worksheet.getXAxisTitle(feedData);
+			worksheet.yAxisTitle = worksheet.getYAxisTitle(feedData);        
+			worksheet.title = feedData.feed.title.$t;
+			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
+			console.log("fetchLocalData called");
 	  },
 	  
 	  getXAxisTitle: function(feedData) {
@@ -219,8 +225,6 @@
 	};
 	
 	var exampleSpreadsheets = [
-	  new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
-	  //new Spreadsheet(localData),
-	]
+	  //new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
+	];
 
-	

@@ -1,4 +1,4 @@
-$(function(){
+//$(function(){
 	var vis = {};
 	var graphics = {};
 	
@@ -619,6 +619,7 @@ $(function(){
 	/* populate dataset drop down menu */
 	var numWorksheetsLoaded = 0;
 	jQuery('body').bind('WorksheetLoaded', function(event) {
+		console.log("WorksheetLoaded triggered");
 	  jQuery('#workSheetSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
 	  numWorksheetsLoaded++;
 	  if (numWorksheetsLoaded >= numWorksheets){
@@ -627,11 +628,12 @@ $(function(){
 		$('#textYMax').show();
 		$('#textXMin').show();
 		$('#textXMax').show();
-		graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
+		graphics = new Graphics(event.worksheet, calcGraphWidth(), calcGraphHeight());
 		updateScaleTextBoxes(graphics);
 		constructVis();
 	  }
 	});
+	
 
 	jQuery('#menu').change(function(event) {
 	  constructVis();
@@ -743,4 +745,4 @@ $(function(){
 	
 	$('#checkboxBWView').change(function() { return constructVis(); });
 	
-});
+//});
