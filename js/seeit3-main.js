@@ -105,8 +105,16 @@
 		 .left(function(d) { return graphics.x(d.incidence) })
 		 .bottom(function(d) { return graphics.y(d.otherFactor) })
 		 .radius(function() { return graphics.normViewDotSize })
-		 .fillStyle("#eee")
-		 .strokeStyle(function(d) {  if (jQuery('#checkboxBWView').is(':checked')){
+		 .fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
+									if (jQuery('#checkboxBWView').is(':checked'))
+										return "black";
+									else 
+										return graphics.c[this.index];
+									
+								} else {
+									return "#eee";
+								}})
+		 .strokeStyle(function() {  if (jQuery('#checkboxBWView').is(':checked')){
 											return "black";
 										} else {
 											return graphics.c[this.index];
