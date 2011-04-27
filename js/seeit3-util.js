@@ -31,6 +31,17 @@ function toggleNormalViewOptions(){
 	}
 }
 
+function toggleNetworkOptions(graphics) {
+	if (graphics.worksheet.local == true){
+		$('#refreshWorksheet').hide();
+		$('#editInGoogleDocs').hide();
+	} else {
+		$('#refreshWorksheet').show();
+		$('#editInGoogleDocs').show();
+	}
+	
+}
+
 /*Drawing Related Functions*/
 function getRotatedEllipseCoords(graphics) {
 	var ellipseXRadius = graphics.xRadius;

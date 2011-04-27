@@ -106,7 +106,6 @@
 	  for (var h = 0; h < exampleSpreadsheets.length; h++) {
 		for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
 		  if (exampleSpreadsheets[h].worksheets[i].URL == URL){
-			console.log("url match");
 			return exampleSpreadsheets[h].worksheets[i];
 		  }
 		}
@@ -125,9 +124,11 @@
 	function Worksheet(param) {
 	  if (typeof param == 'string'){
 		this.URL = param;
+		this.local = false;
 		this.fetchWorksheetData();
 	  } else {
-		this.URL = param.feed.link[1].href;
+		this.URL = param.feed.link[1].href + "***";
+		this.local = true;
 		this.fetchLocalData(param);
 	  }
 	}
@@ -156,7 +157,6 @@
 			worksheet.yAxisTitle = worksheet.getYAxisTitle(feedData);        
 			worksheet.title = feedData.feed.title.$t;
 			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
-			console.log("fetchLocalData called");
 	  },
 	  
 	  getXAxisTitle: function(feedData) {
@@ -190,9 +190,11 @@
 	  if( typeof key == 'string'){
 		this.key = key;
 		this.fetchWorksheets();
+		this.local = false;
 	  } else {
 		this.key == 'local'
 		this.constructLocalWorksheets(key);
+		this.local = true;
 	  }
 	}
 
@@ -227,6 +229,6 @@
 	};
 	
 	var exampleSpreadsheets = [
-	  //new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
+	  new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
 	];
 

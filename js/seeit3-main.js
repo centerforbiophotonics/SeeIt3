@@ -657,7 +657,6 @@ function updateScaleTextBoxes(graphics){
 /* populate dataset drop down menu */
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
-	console.log("WorksheetLoaded triggered");
   jQuery('#workSheetSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
@@ -668,6 +667,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 	$('#textXMax').show();
 	graphics = new Graphics(event.worksheet, calcGraphWidth(), calcGraphHeight());
 	updateScaleTextBoxes(graphics);
+	toggleNetworkOptions(graphics);
 	constructVis();
   }
 });
@@ -696,7 +696,8 @@ jQuery('#workSheetSelector').change(function(event) {
   graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
   graphics.setXScale();
   graphics.setYScale();
-  updateScaleTextBoxes(graphics)
+  updateScaleTextBoxes(graphics);
+  toggleNetworkOptions(graphics);
   constructVis();
 });
 
