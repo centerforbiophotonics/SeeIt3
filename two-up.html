@@ -11,7 +11,20 @@
 </head>
 
 <body>
-  <iframe src="index.html" width="49%" height="96%"></iframe>
-  <iframe src="index.html" width="49%" height="96%"></iframe>
+  <iframe src="index.html" width="49%"></iframe>
+  <iframe src="index.html" width="49%"></iframe>
+  
+  <script type="text/javascript">
+    $(function() {
+    
+      function resizeIframes() {
+        var height = $(window).height() - 25;
+        $('iframe').height(height);
+      }
+      $(window).resize(resizeIframes);
+      resizeIframes();
+    
+    });
+  </script>
 </body>
 </html>
