@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SeeIt: Two Up</title>
+  <script src="lib/jquery-1.4.4.js"></script>
+  <style>
+    iframe {
+      border:none;
+    }
+  </style>
+</head>
+
+<body>
+  <iframe src="index.html" width="49%" height="96%"></iframe>
+  <iframe src="index.html" width="49%" height="96%"></iframe>
+  
+  <script>
+    $('iframe').each(function() {
+      $(this.contentWindow.document).trigger('useSmallFonts');
+    });
+  </script>
+</body>
+</html>
