@@ -256,6 +256,7 @@ function constructNormVis(){
 	.add(pv.Dot)									//Endpoints
 		.fillStyle("red")
 		.shape('square')
+		.cursor('move')
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function() {
 			var mouseX = graphics.x.invert(vis.mouse().x),
@@ -265,7 +266,28 @@ function constructNormVis(){
 			graphics.userDrawnLinePoints[this.index].y = mouseY;
 			
 			vis.render();
-		});
+		})		
+	.add(pv.Dot)
+		.data(function() {return getUserLineMidpoint(graphics)})
+		.left(function(d) { return graphics.x(d.x) })
+		.bottom(function(d) { return graphics.y(d.y) })
+		.fillStyle(pv.rgb(255,0,0,0.1))
+		.strokeStyle(pv.rgb(255,0,0,0.5))
+		.shape('diamond')
+		.cursor('move')
+		.event("mousedown", pv.Behavior.drag())
+		.event("drag", function() {
+			var mouseX = graphics.x.invert(vis.mouse().x),
+				mouseY = graphics.y.invert(graphics.h - vis.mouse().y),
+				handle = getUserLineMidpoint(graphics);
+				
+			graphics.userDrawnLinePoints[0].x += mouseX - handle[0].x;
+			graphics.userDrawnLinePoints[1].x += mouseX - handle[0].x;
+			graphics.userDrawnLinePoints[0].y += mouseY - handle[0].y;
+			graphics.userDrawnLinePoints[1].y += mouseY - handle[0].y;
+						
+			vis.render();
+		});		
 	
   /* user ellipse */
   vis.add(pv.Line)
