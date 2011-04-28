@@ -43,6 +43,12 @@ function toggleNetworkOptions(graphics) {
 }
 
 /*Drawing Related Functions*/
+function getUserLineMidpoint(graphics){
+	return [{x: (graphics.userDrawnLinePoints[0].x + graphics.userDrawnLinePoints[1].x)/2,
+			y: (graphics.userDrawnLinePoints[0].y + graphics.userDrawnLinePoints[1].y)/2}];
+	
+}
+
 function getRotatedEllipseCoords(graphics) {
 	var ellipseXRadius = graphics.xRadius;
 	var ellipseYRadius = graphics.yRadius;
