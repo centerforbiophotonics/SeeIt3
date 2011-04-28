@@ -779,6 +779,9 @@ $('#textXMax').change(function(event) {
 
 $('#refreshWorksheet').click(function(event){
 	getWorksheet().fetchWorksheetData();
+	if ($('#fitScalesToData').is(':checked')){
+		jQuery('#fitScalesToData').attr('checked', false);
+	}
 	
 });
 
