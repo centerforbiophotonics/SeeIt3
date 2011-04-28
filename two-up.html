@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SeeIt: Two Up</title>
+  <script src="lib/jquery-1.4.4.js"></script>
+  <style> 
+    iframe {
+      border:none;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="font-weight:bold">Use your browser's view menu (View -> Zoom In/Out) to adjust font size.</div>
+  
+  <iframe src="index.html" width="49%"></iframe>
+  <iframe src="index.html" width="49%"></iframe>
+  
+  <script type="text/javascript">
+    $(function() {
+    
+      function resizeIframes() {
+        var height = $(window).height() - 40;
+        $('iframe').height(height);
+      }
+      $(window).resize(resizeIframes);
+      resizeIframes();
+    
+    });
+  </script>
+</body>
+</html>
