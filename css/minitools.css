@@ -1,0 +1,28 @@
+svg {
+  border:1px solid;
+}
+
+#ellipseSliders {
+  float:right;
+  display:none;
+  padding-left:15px;
+}
+
+#newSpreadsheetURL {
+  width:200px;
+}
+
+table#menuItems {
+  width:100%;
+  margin-bottom:10px;
+}
+
+table#menuItems h3 {
+  margin-top:0;
+  margin-bottom:2px;
+}
+
+.menuItemCategory {
+  
+}
+

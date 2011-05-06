@@ -267,7 +267,7 @@ function constructNormVis(){
 			
 			vis.render();
 		})		
-	.add(pv.Dot)
+	.add(pv.Dot)									//Midpoint
 		.data(function() {return getUserLineMidpoint(graphics)})
 		.left(function(d) { return graphics.x(d.x) })
 		.bottom(function(d) { return graphics.y(d.y) })
