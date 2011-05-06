@@ -8,60 +8,19 @@
 
 		this.w = width || 600;
 		this.h = height || 300;
-		this.xMax = pv.max(this.data, function(d) { return d.incidence });
-		this.yMax = pv.max(this.data, function(d) { return d.otherFactor });
-		this.xMin = pv.min(this.data, function(d) { return d.incidence });
-		this.yMin = pv.min(this.data, function(d) { return d.otherFactor });
+		this.xMax = pv.max(this.data, function(d) { return d.value });
+		this.xMin = pv.min(this.data, function(d) { return d.value });
 		this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 		this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
 		this.colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black");
 		this.c = jQuery.map(this.data, function() { return graphics.colorScale(Math.random()) });
-		this.normViewDotSize = 3;
-		this.normViewAxisDivisions = 20;
 		this.labelTextSize = "16";
 		this.tickTextSize = "12";
 			
-		/* Variables defined in normalized coordinates */						 
-		/* median median crosses and squares */
-		this.groups = divideDataInto3(this.data);
-		this.medians = getMedianValuesFrom(this.groups);
-		
-		/* median-median line */ 
-		this.mmSlope = findSlope(this.medians[0][0], this.medians[2][0], this.medians[0][1], this.medians[2][1]); 
-		this.mmIntercept = findIntercept(this.medians[0][0], this.medians[0][1], this.mmSlope);
-		this.medianYDelta = ((this.medians[1][1] - getYValue(this.medians[1][0], this.mmSlope, this.mmIntercept)) / 3); 
-		this.adjustedIntercept = this.mmIntercept + this.medianYDelta; 
-		this.mmFarLeftYVal = getYValue(this.xMin, this.mmSlope, this.adjustedIntercept); 
-		this.mmFarRightYVal = getYValue(this.xMax, this.mmSlope, this.adjustedIntercept);
-		
-		/* Least-Squares Regression Line */
-		var incidences = [];
-		var otherFactors = [];
-		for (var i = 0; i < this.data.length; i++){
-			incidences.push(this.data[i].incidence);
-			otherFactors.push(this.data[i].otherFactor);
-		}
-		this.lsSlope = getR(this.data)*(getSD(otherFactors)/getSD(incidences));
-		this.lsIntercept = getMean(otherFactors) - this.lsSlope*getMean(incidences);
-		this.lsFarLeftYVal = getYValue(this.xMin, this.lsSlope, this.lsIntercept);
-		this.lsFarRightYVal = getYValue(this.xMax, this.lsSlope, this.lsIntercept);
-		
-		/* User Drawn Line*/
-		this.userDrawnLinePoints = [{ x:this.xMin, y:this.yMin + (this.yMax - this.yMin)/2 }, 
-								 { x:this.xMax, y:this.yMin + (this.yMax - this.yMin)/2 }];
-								 
-		/* User Ellipse */
-		this.angle = 0;
-		this.xRadius = this.w/4;
-		this.yRadius = this.h/4;
-		this.fullRot = pv.range(0, 2 * Math.PI, 0.01);
-		this.ellipseCX = this.w/2;
-		this.ellipseCY = this.h/2;
-		this.pointsInEllipse = numPointsInEllipse(this);
 		
 		/* X/Y Distribution Variables */
-		this.buckets = 40;
-		this.bucketDotSize = 10;
+		this.buckets = 80;
+		this.bucketDotSize = 5;
 	}
 	
 	Graphics.prototype = {
@@ -139,8 +98,9 @@
 		jQuery.jsonp({ url:this.URL + '?alt=json', callbackParameter: "callback", 
 		  success:function(feedData) {
 			worksheet.data = worksheet.transformFeedData(feedData);
-			worksheet.xAxisTitle = worksheet.getXAxisTitle(feedData);
-			worksheet.yAxisTitle = worksheet.getYAxisTitle(feedData);        
+			worksheet.dataType1 = worksheet.getDataType1(feedData);
+			worksheet.dataType2 = worksheet.getDataType2(feedData);
+			worksheet.labelType = worksheet.getLabelType(feedData);        
 			worksheet.title = feedData.feed.title.$t;
 			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
 		  },
@@ -153,33 +113,43 @@
 	  fetchLocalData: function(feedData) {
 			var worksheet = this;
 			worksheet.data = worksheet.transformFeedData(feedData);
-			worksheet.xAxisTitle = worksheet.getXAxisTitle(feedData);
-			worksheet.yAxisTitle = worksheet.getYAxisTitle(feedData);        
+			worksheet.dataType1 = worksheet.getDataType1(feedData);
+			worksheet.dataType2 = worksheet.getDataType2(feedData);
+			worksheet.labelType = worksheet.getLabelType(feedData);        
 			worksheet.title = feedData.feed.title.$t;
 			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
 	  },
 	  
-	  getXAxisTitle: function(feedData) {
+	  getDataType1: function(feedData) {
 		var titles = feedData.feed.entry[0].content.$t.split(",");
-		return /[\w|\d]+/.exec(titles[0]);
+		return /\:\s+.+/.exec(titles[0])[0].replace(/\:\s+/, "");
 	  },
 	  
-	  getYAxisTitle: function(feedData) {
+	  getDataType2: function(feedData) {
 		var titles = feedData.feed.entry[0].content.$t.split(",");
-		return /[\w|\d]+/.exec(titles[1]);
+		return /\:\s+.+/.exec(titles[2])[0].replace(/\:\s+/, "");
+	  },
+	  
+	  getLabelType: function(feedData) {
+		var titles = feedData.feed.entry[0].content.$t.split(",");
+		return /\:\s+.+/.exec(titles[1])[0].replace(/\:\s+/, "");
 	  },
 	  
 	  transformFeedData: function(feedData) {
 		var data = [];
 		console.log(feedData);
-		for (var i = 0; i < feedData.feed.entry.length; i++) {
-		  var cells = feedData.feed.entry[i].content.$t.split(',');
-		  var firstMatch = /\:\s+([\d|\.]+)/.exec(cells[0]);
-		  var secondMatch = /\:\s+([\d|\.]+)/.exec(cells[1]);
-		  if (!firstMatch || !secondMatch)
-			; // ignore bad or blank data
-		  else
-			data.push({state: feedData.feed.entry[i].title.$t, incidence: firstMatch[1], otherFactor: secondMatch[1]});
+		for (var i = 1; i < feedData.feed.entry.length; i++) {
+			var cells = feedData.feed.entry[i].content.$t.split(',');
+			var firstMatch = /\:\s+([\d|\.]+)/.exec(cells[0]);
+			var secondMatch = /\:\s+([\d|\.]+)/.exec(cells[2]);
+			if (!firstMatch || !secondMatch)
+				; // ignore bad or blank data
+			else{
+				var one = 1;
+				var two = 2;
+				data.push({label: feedData.feed.entry[i].title.$t, value: firstMatch[1], set1: true});
+				data.push({label: feedData.feed.entry[i].title.$t, value: secondMatch[1], set1: false})
+			}
 		}
 		return data;
 	  },
@@ -230,6 +200,6 @@
 	};
 	
 	var exampleSpreadsheets = [
-	  new Spreadsheet('0AlqUG_LhxDPZdGk0ODFNcmxXV243dThtV2RvQTZTeGc'),
+	  new Spreadsheet('0AuGPdilGXQlBdHlYdkZ0a0tlZ1F4N1FQc2luOTNtZUE'),
 	];
 
