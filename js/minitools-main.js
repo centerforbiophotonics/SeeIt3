@@ -148,9 +148,10 @@ function constructSingleVis(){
 	});
   
 	jQuery('#sliderDivisions').slider({ 
-		orientation:'vertical', min:2, max:40, value:graphics.buckets, step:1,
+		orientation:'vertical', min:2, max:50, value:graphics.buckets, step:1,
 		slide:function(event, ui) { 
 			graphics.buckets = ui.value;
+			graphics.singleDistPoints = singleDistPoints(graphics);
 			vis.render(); 
 		}
 	});

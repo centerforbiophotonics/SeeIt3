@@ -19,7 +19,7 @@
 			
 		
 		/* X/Y Distribution Variables */
-		this.buckets = 80;
+		this.buckets = 50;
 		this.bucketDotSize = 5;
 		
 		this.singleDistPoints = singleDistPoints(this);
