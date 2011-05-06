@@ -24,7 +24,7 @@
 	}
 	
 	Graphics.prototype = {
-		setW: function(wVal){		
+		setW: function(wVal){
 			var oldW = this.w;
 			this.w = wVal;
 			this.setXScale();
@@ -57,6 +57,13 @@
 				this.y = pv.Scale.linear(newMin, newMax).range(0, this.h);
 			}			
 		},
+		
+		singleDistPoints: function(){},
+		
+		splitDistPointsSet1: function(){},
+		
+		splitDistPointsSet2: function(){},
+		
 	}
 	
 	
