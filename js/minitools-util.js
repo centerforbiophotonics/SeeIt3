@@ -30,7 +30,7 @@ function getXBuckets(graphics){
 	return points;
 }
 
-function xDistributionPoints(graphics){
+function singleDistPoints(graphics){
 	var xDomain = graphics.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
 	var points = [];

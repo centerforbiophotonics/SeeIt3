@@ -21,6 +21,8 @@
 		/* X/Y Distribution Variables */
 		this.buckets = 80;
 		this.bucketDotSize = 5;
+		
+		this.singleDistPoints = singleDistPoints(this);
 	}
 	
 	Graphics.prototype = {
@@ -57,13 +59,6 @@
 				this.y = pv.Scale.linear(newMin, newMax).range(0, this.h);
 			}			
 		},
-		
-		singleDistPoints: function(){},
-		
-		splitDistPointsSet1: function(){},
-		
-		splitDistPointsSet2: function(){},
-		
 	}
 	
 	

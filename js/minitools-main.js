@@ -90,7 +90,7 @@ function constructSingleVis(){
 	
 	/* Dots */	
 	vis.add(pv.Dot)
-		.data(function() {return xDistributionPoints(graphics)})
+		.data(function() {return graphics.singleDistPoints})
 		.left(function(d) { return d[0] })
 		.bottom(function(d) { return d[1] })
 		.radius(function() {return graphics.bucketDotSize})
