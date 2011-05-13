@@ -499,7 +499,7 @@ function divideDataInto3(data) {
   
   if (data.length < 3) {
 	alert("The data selected has less than three rows of data.  Please add more.")
-	console.error('Data length must be greater than 3')
+	//console.error('Data length must be greater than 3')
 	return;
   }
 

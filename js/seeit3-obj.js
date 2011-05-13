@@ -171,7 +171,6 @@
 	  
 	  transformFeedData: function(feedData) {
 		var data = [];
-		console.log(feedData);
 		for (var i = 0; i < feedData.feed.entry.length; i++) {
 		  var cells = feedData.feed.entry[i].content.$t.split(',');
 		  var firstMatch = /\:\s+([\d|\.]+)/.exec(cells[0]);
