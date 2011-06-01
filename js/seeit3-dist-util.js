@@ -60,6 +60,63 @@ function legendPointStrokeStyle(index){
 	}
 }
 
+function partitionDataInTwo(graphics, mode){
+	var data = parseData(graphics, mode);
+	
+	if (data.length % 2 == 0)
+		return [graphics.xMin,
+						(data[data.length/2]+data[data.length/2+1])/2,
+						graphics.xMax];
+	else
+		return [graphics.xMin, 
+						(data[Math.floor(data.length/2)-1]+data[Math.floor(data.length/2)])/2,
+						graphics.xMax];
+}
+
+function partitionDataInFour(graphics, mode){
+	var data = parseData(graphics, mode),
+			size = Math.ceil(data.length/4),
+			divs = [graphics.xMin],
+			count = 0;
+	for (var i = 0; i<data.length-1; i++){
+		count++;
+		if (count == size){
+			count = 0;
+			divs.push((data[i]+data[i+1])/2);
+		}
+	}
+	divs.push(graphics.xMax);
+	return divs;
+}
+
+function partitionDataInUserDefGroups(graphics, mode){
+	var data = parseData(graphics, mode),
+			size = graphics.partitionGroupSize,
+			divs = [graphics.xMin],
+			count = 0;
+	for (var i = 0; i<data.length-1; i++){
+		count++;
+		if (count == size){
+			count = 0;
+			divs.push((data[i]+data[i+1])/2);
+		}
+	}
+	divs.push(graphics.xMax);
+	return divs;
+}
+
+function partitionDataByIntervalWidth(graphics){
+	var divs = [],
+			curr = graphics.x.domain()[0];
+	
+	while (curr <= graphics.x.domain()[1]){
+		divs.push(curr)
+		curr += graphics.partitionIntervalWidth;
+	}
+	divs.push(curr);
+	return divs;
+}
+
 /*HTML Element Manipulation*/
 function toggleNetworkOptions(graphics) {
 	if (graphics.worksheet.local == true){
@@ -247,19 +304,53 @@ function calcGraphHeight(){
 	return (window.innerHeight - jQuery('div#notGraph').height()) - 165; 
 }
 
-function sortByXValues(data) {
-  data.sort(function(a, b) {
-	return a.value - b.value;
-  });
-  return data;
+function parseData(graphics, mode){
+	var data;
+	if (mode == "set1"){
+		data = graphics.data.filter(function(d){return d.set1})
+												.map(function(d){return parseFloat(d.value)});
+	} else if (mode == "set2"){
+		data = graphics.data.filter(function(d){return !(d.set1)})
+												.map(function(d){return parseFloat(d.value)});
+	} else if (mode == "both"){
+		data = graphics.data.map(function(d){return parseFloat(d.value)});
+	}
+	
+	data.sort(function(a,b){return a - b})
+	
+	return data;
 }
 
-function sortByYValues(data) {
-  data.sort(function(a, b) {
-	return a.otherFactor - b.otherFactor;
-  });
-  return data;
+function countDataInPartitions(graphics, partitions){
+	var counts = [];
+	for (var index=0; index<partitions.length; index++){
+		var count = 0;
+		var data = parseData(graphics,"both");
+		if(index != partitions.length-1){
+			for (var i=0; i<data.length; i++){
+				if (data[i] >= partitions[index] && data[i] < partitions[index+1])
+					count++;
+			}
+		}
+		counts.push(count);
+	}
+	return counts;
 }
+
+function fiwHistogram(graphics, partitions){
+	var counts = countDataInPartitions(graphics, partitions);
+	var rectangles = [];
+	for (var i=0;i<counts.length;i++){
+		rectangles.push([[partitions[i], 0],
+										 [partitions[i], counts[i]*graphics.bucketDotSize*2],
+										 [partitions[i+1], counts[i]*graphics.bucketDotSize*2],
+										 [partitions[i+1], 0],
+										 [partitions[i], 0]]);
+	}
+	
+	return rectangles;
+}
+
 
 
 
