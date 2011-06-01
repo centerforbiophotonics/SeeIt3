@@ -277,6 +277,7 @@ function constructSingleVis(){
 	/* Dots */
 	vis.add(pv.Dot)
 		.data(function() {return singleDistPoints(graphics)})
+		.visible(function() { return $('#checkboxHideData').attr('checked') == false })
 		.left(function(d) { return d.x })
 		.bottom(function(d) { return d.y })
 		.radius(function() {return graphics.bucketDotSize})
