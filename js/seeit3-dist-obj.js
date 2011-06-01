@@ -22,7 +22,10 @@
 		this.buckets = 40;
 		this.bucketDotSize = 5;
 		
-		this.singleDistPoints = singleDistPoints(this);
+		/* Partition Params */
+		this.partitionGroupSize = 4;
+		this.partitionIntervalWidth = 10;
+		
 	}
 	
 	Graphics.prototype = {

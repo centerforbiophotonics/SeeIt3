@@ -103,6 +103,177 @@ function constructSingleVis(){
 			})
 	
 	
+	
+		
+	/* Fixed Interval Width Partitions */
+	var fiwPartitions = partitionDataByIntervalWidth(graphics);
+	vis.add(pv.Rule)
+		.data(fiwPartitions)
+		.left(function(d){return graphics.x(d)})
+		.visible(function(){return jQuery('#radioFixedIntervalGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/*Fixed Interval Width Partitions Size Labels*/
+		vis.add(pv.Label)
+			.data(countDataInPartitions(graphics,fiwPartitions))
+			.textAlign("center")
+			.textStyle("green")
+			.top(10)
+			.left(function(){
+				if (this.index != fiwPartitions.length-1){
+					return graphics.x((fiwPartitions[this.index]+fiwPartitions[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fiwPartitions.length-1 &&
+							 jQuery('#radioFixedIntervalGroups').attr('checked');
+			});
+			
+		/* Fixed Interval Width Histogram */
+		var histRects = fiwHistogram(graphics,fiwPartitions);
+		for (var i=0; i < histRects.length; i++){	  									   
+			vis.add(pv.Line)
+				.data(histRects[i])
+				.visible(function(d) { 
+					return (jQuery('#radioFixedIntervalGroups').is(':checked') &&
+									jQuery('#checkboxHistogram').is(':checked')
+									) 
+				})
+				.left(function(d) { return graphics.x(d[0]) })
+				.bottom(function(d) { return d[1] })
+				.lineWidth(0.5)
+				.strokeStyle("green")
+				.fillStyle(pv.rgb(0,225,0,0.05));
+		}
+	
+		
+	/* Fixed Group Size Partitions */
+	var fgPartitions = partitionDataInUserDefGroups(graphics,"both");
+	vis.add(pv.Rule)
+		.data(fgPartitions)
+		.left(function(d){return graphics.x(d)})
+		.visible(function(){return jQuery('#radioFixedSizeGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/*Fixed Size Partition Size Labels*/
+		vis.add(pv.Label)
+			.data(fgPartitions)
+			.textAlign("center")
+			.textStyle("green")
+			.top(10)
+			.left(function(){
+				if (this.index != fgPartitions.length-1){
+					return graphics.x((fgPartitions[this.index]+fgPartitions[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fgPartitions.length-1 &&
+							 jQuery('#radioFixedSizeGroups').attr('checked');
+			})
+			.text(function(){
+				if (graphics.data.length % graphics.partitionGroupSize == 0 ||
+						this.index != fgPartitions.length-2)
+					return graphics.partitionGroupSize;
+				
+				else return graphics.data.length % graphics.partitionGroupSize;
+				
+			})
+				
+		
+	/* Two Equal Partitions */
+	var twoPartitions = partitionDataInTwo(graphics,"both");
+	vis.add(pv.Rule)
+		.data(twoPartitions)
+		.left(function(d){return graphics.x(d)})
+		.visible(function(){return jQuery('#radioTwoEqualGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/*Two Partition Size Labels*/
+		vis.add(pv.Label)
+			.data(twoPartitions)
+			.textAlign("center")
+			.textStyle("green")
+			.top(10)
+			.left(function(){
+				if (this.index != twoPartitions.length-1){
+					return graphics.x((twoPartitions[this.index]+twoPartitions[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != twoPartitions.length-1 &&
+							 jQuery('#radioTwoEqualGroups').attr('checked');
+			})
+			.text(function(){
+				if (graphics.data.length % 2 == 0)
+					return graphics.data.length/2;
+				else if(this.index != twoPartitions.length-2)
+					return Math.ceil(graphics.data.length/2);
+				else
+					return Math.floor(graphics.data.length/2);
+				
+			})
+	
+	/* Four Equal Partitions */
+	var fourPartitions = partitionDataInFour(graphics,"both");
+	vis.add(pv.Rule)
+		.data(fourPartitions)
+		.left(function(d){return graphics.x(d)})
+		.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/*Four Partition Size Labels*/
+		vis.add(pv.Label)
+			.data(fourPartitions)
+			.textAlign("center")
+			.textStyle("green")
+			.top(10)
+			.left(function(){
+				if (this.index != fourPartitions.length-1){
+					return graphics.x((fourPartitions[this.index]+fourPartitions[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fourPartitions.length-1 &&
+							 jQuery('#radioFourEqualGroups').attr('checked');
+			})
+			.text(function(){
+				if (graphics.data.length % 4 == 0)
+					return graphics.data.length/4;
+				else if(this.index != fourPartitions.length-2)
+					return Math.ceil(graphics.data.length/4);
+				else
+					return graphics.data.length % Math.ceil(graphics.data.length/4);
+				
+			})
+			
 	/* Dots */
 	vis.add(pv.Dot)
 		.data(function() {return singleDistPoints(graphics)})
@@ -353,7 +524,26 @@ $('#textXMax').change(function(event) {
 		graphics.setXScale(curMin, textBoxVal);
 		constructVis();
 	}
-	
+});
+
+$('#fixedGroupSize').change(function(event) {
+	var textBoxVal = parseFloat($('#fixedGroupSize').val());
+	if (isNaN(textBoxVal) || textBoxVal <= 0){
+		$('#fixedGroupSize').val(graphics.partitionGroupSize);
+	} else {
+		graphics.partitionGroupSize = textBoxVal;
+		constructVis();
+	}
+});
+
+$('#fixedIntervalWidth').change(function(event) {
+	var textBoxVal = parseFloat($('#fixedIntervalWidth').val());
+	if (isNaN(textBoxVal) || textBoxVal <= 0){
+		$('#fixedIntervalWidth').val(graphics.partitionIntervalWidth);
+	} else {
+		graphics.partitionIntervalWidth = textBoxVal;
+		constructVis();
+	}
 });
 
 $('#refreshWorksheet').click(function(event){
