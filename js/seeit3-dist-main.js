@@ -551,7 +551,11 @@ $('#refreshWorksheet').click(function(event){
 	if ($('#fitScalesToData').is(':checked')){
 		jQuery('#fitScalesToData').attr('checked', false);
 	}
-	
 });
 
 $('#checkboxBWView').change(function() { return constructVis(); });
+
+$('#fitScalesToData').change(function() {
+	graphics.setXScale();
+	constructVis();
+});
