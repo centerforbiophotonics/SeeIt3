@@ -89,7 +89,7 @@ function partitionDataInFour(graphics, mode){
 	return divs;
 }
 
-function partitionDataInUserDefGroups(graphics, mode){
+function partitionDataInFixedSizeGroups(graphics, mode){
 	var data = parseData(graphics, mode),
 			size = graphics.partitionGroupSize,
 			divs = [graphics.xMin],
@@ -321,11 +321,11 @@ function parseData(graphics, mode){
 	return data;
 }
 
-function countDataInPartitions(graphics, partitions){
+function countDataInPartitions(graphics, partitions, mode){
 	var counts = [];
 	for (var index=0; index<partitions.length; index++){
 		var count = 0;
-		var data = parseData(graphics,"both");
+		var data = parseData(graphics,mode);
 		if(index != partitions.length-1){
 			for (var i=0; i<data.length; i++){
 				if (data[i] >= partitions[index] && data[i] < partitions[index+1])
@@ -337,20 +337,27 @@ function countDataInPartitions(graphics, partitions){
 	return counts;
 }
 
-function countDataInUserDefPartitions(graphics){
-	var udPartXVals = getSortedUDPartitionXVals(graphics);
-	return countDataInPartitions(graphics, udPartXVals);	
+function countDataInUserDefPartitions(graphics, mode){
+	var udPartXVals = getSortedUDPartitionXVals(graphics, mode);
+	return countDataInPartitions(graphics, udPartXVals, mode);	
 }
 
-function getSortedUDPartitionXVals(graphics){
+function getSortedUDPartitionXVals(graphics, mode){
 	var udPartXVals = [graphics.x.domain()[0]];
-	udPartXVals = udPartXVals.concat(graphics.udPartitions.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+	
+	if (mode == "both")
+		udPartXVals = udPartXVals.concat(graphics.udPartitionsBoth.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+	else if (mode == "set1")
+		udPartXVals = udPartXVals.concat(graphics.udPartitionsSet1.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+	else if (mode == "set2")
+		udPartXVals = udPartXVals.concat(graphics.udPartitionsSet2.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+	
 	udPartXVals = udPartXVals.concat(graphics.x.domain()[1]);
 	return udPartXVals;
 }
 
-function fiwHistogram(graphics, partitions){
-	var counts = countDataInPartitions(graphics, partitions);
+function fiwHistogram(graphics, partitions, mode){
+	var counts = countDataInPartitions(graphics, partitions, mode);
 	var rectangles = [];
 	for (var i=0;i<counts.length;i++){
 		rectangles.push([[partitions[i], 0],
@@ -361,6 +368,30 @@ function fiwHistogram(graphics, partitions){
 	}
 	
 	return rectangles;
+}
+
+function selectAUserDefPartition(mode, graphics, index){
+	if (mode == "both") {
+		graphics.selectedUDPartBoth = index;
+		graphics.selectedUDPartSet1 = -1;
+		graphics.selectedUDPartSet2 = -1;
+		graphics.selectedUDPartInWhichSet = "both";
+	} else if (mode == "set1") {
+		graphics.selectedUDPartBoth = -1;
+		graphics.selectedUDPartSet1 = index;
+		graphics.selectedUDPartSet2 = -1;
+		graphics.selectedUDPartInWhichSet = "set1";
+	} else if (mode == "set2") {
+		graphics.selectedUDPartBoth = -1;
+		graphics.selectedUDPartSet1 = -1;
+		graphics.selectedUDPartSet2 = index;
+		graphics.selectedUDPartInWhichSet = "set2";
+	} else if (mode == "none") {
+		graphics.selectedUDPartBoth = -1;
+		graphics.selectedUDPartSet1 = -1;
+		graphics.selectedUDPartSet2 = -1;
+		graphics.selectedUDPartInWhichSet = "";
+	}
 }
 
 

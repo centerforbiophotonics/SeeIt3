@@ -9,7 +9,7 @@ $('#textXMax').hide();
 
 function constructVis() {
 	positionAxisMinMaxWidgets();
-		
+	selectAUserDefPartition("none", graphics, null);
 	if (jQuery('#checkboxSplitData').is(':checked')) {
 		constructSplitVis();
 	} else {
@@ -23,6 +23,23 @@ function constructVis() {
 		graphics.tickTextSize = ui.value.toString();
 		vis.render(); 
 	}
+	});
+	
+	jQuery('#sliderDotSize').slider({ 
+		orientation:'vertical', min:1, max:10, value:graphics.bucketDotSize, step:1,
+		slide:function(event, ui) {
+			graphics.bucketDotSize = ui.value; 
+			vis.render(); 
+		}
+	});
+  
+	jQuery('#sliderDivisions').slider({ 
+		orientation:'vertical', min:2, max:graphics.buckets, value:graphics.buckets, step:1,
+		slide:function(event, ui) { 
+			graphics.buckets = ui.value;
+			graphics.singleDistPoints = singleDistPoints(graphics);
+			vis.render(); 
+		}
 	});
 }
 
@@ -46,7 +63,7 @@ function constructSingleVis(){
 		  .events("all")
 		  .event("mousedown", function() {
 				if (jQuery('#radioUserDefGroups').attr('checked')){
-					graphics.selectedUDPart = graphics.udPartitions.push(this.mouse())-1;
+					selectAUserDefPartition("both", graphics, graphics.udPartitionsBoth.push(this.mouse())-1);
 				}
 				vis.render();
 			});
@@ -111,7 +128,7 @@ function constructSingleVis(){
 	
 	/* User Defined Partitions */
 	vis.add(pv.Rule)
-    .data(function(){return graphics.udPartitions})
+    .data(function(){return graphics.udPartitionsBoth})
     .left(function(d){return d.x})
     .strokeStyle("green")
     .visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
@@ -121,16 +138,18 @@ function constructSingleVis(){
 			.cursor("move")
 			.shape("square")
 			.fillStyle(function() {
-				if (graphics.selectedUDPart == this.index)  return "yellow";
+				if (graphics.selectedUDPartBoth == this.index)  return "yellow";
 				else return "green";
 			})
 			.strokeStyle("green")
 			.radius(4)
 			.event("mousedown", pv.Behavior.drag())
-			.event("dragstart", function() {graphics.selectedUDPart = this.index})
+			.event("dragstart", function() {
+				selectAUserDefPartition("both", graphics, this.index);
+			})
 			.event("drag", vis)
 			
-		/* Edge of the graph partition lines */
+		/* UD Edge of the graph partition lines */
 		vis.add(pv.Rule)
 			.left(0)
 			.strokeStyle("green")
@@ -141,20 +160,20 @@ function constructSingleVis(){
 			.strokeStyle("green")
 			.visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
 			
-		/* Partition Data Count Label */
+		/* UD Partition Data Count Label */
 		vis.add(pv.Label)
-			.data(function(){return countDataInUserDefPartitions(graphics)})
+			.data(function(){return countDataInUserDefPartitions(graphics, "both")})
 			.textAlign("center")
 			.textStyle("green")
 			.top(10)
 			.left(function(d){
-				var udPartXVals = getSortedUDPartitionXVals(graphics);
+				var udPartXVals = getSortedUDPartitionXVals(graphics, "both");
 				if (this.index != udPartXVals.length-1){
 					return graphics.x((udPartXVals[this.index]+udPartXVals[this.index+1])/2);
 				} else return 0;
 			})
 			.visible(function(){
-				var udPartXVals = getSortedUDPartitionXVals(graphics);
+				var udPartXVals = getSortedUDPartitionXVals(graphics, "both");
 				return this.index != udPartXVals.length-1 &&
 							 jQuery('#radioUserDefGroups').attr('checked');
 			});
@@ -164,11 +183,11 @@ function constructSingleVis(){
     pv.listen(window, "mousedown", function() {self.focus()});
 		pv.listen(window, "keydown", function(e) {
 			// code 8 is backspace, code 46 is delete
-			if ((e.keyCode == 8 || e.keyCode == 46) && graphics.selectedUDPart >= 0) {
+			if ((e.keyCode == 8 || e.keyCode == 46) && graphics.selectedUDPartBoth >= 0) {
 				if(deleteUDPFlag){				//the event gets triggered twice somehow.  This prevents multiple deletions.
 					deleteUDPFlag = false;  
-					graphics.udPartitions.splice(graphics.selectedUDPart, 1);
-					graphics.selectedUDPart = -1;
+					graphics.udPartitionsBoth.splice(graphics.selectedUDPartBoth, 1);
+					selectAUserDefPartition("none", graphics, null);
 					vis.render();
 					e.preventDefault();
 				} else {
@@ -197,7 +216,7 @@ function constructSingleVis(){
 			
 		/*Fixed Interval Width Partitions Size Labels*/
 		vis.add(pv.Label)
-			.data(countDataInPartitions(graphics,fiwPartitions))
+			.data(countDataInPartitions(graphics,fiwPartitions, "both"))
 			.textAlign("center")
 			.textStyle("green")
 			.top(10)
@@ -212,7 +231,7 @@ function constructSingleVis(){
 			});
 			
 		/* Fixed Interval Width Histogram */
-		var histRects = fiwHistogram(graphics,fiwPartitions);
+		var histRects = fiwHistogram(graphics,fiwPartitions, "both");
 		for (var i=0; i < histRects.length; i++){	  									   
 			vis.add(pv.Line)
 				.data(histRects[i])
@@ -230,7 +249,7 @@ function constructSingleVis(){
 	
 		
 	/* Fixed Group Size Partitions */
-	var fgPartitions = partitionDataInUserDefGroups(graphics,"both");
+	var fgPartitions = partitionDataInFixedSizeGroups(graphics,"both");
 	vis.add(pv.Rule)
 		.data(fgPartitions)
 		.left(function(d){return graphics.x(d)})
@@ -358,23 +377,6 @@ function constructSingleVis(){
 		.fillStyle(function(d) {return dataPointFillStyle(d)})
 		.strokeStyle(function(d) {return dataPointStrokeStyle(d)})
 		.title(function(d) { return d.label+", "+graphics.x.invert(d.x).toFixed(1) });
-		
-	jQuery('#sliderDotSize').slider({ 
-		orientation:'vertical', min:1, max:10, value:graphics.bucketDotSize, step:1,
-		slide:function(event, ui) {
-			graphics.bucketDotSize = ui.value; 
-			vis.render(); 
-		}
-	});
-  
-	jQuery('#sliderDivisions').slider({ 
-		orientation:'vertical', min:2, max:graphics.buckets, value:graphics.buckets, step:1,
-		slide:function(event, ui) { 
-			graphics.buckets = ui.value;
-			graphics.singleDistPoints = singleDistPoints(graphics);
-			vis.render(); 
-		}
-	});
 					
 	vis.render();
 }
@@ -391,7 +393,17 @@ function constructSplitVis(){
 		  .left(padLeft)
 		  .right(padRight)
 		  .top(padTop)
-		  .events("all");
+		  .events("all")
+		  .event("mousedown", function() {
+				if (jQuery('#radioUserDefGroups').attr('checked')){
+					if(this.mouse().y < topGraphBase){
+						selectAUserDefPartition("set1",graphics, graphics.udPartitionsSet1.push(this.mouse())-1);
+					} else {
+						selectAUserDefPartition("set2", graphics, graphics.udPartitionsSet2.push(this.mouse())-1);
+					}
+				}
+				vis.render();
+			});
 		  
 	/*Graph Title*/		  
 	vis.add(pv.Label)
@@ -414,6 +426,37 @@ function constructSplitVis(){
 				if (this.index == 0) return "= "+graphics.worksheet.dataType1
 				else return "= "+graphics.worksheet.dataType2
 			})
+			
+	 /* Listeners for user defined partition deletion */
+    pv.listen(window, "mousedown", function() {self.focus()});
+		pv.listen(window, "keydown", function(e) {
+			// code 8 is backspace, code 46 is delete
+			if (e.keyCode == 8 || e.keyCode == 46) {
+				if (graphics.selectedUDPartInWhichSet == "set1"){
+					if(deleteUDPFlag){				//the event gets triggered twice somehow.  This prevents multiple deletions.
+						deleteUDPFlag = false;  
+						graphics.udPartitionsSet1.splice(graphics.selectedUDPartSet1, 1);
+						selectAUserDefPartition("none", graphics, null);
+						vis.render();
+						e.preventDefault();
+					} else {
+						deleteUDPFlag = true;
+					}
+				} else if (graphics.selectedUDPartInWhichSet == "set2") {
+					if(deleteUDPFlag){				//the event gets triggered twice somehow.  This prevents multiple deletions.
+						deleteUDPFlag = false;  
+						graphics.udPartitionsSet2.splice(graphics.selectedUDPartSet2, 1);
+						selectAUserDefPartition("none", graphics, null);
+						vis.render();
+						e.preventDefault();
+					} else {
+						deleteUDPFlag = true;
+					}
+				}
+			}
+		});
+			
+/*|||||||||||||||||||||TOP GRAPH STUFF BELOW HERE|||||||||||||||||||||*/
 	
 	/* Top Graph N */
 	vis.add(pv.Label)
@@ -449,6 +492,239 @@ function constructSplitVis(){
 		.anchor("bottom").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
+		  
+	/* Top Graph User Defined Partitions */
+	vis.add(pv.Rule)
+    .data(function(){return graphics.udPartitionsSet1})
+    .left(function(d){return d.x})
+    .bottom(topGraphBase)
+		.height(graphics.h/2 - 50)
+    .strokeStyle("green")
+    .visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
+    .anchor("top").add(pv.Dot)
+			.title(function(d){return graphics.x.invert(d.x)})
+			.events("painted")
+			.cursor("move")
+			.shape("square")
+			.fillStyle(function() {
+				if (graphics.selectedUDPartSet1 == this.index)  return "yellow";
+				else return "green";
+			})
+			.strokeStyle("green")
+			.radius(4)
+			.event("mousedown", pv.Behavior.drag())
+			.event("dragstart", function() {
+				selectAUserDefPartition("set1", graphics, this.index);
+			})
+			.event("drag", vis)
+			
+		/* Top Graph UD Edge of the graph partition lines */
+		vis.add(pv.Rule)
+			.left(0)
+			.bottom(topGraphBase)
+			.height(graphics.h/2 - 50)
+			.strokeStyle("green")
+			.visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
+		
+		vis.add(pv.Rule)
+			.right(0)
+			.bottom(topGraphBase)
+			.height(graphics.h/2 - 50)
+			.strokeStyle("green")
+			.visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
+			
+		/* Top Graph UD Partition Data Count Label */
+		vis.add(pv.Label)
+			.data(function(){return countDataInUserDefPartitions(graphics, "set1")})
+			.textAlign("center")
+			.textStyle("green")
+			.top(10)
+			.left(function(d){
+				var udPartXVals = getSortedUDPartitionXVals(graphics, "set1");
+				if (this.index != udPartXVals.length-1){
+					return graphics.x((udPartXVals[this.index]+udPartXVals[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				var udPartXVals = getSortedUDPartitionXVals(graphics, "set1");
+				return this.index != udPartXVals.length-1 &&
+							 jQuery('#radioUserDefGroups').attr('checked');
+			});
+	
+	/* Top Graph Fixed Interval Width Partitions */
+	var fiwPartitions = partitionDataByIntervalWidth(graphics);
+	vis.add(pv.Rule)
+		.data(fiwPartitions)
+		.left(function(d){return graphics.x(d)})
+		.bottom(topGraphBase)
+		.height(graphics.h/2 - 50)
+		.visible(function(){return jQuery('#radioFixedIntervalGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/* Top Graph Fixed Interval Width Partitions Size Labels*/
+		vis.add(pv.Label)
+			.data(countDataInPartitions(graphics,fiwPartitions, "set1"))
+			.textAlign("center")
+			.textStyle("green")
+			.top(10)
+			.left(function(){
+				if (this.index != fiwPartitions.length-1){
+					return graphics.x((fiwPartitions[this.index]+fiwPartitions[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fiwPartitions.length-1 &&
+							 jQuery('#radioFixedIntervalGroups').attr('checked');
+			});
+			
+		/* Top Graph Fixed Interval Width Histogram */
+		var histRectsSet1 = fiwHistogram(graphics,fiwPartitions, "set1");
+		for (var i=0; i < histRectsSet1.length; i++){	  									   
+			vis.add(pv.Line)
+				.data(histRectsSet1[i])
+				.visible(function(d) { 
+					return (jQuery('#radioFixedIntervalGroups').is(':checked') &&
+									jQuery('#checkboxHistogram').is(':checked')
+									) 
+				})
+				.left(function(d) { return graphics.x(d[0]) })
+				.bottom(function(d) { return topGraphBase + d[1] })
+				.lineWidth(0.5)
+				.strokeStyle("green")
+				.fillStyle(pv.rgb(0,225,0,0.05));
+		}
+	
+	/* Top Graph Fixed Group Size Partitions */
+	var fgPartitionsSet1 = partitionDataInFixedSizeGroups(graphics,"set1");
+	vis.add(pv.Rule)
+		.data(fgPartitionsSet1)
+		.left(function(d){return graphics.x(d)})
+		.bottom(topGraphBase)
+		.height(graphics.h/2 - 50)
+		.visible(function(){return jQuery('#radioFixedSizeGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/* Top Graph Fixed Size Partition Size Labels*/
+		vis.add(pv.Label)
+			.data(fgPartitionsSet1)
+			.textAlign("center")
+			.textStyle("green")
+			.top(10)
+			.left(function(){
+				if (this.index != fgPartitionsSet1.length-1){
+					return graphics.x((fgPartitionsSet1[this.index]+fgPartitionsSet1[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fgPartitionsSet1.length-1 &&
+							 jQuery('#radioFixedSizeGroups').attr('checked');
+			})
+			.text(function(){
+				if (parseData(graphics,"set1").length % graphics.partitionGroupSize == 0 ||
+						this.index != fgPartitionsSet1.length-2)
+					return graphics.partitionGroupSize;
+				
+				else return parseData(graphics,"set1").length % graphics.partitionGroupSize;
+				
+			})
+	
+	/* Top Graph Two Equal Partitions */
+	var twoPartitionsSet1 = partitionDataInTwo(graphics,"set1");
+	vis.add(pv.Rule)
+		.data(twoPartitionsSet1)
+		.left(function(d){return graphics.x(d)})
+		.bottom(topGraphBase)
+		.height(graphics.h/2 - 50)
+		.visible(function(){return jQuery('#radioTwoEqualGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/* Top Graph Two Partition Size Labels*/
+		vis.add(pv.Label)
+			.data(twoPartitionsSet1)
+			.textAlign("center")
+			.textStyle("green")
+			.top(10)
+			.left(function(){
+				if (this.index != twoPartitionsSet1.length-1){
+					return graphics.x((twoPartitionsSet1[this.index]+twoPartitionsSet1[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != twoPartitionsSet1.length-1 &&
+							 jQuery('#radioTwoEqualGroups').attr('checked');
+			})
+			.text(function(){
+				if (parseData(graphics,"set1").length % 2 == 0)
+					return parseData(graphics,"set1").length/2;
+				else if(this.index != twoPartitionsSet1.length-2)
+					return Math.ceil(parseData(graphics,"set1").length/2);
+				else
+					return Math.floor(parseData(graphics,"set1").length/2);
+				
+			})
+			
+	/* Four Equal Partitions */
+	var fourPartitionsSet1 = partitionDataInFour(graphics,"set1");
+	vis.add(pv.Rule)
+		.data(fourPartitionsSet1)
+		.left(function(d){return graphics.x(d)})
+		.bottom(topGraphBase)
+		.height(graphics.h/2 - 50)
+		.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/*Bottom Graph Four Partition Size Labels*/
+		vis.add(pv.Label)
+			.data(fourPartitionsSet1)
+			.textAlign("center")
+			.textStyle("green")
+			.top(10)
+			.left(function(){
+				if (this.index != fourPartitionsSet1.length-1){
+					return graphics.x((fourPartitionsSet1[this.index]+fourPartitionsSet1[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fourPartitionsSet1.length-1 &&
+							 jQuery('#radioFourEqualGroups').attr('checked');
+			})
+			.text(function(){
+				if (parseData(graphics,"set1").length % 4 == 0)
+					return parseData(graphics,"set1").length/4;
+				else if(this.index != fourPartitionsSet1.length-2)
+					return Math.ceil(parseData(graphics,"set1").length/4);
+				else
+					return parseData(graphics,"set1").length % Math.ceil(parseData(graphics,"set1").length/4);
+			})
+	
 		  
 	/* Top Graph Dots */
 	vis.add(pv.Dot)
@@ -496,6 +772,238 @@ function constructSplitVis(){
 		.anchor("bottom").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
+	
+	/* Top Graph User Defined Partitions */
+	vis.add(pv.Rule)
+    .data(function(){return graphics.udPartitionsSet2})
+    .left(function(d){return d.x})
+    .bottom(0)
+		.height(graphics.h/2 - 50)
+    .strokeStyle("green")
+    .visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
+    .anchor("top").add(pv.Dot)
+			.title(function(d){return graphics.x.invert(d.x)})
+			.events("painted")
+			.cursor("move")
+			.shape("square")
+			.fillStyle(function() {
+				if (graphics.selectedUDPartSet2 == this.index)  return "yellow";
+				else return "green";
+			})
+			.strokeStyle("green")
+			.radius(4)
+			.event("mousedown", pv.Behavior.drag())
+			.event("dragstart", function() {
+				selectAUserDefPartition("set2", graphics, this.index);
+			})
+			.event("drag", vis)
+			
+		/* Top Graph UD Edge of the graph partition lines */
+		vis.add(pv.Rule)
+			.left(0)
+			.bottom(0)
+			.height(graphics.h/2 - 50)
+			.strokeStyle("green")
+			.visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
+		
+		vis.add(pv.Rule)
+			.right(0)
+			.bottom(0)
+			.height(graphics.h/2 - 50)
+			.strokeStyle("green")
+			.visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
+			
+		/* Top Graph UD Partition Data Count Label */
+		vis.add(pv.Label)
+			.data(function(){return countDataInUserDefPartitions(graphics, "set2")})
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(topGraphBase - 110)
+			.left(function(d){
+				var udPartXVals = getSortedUDPartitionXVals(graphics, "set2");
+				if (this.index != udPartXVals.length-1){
+					return graphics.x((udPartXVals[this.index]+udPartXVals[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				var udPartXVals = getSortedUDPartitionXVals(graphics, "set2");
+				return this.index != udPartXVals.length-1 &&
+							 jQuery('#radioUserDefGroups').attr('checked');
+			});
+	
+	
+	/* Bottom Graph Fixed Interval Width Partitions */
+	vis.add(pv.Rule)
+		.data(fiwPartitions)
+		.left(function(d){return graphics.x(d)})
+		.bottom(0)
+		.height(graphics.h/2 - 50)
+		.visible(function(){return jQuery('#radioFixedIntervalGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/* Bottom Graph Fixed Interval Width Partitions Size Labels*/
+		vis.add(pv.Label)
+			.data(countDataInPartitions(graphics,fiwPartitions, "set2"))
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(topGraphBase - 110)
+			.left(function(){
+				if (this.index != fiwPartitions.length-1){
+					return graphics.x((fiwPartitions[this.index]+fiwPartitions[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fiwPartitions.length-1 &&
+							 jQuery('#radioFixedIntervalGroups').attr('checked');
+			});
+			
+		/* Bottom Graph Fixed Interval Width Histogram */
+		var histRectsSet2 = fiwHistogram(graphics,fiwPartitions, "set2");
+		for (var i=0; i < histRectsSet2.length; i++){	  									   
+			vis.add(pv.Line)
+				.data(histRectsSet2[i])
+				.visible(function(d) { 
+					return (jQuery('#radioFixedIntervalGroups').is(':checked') &&
+									jQuery('#checkboxHistogram').is(':checked')
+									) 
+				})
+				.left(function(d) { return graphics.x(d[0]) })
+				.bottom(function(d) { return d[1] })
+				.lineWidth(0.5)
+				.strokeStyle("green")
+				.fillStyle(pv.rgb(0,225,0,0.05));
+		}
+		  
+	/* Bottom Graph Fixed Group Size Partitions */
+	var fgPartitionsSet2 = partitionDataInFixedSizeGroups(graphics,"set2");
+	vis.add(pv.Rule)
+		.data(fgPartitionsSet2)
+		.left(function(d){return graphics.x(d)})
+		.height(graphics.h/2 - 50)
+		.bottom(0)
+		.visible(function(){return jQuery('#radioFixedSizeGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/* Bottom Graph Fixed Size Partition Size Labels*/
+		vis.add(pv.Label)
+			.data(fgPartitionsSet2)
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(topGraphBase-110)
+			.left(function(){
+				if (this.index != fgPartitionsSet2.length-1){
+					return graphics.x((fgPartitionsSet2[this.index]+fgPartitionsSet2[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fgPartitionsSet2.length-1 &&
+							 jQuery('#radioFixedSizeGroups').attr('checked');
+			})
+			.text(function(){
+				if (parseData(graphics,"set2").length % graphics.partitionGroupSize == 0 ||
+						this.index != fgPartitionsSet2.length-2)
+					return graphics.partitionGroupSize;
+				
+				else return parseData(graphics,"set2").length % graphics.partitionGroupSize;
+				
+			})
+			
+	/* Bottom Graph Two Equal Partitions */
+	var twoPartitionsSet2 = partitionDataInTwo(graphics,"set2");
+	vis.add(pv.Rule)
+		.data(twoPartitionsSet2)
+		.left(function(d){return graphics.x(d)})
+		.bottom(0)
+		.height(graphics.h/2 - 50)
+		.visible(function(){return jQuery('#radioTwoEqualGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/* Bottom Graph Two Partition Size Labels*/
+		vis.add(pv.Label)
+			.data(twoPartitionsSet2)
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(topGraphBase - 110)
+			.left(function(){
+				if (this.index != twoPartitionsSet2.length-1){
+					return graphics.x((twoPartitionsSet2[this.index]+twoPartitionsSet2[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != twoPartitionsSet2.length-1 &&
+							 jQuery('#radioTwoEqualGroups').attr('checked');
+			})
+			.text(function(){
+				if (parseData(graphics,"set2").length % 2 == 0)
+					return parseData(graphics,"set2").length/2;
+				else if(this.index != twoPartitionsSet2.length-2)
+					return Math.ceil(parseData(graphics,"set2").length/2);
+				else
+					return Math.floor(parseData(graphics,"set2").length/2);
+				
+			})
+			
+	/* Four Equal Partitions */
+	var fourPartitionsSet2 = partitionDataInFour(graphics,"set2");
+	vis.add(pv.Rule)
+		.data(fourPartitionsSet2)
+		.left(function(d){return graphics.x(d)})
+		.bottom(0)
+		.height(graphics.h/2 - 50)
+		.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked')})
+		.strokeStyle("green")
+		.title(function(d){return d})
+		.anchor("top").add(pv.Dot)
+			.title(function(d){return d})
+			.shape("square")
+			.fillStyle("green")
+			.strokeStyle("green")
+			.size(4);
+			
+		/*Bottom Graph Four Partition Size Labels*/
+		vis.add(pv.Label)
+			.data(fourPartitionsSet2)
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(topGraphBase - 110)
+			.left(function(){
+				if (this.index != fourPartitionsSet2.length-1){
+					return graphics.x((fourPartitionsSet2[this.index]+fourPartitionsSet2[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fourPartitionsSet2.length-1 &&
+							 jQuery('#radioFourEqualGroups').attr('checked');
+			})
+			.text(function(){
+				if (parseData(graphics,"set2").length % 4 == 0)
+					return parseData(graphics,"set2").length/4;
+				else if(this.index != fourPartitionsSet2.length-2)
+					return Math.ceil(parseData(graphics,"set2").length/4);
+				else
+					return parseData(graphics,"set2").length % Math.ceil(parseData(graphics,"set2").length/4);
+			})
 		  
 	/* Bottom Graph Dots */
 	vis.add(pv.Dot)
