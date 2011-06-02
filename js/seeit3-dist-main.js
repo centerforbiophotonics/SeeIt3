@@ -367,6 +367,10 @@ function constructSingleVis(){
 					return graphics.data.length % Math.ceil(graphics.data.length/4);
 			})
 			
+		// /* Box Plot Extra Lines */
+		//vis.add(pv.Line)
+		//	.data([fourPartitions
+			
 	/* Dots */
 	vis.add(pv.Dot)
 		.data(function() {return singleDistPoints(graphics)})
@@ -684,7 +688,7 @@ function constructSplitVis(){
 				
 			})
 			
-	/* Four Equal Partitions */
+	/* Top Graph Four Equal Partitions */
 	var fourPartitionsSet1 = partitionDataInFour(graphics,"set1");
 	vis.add(pv.Rule)
 		.data(fourPartitionsSet1)
@@ -701,7 +705,7 @@ function constructSplitVis(){
 			.strokeStyle("green")
 			.size(4);
 			
-		/*Bottom Graph Four Partition Size Labels*/
+		/* Top Graph Four Partition Size Labels*/
 		vis.add(pv.Label)
 			.data(fourPartitionsSet1)
 			.textAlign("center")
@@ -729,6 +733,7 @@ function constructSplitVis(){
 	/* Top Graph Dots */
 	vis.add(pv.Dot)
 		.data(function() {return setOnePoints(graphics)})
+		.visible(function() { return $('#checkboxHideData').attr('checked') == false })
 		.left(function(d) { return d.x })
 		.bottom(function(d) { return topGraphBase + d.y })
 		.radius(function() {return graphics.bucketDotSize})
@@ -964,7 +969,7 @@ function constructSplitVis(){
 				
 			})
 			
-	/* Four Equal Partitions */
+	/* Bottom Graph Four Equal Partitions */
 	var fourPartitionsSet2 = partitionDataInFour(graphics,"set2");
 	vis.add(pv.Rule)
 		.data(fourPartitionsSet2)
@@ -1008,6 +1013,7 @@ function constructSplitVis(){
 	/* Bottom Graph Dots */
 	vis.add(pv.Dot)
 		.data(function() {return setTwoPoints(graphics)})
+		.visible(function() { return $('#checkboxHideData').attr('checked') == false })
 		.left(function(d) { return d.x })
 		.bottom(function(d) { return d.y })
 		.radius(function() {return graphics.bucketDotSize})

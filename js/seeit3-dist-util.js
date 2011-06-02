@@ -64,19 +64,19 @@ function partitionDataInTwo(graphics, mode){
 	var data = parseData(graphics, mode);
 	
 	if (data.length % 2 == 0)
-		return [graphics.xMin,
+		return [getMinOfArray(data),//graphics.xMin,
 						(data[data.length/2]+data[data.length/2+1])/2,
-						graphics.xMax];
+						getMaxOfArray(data)];//graphics.xMax];
 	else
-		return [graphics.xMin, 
+		return [getMinOfArray(data), 
 						(data[Math.floor(data.length/2)-1]+data[Math.floor(data.length/2)])/2,
-						graphics.xMax];
+						getMaxOfArray(data)];
 }
 
 function partitionDataInFour(graphics, mode){
 	var data = parseData(graphics, mode),
 			size = Math.ceil(data.length/4),
-			divs = [graphics.xMin],
+			divs = [getMinOfArray(data)],
 			count = 0;
 	for (var i = 0; i<data.length-1; i++){
 		count++;
@@ -85,7 +85,7 @@ function partitionDataInFour(graphics, mode){
 			divs.push((data[i]+data[i+1])/2);
 		}
 	}
-	divs.push(graphics.xMax);
+	divs.push(getMaxOfArray(data));
 	return divs;
 }
 
@@ -394,6 +394,12 @@ function selectAUserDefPartition(mode, graphics, index){
 	}
 }
 
+function getMaxOfArray(numArray) {
+  return Math.max.apply(null, numArray);
+}
 
+function getMinOfArray(numArray) {
+  return Math.min.apply(null, numArray);
+}
 
 
