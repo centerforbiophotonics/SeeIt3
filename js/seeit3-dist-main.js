@@ -1,5 +1,6 @@
 var vis = {};
 var graphics = {};
+var deleteUDPFlag = true;
 
 $('#textYMin').hide();
 $('#textYMax').hide();
@@ -42,7 +43,13 @@ function constructSingleVis(){
 		  .left(padLeft)
 		  .right(padRight)
 		  .top(padTop)
-		  .events("all");
+		  .events("all")
+		  .event("mousedown", function() {
+				if (jQuery('#radioUserDefGroups').attr('checked')){
+					graphics.selectedUDPart = graphics.udPartitions.push(this.mouse())-1;
+				}
+				vis.render();
+			});
 		  
 	/*Graph Title*/		  
 	vis.add(pv.Label)
@@ -101,6 +108,74 @@ function constructSingleVis(){
 				if (this.index == 0) return "= "+graphics.worksheet.dataType1
 				else return "= "+graphics.worksheet.dataType2
 			})
+	
+	/* User Defined Partitions */
+	vis.add(pv.Rule)
+    .data(function(){return graphics.udPartitions})
+    .left(function(d){return d.x})
+    .strokeStyle("green")
+    .visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
+    .anchor("top").add(pv.Dot)
+			.title(function(d){return graphics.x.invert(d.x)})
+			.events("painted")
+			.cursor("move")
+			.shape("square")
+			.fillStyle(function() {
+				if (graphics.selectedUDPart == this.index)  return "yellow";
+				else return "green";
+			})
+			.strokeStyle("green")
+			.radius(4)
+			.event("mousedown", pv.Behavior.drag())
+			.event("dragstart", function() {graphics.selectedUDPart = this.index})
+			.event("drag", vis)
+			
+		/* Edge of the graph partition lines */
+		vis.add(pv.Rule)
+			.left(0)
+			.strokeStyle("green")
+			.visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
+		
+		vis.add(pv.Rule)
+			.right(0)
+			.strokeStyle("green")
+			.visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
+			
+		/* Partition Data Count Label */
+		vis.add(pv.Label)
+			.data(function(){return countDataInUserDefPartitions(graphics)})
+			.textAlign("center")
+			.textStyle("green")
+			.top(10)
+			.left(function(d){
+				var udPartXVals = getSortedUDPartitionXVals(graphics);
+				if (this.index != udPartXVals.length-1){
+					return graphics.x((udPartXVals[this.index]+udPartXVals[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				var udPartXVals = getSortedUDPartitionXVals(graphics);
+				return this.index != udPartXVals.length-1 &&
+							 jQuery('#radioUserDefGroups').attr('checked');
+			});
+
+
+    /* Listeners for user defined partition deletion */
+    pv.listen(window, "mousedown", function() {self.focus()});
+		pv.listen(window, "keydown", function(e) {
+			// code 8 is backspace, code 46 is delete
+			if ((e.keyCode == 8 || e.keyCode == 46) && graphics.selectedUDPart >= 0) {
+				if(deleteUDPFlag){				//the event gets triggered twice somehow.  This prevents multiple deletions.
+					deleteUDPFlag = false;  
+					graphics.udPartitions.splice(graphics.selectedUDPart, 1);
+					graphics.selectedUDPart = -1;
+					vis.render();
+					e.preventDefault();
+				} else {
+					deleteUDPFlag = true;
+				}
+			}
+		});
 	
 	
 	
@@ -271,7 +346,6 @@ function constructSingleVis(){
 					return Math.ceil(graphics.data.length/4);
 				else
 					return graphics.data.length % Math.ceil(graphics.data.length/4);
-				
 			})
 			
 	/* Dots */

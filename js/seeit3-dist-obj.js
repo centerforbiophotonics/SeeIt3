@@ -25,6 +25,10 @@
 		/* Partition Params */
 		this.partitionGroupSize = 4;
 		this.partitionIntervalWidth = 10;
+		this.udPartitions = [];
+		this.selectedUDPart = -1; 
+		this.udPartXVals;
+
 		
 	}
 	

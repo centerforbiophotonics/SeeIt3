@@ -337,6 +337,18 @@ function countDataInPartitions(graphics, partitions){
 	return counts;
 }
 
+function countDataInUserDefPartitions(graphics){
+	var udPartXVals = getSortedUDPartitionXVals(graphics);
+	return countDataInPartitions(graphics, udPartXVals);	
+}
+
+function getSortedUDPartitionXVals(graphics){
+	var udPartXVals = [graphics.x.domain()[0]];
+	udPartXVals = udPartXVals.concat(graphics.udPartitions.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+	udPartXVals = udPartXVals.concat(graphics.x.domain()[1]);
+	return udPartXVals;
+}
+
 function fiwHistogram(graphics, partitions){
 	var counts = countDataInPartitions(graphics, partitions);
 	var rectangles = [];
