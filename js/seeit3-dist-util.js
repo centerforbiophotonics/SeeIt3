@@ -361,15 +361,34 @@ function getSortedUDPartitionXVals(graphics, mode){
 
 function fiwHistogram(graphics, partitions, mode){
 	var counts = countDataInPartitions(graphics, partitions, mode);
+	var maxCount = getMaxOfArray(counts);
 	var rectangles = [];
-	for (var i=0;i<counts.length;i++){
-		rectangles.push([[partitions[i], 0],
-										 [partitions[i], counts[i]*graphics.bucketDotSize*2],
-										 [partitions[i+1], counts[i]*graphics.bucketDotSize*2],
-										 [partitions[i+1], 0],
-										 [partitions[i], 0]]);
-	}
-	
+	if (mode == "both"){
+		for (var i=0;i<counts.length;i++){
+			rectangles.push([[partitions[i], 0],
+											 [partitions[i], graphics.h * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
+											 [partitions[i+1], graphics.h * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
+											 [partitions[i+1], 0],
+											 [partitions[i], 0]]);
+		}
+	} else if (mode == "set1") {
+		for (var i=0;i<counts.length;i++){
+			rectangles.push([[partitions[i], 0],
+											 [partitions[i], (graphics.h/2 - 50) * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
+											 [partitions[i+1], (graphics.h/2 - 50) * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
+											 [partitions[i+1], 0],
+											 [partitions[i], 0]]);
+		}
+	} else if (mode == "set2") {
+		for (var i=0;i<counts.length;i++){
+			rectangles.push([[partitions[i], 0],
+											 [partitions[i], (graphics.h/2 - 50) * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
+											 [partitions[i+1], (graphics.h/2 - 50) * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
+											 [partitions[i+1], 0],
+											 [partitions[i], 0]]);
+		}
+		
+	} 
 	return rectangles;
 }
 
