@@ -364,7 +364,7 @@ function constructSingleVis(){
 				else if(this.index != fourPartitions.length-2)
 					return Math.ceil(graphics.data.length/4);
 				else
-					return graphics.data.length % Math.ceil(graphics.data.length/4);
+					return graphics.data.length - Math.ceil(graphics.data.length/4)*3;
 			})
 			
 		// /* Box Plot Extra Lines */
@@ -721,12 +721,20 @@ function constructSplitVis(){
 							 jQuery('#radioFourEqualGroups').attr('checked');
 			})
 			.text(function(){
-				if (parseData(graphics,"set1").length % 4 == 0)
-					return parseData(graphics,"set1").length/4;
-				else if(this.index != fourPartitionsSet1.length-2)
-					return Math.ceil(parseData(graphics,"set1").length/4);
-				else
-					return parseData(graphics,"set1").length % Math.ceil(parseData(graphics,"set1").length/4);
+				var dataLength = parseData(graphics,"set1").length;
+				if (dataLength >= 8){
+					if (dataLength % 4 == 0)
+						return dataLength/4;
+					else if(this.index != fourPartitionsSet1.length-2)
+						return Math.ceil(dataLength/4);
+					else
+						return dataLength % Math.ceil(dataLength/4);
+				} else {
+					if(this.index != fourPartitionsSet1.length-2)
+						return 1;
+					else
+						return dataLength - 3;
+				}
 			})
 	
 		  
@@ -1002,12 +1010,20 @@ function constructSplitVis(){
 							 jQuery('#radioFourEqualGroups').attr('checked');
 			})
 			.text(function(){
-				if (parseData(graphics,"set2").length % 4 == 0)
-					return parseData(graphics,"set2").length/4;
-				else if(this.index != fourPartitionsSet2.length-2)
-					return Math.ceil(parseData(graphics,"set2").length/4);
-				else
-					return parseData(graphics,"set2").length % Math.ceil(parseData(graphics,"set2").length/4);
+				var dataLength = parseData(graphics,"set2").length;
+				if (dataLength >= 8){
+					if (dataLength % 4 == 0)
+						return dataLength/4;
+					else if(this.index != fourPartitionsSet2.length-2)
+						return Math.ceil(dataLength/4);
+					else
+						return dataLength % Math.ceil(dataLength/4);
+				} else {
+					if(this.index != fourPartitionsSet2.length-2)
+						return 1;
+					else
+						return dataLength - 3;
+				}
 			})
 		  
 	/* Bottom Graph Dots */

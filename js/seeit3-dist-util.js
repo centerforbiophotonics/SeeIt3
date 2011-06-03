@@ -64,26 +64,29 @@ function partitionDataInTwo(graphics, mode){
 	var data = parseData(graphics, mode);
 	
 	if (data.length % 2 == 0)
-		return [getMinOfArray(data),//graphics.xMin,
-						(data[data.length/2]+data[data.length/2+1])/2,
-						getMaxOfArray(data)];//graphics.xMax];
+		return [getMinOfArray(data),
+						(data[data.length/2-1]+data[data.length/2])/2,
+						getMaxOfArray(data)];
 	else
 		return [getMinOfArray(data), 
-						(data[Math.floor(data.length/2)-1]+data[Math.floor(data.length/2)])/2,
+						(data[Math.floor(data.length/2)]+data[Math.floor(data.length/2+1)])/2,
 						getMaxOfArray(data)];
 }
 
 function partitionDataInFour(graphics, mode){
 	var data = parseData(graphics, mode),
-			size = Math.ceil(data.length/4),
+			size = (data.length >= 8) ? Math.ceil(data.length/4) : Math.floor(data.length/4);
 			divs = [getMinOfArray(data)],
-			count = 0;
+			count = 0,
+			numInteriorDivs = 0;
 	for (var i = 0; i<data.length-1; i++){
 		count++;
 		if (count == size){
 			count = 0;
 			divs.push((data[i]+data[i+1])/2);
+			numInteriorDivs++;
 		}
+		if (numInteriorDivs == 3) break;
 	}
 	divs.push(getMaxOfArray(data));
 	return divs;
