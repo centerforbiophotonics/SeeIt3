@@ -64,32 +64,35 @@ function partitionDataInTwo(graphics, mode){
 	var data = parseData(graphics, mode);
 	
 	if (data.length % 2 == 0)
-		return [graphics.xMin,
-						(data[data.length/2]+data[data.length/2+1])/2,
-						graphics.xMax];
+		return [getMinOfArray(data),
+						(data[data.length/2-1]+data[data.length/2])/2,
+						getMaxOfArray(data)];
 	else
-		return [graphics.xMin, 
-						(data[Math.floor(data.length/2)-1]+data[Math.floor(data.length/2)])/2,
-						graphics.xMax];
+		return [getMinOfArray(data), 
+						(data[Math.floor(data.length/2)]+data[Math.floor(data.length/2+1)])/2,
+						getMaxOfArray(data)];
 }
 
 function partitionDataInFour(graphics, mode){
 	var data = parseData(graphics, mode),
-			size = Math.ceil(data.length/4),
-			divs = [graphics.xMin],
-			count = 0;
+			size = (data.length >= 8) ? Math.ceil(data.length/4) : Math.floor(data.length/4);
+			divs = [getMinOfArray(data)],
+			count = 0,
+			numInteriorDivs = 0;
 	for (var i = 0; i<data.length-1; i++){
 		count++;
 		if (count == size){
 			count = 0;
 			divs.push((data[i]+data[i+1])/2);
+			numInteriorDivs++;
 		}
+		if (numInteriorDivs == 3) break;
 	}
-	divs.push(graphics.xMax);
+	divs.push(getMaxOfArray(data));
 	return divs;
 }
 
-function partitionDataInUserDefGroups(graphics, mode){
+function partitionDataInFixedSizeGroups(graphics, mode){
 	var data = parseData(graphics, mode),
 			size = graphics.partitionGroupSize,
 			divs = [graphics.xMin],
@@ -321,11 +324,11 @@ function parseData(graphics, mode){
 	return data;
 }
 
-function countDataInPartitions(graphics, partitions){
+function countDataInPartitions(graphics, partitions, mode){
 	var counts = [];
 	for (var index=0; index<partitions.length; index++){
 		var count = 0;
-		var data = parseData(graphics,"both");
+		var data = parseData(graphics,mode);
 		if(index != partitions.length-1){
 			for (var i=0; i<data.length; i++){
 				if (data[i] >= partitions[index] && data[i] < partitions[index+1])
@@ -337,8 +340,27 @@ function countDataInPartitions(graphics, partitions){
 	return counts;
 }
 
-function fiwHistogram(graphics, partitions){
-	var counts = countDataInPartitions(graphics, partitions);
+function countDataInUserDefPartitions(graphics, mode){
+	var udPartXVals = getSortedUDPartitionXVals(graphics, mode);
+	return countDataInPartitions(graphics, udPartXVals, mode);	
+}
+
+function getSortedUDPartitionXVals(graphics, mode){
+	var udPartXVals = [graphics.x.domain()[0]];
+	
+	if (mode == "both")
+		udPartXVals = udPartXVals.concat(graphics.udPartitionsBoth.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+	else if (mode == "set1")
+		udPartXVals = udPartXVals.concat(graphics.udPartitionsSet1.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+	else if (mode == "set2")
+		udPartXVals = udPartXVals.concat(graphics.udPartitionsSet2.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+	
+	udPartXVals = udPartXVals.concat(graphics.x.domain()[1]);
+	return udPartXVals;
+}
+
+function fiwHistogram(graphics, partitions, mode){
+	var counts = countDataInPartitions(graphics, partitions, mode);
 	var rectangles = [];
 	for (var i=0;i<counts.length;i++){
 		rectangles.push([[partitions[i], 0],
@@ -351,6 +373,36 @@ function fiwHistogram(graphics, partitions){
 	return rectangles;
 }
 
+function selectAUserDefPartition(mode, graphics, index){
+	if (mode == "both") {
+		graphics.selectedUDPartBoth = index;
+		graphics.selectedUDPartSet1 = -1;
+		graphics.selectedUDPartSet2 = -1;
+		graphics.selectedUDPartInWhichSet = "both";
+	} else if (mode == "set1") {
+		graphics.selectedUDPartBoth = -1;
+		graphics.selectedUDPartSet1 = index;
+		graphics.selectedUDPartSet2 = -1;
+		graphics.selectedUDPartInWhichSet = "set1";
+	} else if (mode == "set2") {
+		graphics.selectedUDPartBoth = -1;
+		graphics.selectedUDPartSet1 = -1;
+		graphics.selectedUDPartSet2 = index;
+		graphics.selectedUDPartInWhichSet = "set2";
+	} else if (mode == "none") {
+		graphics.selectedUDPartBoth = -1;
+		graphics.selectedUDPartSet1 = -1;
+		graphics.selectedUDPartSet2 = -1;
+		graphics.selectedUDPartInWhichSet = "";
+	}
+}
 
+function getMaxOfArray(numArray) {
+  return Math.max.apply(null, numArray);
+}
+
+function getMinOfArray(numArray) {
+  return Math.min.apply(null, numArray);
+}
 
 

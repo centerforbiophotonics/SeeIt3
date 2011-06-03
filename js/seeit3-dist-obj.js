@@ -26,6 +26,20 @@
 		this.partitionGroupSize = 4;
 		this.partitionIntervalWidth = 10;
 		
+		
+		this.selectedUDPartInWhichSet = "";
+		
+		this.selectedUDPartBoth = -1;
+		this.udPartitionsBoth = []; 
+		this.udPartXValsBoth;
+		
+		this.selectedUDPartSet1 = -1;
+		this.udPartitionsSet1 = [];
+		this.udPartXValsSet1;
+		
+		this.selectedUDPartSet2 = -1;
+		this.udPartitionsSet2 = [];
+		this.udPartXValsSet2;
 	}
 	
 	Graphics.prototype = {
