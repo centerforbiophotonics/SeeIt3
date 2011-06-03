@@ -102,7 +102,7 @@ function constructSingleVis(){
 	vis.add(pv.Label)
 		.data([graphics])
 		.left(graphics.w / 2)
-		.bottom(-50)
+		.bottom(-40)
 		.text(function(d){return d.worksheet.dataType1 + " and " + d.worksheet.dataType2 + " by " + d.worksheet.labelType})
 		.textAlign("center")
 		.textAngle(0)
