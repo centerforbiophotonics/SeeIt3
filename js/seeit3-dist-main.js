@@ -359,12 +359,20 @@ function constructSingleVis(){
 							 jQuery('#radioFourEqualGroups').attr('checked');
 			})
 			.text(function(){
-				if (graphics.data.length % 4 == 0)
-					return graphics.data.length/4;
-				else if(this.index != fourPartitions.length-2)
-					return Math.ceil(graphics.data.length/4);
-				else
-					return graphics.data.length - Math.ceil(graphics.data.length/4)*3;
+				var dataLength = parseData(graphics,"both").length;
+				if (dataLength >= 8){
+					if (dataLength % 4 == 0)
+						return dataLength/4;
+					else if(this.index != fourPartitions.length-2)
+						return Math.ceil(dataLength/4);
+					else
+						return dataLength % Math.ceil(dataLength/4);
+				} else {
+					if(this.index != fourPartitions.length-2)
+						return 1;
+					else
+						return dataLength - 3;
+				}
 			})
 			
 		// /* Box Plot Extra Lines */
