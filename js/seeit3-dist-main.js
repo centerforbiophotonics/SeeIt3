@@ -341,6 +341,8 @@ function constructSingleVis(){
 			.shape("square")
 			.fillStyle("green")
 			.strokeStyle("green")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked') == false; })
 			.size(4);
 			
 		/*Four Partition Size Labels*/
@@ -356,7 +358,8 @@ function constructSingleVis(){
 			})
 			.visible(function(){
 				return this.index != fourPartitions.length-1 &&
-							 jQuery('#radioFourEqualGroups').attr('checked');
+							 jQuery('#radioFourEqualGroups').attr('checked') &&
+							 jQuery('#checkboxBoxPlot').attr('checked') == false;
 			})
 			.text(function(){
 				var dataLength = parseData(graphics,"both").length;
@@ -375,9 +378,47 @@ function constructSingleVis(){
 				}
 			})
 			
-		// /* Box Plot Extra Lines */
-		//vis.add(pv.Line)
-		//	.data([fourPartitions
+		/* Box Plot Extra Lines */
+		vis.add(pv.Line)
+			.data([[fourPartitions[0], graphics.h/2],
+						 [fourPartitions[1], graphics.h/2]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
+			
+		vis.add(pv.Line)
+			.data([[fourPartitions[1], graphics.h],
+						 [fourPartitions[3], graphics.h]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
+			
+		vis.add(pv.Line)
+			.data([[fourPartitions[1], 2],
+						 [fourPartitions[3], 2]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
+			
+		vis.add(pv.Line)
+			.data([[fourPartitions[3], graphics.h/2],
+						 [fourPartitions[4], graphics.h/2]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
+			
 			
 	/* Dots */
 	vis.add(pv.Dot)
@@ -707,6 +748,8 @@ function constructSplitVis(){
 		.strokeStyle("green")
 		.title(function(d){return d})
 		.anchor("top").add(pv.Dot)
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked') == false; })
 			.title(function(d){return d})
 			.shape("square")
 			.fillStyle("green")
@@ -726,7 +769,8 @@ function constructSplitVis(){
 			})
 			.visible(function(){
 				return this.index != fourPartitionsSet1.length-1 &&
-							 jQuery('#radioFourEqualGroups').attr('checked');
+							 jQuery('#radioFourEqualGroups').attr('checked') &&
+							 jQuery('#checkboxBoxPlot').attr('checked') == false;
 			})
 			.text(function(){
 				var dataLength = parseData(graphics,"set1").length;
@@ -744,6 +788,47 @@ function constructSplitVis(){
 						return dataLength - 3;
 				}
 			})
+			
+		/* Top Graph Box Plot Extra Lines */
+		vis.add(pv.Line)
+			.data([[fourPartitionsSet1[0], graphics.h/4*3],
+						 [fourPartitionsSet1[1], graphics.h/4*3]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
+			
+		vis.add(pv.Line)
+			.data([[fourPartitionsSet1[1], graphics.h],
+						 [fourPartitionsSet1[3], graphics.h]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
+			
+		vis.add(pv.Line)
+			.data([[fourPartitionsSet1[1], topGraphBase+2],
+						 [fourPartitionsSet1[3], topGraphBase+2]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
+			
+		vis.add(pv.Line)
+			.data([[fourPartitionsSet1[3], graphics.h/4*3],
+						 [fourPartitionsSet1[4], graphics.h/4*3]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
 	
 		  
 	/* Top Graph Dots */
@@ -996,6 +1081,8 @@ function constructSplitVis(){
 		.strokeStyle("green")
 		.title(function(d){return d})
 		.anchor("top").add(pv.Dot)
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked') == false; })
 			.title(function(d){return d})
 			.shape("square")
 			.fillStyle("green")
@@ -1015,7 +1102,8 @@ function constructSplitVis(){
 			})
 			.visible(function(){
 				return this.index != fourPartitionsSet2.length-1 &&
-							 jQuery('#radioFourEqualGroups').attr('checked');
+							 jQuery('#radioFourEqualGroups').attr('checked') &&
+							 jQuery('#checkboxBoxPlot').attr('checked') == false;
 			})
 			.text(function(){
 				var dataLength = parseData(graphics,"set2").length;
@@ -1033,6 +1121,47 @@ function constructSplitVis(){
 						return dataLength - 3;
 				}
 			})
+			
+		/* Bottom Graph Box Plot Extra Lines */
+		vis.add(pv.Line)
+			.data([[fourPartitionsSet2[0], graphics.h/4],
+						 [fourPartitionsSet2[1], graphics.h/4]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
+			
+		vis.add(pv.Line)
+			.data([[fourPartitionsSet2[1], graphics.h/2 - 50],
+						 [fourPartitionsSet2[3], graphics.h/2 - 50]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
+			
+		vis.add(pv.Line)
+			.data([[fourPartitionsSet2[1], 2],
+						 [fourPartitionsSet2[3], 2]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
+			
+		vis.add(pv.Line)
+			.data([[fourPartitionsSet2[3], graphics.h/4],
+						 [fourPartitionsSet2[4], graphics.h/4]])
+			.left(function(d) { return graphics.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return jQuery('#radioFourEqualGroups').attr('checked') &&
+																 jQuery('#checkboxBoxPlot').attr('checked'); })
 		  
 	/* Bottom Graph Dots */
 	vis.add(pv.Dot)
