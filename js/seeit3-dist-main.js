@@ -879,7 +879,7 @@ function constructSplitVis(){
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
 	
-	/* Top Graph User Defined Partitions */
+	/* Bottom Graph User Defined Partitions */
 	vis.add(pv.Rule)
     .data(function(){return graphics.udPartitionsSet2})
     .left(function(d){return d.x})
@@ -904,7 +904,7 @@ function constructSplitVis(){
 			})
 			.event("drag", vis)
 			
-		/* Top Graph UD Edge of the graph partition lines */
+		/* Bottom Graph UD Edge of the graph partition lines */
 		vis.add(pv.Rule)
 			.left(0)
 			.bottom(0)
@@ -919,7 +919,7 @@ function constructSplitVis(){
 			.strokeStyle("green")
 			.visible(function(){return jQuery('#radioUserDefGroups').attr('checked')})
 			
-		/* Top Graph UD Partition Data Count Label */
+		/* Bottom Graph UD Partition Data Count Label */
 		vis.add(pv.Label)
 			.data(function(){return countDataInUserDefPartitions(graphics, "set2")})
 			.textAlign("center")
@@ -990,7 +990,8 @@ function constructSplitVis(){
 	/* Bottom Graph Fixed Group Size Partitions */
 	var fgPartitionsSet2 = partitionDataInFixedSizeGroups(graphics,"set2");
 	vis.add(pv.Rule)
-		.data(fgPartitionsSet2)
+		.data(function(){ fgPartitionsSet2 = partitionDataInFixedSizeGroups(graphics,"set2");
+											return fgPartitionsSet2; })
 		.left(function(d){return graphics.x(d)})
 		.height(graphics.h/2 - 50)
 		.bottom(0)

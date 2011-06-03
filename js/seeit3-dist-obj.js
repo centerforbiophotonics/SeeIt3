@@ -23,8 +23,8 @@
 		this.bucketDotSize = 5;
 		
 		/* Partition Params */
-		this.partitionGroupSize = 4;
-		this.partitionIntervalWidth = 10;
+		this.partitionGroupSize = parseFloat($('#fixedGroupSize').val());
+		this.partitionIntervalWidth = parseFloat($('#fixedIntervalWidth').val());
 		
 		
 		this.selectedUDPartInWhichSet = "";
