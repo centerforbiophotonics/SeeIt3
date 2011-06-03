@@ -469,9 +469,9 @@ function constructSplitVis(){
 	
 	/* Legend */
 	vis.add(pv.Dot)
-		.data([[400,-40],[400,-20]])
-		.right(function(d){return d[0]})
-		.top(function(d){return d[1]})
+		.data([-40,-20])
+		.left(function(){return 20})
+		.top(function(d){return d})
 		.fillStyle(function(){return legendPointFillStyle(this.index)})
 		.strokeStyle(function(d){return legendPointStrokeStyle(this.index)})
 		.anchor("right").add(pv.Label)
