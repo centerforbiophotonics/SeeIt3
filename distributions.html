@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>MiniTools</title>
+  <title>SeeIt3 Distributions</title>
   <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.7.custom.css"/>
   <link rel="stylesheet" type="text/css" href="css/minitools.css"/>
   <script src="lib/protovis-3.2/protovis-d3.2.js"></script>
@@ -58,14 +58,14 @@
 			<label for="radioUserDefGroups">Make Your Own Groups</label><br>
 			
 			<input type="radio" id="radioFixedSizeGroups" name="mode">
-			<label for="radioFixedSizeGroups">Fixed Size</label>
-			<input type="text" id="fixedGroupSize"><br>
+			<label for="radioFixedSizeGroups">Fixed Size:</label>
+			<input type="text" id="fixedGroupSize"  style="width:50px" value="4"><br>
 			
 			<input type="radio" id="radioFixedIntervalGroups" name="mode">
-			<label for="radioFixedIntervalGroups">Fixed Interval Width</label>
-			<input type="text" id="fixedIntervalWidth">
+			<label for="radioFixedIntervalGroups">Fixed Interval Width:</label>
+			<input type="text" id="fixedIntervalWidth"  style="width:50px" value="10">
 			<input type="checkbox" id="checkboxHistogram" name="histogram">
-			<label for="checkboxHistrogram">Histogram</label><br>
+			<label for="checkboxHistogram">Histogram</label><br>
 			
 			<input type="radio" id="radioTwoEqualGroups" name="mode">
 			<label for="radioTwoEqualGroups">Two Equal</label><br>
@@ -81,6 +81,8 @@
 			<label for="checkboxSplitData">Split Data</label><br>
 			<input type="checkbox" id="checkboxHideData" name="hideData">
 			<label for="checkboxHideData">Hide Data</label><br>
+			<input type="checkbox" id="fitScalesToData">
+			<label for="fitScalesToData">Fit Scales To Data</label><br>
 		  </td>
 		  
 	      <td valign="top">
@@ -116,10 +118,10 @@
 
 <p id="loadingMsg">Loading...</p>
 
-<script type="text/javascript" src="js/minitools-util.js"></script>
-<script type="text/javascript" src="js/minitools-obj.js"></script>
-<script type="text/javascript" src="js/minitools-main.js"></script>
-<script type="text/javascript" src="js/minitools-local.js"></script>
+<script type="text/javascript" src="js/seeit3-dist-util.js"></script>
+<script type="text/javascript" src="js/seeit3-dist-obj.js"></script>
+<script type="text/javascript" src="js/seeit3-dist-main.js"></script>
+<script type="text/javascript" src="js/seeit3-dist-local.js"></script>
 
 <div style="position:fixed; bottom:10px; left:20px; background-color:white">
   Copyright &copy; UC Regents, Davis campus. All rights reserved.</div>

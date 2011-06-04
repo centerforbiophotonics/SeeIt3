@@ -19,10 +19,27 @@
 			
 		
 		/* X/Y Distribution Variables */
-		this.buckets = 50;
+		this.buckets = 40;
 		this.bucketDotSize = 5;
 		
-		this.singleDistPoints = singleDistPoints(this);
+		/* Partition Params */
+		this.partitionGroupSize = parseFloat($('#fixedGroupSize').val());
+		this.partitionIntervalWidth = parseFloat($('#fixedIntervalWidth').val());
+		
+		
+		this.selectedUDPartInWhichSet = "";
+		
+		this.selectedUDPartBoth = -1;
+		this.udPartitionsBoth = []; 
+		this.udPartXValsBoth;
+		
+		this.selectedUDPartSet1 = -1;
+		this.udPartitionsSet1 = [];
+		this.udPartXValsSet1;
+		
+		this.selectedUDPartSet2 = -1;
+		this.udPartitionsSet2 = [];
+		this.udPartXValsSet2;
 	}
 	
 	Graphics.prototype = {
@@ -139,7 +156,7 @@
 	  
 	  transformFeedData: function(feedData) {
 		var data = [];
-		console.log(feedData);
+		//console.log(feedData);
 		for (var i = 1; i < feedData.feed.entry.length; i++) {
 			var cells = feedData.feed.entry[i].content.$t.split(',');
 			var firstMatch = /\:\s+([\d|\.]+)/.exec(cells[0]);

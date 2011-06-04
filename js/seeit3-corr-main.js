@@ -50,7 +50,7 @@ function constructNormVis(){
 		  .top(padTop)
 		  .events("all");
   
-  /*Graph Title*/		  
+  /*Graph Title*/
   vis.add(pv.Label)
 	.left(graphics.w / 2)
 	.top(-40)
