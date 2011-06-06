@@ -15,32 +15,6 @@ function constructVis() {
 	} else {
 		constructSingleVis();
 	}
-	
-	jQuery('#sliderTextSize').slider({ 
-	orientation:'vertical', min:12, max:20, value:parseInt(graphics.tickTextSize), step:1,
-	slide:function(event, ui) { 
-		graphics.labelTextSize = (ui.value + 4).toString();
-		graphics.tickTextSize = ui.value.toString();
-		vis.render(); 
-	}
-	});
-	
-	jQuery('#sliderDotSize').slider({ 
-		orientation:'vertical', min:1, max:10, value:graphics.bucketDotSize, step:1,
-		slide:function(event, ui) {
-			graphics.bucketDotSize = ui.value; 
-			vis.render(); 
-		}
-	});
-  
-	jQuery('#sliderDivisions').slider({ 
-		orientation:'vertical', min:2, max:graphics.buckets, value:graphics.buckets, step:1,
-		slide:function(event, ui) { 
-			graphics.buckets = ui.value;
-			graphics.singleDistPoints = singleDistPoints(graphics);
-			vis.render(); 
-		}
-	});
 }
 
 /*Padding around main panel*/
@@ -125,6 +99,16 @@ function constructSingleVis(){
 				if (this.index == 0) return "= "+graphics.worksheet.dataType1
 				else return "= "+graphics.worksheet.dataType2
 			})
+			
+	/* Overflow Warning Message */
+	vis.add(pv.Label)
+		.text("Warning! Data Exceeds Graph Height")
+		.top(-10)
+		.left(graphics.w/2)
+		.textStyle("red")
+		.textAlign("center")
+		.visible(function() {return graphics.graphOverflowFlag})
+
 	
 	/* User Defined Partitions */
 	vis.add(pv.Rule)
@@ -480,34 +464,43 @@ function constructSplitVis(){
 				else return "= "+graphics.worksheet.dataType2
 			})
 			
-	 /* Listeners for user defined partition deletion */
-    pv.listen(window, "mousedown", function() {self.focus()});
-		pv.listen(window, "keydown", function(e) {
-			// code 8 is backspace, code 46 is delete
-			if (e.keyCode == 8 || e.keyCode == 46) {
-				if (graphics.selectedUDPartInWhichSet == "set1"){
-					if(deleteUDPFlag){				//the event gets triggered twice somehow.  This prevents multiple deletions.
-						deleteUDPFlag = false;  
-						graphics.udPartitionsSet1.splice(graphics.selectedUDPartSet1, 1);
-						selectAUserDefPartition("none", graphics, null);
-						vis.render();
-						e.preventDefault();
-					} else {
-						deleteUDPFlag = true;
-					}
-				} else if (graphics.selectedUDPartInWhichSet == "set2") {
-					if(deleteUDPFlag){				//the event gets triggered twice somehow.  This prevents multiple deletions.
-						deleteUDPFlag = false;  
-						graphics.udPartitionsSet2.splice(graphics.selectedUDPartSet2, 1);
-						selectAUserDefPartition("none", graphics, null);
-						vis.render();
-						e.preventDefault();
-					} else {
-						deleteUDPFlag = true;
-					}
+	/* Listeners for user defined partition deletion */
+	pv.listen(window, "mousedown", function() {self.focus()});
+	pv.listen(window, "keydown", function(e) {
+		// code 8 is backspace, code 46 is delete
+		if (e.keyCode == 8 || e.keyCode == 46) {
+			if (graphics.selectedUDPartInWhichSet == "set1"){
+				if(deleteUDPFlag){				//the event gets triggered twice somehow.  This prevents multiple deletions.
+					deleteUDPFlag = false;  
+					graphics.udPartitionsSet1.splice(graphics.selectedUDPartSet1, 1);
+					selectAUserDefPartition("none", graphics, null);
+					vis.render();
+					e.preventDefault();
+				} else {
+					deleteUDPFlag = true;
+				}
+			} else if (graphics.selectedUDPartInWhichSet == "set2") {
+				if(deleteUDPFlag){				//the event gets triggered twice somehow.  This prevents multiple deletions.
+					deleteUDPFlag = false;  
+					graphics.udPartitionsSet2.splice(graphics.selectedUDPartSet2, 1);
+					selectAUserDefPartition("none", graphics, null);
+					vis.render();
+					e.preventDefault();
+				} else {
+					deleteUDPFlag = true;
 				}
 			}
-		});
+		}
+	});
+	
+	/* Overflow Warning Message */
+	vis.add(pv.Label)
+		.text("Warning! Data Exceeds Graph Height")
+		.top(-10)
+		.left(graphics.w/2)
+		.textStyle("red")
+		.textAlign("center")
+		.visible(function() {return graphics.graphOverflowFlag})
 			
 /*|||||||||||||||||||||TOP GRAPH STUFF BELOW HERE|||||||||||||||||||||*/
 	
@@ -1188,16 +1181,12 @@ jQuery('#newSpreadsheetURL').keyup(function(event) {
   }
 });
 
-
 /* Dynamic Graph Resizing */
 $(window).resize(function() {
 	graphics.setW(calcGraphWidth());
 	graphics.setH(calcGraphHeight());
 	constructVis();
 })
-
-
-
 
 /* populate dataset drop down menu */
 var numWorksheetsLoaded = 0;
@@ -1301,4 +1290,32 @@ $('#checkboxBWView').change(function() { return constructVis(); });
 $('#fitScalesToData').change(function() {
 	graphics.setXScale();
 	constructVis();
+});
+
+/* Sliders */
+
+jQuery('#sliderTextSize').slider({ 
+	orientation:'vertical', min:12, max:20, value:parseInt(graphics.tickTextSize), step:1,
+	slide:function(event, ui) { 
+		graphics.labelTextSize = (ui.value + 4).toString();
+		graphics.tickTextSize = ui.value.toString();
+		vis.render(); 
+	}
+});
+	
+jQuery('#sliderDotSize').slider({ 
+	orientation:'vertical', min:1, max:10, value:graphics.bucketDotSize, step:1,
+	slide:function(event, ui) {
+		graphics.bucketDotSize = ui.value; 
+		vis.render(); 
+	}
+});
+
+jQuery('#sliderDivisions').slider({ 
+	orientation:'vertical', min:2, max:40, value:30, step:1,
+	slide:function(event, ui) { 
+		graphics.buckets = ui.value;
+		graphics.singleDistPoints = singleDistPoints(graphics);
+		vis.render(); 
+	}
 });
