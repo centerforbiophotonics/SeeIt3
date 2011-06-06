@@ -165,7 +165,6 @@ function singleDistPoints(graphics){
 	var xDomain = graphics.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
 	var points = [];
-	var graphOverflow = false;
 	
 	for (var i = 0; i < graphics.buckets; i++){
 		var bucketMin = xDomain[0] + (bucketSize * i);
@@ -195,12 +194,7 @@ function singleDistPoints(graphics){
 									 "isInSet1":pointsInBucket[j][3]
 								 });
 		}
-		
-		if (pointsInBucket.length*2*graphics.bucketDotSize > graphics.h)
-			graphOverflow = true;
-		
 	}
-	graphics.graphOverflowFlag = graphOverflow;
 	return points;
 }
 
@@ -208,7 +202,6 @@ function setOnePoints(graphics){
 	var xDomain = graphics.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
 	var points = [];
-	var graphOverflow = false;
 	
 	for (var i = 0; i < graphics.buckets; i++){
 		var bucketMin = xDomain[0] + (bucketSize * i);
@@ -240,10 +233,7 @@ function setOnePoints(graphics){
 									 "isInSet1":pointsInBucket[j][3]
 								 });
 		}
-		if (pointsInBucket.length*2*graphics.bucketDotSize > (graphics.h/2-50))
-			graphOverflow = true;
 	}
-	graphics.graphOverflowFlag = graphOverflow;
 	return points;
 }
 
@@ -251,7 +241,6 @@ function setTwoPoints(graphics){
 	var xDomain = graphics.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
 	var points = [];
-	var graphOverflow = false;
 	
 	for (var i = 0; i < graphics.buckets; i++){
 		var bucketMin = xDomain[0] + (bucketSize * i);
@@ -283,11 +272,8 @@ function setTwoPoints(graphics){
 									 "isInSet1":pointsInBucket[j][3]
 								 });
 		}
-		if (pointsInBucket.length*2*graphics.bucketDotSize > (graphics.h/2-50))
-			graphOverflow = true;
 	}
 	
-	graphics.graphOverflowFlag = graphOverflow;
 	return points;
 }
 
