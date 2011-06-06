@@ -26,6 +26,7 @@ var padBot = 70,
 
 function constructSingleVis(){
 	jQuery('span').remove();
+	graphics.graphOverflowFlag = false;
 	
 	vis = new pv.Panel()
 		  .width(graphics.w)
@@ -99,16 +100,6 @@ function constructSingleVis(){
 				if (this.index == 0) return "= "+graphics.worksheet.dataType1
 				else return "= "+graphics.worksheet.dataType2
 			})
-			
-	/* Overflow Warning Message */
-	vis.add(pv.Label)
-		.text("Warning! Data Exceeds Graph Height")
-		.top(-10)
-		.left(graphics.w/2)
-		.textStyle("red")
-		.textAlign("center")
-		.visible(function() {return graphics.graphOverflowFlag})
-
 	
 	/* User Defined Partitions */
 	vis.add(pv.Rule)
@@ -409,18 +400,33 @@ function constructSingleVis(){
 		.data(function() {return singleDistPoints(graphics)})
 		.visible(function() { return $('#checkboxHideData').attr('checked') == false })
 		.left(function(d) { return d.x })
-		.bottom(function(d) { return d.y })
+		.bottom(function(d) {
+			if (d.y > graphics.h + padTop)
+				graphics.graphOverflowFlag = true;
+			return d.y 
+		})
 		.radius(function() {return graphics.bucketDotSize})
 		.fillStyle(function(d) {return dataPointFillStyle(d)})
 		.strokeStyle(function(d) {return dataPointStrokeStyle(d)})
 		.title(function(d) { return d.label+", "+graphics.x.invert(d.x).toFixed(1) });
-					
+	
+	/* Overflow Warning Message */
+	vis.add(pv.Label)
+		.text("Warning! Data Exceeds Graph Height")
+		.top(-10)
+		.left(graphics.w/2)
+		.textStyle("red")
+		.textAlign("center")
+		.visible(function() {return graphics.graphOverflowFlag})
+
+	
 	vis.render();
 }
 	
 function constructSplitVis(){
 	jQuery('span').remove();
 	
+	graphics.graphOverflowFlag = false;
 	topGraphBase = graphics.h/2 + 50
 	
 	vis = new pv.Panel()
@@ -492,15 +498,6 @@ function constructSplitVis(){
 			}
 		}
 	});
-	
-	/* Overflow Warning Message */
-	vis.add(pv.Label)
-		.text("Warning! Data Exceeds Graph Height")
-		.top(-10)
-		.left(graphics.w/2)
-		.textStyle("red")
-		.textAlign("center")
-		.visible(function() {return graphics.graphOverflowFlag})
 			
 /*|||||||||||||||||||||TOP GRAPH STUFF BELOW HERE|||||||||||||||||||||*/
 	
@@ -829,7 +826,11 @@ function constructSplitVis(){
 		.data(function() {return setOnePoints(graphics)})
 		.visible(function() { return $('#checkboxHideData').attr('checked') == false })
 		.left(function(d) { return d.x })
-		.bottom(function(d) { return topGraphBase + d.y })
+		.bottom(function(d) {
+			if ((topGraphBase + d.y) > graphics.h+padTop-10)
+				graphics.graphOverflowFlag = true;
+			return topGraphBase + d.y 
+		})
 		.radius(function() {return graphics.bucketDotSize})
 		.fillStyle(function(d) {return dataPointFillStyle(d)})
 		.strokeStyle(function(d) {return dataPointStrokeStyle(d)})
@@ -1162,11 +1163,24 @@ function constructSplitVis(){
 		.data(function() {return setTwoPoints(graphics)})
 		.visible(function() { return $('#checkboxHideData').attr('checked') == false })
 		.left(function(d) { return d.x })
-		.bottom(function(d) { return d.y })
+		.bottom(function(d) { 
+			if (d.y > topGraphBase)
+				graphics.graphOverflowFlag = true;
+			return d.y;
+		})
 		.radius(function() {return graphics.bucketDotSize})
 		.fillStyle(function(d) {return dataPointFillStyle(d)})
 		.strokeStyle(function(d) {return dataPointStrokeStyle(d)})
 		.title(function(d) { return d.label+", "+graphics.x.invert(d.x).toFixed(1) });
+	
+	/* Overflow Warning Message */
+	vis.add(pv.Label)
+		.text("Warning! Data Exceeds Graph Height")
+		.top(-10)
+		.left(graphics.w/2)
+		.textStyle("red")
+		.textAlign("center")
+		.visible(function() {return graphics.graphOverflowFlag})
 	
 	vis.render();
 }
@@ -1316,6 +1330,6 @@ jQuery('#sliderDivisions').slider({
 	slide:function(event, ui) { 
 		graphics.buckets = ui.value;
 		graphics.singleDistPoints = singleDistPoints(graphics);
-		vis.render(); 
+		constructVis();
 	}
 });
