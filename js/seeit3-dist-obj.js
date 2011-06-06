@@ -18,14 +18,13 @@
 		this.tickTextSize = "12";
 			
 		
-		/* X/Y Distribution Variables */
+		/* X Distribution Variables */
 		this.buckets = 40;
 		this.bucketDotSize = 5;
 		
 		/* Partition Params */
 		this.partitionGroupSize = parseFloat($('#fixedGroupSize').val());
 		this.partitionIntervalWidth = parseFloat($('#fixedIntervalWidth').val());
-		
 		
 		this.selectedUDPartInWhichSet = "";
 		
@@ -40,6 +39,9 @@
 		this.selectedUDPartSet2 = -1;
 		this.udPartitionsSet2 = [];
 		this.udPartXValsSet2;
+		
+		/* Graph Overflow */
+		this.graphOverflowFlag = false;
 	}
 	
 	Graphics.prototype = {
