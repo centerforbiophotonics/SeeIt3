@@ -83,6 +83,14 @@
 			<label for="checkboxHideData">Hide Data</label><br>
 			<input type="checkbox" id="fitScalesToData">
 			<label for="fitScalesToData">Fit Scales To Data</label><br>
+			<input type="button" value="Add Graph" id="addGraph">
+			
+			<b>Point Stack Mode</b></br>
+			<select id="drawMode">
+				<option value="floating" selected>Floating</option>
+				<option value="center">Center</option>
+				<option value="gravity">Gravity</option>
+			</select>
 		  </td>
 		  
 	      <td valign="top">
@@ -123,8 +131,11 @@
 <script type="text/javascript" src="js/seeit3-dist-main.js"></script>
 <script type="text/javascript" src="js/seeit3-dist-local.js"></script>
 
+<div id="textWidthTest" style="position:absolute; visibility:hidden; width:auto; height:auto"></div>
+
 <div style="position:fixed; bottom:10px; left:20px; background-color:white">
-  Copyright &copy; UC Regents, Davis campus. All rights reserved.</div>
+  Copyright &copy; UC Regents, Davis campus. All rights reserved.
+</div>
 
 </body>
 </html>
