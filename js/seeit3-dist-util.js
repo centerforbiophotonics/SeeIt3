@@ -60,8 +60,8 @@ function legendPointStrokeStyle(index){
 	}
 }
 
-function partitionDataInTwo(graphics, mode){
-	var data = parseData(graphics, mode);
+function partitionDataInTwo(graph){
+	var data = parseData(graph);
 	
 	if (data.length % 2 == 0)
 		return [getMinOfArray(data),
@@ -73,8 +73,8 @@ function partitionDataInTwo(graphics, mode){
 						getMaxOfArray(data)];
 }
 
-function partitionDataInFour(graphics, mode){
-	var data = parseData(graphics, mode),
+function partitionDataInFour(graph){
+	var data = graph.dataVals(),
 			size = (data.length >= 8) ? Math.ceil(data.length/4) : Math.floor(data.length/4);
 			divs = [getMinOfArray(data)],
 			count = 0,
@@ -92,10 +92,10 @@ function partitionDataInFour(graphics, mode){
 	return divs;
 }
 
-function partitionDataInFixedSizeGroups(graphics, mode){
-	var data = parseData(graphics, mode),
-			size = graphics.partitionGroupSize,
-			divs = [graphics.xMin],
+function partitionDataInFixedSizeGroups(graph){
+	var data = graph.dataVals(),
+			size = graph.partitionGroupSize,
+			divs = [graph.xMin],
 			count = 0;
 	for (var i = 0; i<data.length-1; i++){
 		count++;
@@ -104,25 +104,25 @@ function partitionDataInFixedSizeGroups(graphics, mode){
 			divs.push((data[i]+data[i+1])/2);
 		}
 	}
-	divs.push(graphics.xMax);
+	divs.push(graph.xMax);
 	return divs;
 }
 
-function partitionDataByIntervalWidth(graphics){
+function partitionDataByIntervalWidth(graph){
 	var divs = [],
-			curr = graphics.x.domain()[0];
+			curr = graph.x.domain()[0];
 	
-	while (curr <= graphics.x.domain()[1]){
+	while (curr <= graph.x.domain()[1]){
 		divs.push(curr)
-		curr += graphics.partitionIntervalWidth;
+		curr += graph.partitionIntervalWidth;
 	}
 	divs.push(curr);
 	return divs;
 }
 
 /*HTML Element Manipulation*/
-function toggleNetworkOptions(graphics) {
-	if (graphics.worksheet.local == true){
+function toggleNetworkOptions(graph) {
+	if (graph.worksheet.local == true){
 		$('#refreshWorksheet').hide();
 		$('#editInGoogleDocs').hide();
 	} else {
@@ -132,9 +132,9 @@ function toggleNetworkOptions(graphics) {
 	
 }
 
-function updateScaleTextBoxes(graphics){
-	$('#textXMin').val(graphics.x.domain()[0]);
-	$('#textXMax').val(graphics.x.domain()[1]);	
+function updateScaleTextBoxes(graph){
+	$('#textXMin').val(graph.x.domain()[0]);
+	$('#textXMax').val(graph.x.domain()[1]);	
 }
 
 function positionAxisMinMaxWidgets() {
@@ -147,70 +147,33 @@ function positionAxisMinMaxWidgets() {
 
 
 /* Data Manipulation Functions */
-function getXBuckets(graphics){
-	var xDomain = graphics.x.domain();
-	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
+function getXBuckets(graph){
+	var xDomain = graph.x.domain();
+	var bucketSize = (xDomain[1]-xDomain[0])/graph.buckets;
 	var points = [];
 	
 	points.push(xDomain[0]);
 	
-	for (var i = 1; i <= graphics.buckets; i++){
+	for (var i = 1; i <= graph.buckets; i++){
 		points.push(xDomain[0] + (bucketSize * i));
 	}
 	
 	return points;
 }
 
-function singleDistPoints(graphics){
-	var xDomain = graphics.x.domain();
-	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
+function setOnePoints(graph){
+	var xDomain = graph.x.domain();
+	var bucketSize = (xDomain[1]-xDomain[0])/graph.buckets;
 	var points = [];
 	
-	for (var i = 0; i < graphics.buckets; i++){
+	for (var i = 0; i < graph.buckets; i++){
 		var bucketMin = xDomain[0] + (bucketSize * i);
 		var bucketMax = xDomain[0] + (bucketSize * (i+1));
 		var pointsInBucket = [];
 		
-		for (var j = 0; j < graphics.data.length; j++){
-			var dataPoint = graphics.data[j],
-				xVal = parseFloat(dataPoint.value),
-				label = dataPoint.label;
-				set1 = dataPoint.set1;
-				
-			if (xVal >= bucketMin 
-				&& xVal < bucketMax)
-			{
-				pointsInBucket.push([graphics.x(xVal), 0, label, set1]);
-			}
-		}
-		
-		randomIndex = 20;
-		pointsInBucket = shuffle(pointsInBucket);
-		
-		for (var j = 0; j < pointsInBucket.length; j++){
-			points.push({"x":pointsInBucket[j][0],
-									 "y":graphics.bucketDotSize + j*2*graphics.bucketDotSize,
-									 "label":pointsInBucket[j][2],
-									 "isInSet1":pointsInBucket[j][3]
-								 });
-		}
-	}
-	return points;
-}
-
-function setOnePoints(graphics){
-	var xDomain = graphics.x.domain();
-	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
-	var points = [];
-	
-	for (var i = 0; i < graphics.buckets; i++){
-		var bucketMin = xDomain[0] + (bucketSize * i);
-		var bucketMax = xDomain[0] + (bucketSize * (i+1));
-		var pointsInBucket = [];
-		
-		for (var j = 0; j < graphics.data.length; j++){
-			if (graphics.data[j].set1){
-				var dataPoint = graphics.data[j],
+		for (var j = 0; j < graph.data.length; j++){
+			if (graph.data[j].set1){
+				var dataPoint = graph.data[j],
 					xVal = parseFloat(dataPoint.value),
 					label = dataPoint.label;
 					set1 = dataPoint.set1;
@@ -218,7 +181,7 @@ function setOnePoints(graphics){
 				if (xVal >= bucketMin 
 					&& xVal < bucketMax)
 				{
-					pointsInBucket.push([graphics.x(xVal), 0, label, set1]);
+					pointsInBucket.push([graph.x(xVal), 0, label, set1]);
 				}
 			}
 		}
@@ -228,7 +191,7 @@ function setOnePoints(graphics){
 		
 		for (var j = 0; j < pointsInBucket.length; j++){
 			points.push({"x":pointsInBucket[j][0],
-									 "y":graphics.bucketDotSize + j*2*graphics.bucketDotSize,
+									 "y":graph.bucketDotSize + j*2*graph.bucketDotSize,
 									 "label":pointsInBucket[j][2],
 									 "isInSet1":pointsInBucket[j][3]
 								 });
@@ -237,19 +200,19 @@ function setOnePoints(graphics){
 	return points;
 }
 
-function setTwoPoints(graphics){
-	var xDomain = graphics.x.domain();
-	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
+function setTwoPoints(graph){
+	var xDomain = graph.x.domain();
+	var bucketSize = (xDomain[1]-xDomain[0])/graph.buckets;
 	var points = [];
 	
-	for (var i = 0; i < graphics.buckets; i++){
+	for (var i = 0; i < graph.buckets; i++){
 		var bucketMin = xDomain[0] + (bucketSize * i);
 		var bucketMax = xDomain[0] + (bucketSize * (i+1));
 		var pointsInBucket = [];
 		
-		for (var j = 0; j < graphics.data.length; j++){
-			if (graphics.data[j].set1 == false){
-				var dataPoint = graphics.data[j],
+		for (var j = 0; j < graph.data.length; j++){
+			if (graph.data[j].set1 == false){
+				var dataPoint = graph.data[j],
 					xVal = parseFloat(dataPoint.value),
 					label = dataPoint.label;
 					set1 = dataPoint.set1;
@@ -257,7 +220,7 @@ function setTwoPoints(graphics){
 				if (xVal >= bucketMin 
 					&& xVal < bucketMax)
 				{
-					pointsInBucket.push([graphics.x(xVal), 0, label, set1]);
+					pointsInBucket.push([graph.x(xVal), 0, label, set1]);
 				}
 			}
 		}
@@ -267,7 +230,7 @@ function setTwoPoints(graphics){
 		
 		for (var j = 0; j < pointsInBucket.length; j++){
 			points.push({"x":pointsInBucket[j][0],
-									 "y":graphics.bucketDotSize + j*2*graphics.bucketDotSize,
+									 "y":graph.bucketDotSize + j*2*graph.bucketDotSize,
 									 "label":pointsInBucket[j][2],
 									 "isInSet1":pointsInBucket[j][3]
 								 });
@@ -298,35 +261,18 @@ function parseSpreadsheetKeyFromURL(URL) {
 }
 
 function calcGraphWidth(){
-	return window.innerWidth - 65;
+	return window.innerWidth - 200;
 }
 
 function calcGraphHeight(){
-	return (window.innerHeight - jQuery('div#notGraph').height()) - 165; 
+	return (window.innerHeight - jQuery('div#notGraph').height()) - 90; 
 }
 
-function parseData(graphics, mode){
-	var data;
-	if (mode == "set1"){
-		data = graphics.data.filter(function(d){return d.set1})
-												.map(function(d){return parseFloat(d.value)});
-	} else if (mode == "set2"){
-		data = graphics.data.filter(function(d){return !(d.set1)})
-												.map(function(d){return parseFloat(d.value)});
-	} else if (mode == "both"){
-		data = graphics.data.map(function(d){return parseFloat(d.value)});
-	}
-	
-	data.sort(function(a,b){return a - b})
-	
-	return data;
-}
-
-function countDataInPartitions(graphics, partitions, mode){
+function countDataInPartitions(graph, partitions){
 	var counts = [];
 	for (var index=0; index<partitions.length; index++){
 		var count = 0;
-		var data = parseData(graphics,mode);
+		var data = graph.dataVals();
 		if(index != partitions.length-1){
 			for (var i=0; i<data.length; i++){
 				if (data[i] >= partitions[index] && data[i] < partitions[index+1])
@@ -338,50 +284,50 @@ function countDataInPartitions(graphics, partitions, mode){
 	return counts;
 }
 
-function countDataInUserDefPartitions(graphics, mode){
-	var udPartXVals = getSortedUDPartitionXVals(graphics, mode);
-	return countDataInPartitions(graphics, udPartXVals, mode);	
+function countDataInUserDefPartitions(graph){
+	var udPartXVals = getSortedUDPartitionXVals(graph);
+	return countDataInPartitions(graph, udPartXVals);	
 }
 
-function getSortedUDPartitionXVals(graphics, mode){
-	var udPartXVals = [graphics.x.domain()[0]];
+function getSortedUDPartitionXVals(graph){
+	var udPartXVals = [graph.x.domain()[0]];
 	
 	if (mode == "both")
-		udPartXVals = udPartXVals.concat(graphics.udPartitionsBoth.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+		udPartXVals = udPartXVals.concat(graph.udPartitionsBoth.map(function(d){return graph.x.invert(d.x)}).sort(function(a,b){return a - b}));
 	else if (mode == "set1")
-		udPartXVals = udPartXVals.concat(graphics.udPartitionsSet1.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+		udPartXVals = udPartXVals.concat(graph.udPartitionsSet1.map(function(d){return graph.x.invert(d.x)}).sort(function(a,b){return a - b}));
 	else if (mode == "set2")
-		udPartXVals = udPartXVals.concat(graphics.udPartitionsSet2.map(function(d){return graphics.x.invert(d.x)}).sort(function(a,b){return a - b}));
+		udPartXVals = udPartXVals.concat(graph.udPartitionsSet2.map(function(d){return graph.x.invert(d.x)}).sort(function(a,b){return a - b}));
 	
-	udPartXVals = udPartXVals.concat(graphics.x.domain()[1]);
+	udPartXVals = udPartXVals.concat(graph.x.domain()[1]);
 	return udPartXVals;
 }
 
-function fiwHistogram(graphics, partitions, mode){
-	var counts = countDataInPartitions(graphics, partitions, mode);
+function fiwHistogram(graph, partitions, mode){
+	var counts = countDataInPartitions(graph, partitions, mode);
 	var maxCount = getMaxOfArray(counts);
 	var rectangles = [];
 	if (mode == "both"){
 		for (var i=0;i<counts.length;i++){
 			rectangles.push([[partitions[i], 0],
-											 [partitions[i], graphics.h * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
-											 [partitions[i+1], graphics.h * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
+											 [partitions[i], graph.h * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
+											 [partitions[i+1], graph.h * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
 											 [partitions[i+1], 0],
 											 [partitions[i], 0]]);
 		}
 	} else if (mode == "set1") {
 		for (var i=0;i<counts.length;i++){
 			rectangles.push([[partitions[i], 0],
-											 [partitions[i], (graphics.h/2 - 50) * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
-											 [partitions[i+1], (graphics.h/2 - 50) * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
+											 [partitions[i], (graph.h/2 - 50) * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
+											 [partitions[i+1], (graph.h/2 - 50) * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
 											 [partitions[i+1], 0],
 											 [partitions[i], 0]]);
 		}
 	} else if (mode == "set2") {
 		for (var i=0;i<counts.length;i++){
 			rectangles.push([[partitions[i], 0],
-											 [partitions[i], (graphics.h/2 - 50) * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
-											 [partitions[i+1], (graphics.h/2 - 50) * counts[i]/maxCount],//counts[i]*graphics.bucketDotSize*2],
+											 [partitions[i], (graph.h/2 - 50) * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
+											 [partitions[i+1], (graph.h/2 - 50) * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
 											 [partitions[i+1], 0],
 											 [partitions[i], 0]]);
 		}
@@ -390,27 +336,27 @@ function fiwHistogram(graphics, partitions, mode){
 	return rectangles;
 }
 
-function selectAUserDefPartition(mode, graphics, index){
+function selectAUserDefPartition(mode, graph, index){
 	if (mode == "both") {
-		graphics.selectedUDPartBoth = index;
-		graphics.selectedUDPartSet1 = -1;
-		graphics.selectedUDPartSet2 = -1;
-		graphics.selectedUDPartInWhichSet = "both";
+		graph.selectedUDPartBoth = index;
+		graph.selectedUDPartSet1 = -1;
+		graph.selectedUDPartSet2 = -1;
+		graph.selectedUDPartInWhichSet = "both";
 	} else if (mode == "set1") {
-		graphics.selectedUDPartBoth = -1;
-		graphics.selectedUDPartSet1 = index;
-		graphics.selectedUDPartSet2 = -1;
-		graphics.selectedUDPartInWhichSet = "set1";
+		graph.selectedUDPartBoth = -1;
+		graph.selectedUDPartSet1 = index;
+		graph.selectedUDPartSet2 = -1;
+		graph.selectedUDPartInWhichSet = "set1";
 	} else if (mode == "set2") {
-		graphics.selectedUDPartBoth = -1;
-		graphics.selectedUDPartSet1 = -1;
-		graphics.selectedUDPartSet2 = index;
-		graphics.selectedUDPartInWhichSet = "set2";
+		graph.selectedUDPartBoth = -1;
+		graph.selectedUDPartSet1 = -1;
+		graph.selectedUDPartSet2 = index;
+		graph.selectedUDPartInWhichSet = "set2";
 	} else if (mode == "none") {
-		graphics.selectedUDPartBoth = -1;
-		graphics.selectedUDPartSet1 = -1;
-		graphics.selectedUDPartSet2 = -1;
-		graphics.selectedUDPartInWhichSet = "";
+		graph.selectedUDPartBoth = -1;
+		graph.selectedUDPartSet1 = -1;
+		graph.selectedUDPartSet2 = -1;
+		graph.selectedUDPartInWhichSet = "";
 	}
 }
 
@@ -420,6 +366,12 @@ function getMaxOfArray(numArray) {
 
 function getMinOfArray(numArray) {
   return Math.min.apply(null, numArray);
+}
+
+//Not used anywhere currently
+function getPixelWidthOfText(font, text){
+	$("#textWidthTest").html("<p style=\"font:"+font+"\">"+text+"</p>");
+	return $("#textWidthTest").outerWidth();
 }
 
 
