@@ -275,7 +275,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					.font(fontString)
 				
 			var legendPanel = graphPanel.add(pv.Panel)
-				.right(10)
+				.right(0)
 				.data([{"x":0,"y":0}])
 				.def("category", category)
 				.def("row",index)

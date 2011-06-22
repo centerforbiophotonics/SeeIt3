@@ -44,6 +44,8 @@ GraphCollection.prototype = {
 			this.setH(this.defaultGraphHeight*this.graphs.length);
 		else 
 			this.setH(calcGraphHeight());
+			
+		if (this.graphs.length == 0) this.addGraph();
 	},
 	
 	setChildGraphHeights: function(){
