@@ -32,6 +32,12 @@ function constructVis(){
 		.left(-15)
 		.bottom(-20)
 		.top(-30)
+		
+	/*Divider Between Top Graph and Title*/
+	vis.add(pv.Rule)
+		.top(-1)
+		.right(-20)
+		.left(-15)
 	
 	/*Graph Title*/		  
 	vis.add(pv.Label)
@@ -138,23 +144,42 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				testFlag = true;
 				return "blue";
 			}
-		});
+		})
 		
 	graph.panel = graphPanel;
 	
-	if (graph.includedCategories.length > 0){
-		//Remove Graph Button
-		graphPanel.add(pv.Dot)
-			.left(10)
-			.top(10)
-			.shape("cross")
-			.lineWidth(2)
-			.strokeStyle("black")
-			.event("click", function(){
-				graphCollection.removeGraph(graph);
-				constructVis();
-			})
+	//Remove Graph Button
+	graphPanel.add(pv.Dot)
+		.left(0)
+		.top(10)
+		.shape("cross")
+		.lineWidth(2)
+		.strokeStyle("black")
+		.event("click", function(){
+			graphCollection.removeGraph(graph);
+			constructVis();
+		})
+		.event("mouseover", function(d){
+			console.log(this);
+			this.render();
+		})
+		.event("mouseout", function(d){ 
 			
+			this.render();
+		})
+		.anchor("right").add(pv.Label)
+				.visible(false)
+				.text("Remove Graph")
+				.textStyle(pv.rgb(100,100,100,0.5))
+				.font(fontString)
+				
+	//Divider Line Between Graphs
+	graphPanel.add(pv.Rule)
+		.bottom(1)
+		.left(-15)
+		.right(-20)
+	
+	if (graph.includedCategories.length > 0){
 		/* Number of datapoints N */
 		graphPanel.add(pv.Label)
 			.right(0)
@@ -213,7 +238,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.events("all")
 				.width(120)
 				.event("mouseover", function(d){
-					//this.fillStyle(pv.rgb(0,30,255,0.5))
 					this.strokeStyle("black");
 					this.render();
 				})
@@ -278,28 +302,13 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.textBaseline("center")
 			.text("Empty Graph")
 			.font(fontString)
-			
-		//Box Around Message
-		graphPanel.add(pv.Panel)
-			.left(graph.w/4)
-			.top(graph.h/4)
-			.width(graph.w/2)
-			.height(graph.h/2)
-			.lineWidth(1)
-			.strokeStyle("black")
-			
-		//Remove Graph Button
-		graphPanel.add(pv.Dot)
-			.left(graph.w/4 + 10)
-			.top(graph.h/4 + 10)
-			.def("index", index)
-			.shape("cross")
-			.lineWidth(2)
-			.strokeStyle("black")
-			.event("click", function(){
-				graphCollection.removeGraph(graph);
-				constructVis();
-			})
+		graphPanel.add(pv.Label)
+			.left(graph.w/2)
+			.top(graph.h/2 + 15)
+			.textAlign("center")
+			.textBaseline("center")
+			.text("Drag a Dataset from the Left to Add")
+			.font(fontString)
 	}
 	vis.render();
 }
