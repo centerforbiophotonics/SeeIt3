@@ -63,22 +63,46 @@ function constructCategoryPanel(vis){
 	
 	vis.add(pv.Label)
 		.text("Data Sets:")
-		.left(-145)
+		.left(-147)
 		.top(-10)
 		.font(fontString);
-		
+	
+	var dragFeedbackPanels = [];	
 	for (var key in graphCollection.worksheet.data){
 		var abbrevKey = key.slice(0,15)+"..."
+		
+		//Copy of category panel which follows mouse as it is dragged
+		dragFeedbackPanels[row] = vis.add(pv.Panel)
+			.visible(false)
+			.lineWidth(1)
+			.strokeStyle("black")
+			.height(20)
+			.width(130)
+			.left(0)
+			.top(0)
+			
+		dragFeedbackPanels[row].add(pv.Dot)
+			.left(10)
+			.top(10)
+			.shape("square")
+			.size(40)
+			.fillStyle(graphCollection.categoryColors[key])
+			.lineWidth(1)
+			.strokeStyle("black")
+			.anchor("right").add(pv.Label)
+				.text(abbrevKey)
+				.font(fontString)
 		
 		var catPanel = vis.add(pv.Panel)
 			.data([{"x":0,"y":0}])
 			.def("category", key)
+			.def("row",row)
 			.events("all")
 			.title(key)
 			.lineWidth(1)
 			.height(20)
-			.width(120)
-			.left(-145)
+			.width(130)
+			.left(-147)
 			.top(20*row - 10)
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
@@ -92,7 +116,7 @@ function constructCategoryPanel(vis){
 			.event("dragend", function(){
 				var mouseY = vis.mouse().y;
 				var mouseX = vis.mouse().x;
-				if(mouseX > 0 && mouseX < graphCollection.w){
+				if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
 					if (graphCollection.graphs.length > 4){
 						var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
 						graphCollection.graphs[which].addCategory(this.category());
@@ -103,9 +127,22 @@ function constructCategoryPanel(vis){
 					constructVis();
 				}
 			})
+			.event("drag", function(){
+				var mouseY = vis.mouse().y;
+				var mouseX = vis.mouse().x;
+				dragFeedbackPanels[this.row()].left(mouseX);
+				dragFeedbackPanels[this.row()].top(mouseY);
+				vis.render()
+			})
+			.event("dragstart", function(){
+				var mouseY = vis.mouse().y;
+				var mouseX = vis.mouse().x;
+				dragFeedbackPanels[this.row()].left(mouseX);
+				dragFeedbackPanels[this.row()].top(mouseY);
+				dragFeedbackPanels[this.row()].visible(true);
+				vis.render();
+			})
 			
-			
-		
 		catPanel.add(pv.Dot)
 			.left(10)
 			.top(10)
@@ -123,8 +160,7 @@ function constructCategoryPanel(vis){
 	
 }
 
-//
-var testFlag = false;
+
 
 function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	var fontString = "bold 12px sans-serif";
@@ -133,18 +169,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.top(function(){return graph.h*index})
 		.height(graph.h)
 		.width(graph.w)
-		//.lineWidth(1)
-		//.strokeStyle("black")
-		.fillStyle(function(){
-			return "white"
-			if(testFlag) {
-				testFlag = false;
-				return "red"
-			} else {
-				testFlag = true;
-				return "blue";
-			}
-		})
 		
 	graph.panel = graphPanel;
 	
@@ -160,17 +184,17 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			constructVis();
 		})
 		.event("mouseover", function(d){
-			console.log(this);
-			this.render();
+			this.parent.children[this.childIndex+1].visible(true); //will break if more marks are added to graphPanel before this one
+			graphPanel.render();
 		})
 		.event("mouseout", function(d){ 
-			
-			this.render();
+			this.parent.children[this.childIndex+1].visible(false); //Ditto
+			graphPanel.render();
 		})
 		.anchor("right").add(pv.Label)
 				.visible(false)
 				.text("Remove Graph")
-				.textStyle(pv.rgb(100,100,100,0.5))
+				.textStyle(pv.rgb(125,125,125,0.05))
 				.font(fontString)
 				
 	//Divider Line Between Graphs
@@ -223,20 +247,44 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.top(20)
 			.textBaseline("top")
 			.font(fontString);
-		
+
+		var dragFeedbackPanels = [];
 		graph.includedCategories.forEach(function(category, index){
 			var abbrevKey = category.slice(0,15)+"..."
 			
+			//Copy of category panel which follows mouse as it is dragged
+			dragFeedbackPanels[index] = vis.add(pv.Panel)
+				.visible(false)
+				.lineWidth(1)
+				.strokeStyle("black")
+				.height(20)
+				.width(130)
+				.left(0)
+				.top(0)
+				
+			dragFeedbackPanels[index].add(pv.Dot)
+				.left(10)
+				.top(10)
+				.shape("square")
+				.size(40)
+				.fillStyle(graphCollection.categoryColors[category])
+				.lineWidth(1)
+				.strokeStyle("black")
+				.anchor("right").add(pv.Label)
+					.text(abbrevKey)
+					.font(fontString)
+				
 			var legendPanel = graphPanel.add(pv.Panel)
 				.right(10)
 				.data([{"x":0,"y":0}])
 				.def("category", category)
+				.def("row",index)
 				.title(category)
 				.lineWidth(1)
 				.top(20*index+40)
 				.height(20)
 				.events("all")
-				.width(120)
+				.width(130)
 				.event("mouseover", function(d){
 					this.strokeStyle("black");
 					this.render();
@@ -250,7 +298,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.event("dragend", function(){
 					var mouseY = vis.mouse().y;
 					var mouseX = vis.mouse().x;
-					if(mouseX > 0 && mouseX < graphCollection.w){
+					if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
 						if (graphCollection.graphs.length > 4){
 							var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
 							graphCollection.graphs[which].addCategory(this.category());
@@ -265,6 +313,22 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					}
 					constructVis();
 				})
+				.event("drag", function(){
+					var mouseY = vis.mouse().y;
+					var mouseX = vis.mouse().x;
+					dragFeedbackPanels[this.row()].left(mouseX);
+					dragFeedbackPanels[this.row()].top(mouseY);
+					vis.render()
+				})
+				.event("dragstart", function(){
+					var mouseY = vis.mouse().y;
+					var mouseX = vis.mouse().x;
+					dragFeedbackPanels[this.row()].left(mouseX);
+					dragFeedbackPanels[this.row()].top(mouseY);
+					dragFeedbackPanels[this.row()].visible(true);
+					vis.render();
+				})
+				
 				
 			legendPanel.add(pv.Dot)
 				.left(10)
