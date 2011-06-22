@@ -3,6 +3,7 @@ function GraphCollection(){
 	this.worksheet = getWorksheet();
 	
 	this.graphs = [];
+	this.addGraph();
 	this.selectedGraphIndex = -1;
 	
 	//Drawing Variables
@@ -80,7 +81,7 @@ GraphCollection.prototype = {
 function Graph(worksheet){
 	this.worksheet = worksheet;
 	this.data = worksheet.data;
-	this.includedCategories = ["All Female Incidence Rate/100,000", "All Male Incidence Rate/100,000"];
+	this.includedCategories = [];
 	
 	this.w = calcGraphWidth();
 	this.h = 200;
@@ -121,10 +122,16 @@ Graph.prototype = {
 	},
 	
 	addCategory: function(name){
-		this.includedCategories.push(name);
-		this.xMax = pv.max(this.dataVals(), function(d) { return d });
-		this.xMin = pv.min(this.dataVals(), function(d) { return d });
-		this.n = this.dataVals().length
+		if (this.includedCategories.indexOf(name) == -1){
+			this.includedCategories.push(name);
+			this.xMax = pv.max(this.dataVals(), function(d) { return d });
+			this.xMin = pv.min(this.dataVals(), function(d) { return d });
+			this.n = this.dataVals().length;
+			this.setXScale();
+			return true;
+		} else {
+			return false;
+		}
 	},
 	
 	removeCategory: function(name){
