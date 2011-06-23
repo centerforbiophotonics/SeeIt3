@@ -107,6 +107,8 @@ function Graph(worksheet){
 	this.selectedUDPart = null;
 	this.udPartitions = [];
 	
+	this.groupingMode = "none";
+	
 	/* Graph Overflow */
 	this.graphOverflowFlag = false;
 	

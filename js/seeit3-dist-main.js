@@ -168,8 +168,38 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.top(function(){return graph.h*index})
 		.height(graph.h)
 		.width(graph.w)
+		.events("all")
+		.event("click", function(){
+			graphCollection.selectedGraphIndex = index;
+			vis.render();
+		});
 		
 	graph.panel = graphPanel;
+	
+	//Selected Graph Highlights
+	graphPanel.add(pv.Rule)
+		.visible(function(){return graphCollection.selectedGraphIndex == index})
+		.bottom(1)
+		.left(-15)
+		.right(-20)
+		.lineWidth(3)
+		
+	graphPanel.add(pv.Rule)
+		.visible(function(){return graphCollection.selectedGraphIndex == index})
+		.left(-14)
+		.lineWidth(3)
+		
+	graphPanel.add(pv.Rule)
+		.visible(function(){return graphCollection.selectedGraphIndex == index})
+		.top(-1)
+		.left(-15)
+		.right(-20)
+		.lineWidth(3)
+		
+	graphPanel.add(pv.Rule)
+		.visible(function(){return graphCollection.selectedGraphIndex == index})
+		.right(-19)
+		.lineWidth(3)
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Dot)
