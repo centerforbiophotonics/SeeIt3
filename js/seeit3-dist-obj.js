@@ -16,10 +16,14 @@ function GraphCollection(){
 	this.defaultGraphHeight = 300;
 	this.labelTextSize = "16";
 	this.tickTextSize = "12";
+	this.numberOfCategories = 0;
+	for (var key in this.worksheet.data){
+		this.numberOfCategories++;
+	}
 	
 	//Colors
 	this.categoryColors = {};
-	var colorScale = pv.Colors.category20(0,20);
+	var colorScale = pv.Colors.category20(0,this.numberOfCategories);
 	var counter = 0;
 	for (var key in this.worksheet.data){
 		this.categoryColors[key] = colorScale(counter);

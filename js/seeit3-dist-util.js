@@ -138,9 +138,7 @@ function updateScaleTextBoxes(graph){
 }
 
 function positionAxisMinMaxWidgets() {
-  $('#xMin input,#xMax input,#yMin input,#yMax input').css('width', '40px');
-  //$('#yMin').css('position', 'absolute').css('bottom', '75px').css('left', '52px');
-  //$('#yMax').css('position', 'absolute').css('top', '235px').css('left', '52px');
+  $('#xMin input,#xMax input').css('width', '40px');
   $('#xMin').css('position', 'absolute').css('bottom', '30px').css('left', '15px');
   $('#xMax').css('position', 'absolute').css('bottom', '30px').css('right', '24px')
 }

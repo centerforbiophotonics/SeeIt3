@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SeeIt3 Distributions</title>
+  <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.7.custom.css"/>
+  <link rel="stylesheet" type="text/css" href="css/seeit3.css"/>
+  <script src="lib/protovis-3.2/protovis-d3.2.js"></script>
+  <script src="lib/jquery-1.4.4.js"></script>
+  <script src="lib/jquery-ui-1.8.7.custom.min.js"></script>
+  <script src="lib/jquery.jsonp-2.1.4.min.js"></script>
+  
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1184912-6']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+<body>
+
+<div id="notGraph" class="notGraph">
+	<div id="menu" class="menu">
+	  <table>
+  	  <tr>
+  	    <td width="70%">
+    	    <div>
+    		    Select a dataset (worksheet): <select id="workSheetSelector"></select>
+      		  <input type="button" value="Refresh" id="refreshWorksheet">
+      		  <a href="#" id="editInGoogleDocs">Open in Google Docs</a>  
+      	  </div>
+      	</td>
+    	<td>
+      	<div>
+        	<div><label for="newSpreadsheetURL">Add a new spreadsheet by pasting its URL:</label></div>
+        	<input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
+      	</div>
+      	</td>
+    	</tr>
+  	</table>
+	</div>
+
+	<div id="menuOptions" class="menu">
+	  <table id="menuItems">
+	    <tr>
+		  <td valign="top">
+			<h3>Grouping Options</h3>
+			<input type="radio" id="radioNoGroups" name="mode" checked>
+			<label for="radioNoGroups">None</label><br>
+			
+			<input type="radio" id="radioUserDefGroups" name="mode">
+			<label for="radioUserDefGroups">Make Your Own Groups</label><br>
+			
+			<input type="radio" id="radioFixedSizeGroups" name="mode">
+			<label for="radioFixedSizeGroups">Fixed Size:</label>
+			<input type="text" id="fixedGroupSize"  style="width:50px" value="4"><br>
+			
+			<input type="radio" id="radioFixedIntervalGroups" name="mode">
+			<label for="radioFixedIntervalGroups">Fixed Interval Width:</label>
+			<input type="text" id="fixedIntervalWidth"  style="width:50px" value="10">
+			<input type="checkbox" id="checkboxHistogram" name="histogram">
+			<label for="checkboxHistogram">Histogram</label><br>
+			
+			<input type="radio" id="radioTwoEqualGroups" name="mode">
+			<label for="radioTwoEqualGroups">Two Equal</label><br>
+			
+			<input type="radio" id="radioFourEqualGroups" name="mode">
+			<label for="radioFourEqualGroups">Four Equal</label>
+			<input type="checkbox" id="checkboxBoxPlot" name="boxPlot">
+			<label for="checkboxBoxPlot">Box Plot</label><br>
+		  </td>
+		  <td valign="top">
+			<h3>Display Options</h3>
+			<input type="checkbox" id="checkboxSplitData" name="splitData">
+			<label for="checkboxSplitData">Split Data</label><br>
+			<input type="checkbox" id="checkboxHideData" name="hideData">
+			<label for="checkboxHideData">Hide Data</label><br>
+			<input type="checkbox" id="fitScalesToData">
+			<label for="fitScalesToData">Fit Scales To Data</label><br>
+		  </td>
+		  
+	      <td valign="top">
+	        <h3 style="margin-bottom:10px">Divisions</h3>
+	        <div id="sliderDivisions"></div>
+	      </td>
+	      <td valign="top">
+	        <h3 style="margin-bottom:10px">Dot Size</h3>
+	        <div id="sliderDotSize"></div>
+	      </td>
+	      <td valign="top">
+	        <h3 style="margin-bottom:10px">Text Size</h3>
+	        <div id="sliderTextSize"></div>
+	      </td>					
+	      <td valign="top">
+			<h3>Data Points</h3>
+			<input type="checkbox" id="checkboxBWView" name="color">
+	        <label for="checkboxBWView">Black</label><br>
+	        <input type="checkbox" id="checkboxFillDots" name="color">
+	        <label for="checkboxFillDots">Fill</label><br>
+	      </td>
+	    </tr>
+	  </table>
+	</div>
+</div>
+
+
+<div id="xMin">
+  <input type="text" id="textXMin" style="text-align:left"></div>
+
+<div id="xMax">
+  <input type="text" id="textXMax" style="text-align:left"></div>
+
+<p id="loadingMsg">Loading...</p>
+
+<script type="text/javascript" src="js/seeit3-dist-util-OLD.js"></script>
+<script type="text/javascript" src="js/seeit3-dist-obj-OLD.js"></script>
+<script type="text/javascript" src="js/seeit3-dist-main-OLD.js"></script>
+<script type="text/javascript" src="js/seeit3-dist-local-OLD.js"></script>
+
+<div style="position:fixed; bottom:10px; left:20px; background-color:white">
+  Copyright &copy; UC Regents, Davis campus. All rights reserved.</div>
+
+</body>
+</html>

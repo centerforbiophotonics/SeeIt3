@@ -2,8 +2,6 @@ var graphCollection = {};
 var vis = {};
 var deleteUDPFlag = true;
 
-$('#textYMin').hide();
-$('#textYMax').hide();
 $('#textXMin').hide();
 $('#textXMax').hide();
 
@@ -124,8 +122,9 @@ function constructCategoryPanel(vis){
 						var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
 						graphCollection.graphs[which].addCategory(this.category());
 					}
-					constructVis();
 				}
+				dragFeedbackPanels[this.row()].visible(false);
+				constructVis();
 			})
 			.event("drag", function(){
 				var mouseY = vis.mouse().y;
@@ -311,6 +310,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					} else {
 						graph.removeCategory(category);
 					}
+					dragFeedbackPanels[this.row()].visible(false);
 					constructVis();
 				})
 				.event("drag", function(){
@@ -526,5 +526,25 @@ jQuery('#sliderTextSize').slider({
 $('#addGraph').click(function(event){
 	graphCollection.addGraph();
 	constructVis();
-	
 });
+
+$('#groupingOptions').hide();
+$('#groupingOptions').css('position', 'absolute')
+										 .css('top', ($('#groupingButton').position().top + 25) +"px")
+										 .css('left',($('#groupingButton').position().left) +"px");
+
+$('#groupingButton').click(function(){
+	$('#groupingOptions').slideToggle();
+	$('#displayOptions').slideUp();
+});
+
+$('#displayOptions').hide();
+$('#displayOptions').css('position', 'absolute')
+										 .css('top', ($('#displayButton').position().top + 25) +"px")
+										 .css('left',($('#displayButton').offset().left) +"px");
+
+$('#displayButton').click(function(){
+	$('#displayOptions').slideToggle();
+	$('#groupingOptions').slideUp();
+});
+
