@@ -101,6 +101,14 @@ GraphCollection.prototype = {
 		
 		$('#fitScaleToData').attr('checked', this.graphs[this.selectedGraphIndex].fitScaleToData);
 	},
+	
+	selectAUserDefPartition: function(graphIndex, partIndex){
+		this.graphs.forEach(function(g){
+			g.selectedUDPart = null;
+		})
+		if (graphIndex != null)
+			this.graphs[graphIndex].selectedUDPart = partIndex;
+	},
 }
 
 /* MODIFY ATTRIBUTES WITH GREAT CAUTION */

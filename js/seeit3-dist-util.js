@@ -278,14 +278,7 @@ function countDataInUserDefPartitions(graph){
 
 function getSortedUDPartitionXVals(graph){
 	var udPartXVals = [graph.x.domain()[0]];
-	
-	if (mode == "both")
-		udPartXVals = udPartXVals.concat(graph.udPartitionsBoth.map(function(d){return graph.x.invert(d.x)}).sort(function(a,b){return a - b}));
-	else if (mode == "set1")
-		udPartXVals = udPartXVals.concat(graph.udPartitionsSet1.map(function(d){return graph.x.invert(d.x)}).sort(function(a,b){return a - b}));
-	else if (mode == "set2")
-		udPartXVals = udPartXVals.concat(graph.udPartitionsSet2.map(function(d){return graph.x.invert(d.x)}).sort(function(a,b){return a - b}));
-	
+	udPartXVals = udPartXVals.concat(graph.udPartitions.map(function(d){return graph.x.invert(d.x)}).sort(function(a,b){return a - b}));
 	udPartXVals = udPartXVals.concat(graph.x.domain()[1]);
 	return udPartXVals;
 }
@@ -304,30 +297,6 @@ function fiwHistogram(graph, partitions, mode){
 	}
 
 	return rectangles;
-}
-
-function selectAUserDefPartition(mode, graph, index){
-	if (mode == "both") {
-		graph.selectedUDPartBoth = index;
-		graph.selectedUDPartSet1 = -1;
-		graph.selectedUDPartSet2 = -1;
-		graph.selectedUDPartInWhichSet = "both";
-	} else if (mode == "set1") {
-		graph.selectedUDPartBoth = -1;
-		graph.selectedUDPartSet1 = index;
-		graph.selectedUDPartSet2 = -1;
-		graph.selectedUDPartInWhichSet = "set1";
-	} else if (mode == "set2") {
-		graph.selectedUDPartBoth = -1;
-		graph.selectedUDPartSet1 = -1;
-		graph.selectedUDPartSet2 = index;
-		graph.selectedUDPartInWhichSet = "set2";
-	} else if (mode == "none") {
-		graph.selectedUDPartBoth = -1;
-		graph.selectedUDPartSet1 = -1;
-		graph.selectedUDPartSet2 = -1;
-		graph.selectedUDPartInWhichSet = "";
-	}
 }
 
 function getMaxOfArray(numArray) {

@@ -7,7 +7,6 @@ $('#textXMax').hide();
 
 function constructVis(){
 	jQuery('span').remove();
-	console.log("constructVis");
 	//graph.graphOverflowFlag = false;
 	
 	vis = new pv.Panel()
@@ -172,6 +171,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.width(graph.w)
 		.events("all")
 		.event("click", function(){
+			if (graphCollection.selectedGraphIndex != index)
+				graphCollection.selectAUserDefPartition();
 			graphCollection.selectedGraphIndex = index;
 			graphCollection.updateMenuOptions();
 			vis.render();
@@ -369,6 +370,117 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					
 		});
 		
+		/* User Defined Partitions */
+		graphPanel.add(pv.Rule)
+			.data(function(){return graph.udPartitions})
+			.left(function(d){return d.x})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return graph.h * 0.75})
+			.strokeStyle("green")
+			.visible(function(){return graph.groupingMode == "UserDefGroups"})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){return graph.x.invert(d.x)})
+				.events("all")
+				.cursor("move")
+				.shape("square")
+				.fillStyle(function() {
+					if (graph.selectedUDPart == this.index)  return "yellow";
+					else return "green";
+				})
+				.strokeStyle("green")
+				.radius(4)
+				.event("mousedown", pv.Behavior.drag())
+				.event("dragstart", function() {
+					graphCollection.selectAUserDefPartition(index, this.index);
+				})
+				.event("drag", vis)
+		
+		/* UD Edge of the graph partition lines 
+		 * Where new partitions come from 
+		 */
+		graphPanel.add(pv.Rule)
+			.data([{"x":0,"y":0}])
+			.left(0)
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return graph.h * 0.75})
+			.strokeStyle("green")
+			.visible(function(){return graph.groupingMode == "UserDefGroups"})
+			.anchor("top").add(pv.Dot)
+				.events("all")
+				.cursor("move")
+				.shape("square")
+				.fillStyle("green")
+				.strokeStyle("green")
+				.radius(4)
+				.event("mousedown", pv.Behavior.drag())
+				.event("dragstart", function() {
+					graphCollection.selectAUserDefPartition(index, graph.udPartitions.push(vis.mouse())-1)
+					graphPanel.render();
+				})
+				.event("drag", function(){
+					graph.udPartitions[graph.udPartitions.length-1] = vis.mouse();
+					graphPanel.render();
+				})
+				.event("dragend",function(){
+					graph.udPartitions[graph.udPartitions.length-1] = vis.mouse();
+					graphPanel.render();
+				}) 
+			
+		
+		graphPanel.add(pv.Rule)
+			.right(0)
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return graph.h * 0.75})
+			.strokeStyle("green")
+			.visible(function(){return graph.groupingMode == "UserDefGroups"})
+			.event("dragstart", function() {
+				graph.udPartitions.push(vis.mouse())
+				graphPanel.render();
+			})
+			.event("drag", function(){
+				graph.udPartitions.slice(-1) = vis.mouse();
+			})
+			.event("dragend",function(){
+				graph.udPartitions.slice(-1) = vis.mouse();
+			}) 
+			
+		/* UD Partition Data Count Label */
+		graphPanel.add(pv.Label)
+			.data(function(){return countDataInUserDefPartitions(graph)})
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(function(){return graph.h * 0.75 + graph.baseLine})
+			.left(function(d){
+				var udPartXVals = getSortedUDPartitionXVals(graph);
+				if (this.index != udPartXVals.length-1){
+					return graph.x((udPartXVals[this.index]+udPartXVals[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				var udPartXVals = getSortedUDPartitionXVals(graph);
+				return this.index != udPartXVals.length-1 &&
+							 graph.groupingMode == "UserDefGroups";
+			});
+
+
+    /* Listeners for user defined partition deletion */
+    pv.listen(window, "mousedown", function() {self.focus()});
+		pv.listen(window, "keydown", function(e) {
+			//code 8 is backspace, code 46 is delete
+			if ((e.keyCode == 8 || e.keyCode == 46) && graph.selectedUDPart != null) {
+				//if(deleteUDPFlag){				//the event gets triggered twice somehow.  This prevents multiple deletions.
+					//deleteUDPFlag = false;  
+					graph.udPartitions.splice(graph.selectedUDPart, 1);
+					graphCollection.selectAUserDefPartition();
+					
+					e.preventDefault();
+					constructVis();
+				//} else {
+				//	deleteUDPFlag = true;
+				//}
+			}
+		});
+		
 		/* Fixed Interval Width Partitions */
 		var fiwPartitions = partitionDataByIntervalWidth(graph);
 		graphPanel.add(pv.Rule)
@@ -391,7 +503,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.data(countDataInPartitions(graph,fiwPartitions))
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.80})
+			.bottom(function(){return graph.h * 0.75 + graph.baseLine})
 			.left(function(){
 				if (this.index != fiwPartitions.length-1){
 					return graph.x((fiwPartitions[this.index]+fiwPartitions[this.index+1])/2);
@@ -441,7 +553,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.data(fgPartitions)
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.80})
+			.bottom(function(){return graph.h * 0.75 + graph.baseLine})
 			.left(function(){
 				if (this.index != fgPartitions.length-1){
 					return graph.x((fgPartitions[this.index]+fgPartitions[this.index+1])/2);
@@ -482,7 +594,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.data(twoPartitions)
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.80})
+			.bottom(function(){return graph.h * 0.75 + graph.baseLine})
 			.left(function(){
 				if (this.index != twoPartitions.length-1){
 					return graph.x((twoPartitions[this.index]+twoPartitions[this.index+1])/2);
@@ -526,7 +638,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.data(fourPartitions)
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.80})
+			.bottom(function(){return graph.h * 0.75 + graph.baseLine})
 			.left(function(){
 				if (this.index != fourPartitions.length-1){
 					return graph.x((fourPartitions[this.index]+fourPartitions[this.index+1])/2);
