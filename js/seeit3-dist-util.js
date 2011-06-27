@@ -61,7 +61,7 @@ function legendPointStrokeStyle(index){
 }
 
 function partitionDataInTwo(graph){
-	var data = parseData(graph);
+	var data = graph.dataVals();
 	
 	if (data.length % 2 == 0)
 		return [getMinOfArray(data),
@@ -130,17 +130,6 @@ function toggleNetworkOptions(graph) {
 		$('#editInGoogleDocs').show();
 	}
 	
-}
-
-function updateScaleTextBoxes(graph){
-	$('#textXMin').val(graph.x.domain()[0]);
-	$('#textXMax').val(graph.x.domain()[1]);	
-}
-
-function positionAxisMinMaxWidgets() {
-  $('#xMin input,#xMax input').css('width', '40px');
-  $('#xMin').css('position', 'absolute').css('bottom', '30px').css('left', '15px');
-  $('#xMax').css('position', 'absolute').css('bottom', '30px').css('right', '24px')
 }
 
 
@@ -302,35 +291,18 @@ function getSortedUDPartitionXVals(graph){
 }
 
 function fiwHistogram(graph, partitions, mode){
-	var counts = countDataInPartitions(graph, partitions, mode);
+	var counts = countDataInPartitions(graph, partitions);
 	var maxCount = getMaxOfArray(counts);
 	var rectangles = [];
-	if (mode == "both"){
-		for (var i=0;i<counts.length;i++){
-			rectangles.push([[partitions[i], 0],
-											 [partitions[i], graph.h * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
-											 [partitions[i+1], graph.h * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
-											 [partitions[i+1], 0],
-											 [partitions[i], 0]]);
-		}
-	} else if (mode == "set1") {
-		for (var i=0;i<counts.length;i++){
-			rectangles.push([[partitions[i], 0],
-											 [partitions[i], (graph.h/2 - 50) * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
-											 [partitions[i+1], (graph.h/2 - 50) * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
-											 [partitions[i+1], 0],
-											 [partitions[i], 0]]);
-		}
-	} else if (mode == "set2") {
-		for (var i=0;i<counts.length;i++){
-			rectangles.push([[partitions[i], 0],
-											 [partitions[i], (graph.h/2 - 50) * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
-											 [partitions[i+1], (graph.h/2 - 50) * counts[i]/maxCount],//counts[i]*graph.bucketDotSize*2],
-											 [partitions[i+1], 0],
-											 [partitions[i], 0]]);
-		}
-		
-	} 
+
+	for (var i=0;i<counts.length;i++){
+		rectangles.push([[partitions[i], graph.baseLine],
+										 [partitions[i], graph.h * 0.75 * counts[i]/maxCount + graph.baseLine],
+										 [partitions[i+1], graph.h * 0.75 * counts[i]/maxCount + graph.baseLine],
+										 [partitions[i+1], graph.baseLine],
+										 [partitions[i], graph.baseLine]]);
+	}
+
 	return rectangles;
 }
 
@@ -366,10 +338,5 @@ function getMinOfArray(numArray) {
   return Math.min.apply(null, numArray);
 }
 
-//Not used anywhere currently
-function getPixelWidthOfText(font, text){
-	$("#textWidthTest").html("<p style=\"font:"+font+"\">"+text+"</p>");
-	return $("#textWidthTest").outerWidth();
-}
 
 

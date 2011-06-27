@@ -3,8 +3,7 @@ function GraphCollection(){
 	this.worksheet = getWorksheet();
 	
 	this.graphs = [];
-	this.addGraph();
-	this.selectedGraphIndex = -1;
+	this.selectedGraphIndex = 0;
 	
 	//Drawing Variables
 	this.w = calcGraphWidth();
@@ -29,6 +28,9 @@ function GraphCollection(){
 		this.categoryColors[key] = colorScale(counter);
 		counter++;
 	}
+	
+	this.addGraph();
+	this.updateMenuOptions();
 }
 
 GraphCollection.prototype = {
@@ -81,6 +83,24 @@ GraphCollection.prototype = {
 		this.h = height;
 		this.setChildGraphHeights();
 	},
+	
+	updateMenuOptions: function(){
+		$('#radio'+this.graphs[this.selectedGraphIndex].groupingMode).attr('checked',true);
+		$('#checkboxHistogram').attr('checked',this.graphs[this.selectedGraphIndex].histogram);
+		$('#checkboxBoxPlot').attr('checked',this.graphs[this.selectedGraphIndex].boxPlot);
+		$('#fixedIntervalWidth').val(this.graphs[this.selectedGraphIndex].partitionIntervalWidth);
+		$('#fixedGroupSize').val(this.graphs[this.selectedGraphIndex].partitionGroupSize);
+		
+		if (this.graphs[this.selectedGraphIndex].includedCategories.length > 0){
+			$('#textXMin').val(this.graphs[this.selectedGraphIndex].x.domain()[0]);
+			$('#textXMax').val(this.graphs[this.selectedGraphIndex].x.domain()[1]);
+		} else {
+			$('#textXMin').val("NA");
+			$('#textXMax').val("NA");
+		}
+		
+		$('#fitScaleToData').attr('checked', this.graphs[this.selectedGraphIndex].fitScaleToData);
+	},
 }
 
 /* MODIFY ATTRIBUTES WITH GREAT CAUTION */
@@ -101,13 +121,17 @@ function Graph(worksheet){
 	this.bucketDotSize = 5;
 	
 	/* Partition Params */
-	this.partitionGroupSize = parseFloat($('#fixedGroupSize').val());
-	this.partitionIntervalWidth = parseFloat($('#fixedIntervalWidth').val());
+	this.partitionGroupSize = 4;
+	this.partitionIntervalWidth = 10;
+	
+	this.histogram = false;
+	this.boxPlot = false;
+	this.fitScaleToData = false;
 	
 	this.selectedUDPart = null;
 	this.udPartitions = [];
 	
-	this.groupingMode = "none";
+	this.groupingMode = "NoGroups";
 	
 	/* Graph Overflow */
 	this.graphOverflowFlag = false;
@@ -122,9 +146,9 @@ Graph.prototype = {
 		var newMin = min || 0;
 		var newMax = max || Math.ceil(this.xMax);
 		
-		if (jQuery('#fitScalesToData').is(':checked')) {
+		if (this.fitScaleToData) {
 			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
-		}else{			
+		} else {
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
 		}
 	},
@@ -146,7 +170,8 @@ Graph.prototype = {
 		this.includedCategories.splice(this.includedCategories.indexOf(name),1);
 		this.xMax = pv.max(this.dataVals(), function(d) { return d });
 		this.xMin = pv.min(this.dataVals(), function(d) { return d });
-		this.n = this.dataVals().length
+		this.n = this.dataVals().length;
+		this.setXScale();
 	},
 	
 	dataVals: function(){
@@ -221,6 +246,8 @@ Graph.prototype = {
 		}
 		return points;
 	},
+	
+	
 }
 
 function getWorksheetByURL(URL) {

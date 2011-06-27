@@ -37,8 +37,8 @@
 			</tr>
 			<tr>
 				<td valign="top">
-					<button type="button" id="groupingButton">Grouping Options</button>
-					<button type="button" id="displayButton">Display Options</button>
+					<input type="button" id="groupingButton" value="Grouping Options">
+					<input type="button" id="displayButton" value="Display Options">
 				</td>
 				
 				<td valign="top"><input type="button" value="Add Graph" id="addGraph"></td>
@@ -49,29 +49,42 @@
 
 
 <div id="groupingOptions">
-	<input type="radio" id="radioNoGroups" name="mode" checked>
+	<b>Graph Scale:</b><br>
+	<input type="radio" id="radioNoGroups" name="mode" style="margin-left:10px;" checked>
 	<label for="radioNoGroups">None</label><br>
 	
-	<input type="radio" id="radioUserDefGroups" name="mode">
+	<input type="radio" id="radioUserDefGroups" name="mode" style="margin-left:10px;">
 	<label for="radioUserDefGroups">Make Your Own Groups</label><br>
 	
-	<input type="radio" id="radioFixedSizeGroups" name="mode">
+	<input type="radio" id="radioFixedSizeGroups" name="mode" style="margin-left:10px;">
 	<label for="radioFixedSizeGroups">Fixed Size:</label>
 	<input type="text" id="fixedGroupSize"  style="width:50px" value="4"><br>
 	
-	<input type="radio" id="radioFixedIntervalGroups" name="mode">
+	<input type="radio" id="radioFixedIntervalGroups" name="mode" style="margin-left:10px;">
 	<label for="radioFixedIntervalGroups">Fixed Interval Width:</label>
-	<input type="text" id="fixedIntervalWidth"  style="width:50px" value="10">
-	<input type="checkbox" id="checkboxHistogram" name="histogram">
+	<input type="text" id="fixedIntervalWidth"  style="width:50px" value="10"><br>
+	<input type="checkbox" id="checkboxHistogram" name="histogram" style="margin-left:25px;">
 	<label for="checkboxHistogram">Histogram</label><br>
 	
-	<input type="radio" id="radioTwoEqualGroups" name="mode">
+	<input type="radio" id="radioTwoEqualGroups" name="mode" style="margin-left:10px;">
 	<label for="radioTwoEqualGroups">Two Equal</label><br>
 	
-	<input type="radio" id="radioFourEqualGroups" name="mode">
-	<label for="radioFourEqualGroups">Four Equal</label>
-	<input type="checkbox" id="checkboxBoxPlot" name="boxPlot">
+	<input type="radio" id="radioFourEqualGroups" name="mode" style="margin-left:10px;">
+	<label for="radioFourEqualGroups">Four Equal</label><br>
+	<input type="checkbox" id="checkboxBoxPlot" name="boxPlot" style="margin-left:25px;">
 	<label for="checkboxBoxPlot">Box Plot</label><br>
+	
+	<b>Graph Scale:</b><br>
+	<label for="textXMin" style="margin-left:10px;">Min: </label>
+	<input type="text" id="textXMin" style="width:50px;"><br>
+	<label for="textXMax" style="margin-left:10px;">Max:</label>
+	<input type="text" id="textXMax" style="width:50px;"><br>
+	
+	<input type="checkbox" id="fitScaleToData" style="margin-left:10px;">
+	<label for="fitScaleToData">Fit Scale To Data</label><br>
+	
+	<!-- <input type="button" value="Apply to Selected" id="applyOptionsToSelected"> -->
+	<input type="button" value="Apply to All" id="applyOptionsToAll">
 </div>
 
 <div id="displayOptions">
@@ -80,8 +93,7 @@
 			<td>
 				<input type="checkbox" id="checkboxHideData" name="hideData">
 				<label for="checkboxHideData">Hide Data</label><br>
-				<input type="checkbox" id="fitScalesToData">
-				<label for="fitScalesToData">Fit Scales To Data</label><br>
+				
 				
 				<b>Point Stack Mode</b></br>
 				<select id="drawMode">
@@ -113,20 +125,12 @@
 	</table>
 </div>
 
-<div id="xMin">
-  <input type="text" id="textXMin" style="text-align:left"></div>
-
-<div id="xMax">
-  <input type="text" id="textXMax" style="text-align:left"></div>
-
 <p id="loadingMsg">Loading...</p>
 
 <script type="text/javascript" src="js/seeit3-dist-util.js"></script>
 <script type="text/javascript" src="js/seeit3-dist-obj.js"></script>
 <script type="text/javascript" src="js/seeit3-dist-main.js"></script>
 <script type="text/javascript" src="js/seeit3-dist-local.js"></script>
-
-<div id="textWidthTest" style="position:absolute; visibility:hidden; width:auto; height:auto"></div>
 
 <div style="position:fixed; bottom:10px; left:20px; background-color:white">
   Copyright &copy; UC Regents, Davis campus. All rights reserved.

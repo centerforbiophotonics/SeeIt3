@@ -7,7 +7,7 @@ $('#textXMax').hide();
 
 function constructVis(){
 	jQuery('span').remove();
-	positionAxisMinMaxWidgets();
+	console.log("constructVis");
 	//graph.graphOverflowFlag = false;
 	
 	vis = new pv.Panel()
@@ -118,9 +118,11 @@ function constructCategoryPanel(vis){
 					if (graphCollection.graphs.length > 4){
 						var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
 						graphCollection.graphs[which].addCategory(this.category());
+						graphCollection.updateMenuOptions();
 					} else {
 						var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
 						graphCollection.graphs[which].addCategory(this.category());
+						graphCollection.updateMenuOptions();
 					}
 				}
 				dragFeedbackPanels[this.row()].visible(false);
@@ -171,6 +173,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.events("all")
 		.event("click", function(){
 			graphCollection.selectedGraphIndex = index;
+			graphCollection.updateMenuOptions();
 			vis.render();
 		});
 		
@@ -253,16 +256,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.anchor("bottom").add(pv.Label)
 				.text(function(d) {return d.toFixed(1)})
 				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-				
-		/* X-axis label */
-		//graphPanel.add(pv.Label)
-		//	.data([graph])
-		//	.left(graph.w / 2)
-		//	.bottom(0)
-		//	.text(function(d){return d.worksheet.dataType1 + " and " + d.worksheet.dataType2 + " by " + d.worksheet.labelType})
-		//	.textAlign("center")
-		//	.textAngle(0)
-		//	.font(function(){return "bold "+graph.labelTextSize+"px sans-serif"});
 			
 		/* X-axis line */
 		graphPanel.add(pv.Rule)
@@ -281,7 +274,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		graph.includedCategories.forEach(function(category, index){
 			var abbrevKey = category.slice(0,15)+"..."
 			
-			//Copy of category panel which follows mouse as it is dragged
+			//Copy of legend panel which follows mouse as it is dragged
 			dragFeedbackPanels[index] = vis.add(pv.Panel)
 				.visible(false)
 				.lineWidth(1)
@@ -330,12 +323,14 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
 						if (graphCollection.graphs.length > 4){
 							var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
-							graphCollection.graphs[which].addCategory(this.category());
-							graph.removeCategory(this.category());
+							if (graphCollection.graphs[which].addCategory(this.category()))
+								graph.removeCategory(this.category());
+							graphCollection.updateMenuOptions();
 						} else {
 							var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
 							if (graphCollection.graphs[which].addCategory(this.category()))
 								graph.removeCategory(this.category());
+							graphCollection.updateMenuOptions();
 						}
 					} else {
 						graph.removeCategory(category);
@@ -374,7 +369,233 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					
 		});
 		
+		/* Fixed Interval Width Partitions */
+		var fiwPartitions = partitionDataByIntervalWidth(graph);
+		graphPanel.add(pv.Rule)
+			.data(fiwPartitions)
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return graph.h * 0.75})
+			.visible(function(){return graph.groupingMode == "FixedIntervalGroups"})
+			.strokeStyle("green")
+			.title(function(d){return d})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){return d})
+				.shape("square")
+				.fillStyle("green")
+				.strokeStyle("green")
+				.size(4);
 			
+		/*Fixed Interval Width Partitions Size Labels*/
+		graphPanel.add(pv.Label)
+			.data(countDataInPartitions(graph,fiwPartitions))
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(function(){return graph.h * 0.80})
+			.left(function(){
+				if (this.index != fiwPartitions.length-1){
+					return graph.x((fiwPartitions[this.index]+fiwPartitions[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fiwPartitions.length-1 &&
+							 graph.groupingMode == "FixedIntervalGroups";
+			});
+			
+		/* Fixed Interval Width Histogram */
+		var histRects = fiwHistogram(graph,fiwPartitions);
+		for (var i=0; i < histRects.length; i++){	  									   
+			graphPanel.add(pv.Line)
+				.data(histRects[i])
+				.visible(function(d) { 
+					return ( graph.groupingMode == "FixedIntervalGroups" &&
+									 graph.histogram
+									) 
+				})
+				.left(function(d) { return graph.x(d[0]) })
+				.bottom(function(d) { return d[1] })
+				.lineWidth(0.5)
+				.strokeStyle("green")
+				.fillStyle(pv.rgb(0,225,0,0.05));
+		}
+		
+		/* Fixed Group Size Partitions */
+		var fgPartitions = partitionDataInFixedSizeGroups(graph);
+		graphPanel.add(pv.Rule)
+			.data(fgPartitions)
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return graph.h * 0.75})
+			.visible(function(){return graph.groupingMode == "FixedSizeGroups"})
+			.strokeStyle("green")
+			.title(function(d){return d})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){return d})
+				.shape("square")
+				.fillStyle("green")
+				.strokeStyle("green")
+				.size(4);
+			
+		/*Fixed Size Partition Size Labels*/
+		graphPanel.add(pv.Label)
+			.data(fgPartitions)
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(function(){return graph.h * 0.80})
+			.left(function(){
+				if (this.index != fgPartitions.length-1){
+					return graph.x((fgPartitions[this.index]+fgPartitions[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fgPartitions.length-1 &&
+							 graph.groupingMode == "FixedSizeGroups";
+			})
+			.text(function(){
+				if (graph.dataVals().length % graph.partitionGroupSize == 0 ||
+						this.index != fgPartitions.length-2)
+					return graph.partitionGroupSize;
+				
+				else return graph.dataVals().length % graph.partitionGroupSize;
+				
+			})
+			
+		/* Two Equal Partitions */
+		var twoPartitions = partitionDataInTwo(graph);
+		graphPanel.add(pv.Rule)
+			.data(twoPartitions)
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return graph.h * 0.75})
+			.visible(function(){return graph.groupingMode == "TwoEqualGroups"})
+			.strokeStyle("green")
+			.title(function(d){return d})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){return d})
+				.shape("square")
+				.fillStyle("green")
+				.strokeStyle("green")
+				.size(4);
+				
+		/*Two Partition Size Labels*/
+		graphPanel.add(pv.Label)
+			.data(twoPartitions)
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(function(){return graph.h * 0.80})
+			.left(function(){
+				if (this.index != twoPartitions.length-1){
+					return graph.x((twoPartitions[this.index]+twoPartitions[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != twoPartitions.length-1 &&
+							 graph.groupingMode == "TwoEqualGroups";
+			})
+			.text(function(){
+				if (graph.dataVals().length % 2 == 0)
+					return graph.dataVals().length/2;
+				else if(this.index != twoPartitions.length-2)
+					return Math.ceil(graph.dataVals().length/2);
+				else
+					return Math.floor(graph.dataVals().length/2);
+				
+			})
+		
+		/* Four Equal Partitions */
+		var fourPartitions = partitionDataInFour(graph);
+		graphPanel.add(pv.Rule)
+			.data(fourPartitions)
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return graph.h * 0.75})
+			.visible(function(){return graph.groupingMode == "FourEqualGroups"})
+			.strokeStyle("green")
+			.title(function(d){return d})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){return d})
+				.shape("square")
+				.fillStyle("green")
+				.strokeStyle("green")
+				.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot == false; })
+				.size(4);
+				
+		/*Four Partition Size Labels*/
+		graphPanel.add(pv.Label)
+			.data(fourPartitions)
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(function(){return graph.h * 0.80})
+			.left(function(){
+				if (this.index != fourPartitions.length-1){
+					return graph.x((fourPartitions[this.index]+fourPartitions[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != fourPartitions.length-1 &&
+							graph.groupingMode == "FourEqualGroups" &&
+							graph.boxPlot == false;
+			})
+			.text(function(){
+				var dataLength = graph.dataVals().length;
+				if (dataLength >= 8){
+					if (dataLength % 4 == 0)
+						return dataLength/4;
+					else if(this.index != fourPartitions.length-2)
+						return Math.ceil(dataLength/4);
+					else
+						return dataLength % Math.ceil(dataLength/4);
+				} else {
+					if(this.index != fourPartitions.length-2)
+						return 1;
+					else
+						return dataLength - 3;
+				}
+			})
+			
+		/* Box Plot Extra Lines */
+		graphPanel.add(pv.Line)
+			.data([[fourPartitions[0], graph.h/2],
+						 [fourPartitions[1], graph.h/2]])
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot; })
+			
+		graphPanel.add(pv.Line)
+			.data([[fourPartitions[1], graph.h * 0.75 + graph.baseLine],
+						 [fourPartitions[3], graph.h * 0.75 + graph.baseLine]])
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot; })
+			
+		graphPanel.add(pv.Line)
+			.data([[fourPartitions[1], graph.baseLine+2],
+						 [fourPartitions[3], graph.baseLine+2]])
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot; })
+			
+		graphPanel.add(pv.Line)
+			.data([[fourPartitions[3], graph.h/2],
+						 [fourPartitions[4], graph.h/2]])
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot; })
+		
+		
 		/* Dots */
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
@@ -455,7 +676,10 @@ jQuery('#editInGoogleDocs').click(function(event) {
   event.preventDefault();
 });
 
-jQuery('#menuOptions').change(function(event) {
+jQuery('#groupingOptions').change(function(event) {
+	graphCollection.graphs[graphCollection.selectedGraphIndex].groupingMode = $('input:radio[name=mode]:checked').attr('id').slice(5);
+	graphCollection.graphs[graphCollection.selectedGraphIndex].histogram = $('#checkboxHistogram').is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].boxPlot = $('#checkboxBoxPlot').is(':checked');
   constructVis();
   event.stopPropagation();
 });
@@ -470,24 +694,26 @@ jQuery('#workSheetSelector').change(function(event) {
 
 $('#textXMin').change(function(event) {
 	var textBoxVal = parseFloat($('#textXMin').val());
-	var curMax = graph.x.domain()[1];
+	var curMax = graphCollection.graphs[graphCollection.selectedGraphIndex].x.domain()[1];
 	if (isNaN(textBoxVal) || textBoxVal >= curMax){
-		updateScaleTextBoxes(graph);
+		$('#textXMin').val(graphCollection.graphs[graphCollection.selectedGraphIndex].x.domain()[0]);
 	} else {
-		jQuery('#fitScalesToData').attr('checked', false);
-		graph.setXScale(textBoxVal, curMax);
+		graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = false;
+		graphCollection.graphs[graphCollection.selectedGraphIndex].setXScale(textBoxVal, curMax);
+		graphCollection.updateMenuOptions();
 		constructVis();
 	}
 });
 
 $('#textXMax').change(function(event) {
 	var textBoxVal = parseFloat($('#textXMax').val());
-	var curMin = graph.x.domain()[0];
+	var curMin = graphCollection.graphs[graphCollection.selectedGraphIndex].x.domain()[0];
 	if (isNaN(textBoxVal) || textBoxVal <= curMin){
-		updateScaleTextBoxes(graph);
+		$('#textXMax').val(graphCollection.graphs[graphCollection.selectedGraphIndex].x.domain()[1]);
 	} else {
-		jQuery('#fitScalesToData').attr('checked', false);
-		graph.setXScale(curMin, textBoxVal);
+		graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = false;
+		graphCollection.graphs[graphCollection.selectedGraphIndex].setXScale(curMin, textBoxVal);
+		graphCollection.updateMenuOptions();
 		constructVis();
 	}
 });
@@ -495,9 +721,9 @@ $('#textXMax').change(function(event) {
 $('#fixedGroupSize').change(function(event) {
 	var textBoxVal = parseFloat($('#fixedGroupSize').val());
 	if (isNaN(textBoxVal) || textBoxVal <= 0){
-		$('#fixedGroupSize').val(graph.partitionGroupSize);
+		$('#fixedGroupSize').val(graphCollection.graphs[graphCollection.selectedGraphIndex].partitionGroupSize);
 	} else {
-		graph.partitionGroupSize = textBoxVal;
+		graphCollection.graphs[graphCollection.selectedGraphIndex].partitionGroupSize = textBoxVal;
 		constructVis();
 	}
 });
@@ -505,24 +731,26 @@ $('#fixedGroupSize').change(function(event) {
 $('#fixedIntervalWidth').change(function(event) {
 	var textBoxVal = parseFloat($('#fixedIntervalWidth').val());
 	if (isNaN(textBoxVal) || textBoxVal <= 0){
-		$('#fixedIntervalWidth').val(graph.partitionIntervalWidth);
+		$('#fixedIntervalWidth').val(graphCollection.graphs[graphCollection.selectedGraphIndex].partitionIntervalWidth);
 	} else {
-		graph.partitionIntervalWidth = textBoxVal;
+		graphCollection.graphs[graphCollection.selectedGraphIndex].partitionIntervalWidth = textBoxVal;
 		constructVis();
 	}
 });
 
 $('#refreshWorksheet').click(function(event){
 	getWorksheet().fetchWorksheetData();
-	if ($('#fitScalesToData').is(':checked')){
-		jQuery('#fitScalesToData').attr('checked', false);
+	if ($('#fitScaleToData').is(':checked')){
+		jQuery('#fitScaleToData').attr('checked', false);
 	}
 });
 
 $('#checkboxBWView').change(function() { return constructVis(); });
 
-$('#fitScalesToData').change(function() {
-	graph.setXScale();
+$('#fitScaleToData').change(function() {
+	graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = jQuery('#fitScaleToData').is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].setXScale();
+	graphCollection.updateMenuOptions();
 	constructVis();
 });
 
@@ -564,6 +792,7 @@ $('#groupingOptions').css('position', 'absolute')
 										 .css('left',($('#groupingButton').position().left) +"px");
 
 $('#groupingButton').click(function(){
+	graphCollection.updateMenuOptions();
 	$('#groupingOptions').slideToggle();
 	$('#displayOptions').slideUp();
 });
@@ -571,7 +800,7 @@ $('#groupingButton').click(function(){
 $('#displayOptions').hide();
 $('#displayOptions').css('position', 'absolute')
 										 .css('top', ($('#displayButton').position().top + 25) +"px")
-										 .css('left',($('#displayButton').offset().left) +"px");
+										 .css('left',($('#displayButton').position().left) +"px");
 
 $('#displayButton').click(function(){
 	$('#displayOptions').slideToggle();
