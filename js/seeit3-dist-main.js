@@ -139,7 +139,7 @@ function constructCategoryPanel(vis){
 				constructVis();
 			})
 			.event("touchstart", function(){
-				console.log("touchstart");
+				console.log(vis.mouse());
 				var mouseY = vis.mouse().y;
 				var mouseX = vis.mouse().x;
 				dragFeedbackPanels[this.row()].left(mouseX);
@@ -149,7 +149,7 @@ function constructCategoryPanel(vis){
 				vis.render();
 			})
 			.event("touchmove", function(){
-				console.log("touchmove");
+				console.log(vis.mouse());
 				var mouseY = vis.mouse().y;
 				var mouseX = vis.mouse().x;
 				dragFeedbackPanels[this.row()].left(mouseX);
