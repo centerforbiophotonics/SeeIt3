@@ -206,29 +206,61 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.lineWidth(3)
 	
 	//Remove Graph Button
-	graphPanel.add(pv.Dot)
-		.left(0)
-		.top(10)
-		.shape("cross")
-		.lineWidth(2)
+	graphPanel.add(pv.Panel)
+		.left(-5)
+		.top(5)
+		.width(10)
+		.height(10)
 		.strokeStyle("black")
+		.events("all")
 		.event("click", function(){
 			graphCollection.removeGraph(graph);
 			constructVis();
 		})
 		.event("mouseover", function(d){
-			this.parent.children[this.childIndex+1].visible(true); //will break if more marks are added to graphPanel before this one
+			this.children[1].visible(true);
 			graphPanel.render();
 		})
 		.event("mouseout", function(d){ 
-			this.parent.children[this.childIndex+1].visible(false); //Ditto
+			this.children[1].visible(false);
 			graphPanel.render();
 		})
-		.anchor("right").add(pv.Label)
+		.add(pv.Dot)
+			.left(5)
+			.top(5)
+			.shape("cross")
+			.lineWidth(2)
+			.strokeStyle("black")
+			.anchor("right").add(pv.Label)
 				.visible(false)
 				.text("Remove Graph")
 				.textStyle(pv.rgb(125,125,125,0.05))
 				.font(fontString)
+			
+	
+	//graphPanel.add(pv.Dot)
+	//	.left(0)
+	//	.top(10)
+	//	.shape("cross")
+	//	.lineWidth(2)
+	//	.strokeStyle("black")
+	//	.event("click", function(){
+	//		graphCollection.removeGraph(graph);
+	//		constructVis();
+	//	})
+	//	.event("mouseover", function(d){
+	//		this.parent.children[this.childIndex+1].visible(true); //will break if more marks are added to graphPanel before this one
+	//		graphPanel.render();
+	//	})
+	//	.event("mouseout", function(d){ 
+	//		this.parent.children[this.childIndex+1].visible(false); //Ditto
+	//		graphPanel.render();
+	//	})
+	//	.anchor("right").add(pv.Label)
+	//			.visible(false)
+	//			.text("Remove Graph")
+	//			.textStyle(pv.rgb(125,125,125,0.05))
+	//			.font(fontString)
 				
 	//Divider Line Between Graphs
 	graphPanel.add(pv.Rule)
