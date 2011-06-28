@@ -244,7 +244,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 	//Show Grouping Option Menu Button
 	graphPanel.add(pv.Image)
-		.url("file:///home/matthew/Desktop/Work/SeeIt3/img/wrench.png")
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/wrench.png")  //fix this
 		.width(12)
 		.height(12)
 		.top(4)
