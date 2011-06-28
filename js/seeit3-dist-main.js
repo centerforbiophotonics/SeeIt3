@@ -120,7 +120,11 @@ function constructCategoryPanel(vis){
 				document.body.style.cursor="default";
 				constructVis();
 			})
+			.event("touchstart", function(){
+				console.log("touchstart");
+			})
 			.event("drag", function(){
+				console.log("touchmove")
 				var mouseY = vis.mouse().y;
 				var mouseX = vis.mouse().x;
 				dragFeedbackPanels[this.row()].left(mouseX);
@@ -174,7 +178,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 			positionGroupingMenuOverGraph(index, graphCollection);
 					
-			if (oldIndex != index) $('#groupingOptions').slideDown();;
+			if (oldIndex != index) $('#groupingOptions').slideUp();
 			vis.render();
 		});
 		
@@ -209,8 +213,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	graphPanel.add(pv.Panel)
 		.left(-8)
 		.top(5)
-		.width(10)
-		.height(10)
+		.width(20)
+		.height(20)
+		.visible(function(){return index == graphCollection.selectedGraphIndex})
 		.strokeStyle("black")
 		.cursor("pointer")
 		.events("all")
@@ -229,10 +234,12 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		//	this.render();
 		//})
 		.add(pv.Dot)
-			.left(5)
-			.top(5)
+			.left(10)
+			.top(10)
 			.shape("cross")
 			.cursor("pointer")
+			.events("all")
+			.size(20)
 			.lineWidth(2)
 			.title("Remove Graph")
 			.strokeStyle("black")
@@ -245,10 +252,11 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	//Show Grouping Option Menu Button
 	graphPanel.add(pv.Image)
 		.url("http://centerforbiophotonics.github.com/SeeIt3/img/wrench.png")  //fix this
-		.width(12)
-		.height(12)
+		.width(20)
+		.height(20)
 		.top(4)
-		.left(5)
+		.left(20)
+		.visible(function(){return index == graphCollection.selectedGraphIndex})
 		.cursor("pointer")
 		.title("Show Graph Option Menu")
 		.event("click", function(){
@@ -831,8 +839,8 @@ $(window).resize(function() {
 	graphCollection.setW(calcGraphWidth());
 	if (graphCollection.graphs.length <= 4)
 		graphCollection.setH(calcGraphHeight());
-	
 	constructVis();
+	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 })
 
 /* Populate dataset drop down menu */
@@ -849,7 +857,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		//toggleNetworkOptions(graph);
 		constructVis();
 		positionGroupingMenuOverGraph(0,graphCollection);
-		$('#groupingOptions').slideDown();
+		//$('#groupingOptions').slideDown();
   }
 });
 

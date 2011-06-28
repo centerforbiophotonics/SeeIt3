@@ -396,7 +396,6 @@ Spreadsheet.prototype = {
 		this.getWorksheetURLs(function(feedData) {
 			//globalFeedData = feedData;
 			for (var i = 0; i < feedData.feed.entry.length; i++) {
-				console.log(feedData);
 				spreadsheet.worksheets.push(new Worksheet(feedData.feed.entry[i].link[1].href));
 			}
 			numWorksheets += feedData.feed.entry.length;
