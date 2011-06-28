@@ -406,6 +406,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.strokeStyle("green")
 			.visible(function(){return graph.groupingMode == "UserDefGroups"})
 			.anchor("top").add(pv.Dot)
+				.title("Drag to create a new partition.")
 				.events("all")
 				.cursor("move")
 				.shape("square")

@@ -29,7 +29,8 @@
 	<div id="menu" class="menu">
 		<table>
 			<tr>
-				<td>Select a dataset (worksheet): <select id="workSheetSelector"></select></td>
+				<td>Select a dataset (worksheet):</td> 
+				<td><select id="workSheetSelector"></select></td>
 				<td><input type="button" value="Refresh" id="refreshWorksheet"></td>
 				<td width="25%"><a href="#" id="editInGoogleDocs">Open in Google Docs</a></td>
 				<td><label for="newSpreadsheetURL">Add a new spreadsheet by pasting its URL:</label></td>
@@ -38,6 +39,9 @@
 			<tr>
 				<td valign="top">
 					<input type="button" id="groupingButton" value="Grouping Options">
+				</td>
+				
+				<td valign="top">
 					<input type="button" id="displayButton" value="Display Options">
 				</td>
 				
@@ -49,7 +53,7 @@
 
 
 <div id="groupingOptions">
-	<b>Graph Scale:</b><br>
+	<b>Groups:</b><br>
 	<input type="radio" id="radioNoGroups" name="mode" style="margin-left:10px;" checked>
 	<label for="radioNoGroups">None</label><br>
 	
