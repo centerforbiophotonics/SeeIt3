@@ -861,7 +861,7 @@ jQuery('#menu').change(function(event) {
 
 jQuery('#editInGoogleDocs').click(function(event) {
   var URL = jQuery('#workSheetSelector').val();
-  var matches = /feeds\/list\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+  var matches = /feeds\/cells\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
   window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
   event.preventDefault();
 });
