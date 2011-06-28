@@ -120,11 +120,43 @@ function constructCategoryPanel(vis){
 				document.body.style.cursor="default";
 				constructVis();
 			})
+			.event("touchend", function(){
+				var mouseY = vis.mouse().y;
+				var mouseX = vis.mouse().x;
+				if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
+					if (graphCollection.graphs.length > 4){
+						var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
+						graphCollection.graphs[which].addCategory(this.category());
+						graphCollection.updateMenuOptions();
+					} else {
+						var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
+						graphCollection.graphs[which].addCategory(this.category());
+						graphCollection.updateMenuOptions();
+					}
+				}
+				dragFeedbackPanels[this.row()].visible(false);
+				document.body.style.cursor="default";
+				constructVis();
+			})
 			.event("touchstart", function(){
 				console.log("touchstart");
+				var mouseY = vis.mouse().y;
+				var mouseX = vis.mouse().x;
+				dragFeedbackPanels[this.row()].left(mouseX);
+				dragFeedbackPanels[this.row()].top(mouseY);
+				dragFeedbackPanels[this.row()].visible(true);
+				document.body.style.cursor="move";
+				vis.render();
+			})
+			.event("touchmove", function(){
+				console.log("touchmove");
+				var mouseY = vis.mouse().y;
+				var mouseX = vis.mouse().x;
+				dragFeedbackPanels[this.row()].left(mouseX);
+				dragFeedbackPanels[this.row()].top(mouseY);
+				vis.render()
 			})
 			.event("drag", function(){
-				console.log("touchmove")
 				var mouseY = vis.mouse().y;
 				var mouseX = vis.mouse().x;
 				dragFeedbackPanels[this.row()].left(mouseX);
@@ -156,6 +188,16 @@ function constructCategoryPanel(vis){
 
 		row++;
 	}
+	
+	//function dragStart(){
+	//	var mouseY = vis.mouse().y;
+	//	var mouseX = vis.mouse().x;
+	//	dragFeedbackPanels[this.row()].left(mouseX);
+	//	dragFeedbackPanels[this.row()].top(mouseY);
+	//	dragFeedbackPanels[this.row()].visible(true);
+	//	document.body.style.cursor="move";
+	//	vis.render();
+	//}
 	
 }
 
