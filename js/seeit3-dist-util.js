@@ -132,6 +132,17 @@ function toggleNetworkOptions(graph) {
 	
 }
 
+function positionGroupingMenuOverGraph(index, graphCollection){
+	$('#groupingOptions')
+				.css('position', 'absolute')
+				.css('top', $('span').offset().top +
+					graphCollection.padTop - 1 +
+					index*graphCollection.graphs[0].h +
+					"px")
+				.css('left',$('span').offset().left +
+					graphCollection.padLeft - 14 + "px")
+}
+
 
 /* Data Manipulation Functions */
 function getXBuckets(graph){

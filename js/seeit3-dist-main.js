@@ -1,6 +1,5 @@
 var graphCollection = {};
 var vis = {};
-var deleteUDPFlag = true;
 
 $('#textXMin').hide();
 $('#textXMax').hide();
@@ -16,13 +15,6 @@ function constructVis(){
 		.left(graphCollection.padLeft)
 		.right(graphCollection.padRight)
 		.top(graphCollection.padTop)
-		//.events("all")
-		//.event("mousedown", function() {
-		//	if (jQuery('#radioUserDefGroups').attr('checked')){
-		//		selectAUserDefPartition("both", graph, graph.udPartitionsBoth.push(this.mouse())-1);
-		//	}
-		//	vis.render();
-		//});
 	
 	/* Divider Between Graphs and Data Sets */
 	vis.add(pv.Rule)
@@ -50,7 +42,6 @@ function constructVis(){
 	graphCollection.graphs.forEach(function(graph,index,graphs){
 		constructGraphPanel(vis, graph, index, graphs.length);
 	});
-	
 	vis.render();
 }
 		  
@@ -95,6 +86,7 @@ function constructCategoryPanel(vis){
 			.def("category", key)
 			.def("row",row)
 			.events("all")
+			.cursor("move")
 			.title(key)
 			.lineWidth(1)
 			.height(20)
@@ -125,6 +117,7 @@ function constructCategoryPanel(vis){
 					}
 				}
 				dragFeedbackPanels[this.row()].visible(false);
+				document.body.style.cursor="default";
 				constructVis();
 			})
 			.event("drag", function(){
@@ -140,6 +133,7 @@ function constructCategoryPanel(vis){
 				dragFeedbackPanels[this.row()].left(mouseX);
 				dragFeedbackPanels[this.row()].top(mouseY);
 				dragFeedbackPanels[this.row()].visible(true);
+				document.body.style.cursor="move";
 				vis.render();
 			})
 			
@@ -147,6 +141,7 @@ function constructCategoryPanel(vis){
 			.left(10)
 			.top(10)
 			.shape("square")
+			.cursor("move")
 			.size(40)
 			.fillStyle(graphCollection.categoryColors[key])
 			.lineWidth(1)
@@ -171,10 +166,15 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.width(graph.w)
 		.events("all")
 		.event("click", function(){
-			if (graphCollection.selectedGraphIndex != index)
+			var oldIndex = graphCollection.selectedGraphIndex;
+			if (oldIndex != index)
 				graphCollection.selectAUserDefPartition();
 			graphCollection.selectedGraphIndex = index;
 			graphCollection.updateMenuOptions();
+			
+			positionGroupingMenuOverGraph(index, graphCollection);
+					
+			if (oldIndex != index) $('#groupingOptions').slideDown();;
 			vis.render();
 		});
 		
@@ -207,60 +207,54 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
-		.left(-5)
+		.left(-8)
 		.top(5)
 		.width(10)
 		.height(10)
 		.strokeStyle("black")
+		.cursor("pointer")
 		.events("all")
+		.title("Remove Graph")
 		.event("click", function(){
 			graphCollection.removeGraph(graph);
 			constructVis();
 		})
-		.event("mouseover", function(d){
-			this.children[1].visible(true);
-			graphPanel.render();
-		})
-		.event("mouseout", function(d){ 
-			this.children[1].visible(false);
-			graphPanel.render();
-		})
+		//.event("mouseover", function(d){
+		//	console.log(this)
+		//	this.children[1].visible(true);
+		//	this.render();
+		//})
+		//.event("mouseout", function(d){ 
+		//	this.children[1].visible(false);
+		//	this.render();
+		//})
 		.add(pv.Dot)
 			.left(5)
 			.top(5)
 			.shape("cross")
+			.cursor("pointer")
 			.lineWidth(2)
+			.title("Remove Graph")
 			.strokeStyle("black")
-			.anchor("right").add(pv.Label)
-				.visible(false)
-				.text("Remove Graph")
-				.textStyle(pv.rgb(125,125,125,0.05))
-				.font(fontString)
+			//.anchor("right").add(pv.Label)
+			//	.visible(false)
+			//	.text("Remove Graph")
+			//	.textStyle(pv.rgb(125,125,125,0.05))
+			//	.font(fontString)
 			
-	
-	//graphPanel.add(pv.Dot)
-	//	.left(0)
-	//	.top(10)
-	//	.shape("cross")
-	//	.lineWidth(2)
-	//	.strokeStyle("black")
-	//	.event("click", function(){
-	//		graphCollection.removeGraph(graph);
-	//		constructVis();
-	//	})
-	//	.event("mouseover", function(d){
-	//		this.parent.children[this.childIndex+1].visible(true); //will break if more marks are added to graphPanel before this one
-	//		graphPanel.render();
-	//	})
-	//	.event("mouseout", function(d){ 
-	//		this.parent.children[this.childIndex+1].visible(false); //Ditto
-	//		graphPanel.render();
-	//	})
-	//	.anchor("right").add(pv.Label)
-	//			.visible(false)
-	//			.text("Remove Graph")
-	//			.textStyle(pv.rgb(125,125,125,0.05))
-	//			.font(fontString)
+	//Show Grouping Option Menu Button
+	graphPanel.add(pv.Image)
+		.url("file:///home/matthew/Desktop/Work/SeeIt3/img/wrench.png")
+		.width(12)
+		.height(12)
+		.top(4)
+		.left(5)
+		.cursor("pointer")
+		.title("Show Graph Option Menu")
+		.event("click", function(){
+			positionGroupingMenuOverGraph(index, graphCollection);
+			$('#groupingOptions').slideDown();
+		})
 				
 	//Divider Line Between Graphs
 	graphPanel.add(pv.Rule)
@@ -338,6 +332,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.lineWidth(1)
 				.top(20*index+40)
 				.height(20)
+				.cursor("move")
 				.events("all")
 				.width(130)
 				.event("mouseover", function(d){
@@ -369,6 +364,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 						graph.removeCategory(category);
 					}
 					dragFeedbackPanels[this.row()].visible(false);
+					document.body.style.cursor="default";
 					constructVis();
 				})
 				.event("drag", function(){
@@ -384,6 +380,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					dragFeedbackPanels[this.row()].left(mouseX);
 					dragFeedbackPanels[this.row()].top(mouseY);
 					dragFeedbackPanels[this.row()].visible(true);
+					document.body.style.cursor="move";
 					vis.render();
 				})
 				
@@ -392,6 +389,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.left(10)
 				.top(10)
 				.shape("square")
+				.cursor("move")
 				.size(40)
 				.fillStyle(graphCollection.categoryColors[category])
 				.lineWidth(1)
@@ -500,17 +498,11 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
     pv.listen(window, "mousedown", function() {self.focus()});
 		pv.listen(window, "keydown", function(e) {
 			//code 8 is backspace, code 46 is delete
-			if ((e.keyCode == 8 || e.keyCode == 46) && graph.selectedUDPart != null) {
-				//if(deleteUDPFlag){				//the event gets triggered twice somehow.  This prevents multiple deletions.
-					//deleteUDPFlag = false;  
-					graph.udPartitions.splice(graph.selectedUDPart, 1);
-					graphCollection.selectAUserDefPartition();
-					
-					e.preventDefault();
-					constructVis();
-				//} else {
-				//	deleteUDPFlag = true;
-				//}
+			if ((e.keyCode == 8 || e.keyCode == 46) && graph.selectedUDPart != null) {			
+				graph.udPartitions.splice(graph.selectedUDPart, 1);
+				graphCollection.selectAUserDefPartition();
+				e.preventDefault();
+				constructVis();
 			}
 		});
 		
@@ -654,7 +646,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return graph.h * 0.75})
-			.visible(function(){return graph.groupingMode == "FourEqualGroups"})
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																 graph.boxPlot == false;})
 			.strokeStyle("green")
 			.title(function(d){return d})
 			.anchor("top").add(pv.Dot)
@@ -701,8 +694,58 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 		/* Box Plot Extra Lines */
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[0], graph.h/2],
-						 [fourPartitions[1], graph.h/2]])
+			.data([[fourPartitions[0], graph.baseLine],
+						 [fourPartitions[0], graph.h * 0.80]])
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot; })
+																	 
+		graphPanel.add(pv.Line)
+			.data([[fourPartitions[4], graph.baseLine],
+						 [fourPartitions[4], graph.h * 0.80]])
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot; })
+																	 
+		graphPanel.add(pv.Line)
+			.data([[fourPartitions[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [fourPartitions[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]])
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot; })
+																	 
+		graphPanel.add(pv.Line)
+			.data([[fourPartitions[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [fourPartitions[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]])
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot; })
+																	 
+		graphPanel.add(pv.Line)
+			.data([[fourPartitions[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [fourPartitions[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]])
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot; })						
+																	 						
+		graphPanel.add(pv.Line)
+			.data([[fourPartitions[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [fourPartitions[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]])
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -711,8 +754,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 																	 graph.boxPlot; })
 			
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[1], graph.h * 0.75 + graph.baseLine],
-						 [fourPartitions[3], graph.h * 0.75 + graph.baseLine]])
+			.data([[fourPartitions[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
+						 [fourPartitions[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]])
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -721,8 +764,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 																	 graph.boxPlot; })
 			
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[1], graph.baseLine+2],
-						 [fourPartitions[3], graph.baseLine+2]])
+			.data([[fourPartitions[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [fourPartitions[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]])
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -731,8 +774,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 																	 graph.boxPlot; })
 			
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[3], graph.h/2],
-						 [fourPartitions[4], graph.h/2]])
+			.data([[fourPartitions[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [fourPartitions[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]])
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -792,7 +835,7 @@ $(window).resize(function() {
 	constructVis();
 })
 
-/* populate dataset drop down menu */
+/* Populate dataset drop down menu */
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
   jQuery('#workSheetSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
@@ -805,6 +848,8 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		//updateScaleTextBoxes(graph);
 		//toggleNetworkOptions(graph);
 		constructVis();
+		positionGroupingMenuOverGraph(0,graphCollection);
+		$('#groupingOptions').slideDown();
   }
 });
 
@@ -932,15 +977,6 @@ $('#addGraph').click(function(event){
 });
 
 $('#groupingOptions').hide();
-$('#groupingOptions').css('position', 'absolute')
-										 .css('top', ($('#groupingButton').position().top + 25) +"px")
-										 .css('left',($('#groupingButton').position().left) +"px");
-
-$('#groupingButton').click(function(){
-	graphCollection.updateMenuOptions();
-	$('#groupingOptions').slideToggle();
-	$('#displayOptions').slideUp();
-});
 
 $('#displayOptions').hide();
 $('#displayOptions').css('position', 'absolute')
@@ -949,6 +985,10 @@ $('#displayOptions').css('position', 'absolute')
 
 $('#displayButton').click(function(){
 	$('#displayOptions').slideToggle();
+	$('#groupingOptions').slideUp();
+});
+
+$('#closeGroupingMenu').click(function(){
 	$('#groupingOptions').slideUp();
 });
 
