@@ -983,6 +983,7 @@ jQuery('#sliderTextSize').slider({
 //});
 
 $('#addGraph').click(function(event){
+	console.log("addGraph");
 	graphCollection.addGraph();
 	constructVis();
 });
@@ -1008,6 +1009,7 @@ $('#closeGroupingMenu').click(function(){
 document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
+	console.log("touchStart");
 	event.preventDefault(); 
   if (!dragging) return;
    
@@ -1051,8 +1053,7 @@ document.addEventListener("touchend", touchEnd, false);
 function touchEnd(event){
 	event.preventDefault(); 
   if (!dragging) return;
-	console.log("finalX: " + finalX);
-	console.log("finalY: " + finalY);
+	
 	//var targetTouches = event.targetTouches;
 	//console.log(objectToString(targetTouches));  
   var curX = finalX  //event.targetTouches[0].pageX -
@@ -1065,7 +1066,6 @@ function touchEnd(event){
 	
 	draggedObj.visible(false);
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
-		console.log("inside panel");
 		if (graphCollection.graphs.length > 4){
 			var which = parseInt(curY/graphCollection.defaultGraphHeight);
 			if (dragGraphIndex == -1)
@@ -1076,7 +1076,6 @@ function touchEnd(event){
 			}
 			graphCollection.updateMenuOptions();
 		} else {
-			console.log(which);
 			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
 			if (dragGraphIndex == -1)
 				graphCollection.graphs[which].addCategory(dragCat);
