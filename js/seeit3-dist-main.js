@@ -1045,6 +1045,10 @@ $('#closeGroupingMenu').click(function(){
 document.addEventListener("touchmove", touchMove, false);
 
 function touchMove(event){
-	console.log(objectToString(event));
+	 var targetTouches = event.targetTouches;  
+   var curX = event.targetTouches[0].pageX;
+ 
+  console.log("X:"+curX); 
+	//console.log(objectToString(event));
 }
 
