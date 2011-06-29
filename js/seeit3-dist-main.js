@@ -228,7 +228,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
-		.right(0)
+		.right(-10)
 		.top(5)
 		.width(20)
 		.height(20)
