@@ -175,7 +175,7 @@ function constructCategoryPanel(vis){
 
 
 function constructGraphPanel(vis, graph, index, numberOfGraphs){
-	var fontString = "bold 12px sans-serif";
+	var fontString = "bold 14px sans-serif";
 	
 	var graphPanel = vis.add(pv.Panel)
 		.top(function(){return graph.h*index})
@@ -300,7 +300,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		/* Legend */
 		graphPanel.add(pv.Label)
 			.text("Legend:")
-			.right(140)
+			.right(210)
 			.top(5)
 			.textBaseline("top")
 			.font(fontString);
@@ -314,16 +314,16 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.visible(false)
 				.lineWidth(1)
 				.strokeStyle("black")
-				.height(20)
-				.width(130)
+				.height(30)
+				.width(180)
 				.left(0)
 				.top(0)
 				
 			dragFeedbackPanels[index].add(pv.Dot)
-				.left(10)
-				.top(10)
+				.left(15)
+				.top(15)
 				.shape("square")
-				.size(40)
+				.size(80)
 				.fillStyle(graphCollection.categoryColors[category])
 				.lineWidth(1)
 				.strokeStyle("black")
@@ -332,17 +332,17 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					.font(fontString)
 				
 			var legendPanel = graphPanel.add(pv.Panel)
-				.right(10)
+				.right(30)
 				.data([{"x":0,"y":0}])
 				.def("category", category)
 				.def("row",index)
 				.title(category)
 				.lineWidth(1)
-				.top(20*index+20)
-				.height(20)
+				.top(30*index+25)
+				.height(30)
 				.cursor("move")
 				.events("all")
-				.width(130)
+				.width(180)
 				.event("mouseover", function(d){
 					this.strokeStyle("black");
 					this.render();
@@ -400,11 +400,11 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				
 				
 			legendPanel.add(pv.Dot)
-				.left(10)
-				.top(10)
+				.left(15)
+				.top(15)
 				.shape("square")
 				.cursor("move")
-				.size(40)
+				.size(80)
 				.fillStyle(graphCollection.categoryColors[category])
 				.lineWidth(1)
 				.strokeStyle("black")

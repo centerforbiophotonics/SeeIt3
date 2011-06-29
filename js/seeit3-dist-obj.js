@@ -180,7 +180,7 @@ Graph.prototype = {
 	},
 	
 	addCategory: function(name){
-		if (this.includedCategories.indexOf(name) == -1){
+		if (this.includedCategories.indexOf(name) == -1 && this.includedCategories.length < 4){
 			this.includedCategories.push(name);
 			this.xMax = pv.max(this.dataVals(), function(d) { return d });
 			this.xMin = pv.min(this.dataVals(), function(d) { return d });
