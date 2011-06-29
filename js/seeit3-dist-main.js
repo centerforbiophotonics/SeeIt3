@@ -1074,6 +1074,8 @@ function touchEnd(event){
 			graphCollection.updateMenuOptions();
 		} else {
 			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
+			console.log(which);
+			console.log(dragCat);
 			if (dragGraphIndex == -1)
 				graphCollection.graphs[which].addCategory(dragCat);
 			else {
