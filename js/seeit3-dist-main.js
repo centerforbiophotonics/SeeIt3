@@ -391,7 +391,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					draggedObj = dragFeedbackPanels[this.row()];
 					dragging = true;
 					dragCat = this.category();
-					dragGraphIndex = this.row();
+					dragGraphIndex = graphCollection.graphs.indexOf(graph);
 					console.log("dragCat: "+ dragCat)
 					console.log("dragGraphIndex: "+ dragGraphIndex)
 				})
