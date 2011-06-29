@@ -1047,7 +1047,7 @@ function touchMove(event){
 document.addEventListener("touchend", touchEnd, false);
 
 function touchEnd(event){
-	console.log("touchend");
+	console.log(objectToString(event));
 	event.preventDefault(); 
   if (!dragging) return;
 	
