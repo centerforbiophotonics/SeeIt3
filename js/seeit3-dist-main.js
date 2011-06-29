@@ -232,7 +232,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.strokeStyle("black")
 		.cursor("pointer")
 		.events("all")
-		.title("Remove Graph")
+		.title("Remove graph")
 		.event("click", function(){
 			graphCollection.removeGraph(graph);
 			constructVis();
@@ -256,7 +256,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.top(4)
 		.left(-10)
 		.cursor("pointer")
-		.title("Show Graph Option Menu")
+		.title("Show graph option menu")
 		.event("click", function(){
 			graphCollection.selectedGraphIndex = index;
 			graphCollection.updateMenuOptions();
@@ -296,123 +296,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		graphPanel.add(pv.Rule)
 			.bottom(graph.baseLine)
 			.strokeStyle("#000");
-			
-		/* Legend */
-		graphPanel.add(pv.Label)
-			.text("Legend:")
-			.right(210)
-			.top(5)
-			.textBaseline("top")
-			.font(fontString);
-
-		var dragFeedbackPanels = [];
-		graph.includedCategories.forEach(function(category, index){
-			var abbrevKey = category.slice(0,15)+"..."
-			
-			//Copy of legend panel which follows mouse as it is dragged
-			dragFeedbackPanels[index] = vis.add(pv.Panel)
-				.visible(false)
-				.lineWidth(1)
-				.strokeStyle("black")
-				.height(30)
-				.width(180)
-				.left(0)
-				.top(0)
-				
-			dragFeedbackPanels[index].add(pv.Dot)
-				.left(15)
-				.top(15)
-				.shape("square")
-				.size(80)
-				.fillStyle(graphCollection.categoryColors[category])
-				.lineWidth(1)
-				.strokeStyle("black")
-				.anchor("right").add(pv.Label)
-					.text(abbrevKey)
-					.font(fontString)
-				
-			var legendPanel = graphPanel.add(pv.Panel)
-				.right(30)
-				.data([{"x":0,"y":0}])
-				.def("category", category)
-				.def("row",index)
-				.title(category)
-				.lineWidth(1)
-				.top(30*index+25)
-				.height(30)
-				.cursor("move")
-				.events("all")
-				.width(180)
-				.event("mouseover", function(d){
-					this.strokeStyle("black");
-					this.render();
-				})
-				.event("mouseout", function(d){ 
-					this.fillStyle(pv.rgb(0,0,0,0))
-					this.strokeStyle(pv.rgb(0,0,0,0));
-					this.render();
-				})
-				.event("mousedown", pv.Behavior.drag())
-				.event("dragend", function(){
-					var mouseY = vis.mouse().y;
-					var mouseX = vis.mouse().x;
-					if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
-						if (graphCollection.graphs.length > 4){
-							var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
-							if (graphCollection.graphs[which].addCategory(this.category()))
-								graph.removeCategory(this.category());
-							graphCollection.updateMenuOptions();
-						} else {
-							var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
-							if (graphCollection.graphs[which].addCategory(this.category()))
-								graph.removeCategory(this.category());
-							graphCollection.updateMenuOptions();
-						}
-					} else {
-						graph.removeCategory(category);
-					}
-					dragFeedbackPanels[this.row()].visible(false);
-					document.body.style.cursor="default";
-					constructVis();
-				})
-				.event("drag", function(){
-					var mouseY = vis.mouse().y;
-					var mouseX = vis.mouse().x;
-					dragFeedbackPanels[this.row()].left(mouseX);
-					dragFeedbackPanels[this.row()].top(mouseY);
-					vis.render()
-				})
-				.event("dragstart", function(){
-					var mouseY = vis.mouse().y;
-					var mouseX = vis.mouse().x;
-					dragFeedbackPanels[this.row()].left(mouseX);
-					dragFeedbackPanels[this.row()].top(mouseY);
-					dragFeedbackPanels[this.row()].visible(true);
-					document.body.style.cursor="move";
-					vis.render();
-				})
-				.event("touchstart", function(event){
-					draggedObj = dragFeedbackPanels[this.row()];
-					dragging = true;
-					dragCat = this.category();
-					dragGraphIndex = graphCollection.graphs.indexOf(graph);
-				})
-				
-				
-			legendPanel.add(pv.Dot)
-				.left(15)
-				.top(15)
-				.shape("square")
-				.cursor("move")
-				.size(80)
-				.fillStyle(graphCollection.categoryColors[category])
-				.lineWidth(1)
-				.strokeStyle("black")
-				.anchor("right").add(pv.Label)
-					.text(abbrevKey)
-					.font(fontString)
-					
-		});
 		
 		/* User Defined Partitions */
 		graphPanel.add(pv.Rule)
@@ -494,7 +377,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.data(function(){return countDataInUserDefPartitions(graph)})
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.75 + graph.baseLine})
+			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
 			.left(function(d){
 				var udPartXVals = getSortedUDPartitionXVals(graph);
 				if (this.index != udPartXVals.length-1){
@@ -542,7 +425,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.data(countDataInPartitions(graph,fiwPartitions))
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.75 + graph.baseLine})
+			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
 			.left(function(){
 				if (this.index != fiwPartitions.length-1){
 					return graph.x((fiwPartitions[this.index]+fiwPartitions[this.index+1])/2);
@@ -592,7 +475,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.data(fgPartitions)
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.75 + graph.baseLine})
+			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
 			.left(function(){
 				if (this.index != fgPartitions.length-1){
 					return graph.x((fgPartitions[this.index]+fgPartitions[this.index+1])/2);
@@ -633,7 +516,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.data(twoPartitions)
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.75 + graph.baseLine})
+			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
 			.left(function(){
 				if (this.index != twoPartitions.length-1){
 					return graph.x((twoPartitions[this.index]+twoPartitions[this.index+1])/2);
@@ -678,7 +561,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.data(fourPartitions)
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.75 + graph.baseLine})
+			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
 			.left(function(){
 				if (this.index != fourPartitions.length-1){
 					return graph.x((fourPartitions[this.index]+fourPartitions[this.index+1])/2);
@@ -810,6 +693,154 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.fillStyle(function(d) {return graphCollection.categoryColors[d.set]})
 			.strokeStyle(function(d) {return "black"})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.x).toFixed(1) });
+			
+		/* Legend */
+		var legendPanel = graphPanel.add(pv.Panel)
+			.right(15)
+			.top(5)
+			.overflow("hidden")
+			.width(function(){
+				if(graphCollection.legendHidden) return 110;
+				else return 190;
+			})
+			.height(function(){
+				if (graphCollection.legendHidden)
+					return 25;
+				else
+					return graph.includedCategories.length * 30 + 30
+			})
+			.lineWidth(1)
+			.strokeStyle("black")
+			.fillStyle("white")
+		
+		legendPanel.add(pv.Panel)
+			.left(0)
+			.top(0)
+			.width(100)
+			.height(30)
+			.title("Click title to hide/show")
+			.events("all")
+			.event("click", function(){
+				graphCollection.legendHidden = !graphCollection.legendHidden;
+				vis.render();
+			})
+			.add(pv.Label)
+				.text(function() {
+					if (graphCollection.legendHidden) return "Show Legend";
+					else return "Legend:";
+				})
+				.left(5)
+				.top(5)
+				.textBaseline("top")
+				.font(fontString);
+
+		var dragFeedbackPanels = [];
+		graph.includedCategories.forEach(function(category, index){
+			var abbrevKey = category.slice(0,15)+"..."
+			
+			//Copy of legend panel which follows mouse as it is dragged
+			dragFeedbackPanels[index] = vis.add(pv.Panel)
+				.visible(false)
+				.lineWidth(1)
+				.strokeStyle("black")
+				.height(30)
+				.width(180)
+				.left(0)
+				.top(0)
+				
+			dragFeedbackPanels[index].add(pv.Dot)
+				.left(15)
+				.top(15)
+				.shape("square")
+				.size(80)
+				.fillStyle(graphCollection.categoryColors[category])
+				.lineWidth(1)
+				.strokeStyle("black")
+				.anchor("right").add(pv.Label)
+					.text(abbrevKey)
+					.font(fontString)
+				
+			var catPanel = legendPanel.add(pv.Panel)
+				.left(5)
+				.data([{"x":0,"y":0}])
+				.def("category", category)
+				.def("row",index)
+				.title(category)
+				.lineWidth(1)
+				.top(30*index+25)
+				.height(30)
+				.cursor("move")
+				.events("all")
+				.width(180)
+				.event("mouseover", function(d){
+					this.strokeStyle("black");
+					this.render();
+				})
+				.event("mouseout", function(d){ 
+					this.fillStyle(pv.rgb(0,0,0,0))
+					this.strokeStyle(pv.rgb(0,0,0,0));
+					this.render();
+				})
+				.event("mousedown", pv.Behavior.drag())
+				.event("dragend", function(){
+					var mouseY = vis.mouse().y;
+					var mouseX = vis.mouse().x;
+					if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
+						if (graphCollection.graphs.length > 4){
+							var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
+							if (graphCollection.graphs[which].addCategory(this.category()))
+								graph.removeCategory(this.category());
+							graphCollection.updateMenuOptions();
+						} else {
+							var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
+							if (graphCollection.graphs[which].addCategory(this.category()))
+								graph.removeCategory(this.category());
+							graphCollection.updateMenuOptions();
+						}
+					} else {
+						graph.removeCategory(category);
+					}
+					dragFeedbackPanels[this.row()].visible(false);
+					document.body.style.cursor="default";
+					constructVis();
+				})
+				.event("drag", function(){
+					var mouseY = vis.mouse().y;
+					var mouseX = vis.mouse().x;
+					dragFeedbackPanels[this.row()].left(mouseX);
+					dragFeedbackPanels[this.row()].top(mouseY);
+					vis.render()
+				})
+				.event("dragstart", function(){
+					var mouseY = vis.mouse().y;
+					var mouseX = vis.mouse().x;
+					dragFeedbackPanels[this.row()].left(mouseX);
+					dragFeedbackPanels[this.row()].top(mouseY);
+					dragFeedbackPanels[this.row()].visible(true);
+					document.body.style.cursor="move";
+					vis.render();
+				})
+				.event("touchstart", function(event){
+					draggedObj = dragFeedbackPanels[this.row()];
+					dragging = true;
+					dragCat = this.category();
+					dragGraphIndex = graphCollection.graphs.indexOf(graph);
+				})
+				
+				
+			catPanel.add(pv.Dot)
+				.left(15)
+				.top(15)
+				.shape("square")
+				.cursor("move")
+				.size(80)
+				.fillStyle(graphCollection.categoryColors[category])
+				.lineWidth(1)
+				.strokeStyle("black")
+				.anchor("right").add(pv.Label)
+					.text(abbrevKey)
+					.font(fontString)	
+		});	
 	} else {
 		//Empty Graph Message
 		graphPanel.add(pv.Label)
