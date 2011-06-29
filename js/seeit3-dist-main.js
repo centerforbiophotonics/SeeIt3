@@ -22,6 +22,9 @@ function constructVis(){
 		.left(graphCollection.padLeft)
 		.right(graphCollection.padRight)
 		.top(graphCollection.padTop)
+		//.event("click", function(){
+		//	$('#groupingOptions').slideUp();
+		//})
 	
 	/* Divider Between Graphs and Data Sets */
 	vis.add(pv.Rule)
@@ -54,11 +57,11 @@ function constructVis(){
 		  
 function constructCategoryPanel(vis){
 	var row = 0;
-	var fontString = "bold 12px sans-serif";
+	var fontString = "bold 14px sans-serif";
 	
 	vis.add(pv.Label)
 		.text("Data Sets:")
-		.left(-147)
+		.left(-197)
 		.top(-10)
 		.font(fontString);
 	
@@ -71,16 +74,16 @@ function constructCategoryPanel(vis){
 			.visible(false)
 			.lineWidth(1)
 			.strokeStyle("black")
-			.height(20)
-			.width(130)
+			.height(30)
+			.width(180)
 			.left(0)
 			.top(0)
 			
 		dragFeedbackPanels[row].add(pv.Dot)
-			.left(10)
-			.top(10)
+			.left(15)
+			.top(15)
 			.shape("square")
-			.size(40)
+			.size(80)
 			.fillStyle(graphCollection.categoryColors[key])
 			.lineWidth(1)
 			.strokeStyle("black")
@@ -96,10 +99,10 @@ function constructCategoryPanel(vis){
 			.cursor("move")
 			.title(key)
 			.lineWidth(1)
-			.height(20)
-			.width(130)
-			.left(-147)
-			.top(20*row - 10)
+			.height(30)
+			.width(180)
+			.left(-197)
+			.top(40*row - 5)
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
 				this.render();
@@ -153,11 +156,11 @@ function constructCategoryPanel(vis){
 			
 			
 		catPanel.add(pv.Dot)
-			.left(10)
-			.top(10)
+			.left(15)
+			.top(15)
 			.shape("square")
 			.cursor("move")
-			.size(40)
+			.size(80)
 			.fillStyle(graphCollection.categoryColors[key])
 			.lineWidth(1)
 			.strokeStyle("black")
@@ -188,36 +191,37 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 			positionGroupingMenuOverGraph(index, graphCollection);
 					
-			if (oldIndex != index) $('#groupingOptions').slideUp();
+			if (oldIndex == index) $('#groupingOptions').slideUp();
+			else $('#groupingOptions').hide();
 			vis.render();
 		});
 		
 	graph.panel = graphPanel;
 	
 	//Selected Graph Highlights
-	graphPanel.add(pv.Rule)
-		.visible(function(){return graphCollection.selectedGraphIndex == index})
-		.bottom(1)
-		.left(-15)
-		.right(-20)
-		.lineWidth(3)
+	//graphPanel.add(pv.Rule)
+	//	.visible(function(){return graphCollection.selectedGraphIndex == index})
+	//	.bottom(1)
+	//	.left(-15)
+	//	.right(-20)
+	//	.lineWidth(3)
+	//	
+	//graphPanel.add(pv.Rule)
+	//	.visible(function(){return graphCollection.selectedGraphIndex == index})
+	//	.left(-14)
+	//	.lineWidth(3)
+	//	
+	//graphPanel.add(pv.Rule)
+	//	.visible(function(){return graphCollection.selectedGraphIndex == index})
+	//	.top(-1)
+	//	.left(-15)
+	//	.right(-20)
+	//	.lineWidth(3)
 		
-	graphPanel.add(pv.Rule)
-		.visible(function(){return graphCollection.selectedGraphIndex == index})
-		.left(-14)
-		.lineWidth(3)
-		
-	graphPanel.add(pv.Rule)
-		.visible(function(){return graphCollection.selectedGraphIndex == index})
-		.top(-1)
-		.left(-15)
-		.right(-20)
-		.lineWidth(3)
-		
-	graphPanel.add(pv.Rule)
-		.visible(function(){return graphCollection.selectedGraphIndex == index})
-		.right(-19)
-		.lineWidth(3)
+	//graphPanel.add(pv.Rule)
+	//	.visible(function(){return graphCollection.selectedGraphIndex == index})
+	//	.right(-19)
+	//	.lineWidth(3)
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
@@ -225,7 +229,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.top(5)
 		.width(20)
 		.height(20)
-		.visible(function(){return index == graphCollection.selectedGraphIndex})
 		.strokeStyle("black")
 		.cursor("pointer")
 		.events("all")
@@ -252,10 +255,11 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.height(20)
 		.top(4)
 		.left(-10)
-		.visible(function(){return index == graphCollection.selectedGraphIndex})
 		.cursor("pointer")
 		.title("Show Graph Option Menu")
 		.event("click", function(){
+			graphCollection.selectedGraphIndex = index;
+			graphCollection.updateMenuOptions();
 			positionGroupingMenuOverGraph(index, graphCollection);
 			$('#groupingOptions').slideDown();
 		})
@@ -428,7 +432,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					else return "green";
 				})
 				.strokeStyle("green")
-				.radius(4)
+				.radius(8)
 				.event("mousedown", pv.Behavior.drag())
 				.event("dragstart", function() {
 					graphCollection.selectAUserDefPartition(index, this.index);
@@ -452,7 +456,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.shape("square")
 				.fillStyle("green")
 				.strokeStyle("green")
-				.radius(4)
+				.radius(8)
 				.event("mousedown", pv.Behavior.drag())
 				.event("dragstart", function() {
 					graphCollection.selectAUserDefPartition(index, graph.udPartitions.push(vis.mouse())-1)
