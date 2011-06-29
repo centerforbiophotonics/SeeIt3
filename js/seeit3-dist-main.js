@@ -1080,8 +1080,11 @@ function touchEnd(event){
 				graphCollection.graphs[which].addCategory(dragCat);
 			else {
 				console.log("dragFromAGraph")
-				if (graphCollection.graphs[which].addCategory(dragCat))
-					graphCollection.graphs[dragGraphIndex].removeCategory(dragCat);		
+				if (graphCollection.graphs[which].addCategory(dragCat)){
+					console.log("addSuccessful")
+					console.log(dragGraphIndex);
+					graphCollection.graphs[dragGraphIndex].removeCategory(dragCat);
+				}		
 			}
 			graphCollection.updateMenuOptions();
 		}
