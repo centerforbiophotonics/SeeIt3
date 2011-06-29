@@ -148,6 +148,8 @@ function constructCategoryPanel(vis){
 				dragging = true;
 				dragCat = this.category();
 				dragGraphIndex = -1;
+				console.log("dragCat: "+ dragCat)
+				console.log("dragGraphIndex: "+ dragGraphIndex)
 			})
 			
 			
