@@ -1049,10 +1049,10 @@ function touchMove(event){
 document.addEventListener("touchend", touchEnd, false);
 
 function touchEnd(event){
-	console.log("touchend");
 	event.preventDefault(); 
   if (!dragging) return;
-	console.log("still dragging");
+	console.log("finalX: " + finalX);
+	console.log("finalY: " + finalY);
 	//var targetTouches = event.targetTouches;
 	//console.log(objectToString(targetTouches));  
   var curX = finalX - //event.targetTouches[0].pageX -
@@ -1065,6 +1065,7 @@ function touchEnd(event){
 	
 	draggedObj.visible(false);
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
+		console.log("inside panel");
 		if (graphCollection.graphs.length > 4){
 			var which = parseInt(curY/graphCollection.defaultGraphHeight);
 			if (dragGraphIndex == -1)
