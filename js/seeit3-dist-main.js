@@ -5,6 +5,8 @@ var draggedObj = undefined;
 var dragging = false;
 var dragCat = undefined;
 var dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
+var finalX = undefined;
+var finalY = undefined;
 
 $('#textXMin').hide();
 $('#textXMax').hide();
@@ -151,10 +153,8 @@ function constructCategoryPanel(vis){
 				
 			})
 			.event("touchend", function(event){
-				//draggedObj = undefined;
-				//dragging = false;
-				//dragCat = undefined;
-				//dragGraphIndex = undefined;
+				
+				
 			})
 			
 			
@@ -1041,22 +1041,25 @@ function touchMove(event){
 							graphCollection.padTop;
 	draggedObj.left(curX);
 	draggedObj.top(curY);
+	finalX = curX;
+	finalY = curY;
 	vis.render();
 }
 
 document.addEventListener("touchend", touchEnd, false);
 
 function touchEnd(event){
-	console.log(objectToString(event));
+	//console.log(objectToString(event));
 	event.preventDefault(); 
   if (!dragging) return;
 	
-	var targetTouches = event.targetTouches;  
-  var curX = event.targetTouches[0].pageX -
+	//var targetTouches = event.targetTouches;
+	//console.log(objectToString(targetTouches));  
+  var curX = finalX - //event.targetTouches[0].pageX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
 							
-	var curY = event.targetTouches[0].pageY - 
+	var curY = finalY - //event.targetTouches[0].pageY - 
 							$('span').offset().top - 
 							graphCollection.padTop;
 	
@@ -1083,6 +1086,12 @@ function touchEnd(event){
 		}
 	} else if (dragGraphIndex != -1) {
 		graphCollection.graphs[dragGraphIndex].removeCategory(dragCat);
-	} 
+	}
+	draggedObj = undefined;
+	dragging = false;
+	dragCat = undefined;
+	dragGraphIndex = undefined;
+	finalX = undefined;
+	finalY = undefined; 
 }
 
