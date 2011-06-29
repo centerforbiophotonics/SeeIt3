@@ -125,7 +125,6 @@ GraphCollection.prototype = {
 	},
 }
 
-/* MODIFY ATTRIBUTES WITH GREAT CAUTION */
 function Graph(worksheet, graphCollection){
 	this.graphCollection = graphCollection;
 	this.worksheet = worksheet;
@@ -142,7 +141,7 @@ function Graph(worksheet, graphCollection){
 	this.scaleMax = Math.ceil(this.xMax);
 	
 	/* X Distribution Variables */
-	this.buckets = 40;
+	this.buckets = 30;
 	this.bucketDotSize = 5;
 	
 	/* Partition Params */
