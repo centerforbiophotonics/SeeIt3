@@ -146,7 +146,7 @@ function constructCategoryPanel(vis){
 			.event("touchstart", function(event){
 				draggedObj = dragFeedbackPanels[this.row()];
 				dragging = true;
-				dragCat = key;
+				dragCat = this.category();
 				dragGraphIndex = -1;
 			})
 			.event("touchmove", function(event){
@@ -1076,6 +1076,7 @@ function touchEnd(event){
 			}
 			graphCollection.updateMenuOptions();
 		} else {
+			console.log(which);
 			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
 			if (dragGraphIndex == -1)
 				graphCollection.graphs[which].addCategory(dragCat);
@@ -1095,5 +1096,6 @@ function touchEnd(event){
 	dragGraphIndex = undefined;
 	finalX = undefined;
 	finalY = undefined; 
+	constructVis();
 }
 
