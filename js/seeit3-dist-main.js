@@ -149,13 +149,6 @@ function constructCategoryPanel(vis){
 				dragCat = this.category();
 				dragGraphIndex = -1;
 			})
-			.event("touchmove", function(event){
-				
-			})
-			.event("touchend", function(event){
-				
-				
-			})
 			
 			
 			
@@ -228,7 +221,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
-		.right(-10)
+		.right(-15)
 		.top(5)
 		.width(20)
 		.height(20)
@@ -393,6 +386,12 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					dragFeedbackPanels[this.row()].visible(true);
 					document.body.style.cursor="move";
 					vis.render();
+				})
+				.event("touchstart", function(event){
+					draggedObj = dragFeedbackPanels[this.row()];
+					dragging = true;
+					dragCat = this.category();
+					dragGraphIndex = this.row();
 				})
 				
 				
