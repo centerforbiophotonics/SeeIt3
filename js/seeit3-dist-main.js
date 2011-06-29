@@ -139,7 +139,7 @@ function constructCategoryPanel(vis){
 				constructVis();
 			})
 			.event("touchstart", function(event){
-				console.log("touchstart",objectToString(event));
+				//console.log("touchstart",objectToString(event));
 				var mouseY = vis.mouse().y;
 				var mouseX = vis.mouse().x;
 				dragFeedbackPanels[this.row()].left(mouseX);
@@ -149,7 +149,7 @@ function constructCategoryPanel(vis){
 				vis.render();
 			})
 			.event("touchmove", function(event){
-				console.log(objectToString(event));
+				//console.log(objectToString(event));
 				var mouseY = vis.mouse().y;
 				var mouseX = vis.mouse().x;
 				dragFeedbackPanels[this.row()].left(mouseX);
@@ -1041,4 +1041,10 @@ $('#displayButton').click(function(){
 $('#closeGroupingMenu').click(function(){
 	$('#groupingOptions').slideUp();
 });
+
+document.addEventListener("touchmove", touchMove, false);
+
+function touchMove(){
+	console.log("touchmove");
+}
 
