@@ -1055,13 +1055,13 @@ function touchEnd(event){
 	console.log("finalY: " + finalY);
 	//var targetTouches = event.targetTouches;
 	//console.log(objectToString(targetTouches));  
-  var curX = finalX - //event.targetTouches[0].pageX -
-							$('span').offset().left -
-							graphCollection.padLeft + 14;
+  var curX = finalX  //event.targetTouches[0].pageX -
+							//$('span').offset().left -
+							//graphCollection.padLeft + 14;
 							
-	var curY = finalY - //event.targetTouches[0].pageY - 
-							$('span').offset().top - 
-							graphCollection.padTop;
+	var curY = finalY  //event.targetTouches[0].pageY - 
+							//$('span').offset().top - 
+							//graphCollection.padTop;
 	
 	draggedObj.visible(false);
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
