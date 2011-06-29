@@ -221,7 +221,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
-		.right(-15)
+		.right(-13)
 		.top(5)
 		.width(20)
 		.height(20)
@@ -269,9 +269,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	if (graph.includedCategories.length > 0){
 		/* Number of datapoints N */
 		graphPanel.add(pv.Label)
-			.right(130)
+			.right(function() {return graph.w/2})
 			.top(2)
-			.textAlign("right")
+			.textAlign("center")
 			.textAngle(0)
 			.textBaseline("top")
 			.text("N = " + graph.n)
@@ -296,8 +296,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		/* Legend */
 		graphPanel.add(pv.Label)
 			.text("Legend:")
-			.right(130)
-			.top(20)
+			.right(140)
+			.top(5)
 			.textBaseline("top")
 			.font(fontString);
 
@@ -328,13 +328,13 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					.font(fontString)
 				
 			var legendPanel = graphPanel.add(pv.Panel)
-				.right(0)
+				.right(10)
 				.data([{"x":0,"y":0}])
 				.def("category", category)
 				.def("row",index)
 				.title(category)
 				.lineWidth(1)
-				.top(20*index+40)
+				.top(20*index+20)
 				.height(20)
 				.cursor("move")
 				.events("all")

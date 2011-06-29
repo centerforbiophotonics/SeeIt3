@@ -51,6 +51,8 @@ GraphCollection.prototype = {
 		else 
 			this.setH(calcGraphHeight());
 			
+		this.selectedGraphIndex = -1;
+			
 		if (this.graphs.length == 0) this.addGraph();
 	},
 	
