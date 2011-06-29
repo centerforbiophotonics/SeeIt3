@@ -1,5 +1,7 @@
 var graphCollection = {};
 var vis = {};
+var draggedObj = undefined;
+var dragging = false;
 
 $('#textXMin').hide();
 $('#textXMax').hide();
@@ -102,6 +104,22 @@ function constructCategoryPanel(vis){
 				this.render();
 			})
 			.event("mousedown", pv.Behavior.drag())
+			.event("dragstart", function(){
+				var mouseY = vis.mouse().y;
+				var mouseX = vis.mouse().x;
+				dragFeedbackPanels[this.row()].left(mouseX);
+				dragFeedbackPanels[this.row()].top(mouseY);
+				dragFeedbackPanels[this.row()].visible(true);
+				document.body.style.cursor="move";
+				vis.render();
+			})
+			.event("drag", function(event){
+				var mouseY = vis.mouse().y;
+				var mouseX = vis.mouse().x;
+				dragFeedbackPanels[this.row()].left(mouseX);
+				dragFeedbackPanels[this.row()].top(mouseY);
+				vis.render()
+			})
 			.event("dragend", function(){
 				var mouseY = vis.mouse().y;
 				var mouseX = vis.mouse().x;
@@ -120,58 +138,48 @@ function constructCategoryPanel(vis){
 				document.body.style.cursor="default";
 				constructVis();
 			})
-			.event("touchend", function(){
-				var mouseY = vis.mouse().y;
-				var mouseX = vis.mouse().x;
-				if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
-					if (graphCollection.graphs.length > 4){
-						var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
-						graphCollection.graphs[which].addCategory(this.category());
-						graphCollection.updateMenuOptions();
-					} else {
-						var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
-						graphCollection.graphs[which].addCategory(this.category());
-						graphCollection.updateMenuOptions();
-					}
-				}
-				dragFeedbackPanels[this.row()].visible(false);
-				document.body.style.cursor="default";
-				constructVis();
-			})
 			.event("touchstart", function(event){
+				draggedObj = this;
+				dragging = true;
 				//console.log("touchstart",objectToString(event));
-				var mouseY = vis.mouse().y;
-				var mouseX = vis.mouse().x;
-				dragFeedbackPanels[this.row()].left(mouseX);
-				dragFeedbackPanels[this.row()].top(mouseY);
-				dragFeedbackPanels[this.row()].visible(true);
-				document.body.style.cursor="move";
-				vis.render();
+				//var mouseY = vis.mouse().y;
+				//var mouseX = vis.mouse().x;
+				//dragFeedbackPanels[this.row()].left(mouseX);
+				//dragFeedbackPanels[this.row()].top(mouseY);
+				//dragFeedbackPanels[this.row()].visible(true);
+				//document.body.style.cursor="move";
+				//vis.render();
 			})
 			.event("touchmove", function(event){
 				//console.log(objectToString(event));
-				var mouseY = vis.mouse().y;
-				var mouseX = vis.mouse().x;
-				dragFeedbackPanels[this.row()].left(mouseX);
-				dragFeedbackPanels[this.row()].top(mouseY);
-				vis.render()
+				//var mouseY = vis.mouse().y;
+				//var mouseX = vis.mouse().x;
+				//dragFeedbackPanels[this.row()].left(mouseX);
+				//dragFeedbackPanels[this.row()].top(mouseY);
+				//vis.render()
 			})
-			.event("drag", function(event){
-				var mouseY = vis.mouse().y;
-				var mouseX = vis.mouse().x;
-				dragFeedbackPanels[this.row()].left(mouseX);
-				dragFeedbackPanels[this.row()].top(mouseY);
-				vis.render()
+			.event("touchend", function(){
+				draggedObj = undefined;
+				dragging = false;
+				//var mouseY = vis.mouse().y;
+				//var mouseX = vis.mouse().x;
+				//if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
+				//	if (graphCollection.graphs.length > 4){
+				//		var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
+				//		graphCollection.graphs[which].addCategory(this.category());
+				//		graphCollection.updateMenuOptions();
+				//	} else {
+				//		var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
+				//		graphCollection.graphs[which].addCategory(this.category());
+				//		graphCollection.updateMenuOptions();
+				//	}
+				//}
+				//dragFeedbackPanels[this.row()].visible(false);
+				//document.body.style.cursor="default";
+				//constructVis();
 			})
-			.event("dragstart", function(){
-				var mouseY = vis.mouse().y;
-				var mouseX = vis.mouse().x;
-				dragFeedbackPanels[this.row()].left(mouseX);
-				dragFeedbackPanels[this.row()].top(mouseY);
-				dragFeedbackPanels[this.row()].visible(true);
-				document.body.style.cursor="move";
-				vis.render();
-			})
+			
+			
 			
 		catPanel.add(pv.Dot)
 			.left(10)
@@ -1042,13 +1050,43 @@ $('#closeGroupingMenu').click(function(){
 	$('#groupingOptions').slideUp();
 });
 
+
+
+document.addEventListener("touchstart", touchStart, false);
+
+function touchStart(event){
+	var targetTouches = event.targetTouches;  
+	var curX = event.targetTouches[0].pageX;
+	var curY = event.targetTouches[0].pageY;
+	draggedObj.left(curX);
+	draggedObj.top(curY);
+	draggedObj.visible(true);
+	//document.body.style.cursor="move";
+	vis.render();
+	
+	
+  //console.log("X:"+curX); 
+	//console.log(objectToString(event));
+}
+
 document.addEventListener("touchmove", touchMove, false);
 
 function touchMove(event){
-	 var targetTouches = event.targetTouches;  
-   var curX = event.targetTouches[0].pageX;
- 
-  console.log("X:"+curX); 
+	var targetTouches = event.targetTouches;  
+	var curX = event.targetTouches[0].pageX;
+	var curY = event.targetTouches[0].pageY;
+	draggedObj.left(curX);
+	draggedObj.top(curY);
+	vis.render();
+}
+
+//document.addEventListener("touchend", touchEnd, false);
+
+function touchEnd(event){
+	 //var targetTouches = event.targetTouches;  
+   //var curX = event.targetTouches[0].pageX;
+		
+  //console.log("X:"+curX); 
 	//console.log(objectToString(event));
 }
 
