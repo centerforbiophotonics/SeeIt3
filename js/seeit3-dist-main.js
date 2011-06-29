@@ -151,10 +151,10 @@ function constructCategoryPanel(vis){
 				
 			})
 			.event("touchend", function(event){
-				draggedObj = undefined;
-				dragging = false;
-				dragCat = undefined;
-				dragGraphIndex = undefined;
+				//draggedObj = undefined;
+				//dragging = false;
+				//dragCat = undefined;
+				//dragGraphIndex = undefined;
 			})
 			
 			
@@ -1047,6 +1047,7 @@ function touchMove(event){
 document.addEventListener("touchend", touchEnd, false);
 
 function touchEnd(event){
+	console.log("touchend");
 	event.preventDefault(); 
   if (!dragging) return;
 	
