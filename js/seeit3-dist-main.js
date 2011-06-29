@@ -1049,10 +1049,10 @@ function touchMove(event){
 document.addEventListener("touchend", touchEnd, false);
 
 function touchEnd(event){
-	//console.log(objectToString(event));
+	console.log("touchend");
 	event.preventDefault(); 
   if (!dragging) return;
-	
+	console.log("still dragging");
 	//var targetTouches = event.targetTouches;
 	//console.log(objectToString(targetTouches));  
   var curX = finalX - //event.targetTouches[0].pageX -
@@ -1087,6 +1087,7 @@ function touchEnd(event){
 	} else if (dragGraphIndex != -1) {
 		graphCollection.graphs[dragGraphIndex].removeCategory(dragCat);
 	}
+	
 	draggedObj = undefined;
 	dragging = false;
 	dragCat = undefined;
