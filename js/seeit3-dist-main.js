@@ -1044,7 +1044,7 @@ $('#closeGroupingMenu').click(function(){
 
 document.addEventListener("touchmove", touchMove, false);
 
-function touchMove(){
-	console.log("touchmove");
+function touchMove(event){
+	console.log(objectToString(event));
 }
 
