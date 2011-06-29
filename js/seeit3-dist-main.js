@@ -392,8 +392,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					dragging = true;
 					dragCat = this.category();
 					dragGraphIndex = graphCollection.graphs.indexOf(graph);
-					console.log("dragCat: "+ dragCat)
-					console.log("dragGraphIndex: "+ dragGraphIndex)
 				})
 				
 				
@@ -1052,16 +1050,10 @@ document.addEventListener("touchend", touchEnd, false);
 function touchEnd(event){
 	event.preventDefault(); 
   if (!dragging) return;
-	
-	//var targetTouches = event.targetTouches;
-	//console.log(objectToString(targetTouches));  
-  var curX = finalX  //event.targetTouches[0].pageX -
-							//$('span').offset().left -
-							//graphCollection.padLeft + 14;
+
+  var curX = finalX;
 							
-	var curY = finalY  //event.targetTouches[0].pageY - 
-							//$('span').offset().top - 
-							//graphCollection.padTop;
+	var curY = finalY;
 	
 	draggedObj.visible(false);
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
@@ -1076,17 +1068,11 @@ function touchEnd(event){
 			graphCollection.updateMenuOptions();
 		} else {
 			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-			//console.log(which);
-			//console.log(dragCat);
 			if (dragGraphIndex == -1)
 				graphCollection.graphs[which].addCategory(dragCat);
 			else {
-				console.log("dragFromAGraph")
-				if (graphCollection.graphs[which].addCategory(dragCat)){
-					console.log("addSuccessful")
-					console.log(dragGraphIndex);
+				if (graphCollection.graphs[which].addCategory(dragCat))
 					graphCollection.graphs[dragGraphIndex].removeCategory(dragCat);
-				}		
 			}
 			graphCollection.updateMenuOptions();
 		}
