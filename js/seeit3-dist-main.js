@@ -1,7 +1,10 @@
 var graphCollection = {};
 var vis = {};
+
 var draggedObj = undefined;
 var dragging = false;
+var dragCat = undefined;
+var dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
 
 $('#textXMin').hide();
 $('#textXMax').hide();
@@ -139,44 +142,19 @@ function constructCategoryPanel(vis){
 				constructVis();
 			})
 			.event("touchstart", function(event){
-				draggedObj = this;
+				draggedObj = dragFeedbackPanels[this.row()];
 				dragging = true;
-				//console.log("touchstart",objectToString(event));
-				//var mouseY = vis.mouse().y;
-				//var mouseX = vis.mouse().x;
-				//dragFeedbackPanels[this.row()].left(mouseX);
-				//dragFeedbackPanels[this.row()].top(mouseY);
-				//dragFeedbackPanels[this.row()].visible(true);
-				//document.body.style.cursor="move";
-				//vis.render();
+				dragCat = key;
+				dragGraphIndex = -1;
 			})
 			.event("touchmove", function(event){
-				//console.log(objectToString(event));
-				//var mouseY = vis.mouse().y;
-				//var mouseX = vis.mouse().x;
-				//dragFeedbackPanels[this.row()].left(mouseX);
-				//dragFeedbackPanels[this.row()].top(mouseY);
-				//vis.render()
+				
 			})
-			.event("touchend", function(){
+			.event("touchend", function(event){
 				draggedObj = undefined;
 				dragging = false;
-				//var mouseY = vis.mouse().y;
-				//var mouseX = vis.mouse().x;
-				//if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
-				//	if (graphCollection.graphs.length > 4){
-				//		var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
-				//		graphCollection.graphs[which].addCategory(this.category());
-				//		graphCollection.updateMenuOptions();
-				//	} else {
-				//		var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
-				//		graphCollection.graphs[which].addCategory(this.category());
-				//		graphCollection.updateMenuOptions();
-				//	}
-				//}
-				//dragFeedbackPanels[this.row()].visible(false);
-				//document.body.style.cursor="default";
-				//constructVis();
+				dragCat = undefined;
+				dragGraphIndex = undefined;
 			})
 			
 			
@@ -195,18 +173,7 @@ function constructCategoryPanel(vis){
 				.font(fontString)
 
 		row++;
-	}
-	
-	//function dragStart(){
-	//	var mouseY = vis.mouse().y;
-	//	var mouseX = vis.mouse().x;
-	//	dragFeedbackPanels[this.row()].left(mouseX);
-	//	dragFeedbackPanels[this.row()].top(mouseY);
-	//	dragFeedbackPanels[this.row()].visible(true);
-	//	document.body.style.cursor="move";
-	//	vis.render();
-	//}
-	
+	}	
 }
 
 
@@ -274,15 +241,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			graphCollection.removeGraph(graph);
 			constructVis();
 		})
-		//.event("mouseover", function(d){
-		//	console.log(this)
-		//	this.children[1].visible(true);
-		//	this.render();
-		//})
-		//.event("mouseout", function(d){ 
-		//	this.children[1].visible(false);
-		//	this.render();
-		//})
 		.add(pv.Dot)
 			.left(10)
 			.top(10)
@@ -293,11 +251,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.lineWidth(2)
 			.title("Remove Graph")
 			.strokeStyle("black")
-			//.anchor("right").add(pv.Label)
-			//	.visible(false)
-			//	.text("Remove Graph")
-			//	.textStyle(pv.rgb(125,125,125,0.05))
-			//	.font(fontString)
 			
 	//Show Grouping Option Menu Button
 	graphPanel.add(pv.Image)
@@ -1055,9 +1008,17 @@ $('#closeGroupingMenu').click(function(){
 document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
+	event.preventDefault(); 
+  if (!dragging) return;
+   
 	var targetTouches = event.targetTouches;  
-	var curX = event.targetTouches[0].pageX;
-	var curY = event.targetTouches[0].pageY;
+	var curX = event.targetTouches[0].pageX +
+							$('span').offset().left +
+							graphCollection.padLeft - 14;
+							
+	var curY = event.targetTouches[0].pageY + 
+							$('span').offset().top + 
+							graphCollection.padTop;
 	draggedObj.left(curX);
 	draggedObj.top(curY);
 	draggedObj.visible(true);
@@ -1072,9 +1033,17 @@ function touchStart(event){
 document.addEventListener("touchmove", touchMove, false);
 
 function touchMove(event){
+	event.preventDefault(); 
+  if (!dragging) return;
+  
 	var targetTouches = event.targetTouches;  
-	var curX = event.targetTouches[0].pageX;
-	var curY = event.targetTouches[0].pageY;
+	var curX = event.targetTouches[0].pageX +
+							$('span').offset().left +
+							graphCollection.padLeft - 14;
+							
+	var curY = event.targetTouches[0].pageY + 
+							$('span').offset().top + 
+							graphCollection.padTop;
 	draggedObj.left(curX);
 	draggedObj.top(curY);
 	vis.render();
@@ -1083,10 +1052,18 @@ function touchMove(event){
 //document.addEventListener("touchend", touchEnd, false);
 
 function touchEnd(event){
-	 //var targetTouches = event.targetTouches;  
-   //var curX = event.targetTouches[0].pageX;
+	event.preventDefault(); 
+  if (!dragging) return;
+	
+	var targetTouches = event.targetTouches;  
+  var curX = event.targetTouches[0].pageX +
+							$('span').offset().left +
+							graphCollection.padLeft - 14;
+							
+	var curY = event.targetTouches[0].pageY + 
+							$('span').offset().top + 
+							graphCollection.padTop;
 		
-  //console.log("X:"+curX); 
-	//console.log(objectToString(event));
+  
 }
 
