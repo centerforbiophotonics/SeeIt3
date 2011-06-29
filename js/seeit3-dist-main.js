@@ -1012,12 +1012,12 @@ function touchStart(event){
   if (!dragging) return;
    
 	var targetTouches = event.targetTouches;  
-	var curX = event.targetTouches[0].pageX +
-							$('span').offset().left +
-							graphCollection.padLeft - 14;
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
 							
-	var curY = event.targetTouches[0].pageY + 
-							$('span').offset().top + 
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
 							graphCollection.padTop;
 	draggedObj.left(curX);
 	draggedObj.top(curY);
@@ -1037,12 +1037,12 @@ function touchMove(event){
   if (!dragging) return;
   
 	var targetTouches = event.targetTouches;  
-	var curX = event.targetTouches[0].pageX +
-							$('span').offset().left +
-							graphCollection.padLeft - 14;
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
 							
-	var curY = event.targetTouches[0].pageY + 
-							$('span').offset().top + 
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
 							graphCollection.padTop;
 	draggedObj.left(curX);
 	draggedObj.top(curY);
