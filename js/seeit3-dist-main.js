@@ -1027,7 +1027,7 @@ function touchStart(event){
 document.addEventListener("touchmove", touchMove, false);
 
 function touchMove(event){
-	event.preventDefault(); 
+	//event.preventDefault(); 
   if (!dragging) return;
   
 	var targetTouches = event.targetTouches;  
@@ -1048,7 +1048,7 @@ function touchMove(event){
 document.addEventListener("touchend", touchEnd, false);
 
 function touchEnd(event){
-	event.preventDefault(); 
+	//event.preventDefault(); 
   if (!dragging) return;
 
   var curX = finalX;
