@@ -1010,7 +1010,7 @@ document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
 	console.log("touchStart");
-	event.preventDefault(); 
+	//event.preventDefault(); 
   if (!dragging) return;
    
 	var targetTouches = event.targetTouches;  
