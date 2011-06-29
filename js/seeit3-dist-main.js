@@ -228,7 +228,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
-		.left(-8)
+		.right(0)
 		.top(5)
 		.width(20)
 		.height(20)
@@ -258,7 +258,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.width(20)
 		.height(20)
 		.top(4)
-		.left(20)
+		.left(-10)
 		.visible(function(){return index == graphCollection.selectedGraphIndex})
 		.cursor("pointer")
 		.title("Show Graph Option Menu")
@@ -276,7 +276,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	if (graph.includedCategories.length > 0){
 		/* Number of datapoints N */
 		graphPanel.add(pv.Label)
-			.right(0)
+			.right(130)
 			.top(2)
 			.textAlign("right")
 			.textAngle(0)
@@ -983,7 +983,6 @@ jQuery('#sliderTextSize').slider({
 //});
 
 $('#addGraph').click(function(event){
-	console.log("addGraph");
 	graphCollection.addGraph();
 	constructVis();
 });
@@ -1009,7 +1008,6 @@ $('#closeGroupingMenu').click(function(){
 document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
-	console.log("touchStart");
 	//event.preventDefault(); 
   if (!dragging) return;
    
