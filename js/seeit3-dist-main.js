@@ -1074,11 +1074,12 @@ function touchEnd(event){
 			graphCollection.updateMenuOptions();
 		} else {
 			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-			console.log(which);
-			console.log(dragCat);
+			//console.log(which);
+			//console.log(dragCat);
 			if (dragGraphIndex == -1)
 				graphCollection.graphs[which].addCategory(dragCat);
 			else {
+				console.log("dragFromAGraph")
 				if (graphCollection.graphs[which].addCategory(dragCat))
 					graphCollection.graphs[dragGraphIndex].removeCategory(dragCat);		
 			}
