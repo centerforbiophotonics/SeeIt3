@@ -700,11 +700,11 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.top(5)
 			.overflow("hidden")
 			.width(function(){
-				if(graphCollection.legendHidden) return 110;
+				if(graph.legendHidden) return 110;
 				else return 190;
 			})
 			.height(function(){
-				if (graphCollection.legendHidden)
+				if (graph.legendHidden)
 					return 25;
 				else
 					return graph.includedCategories.length * 30 + 30
@@ -721,12 +721,12 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.title("Click title to hide/show")
 			.events("all")
 			.event("click", function(){
-				graphCollection.legendHidden = !graphCollection.legendHidden;
+				graph.legendHidden = !graph.legendHidden;
 				vis.render();
 			})
 			.add(pv.Label)
 				.text(function() {
-					if (graphCollection.legendHidden) return "Show Legend";
+					if (graph.legendHidden) return "Show Legend";
 					else return "Legend:";
 				})
 				.left(5)
@@ -767,6 +767,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.def("row",index)
 				.title(category)
 				.lineWidth(1)
+				.visible(function(){ return !(graph.legendHidden)})
 				.top(30*index+25)
 				.height(30)
 				.cursor("move")

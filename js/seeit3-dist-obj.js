@@ -4,7 +4,7 @@ function GraphCollection(){
 	
 	this.graphs = [];
 	this.selectedGraphIndex = 0;
-	this.legendHidden = false;
+	
 	
 	//Drawing Variables
 	this.w = calcGraphWidth();
@@ -163,6 +163,8 @@ function Graph(worksheet, graphCollection){
 	
 	this.panel = {};
 	this.baseLine = 20;
+	
+	this.legendHidden = false;
 	
 }
 
