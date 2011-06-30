@@ -670,7 +670,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.bottom(function(d) {
 				return d.y + graph.baseLine; 
 			})
-			.radius(function() {return graph.bucketDotSize})
+			.radius(function() {return graphCollection.bucketDotSize})
 			.fillStyle(function(d) {return graphCollection.categoryColors[d.set]})
 			.strokeStyle(function(d) {return "black"})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.x).toFixed(1) });
@@ -871,11 +871,8 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		$('#textXMin').show();
 		$('#textXMax').show();
 		graphCollection = new GraphCollection();
-		//updateScaleTextBoxes(graph);
-		//toggleNetworkOptions(graph);
 		constructVis();
 		positionGroupingMenuOverGraph(0,graphCollection);
-		//$('#groupingOptions').slideDown();
   }
 });
 
@@ -972,7 +969,7 @@ $('#fitScaleToData').change(function() {
 
 /* Sliders */
 jQuery('#sliderTextSize').slider({ 
-	orientation:'vertical', min:12, max:20, value:parseInt(graphCollection.tickTextSize), step:1,
+	orientation:'vertical', min:12, max:20, value:12, step:1,
 	slide:function(event, ui) { 
 		graphCollection.labelTextSize = (ui.value + 4).toString();
 		graphCollection.tickTextSize = ui.value.toString();
@@ -980,22 +977,23 @@ jQuery('#sliderTextSize').slider({
 	}
 });
 	
-//jQuery('#sliderDotSize').slider({ 
-//	orientation:'vertical', min:1, max:10, value:graph.bucketDotSize, step:1,
-//	slide:function(event, ui) {
-//		graph.bucketDotSize = ui.value; 
-//		vis.render(); 
-//	}
-//});
+jQuery('#sliderDotSize').slider({ 
+	orientation:'vertical', min:1, max:10, value:5, step:1,
+	slide:function(event, ui) {
+		graphCollection.bucketDotSize = ui.value; 
+		vis.render(); 
+	}
+});
 
-//jQuery('#sliderDivisions').slider({ 
-//	orientation:'vertical', min:2, max:40, value:30, step:1,
-//	slide:function(event, ui) { 
-//		graph.buckets = ui.value;
-//		graph.singleDistPoints = singleDistPoints(graph);
-//		constructVis();
-//	}
-//});
+jQuery('#sliderDivisions').slider({ 
+	orientation:'vertical', min:2, max:40, value:30, step:1,
+	slide:function(event, ui) { 
+		graphCollection.buckets = ui.value;
+		constructVis();
+	}
+});
+
+$('#checkboxHideData').change(function() { constructVis();});
 
 $('#addGraph').click(function(event){
 	graphCollection.addGraph();

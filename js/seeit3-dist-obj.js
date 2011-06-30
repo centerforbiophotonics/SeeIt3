@@ -16,6 +16,8 @@ function GraphCollection(){
 	this.defaultGraphHeight = 300;
 	this.labelTextSize = "16";
 	this.tickTextSize = "12";
+	this.buckets = 30;
+	this.bucketDotSize = 5;
 	this.numberOfCategories = 0;
 	for (var key in this.worksheet.data){
 		this.numberOfCategories++;
@@ -141,10 +143,6 @@ function Graph(worksheet, graphCollection){
 	this.scaleMin = 0;
 	this.scaleMax = Math.ceil(this.xMax);
 	
-	/* X Distribution Variables */
-	this.buckets = 30;
-	this.bucketDotSize = 5;
-	
 	/* Partition Params */
 	this.partitionGroupSize = 4;
 	this.partitionIntervalWidth = 10;
@@ -189,6 +187,7 @@ Graph.prototype = {
 			this.xMin = pv.min(this.dataVals(), function(d) { return d });
 			this.n = this.dataVals().length;
 			this.graphCollection.scaleAllGraphsToFit();
+			this.legendHidden = false;
 			return true;
 		} else {
 			return false;
@@ -228,12 +227,12 @@ Graph.prototype = {
 	
 	getDataDrawObjects: function(){
 		var xDomain = this.x.domain();
-		var bucketSize = (xDomain[1]-xDomain[0])/this.buckets;
+		var bucketSize = (xDomain[1]-xDomain[0])/this.graphCollection.buckets;
 		var points = [];
 		var data = this.dataObjects();
 		var drawMode = jQuery("#drawMode option:selected").val();
 		
-		for (var i = 0; i < this.buckets; i++){
+		for (var i = 0; i < this.graphCollection.buckets; i++){
 			var bucketMin = xDomain[0] + (bucketSize * i);
 			var bucketMax = xDomain[0] + (bucketSize * (i+1));
 			var pointsInBucket = [];
@@ -259,7 +258,7 @@ Graph.prototype = {
 				
 				for (var j = 0; j < pointsInBucket.length; j++){
 					points.push({"x":pointsInBucket[j][0],
-											 "y":this.bucketDotSize + j*2*this.bucketDotSize,
+											 "y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
 											 "label":pointsInBucket[j][1],
 											 "set":pointsInBucket[j][2]
 										 });

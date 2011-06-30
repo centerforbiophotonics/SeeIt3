@@ -141,8 +141,10 @@ function positionGroupingMenuOverGraph(index, graphCollection){
 	var xPos = $('span').offset().left +
 							graphCollection.padLeft - 34;
 					
-	if (yPos + $('#groupingOptions').height() > graphCollection.h)
+	if (yPos + $('#groupingOptions').height() > graphCollection.h){
+		console.log("reposition");
 		yPos -= yPos + $('#groupingOptions').height() - graphCollection.h - 62;
+	}
 		
 	$('#groupingOptions')
 		.css('position', 'absolute')
@@ -155,12 +157,12 @@ function positionGroupingMenuOverGraph(index, graphCollection){
 /* Data Manipulation Functions */
 function getXBuckets(graph){
 	var xDomain = graph.x.domain();
-	var bucketSize = (xDomain[1]-xDomain[0])/graph.buckets;
+	var bucketSize = (xDomain[1]-xDomain[0])/graph.graphCollection.buckets;
 	var points = [];
 	
 	points.push(xDomain[0]);
 	
-	for (var i = 1; i <= graph.buckets; i++){
+	for (var i = 1; i <= graph.graphCollection.buckets; i++){
 		points.push(xDomain[0] + (bucketSize * i));
 	}
 	
