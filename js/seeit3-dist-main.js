@@ -198,34 +198,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		
 	graph.panel = graphPanel;
 	
-	//Selected Graph Highlights
-	//graphPanel.add(pv.Rule)
-	//	.visible(function(){return graphCollection.selectedGraphIndex == index})
-	//	.bottom(1)
-	//	.left(-15)
-	//	.right(-20)
-	//	.lineWidth(3)
-	//	
-	//graphPanel.add(pv.Rule)
-	//	.visible(function(){return graphCollection.selectedGraphIndex == index})
-	//	.left(-14)
-	//	.lineWidth(3)
-	//	
-	//graphPanel.add(pv.Rule)
-	//	.visible(function(){return graphCollection.selectedGraphIndex == index})
-	//	.top(-1)
-	//	.left(-15)
-	//	.right(-20)
-	//	.lineWidth(3)
-		
-	//graphPanel.add(pv.Rule)
-	//	.visible(function(){return graphCollection.selectedGraphIndex == index})
-	//	.right(-19)
-	//	.lineWidth(3)
-	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
-		.right(-13)
+		.right(0)
 		.top(5)
 		.width(20)
 		.height(20)
@@ -254,7 +229,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.width(30)
 		.height(30)
 		.top(4)
-		.left(-10)
+		.left(0)
 		.cursor("pointer")
 		.title("Show graph option menu")
 		.event("click", function(){
@@ -291,36 +266,14 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.anchor("bottom").add(pv.Label)
 				.text(function(d) {return d.toFixed(1)})
 				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+				.visible(function(d) {return this.index % 2 == 0})
 			
 		/* X-axis line */
 		graphPanel.add(pv.Rule)
 			.bottom(graph.baseLine)
 			.strokeStyle("#000");
 		
-		/* User Defined Partitions */
-		graphPanel.add(pv.Rule)
-			.data(function(){return graph.udPartitions})
-			.left(function(d){return d.x})
-			.bottom(function(){return graph.baseLine})
-			.height(function(){return graph.h * 0.75})
-			.strokeStyle("green")
-			.visible(function(){return graph.groupingMode == "UserDefGroups"})
-			.anchor("top").add(pv.Dot)
-				.title(function(d){return graph.x.invert(d.x)})
-				.events("all")
-				.cursor("move")
-				.shape("square")
-				.fillStyle(function() {
-					if (graph.selectedUDPart == this.index)  return "yellow";
-					else return "green";
-				})
-				.strokeStyle("green")
-				.radius(8)
-				.event("mousedown", pv.Behavior.drag())
-				.event("dragstart", function() {
-					graphCollection.selectAUserDefPartition(index, this.index);
-				})
-				.event("drag", vis)
+		
 		
 		/* UD Edge of the graph partition lines 
 		 * Where new partitions come from 
@@ -333,6 +286,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.strokeStyle("green")
 			.visible(function(){return graph.groupingMode == "UserDefGroups"})
 			.anchor("top").add(pv.Dot)
+				.left(9)
 				.title("Drag to create a new partition.")
 				.events("all")
 				.cursor("move")
@@ -353,6 +307,32 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					graph.udPartitions[graph.udPartitions.length-1] = vis.mouse();
 					graphPanel.render();
 				}) 
+				
+		/* User Defined Partitions */
+		graphPanel.add(pv.Rule)
+			.data(function(){return graph.udPartitions})
+			.left(function(d){return d.x})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return graph.h * 0.75})
+			.strokeStyle("green")
+			.visible(function(){return graph.groupingMode == "UserDefGroups"})
+			.anchor("top").add(pv.Dot)
+				.left(function(d){return d.x + 9})
+				.title(function(d){return graph.x.invert(d.x)})
+				.events("all")
+				.cursor("move")
+				.shape("square")
+				.fillStyle(function() {
+					if (graph.selectedUDPart == this.index)  return "yellow";
+					else return "green";
+				})
+				.strokeStyle("green")
+				.radius(8)
+				.event("mousedown", pv.Behavior.drag())
+				.event("dragstart", function() {
+					graphCollection.selectAUserDefPartition(index, this.index);
+				})
+				.event("drag", vis)
 			
 		
 		graphPanel.add(pv.Rule)
@@ -684,7 +664,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		/* Dots */
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
-			.visible(function() { return $('#checkboxHideData').attr('checked') == false })
+			.visible(function(d) { return $('#checkboxHideData').attr('checked') == false  && (d.y+graph.baseLine) < graph.h})
 			.left(function(d) { return d.x })
 			.bottom(function(d) {
 				return d.y + graph.baseLine; 
@@ -696,7 +676,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 		/* Legend */
 		var legendPanel = graphPanel.add(pv.Panel)
-			.right(15)
+			.right(25)
 			.top(5)
 			.overflow("hidden")
 			.width(function(){
@@ -738,7 +718,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		graph.includedCategories.forEach(function(category, index){
 			var abbrevKey = category.slice(0,15)+"..."
 			
-			//Copy of legend panel which follows mouse as it is dragged
+			//Copy of category panel which follows mouse as it is dragged
 			dragFeedbackPanels[index] = vis.add(pv.Panel)
 				.visible(false)
 				.lineWidth(1)
