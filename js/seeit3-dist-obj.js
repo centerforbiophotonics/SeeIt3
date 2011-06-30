@@ -12,7 +12,7 @@ function GraphCollection(){
 	this.padBot = 20;
 	this.padTop = 30;
 	this.padLeft = 200;
-	this.padRight = 20;
+	this.padRight = 25;
 	this.defaultGraphHeight = 300;
 	this.labelTextSize = "16";
 	this.tickTextSize = "12";

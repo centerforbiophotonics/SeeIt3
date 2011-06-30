@@ -133,14 +133,22 @@ function toggleNetworkOptions(graph) {
 }
 
 function positionGroupingMenuOverGraph(index, graphCollection){
+	var yPos = $('span').offset().top +
+							graphCollection.padTop +
+							(index == 0 ? 0 : 1) +
+							index*graphCollection.graphs[0].h;
+	
+	var xPos = $('span').offset().left +
+							graphCollection.padLeft - 34;
+					
+	if (yPos + $('#groupingOptions').height() > graphCollection.h)
+		yPos -= yPos + $('#groupingOptions').height() - graphCollection.h - 62;
+		
 	$('#groupingOptions')
-				.css('position', 'absolute')
-				.css('top', $('span').offset().top +
-					graphCollection.padTop - 1 +
-					index*graphCollection.graphs[0].h +
-					"px")
-				.css('left',$('span').offset().left +
-					graphCollection.padLeft - 14 + "px")
+		.css('position', 'absolute')
+		.css('top', yPos + "px")
+		.css('left', xPos + "px")
+	
 }
 
 

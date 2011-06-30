@@ -28,15 +28,15 @@ function constructVis(){
 	
 	/* Divider Between Graphs and Data Sets */
 	vis.add(pv.Rule)
-		.left(-15)
-		.bottom(-20)
+		.left(-35)
+		.bottom(0)
 		.top(-30)
 		
 	/*Divider Between Top Graph and Title*/
 	vis.add(pv.Rule)
 		.top(-1)
-		.right(-20)
-		.left(-15)
+		.right(-25)
+		.left(-35)
 	
 	/*Graph Title*/		  
 	vis.add(pv.Label)
@@ -53,6 +53,7 @@ function constructVis(){
 		constructGraphPanel(vis, graph, index, graphs.length);
 	});
 	vis.render();
+	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 }
 		  
 function constructCategoryPanel(vis){
@@ -75,7 +76,7 @@ function constructCategoryPanel(vis){
 			.lineWidth(1)
 			.strokeStyle("black")
 			.height(30)
-			.width(180)
+			.width(160)
 			.left(0)
 			.top(0)
 			
@@ -100,8 +101,8 @@ function constructCategoryPanel(vis){
 			.title(key)
 			.lineWidth(1)
 			.height(30)
-			.width(180)
-			.left(-197)
+			.width(160)
+			.left(-198)
 			.top(40*row - 5)
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
@@ -200,7 +201,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
-		.right(0)
+		.right(-20)
 		.top(5)
 		.width(20)
 		.height(20)
@@ -229,7 +230,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.width(30)
 		.height(30)
 		.top(4)
-		.left(0)
+		.left(-30)
 		.cursor("pointer")
 		.title("Show graph option menu")
 		.event("click", function(){
@@ -241,9 +242,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				
 	//Divider Line Between Graphs
 	graphPanel.add(pv.Rule)
-		.bottom(1)
-		.left(-15)
-		.right(-20)
+		.bottom(0)
+		.left(-35)
+		.right(-25)
 	
 	if (graph.includedCategories.length > 0){
 		/* Number of datapoints N */
@@ -676,8 +677,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 		/* Legend */
 		var legendPanel = graphPanel.add(pv.Panel)
-			.right(25)
-			.top(5)
+			.right(5)
+			.top(4)
 			.overflow("hidden")
 			.width(function(){
 				if(graph.legendHidden) return 110;
@@ -839,7 +840,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.text("Drag a Dataset from the Left to Add")
 			.font(fontString)
 	}
-	vis.render();
 }
 	
 	
