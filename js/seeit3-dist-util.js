@@ -153,6 +153,13 @@ function positionGroupingMenuOverGraph(index, graphCollection){
 	
 }
 
+function positionDisplayMenu(){
+	$('#displayOptions').css('position', 'absolute')
+										 .css('top', $('span').offset().top +"px")
+										 .css('left',$('span').offset().left +
+																	graphCollection.padLeft - 34 +"px");
+}
+
 
 /* Data Manipulation Functions */
 function getXBuckets(graph){

@@ -45,7 +45,7 @@ function constructVis(){
 		.font("bold 20px sans-serif");
 	
 	/* Display Options Menu Button */
-	graphPanel.add(pv.Image)
+	vis.add(pv.Image)
 		.url("http://centerforbiophotonics.github.com/SeeIt3/img/eye.png")  //fix this
 		.width(30)
 		.height(30)
@@ -204,6 +204,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					
 			if (oldIndex == index) $('#groupingOptions').slideUp();
 			else $('#groupingOptions').hide();
+			$('#displayOptions').slideUp();
 			vis.render();
 		});
 		
@@ -883,6 +884,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		graphCollection = new GraphCollection();
 		constructVis();
 		positionGroupingMenuOverGraph(0,graphCollection);
+		positionDisplayMenu();
   }
 });
 
@@ -1011,18 +1013,11 @@ $('#addGraph').click(function(event){
 });
 
 $('#groupingOptions').hide();
-
 $('#displayOptions').hide();
-$('#displayOptions').css('position', 'absolute')
-										 .css('top', $('span').offset().top +
-																	graphCollection.padTop +"px")
-										 .css('left',$('span').offset().left +
-																	graphCollection.padLeft +"px");
-										 
 
-$('#displayButton').click(function(){
-	$('#displayOptions').slideToggle();
-	$('#groupingOptions').slideUp();
+
+$('#displayMenuClose').click(function(){
+	$('#displayOptions').slideUp();
 });
 
 $('#closeGroupingMenu').click(function(){
