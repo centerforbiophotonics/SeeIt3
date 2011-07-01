@@ -144,14 +144,14 @@ function constructCategoryPanel(vis){
 				dragFeedbackPanels[this.row()].top(mouseY);
 				dragFeedbackPanels[this.row()].visible(true);
 				document.body.style.cursor="move";
-				vis.render();
+				dragFeedbackPanels[this.row()].render();
 			})
 			.event("drag", function(event){
 				var mouseY = vis.mouse().y;
 				var mouseX = vis.mouse().x;
 				dragFeedbackPanels[this.row()].left(mouseX);
 				dragFeedbackPanels[this.row()].top(mouseY);
-				vis.render()
+				dragFeedbackPanels[this.row()].render();
 			})
 			.event("dragend", function(){
 				var mouseY = vis.mouse().y;
@@ -690,7 +690,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		
 		/* Dots */
 		graphPanel.add(pv.Dot)
-			.data(function() {console.log(graph.getDataDrawObjects()); return graph.getDataDrawObjects()})
+			.data(function() {return graph.getDataDrawObjects()})
 			.visible(function(d) { return $('#checkboxHideData').attr('checked') == false  && (d.y+graph.baseLine) < graph.h})
 			.left(function(d) { return d.x })
 			.bottom(function(d) {
@@ -817,7 +817,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					var mouseX = vis.mouse().x;
 					dragFeedbackPanels[this.row()].left(mouseX);
 					dragFeedbackPanels[this.row()].top(mouseY);
-					vis.render()
+					dragFeedbackPanels[this.row()].render();
 				})
 				.event("dragstart", function(){
 					var mouseY = vis.mouse().y;
@@ -826,7 +826,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					dragFeedbackPanels[this.row()].top(mouseY);
 					dragFeedbackPanels[this.row()].visible(true);
 					document.body.style.cursor="move";
-					vis.render();
+					dragFeedbackPanels[this.row()].render();
 				})
 				.event("touchstart", function(event){
 					draggedObj = dragFeedbackPanels[this.row()];
@@ -1069,7 +1069,8 @@ function touchStart(event){
 	draggedObj.left(curX);
 	draggedObj.top(curY);
 	draggedObj.visible(true);
-	vis.render();
+	//vis.render();
+	draggedObj.render();
 }
 
 document.addEventListener("touchmove", touchMove, false);
@@ -1090,7 +1091,8 @@ function touchMove(event){
 	draggedObj.top(curY);
 	finalX = curX;
 	finalY = curY;
-	vis.render();
+	//vis.render();
+	draggedObj.render();
 }
 
 document.addEventListener("touchend", touchEnd, false);
