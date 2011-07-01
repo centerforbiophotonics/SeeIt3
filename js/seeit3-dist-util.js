@@ -142,8 +142,8 @@ function positionGroupingMenuOverGraph(index, graphCollection){
 							graphCollection.padLeft - 34;
 					
 	if (yPos + $('#groupingOptions').height() > graphCollection.h){
-		console.log("reposition");
-		yPos -= yPos + $('#groupingOptions').height() - graphCollection.h - 62;
+		//console.log("reposition");
+		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h ;//- 62;
 	}
 		
 	$('#groupingOptions')

@@ -56,6 +56,20 @@ function constructVis(){
 		.event("click", function(){
 			$('#displayOptions').slideDown();
 		})
+		
+	/* Add New Graph Button */
+	vis.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png")  //fix this
+		.width(30)
+		.height(30)
+		.top(-30)
+		.left(100)
+		.cursor("pointer")
+		.title("Add new graph")
+		.event("click", function(){
+			graphCollection.addGraph();
+			constructVis();
+		})
 	
 	constructCategoryPanel(vis);
 	
