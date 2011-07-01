@@ -1,64 +1,36 @@
 /*Visualization Settings*/
-function dataPointFillStyle(d){
+function pointFillStyle(set){
 	if (jQuery('#checkboxFillDots').is(':checked')){
 		if (jQuery('#checkboxBWView').is(':checked')){
-			if (d.isInSet1) return "black";
-			else return "grey";
+			var color = graphCollection.categoryColors[set];
+			//var greyVal = parseInt((0.21 * color.r  + 0.71 * color.g + 0.07 * color.b)/3);  //luminosity
+			//var greyVal = parseInt((color.r  + color.g + color.b)/3);												//average
+			var greyVal = parseInt((Math.max(color.r, color.g, color.b) + Math.min(color.r,color.g,color.b))/2)  //lightness
+			return pv.rgb(greyVal, greyVal, greyVal, 1);
 		}else{ 
-			if (d.isInSet1) return "blue";
-			else return "red";
+			return graphCollection.categoryColors[set]
 		}
 	}else{
-		if (jQuery('#checkboxBWView').is(':checked')){
-			if (d.isInSet1) return "aaa";
-			else return "eee";
-		}else{ 
-			if (d.isInSet1)return "eee";
-			else return "eee";
-		}
+		return "white";
 	}
 }
 
-function dataPointStrokeStyle(d){
-	if (jQuery('#checkboxBWView').is(':checked')){
-		if (d.isInSet1) return "black";
-		else return "grey";
-	}else{
-		if (d.isInSet1) return "blue";
-		else return "red";
-	}
-}
-
-function legendPointFillStyle(index){
+function pointStrokeStyle(set){
 	if (jQuery('#checkboxFillDots').is(':checked')){
-		if (jQuery('#checkboxBWView').is(':checked')){
-			if (index == 0) return "black";
-			else return "grey";
-		}else{ 
-			if (index == 0) return "blue";
-			else return "red";
-		}
+		return "black";
 	}else{
 		if (jQuery('#checkboxBWView').is(':checked')){
-			if (index == 0) return "aaa";
-			else return "eee";
+			var color = graphCollection.categoryColors[set];
+			//var greyVal = parseInt((0.21 * color.r  + 0.71 * color.g + 0.07 * color.b)/3);  //luminosity
+			//var greyVal = parseInt((color.r  + color.g + color.b)/3);												//average
+			var greyVal = parseInt((Math.max(color.r, color.g, color.b) + Math.min(color.r,color.g,color.b))/2)  //lightness
+			return pv.rgb(greyVal, greyVal, greyVal, 1);
 		}else{ 
-			if (index == 0) return "eee";
-			else return "eee";
+			return graphCollection.categoryColors[set]
 		}
 	}
 }
 
-function legendPointStrokeStyle(index){
-	if (jQuery('#checkboxBWView').is(':checked')){
-		if (index == 0) return "black";
-		else return "grey";	
-	} else {
-		if (index == 0) return "blue";
-		else return "red";
-		
-	}
-}
 
 function partitionDataInTwo(graph){
 	var data = graph.dataVals();
@@ -176,84 +148,6 @@ function getXBuckets(graph){
 	return points;
 }
 
-function setOnePoints(graph){
-	var xDomain = graph.x.domain();
-	var bucketSize = (xDomain[1]-xDomain[0])/graph.buckets;
-	var points = [];
-	
-	for (var i = 0; i < graph.buckets; i++){
-		var bucketMin = xDomain[0] + (bucketSize * i);
-		var bucketMax = xDomain[0] + (bucketSize * (i+1));
-		var pointsInBucket = [];
-		
-		for (var j = 0; j < graph.data.length; j++){
-			if (graph.data[j].set1){
-				var dataPoint = graph.data[j],
-					xVal = parseFloat(dataPoint.value),
-					label = dataPoint.label;
-					set1 = dataPoint.set1;
-					
-				if (xVal >= bucketMin 
-					&& xVal < bucketMax)
-				{
-					pointsInBucket.push([graph.x(xVal), 0, label, set1]);
-				}
-			}
-		}
-		
-		randomIndex = 20;
-		pointsInBucket = shuffle(pointsInBucket);
-		
-		for (var j = 0; j < pointsInBucket.length; j++){
-			points.push({"x":pointsInBucket[j][0],
-									 "y":graph.bucketDotSize + j*2*graph.bucketDotSize,
-									 "label":pointsInBucket[j][2],
-									 "isInSet1":pointsInBucket[j][3]
-								 });
-		}
-	}
-	return points;
-}
-
-function setTwoPoints(graph){
-	var xDomain = graph.x.domain();
-	var bucketSize = (xDomain[1]-xDomain[0])/graph.buckets;
-	var points = [];
-	
-	for (var i = 0; i < graph.buckets; i++){
-		var bucketMin = xDomain[0] + (bucketSize * i);
-		var bucketMax = xDomain[0] + (bucketSize * (i+1));
-		var pointsInBucket = [];
-		
-		for (var j = 0; j < graph.data.length; j++){
-			if (graph.data[j].set1 == false){
-				var dataPoint = graph.data[j],
-					xVal = parseFloat(dataPoint.value),
-					label = dataPoint.label;
-					set1 = dataPoint.set1;
-					
-				if (xVal >= bucketMin 
-					&& xVal < bucketMax)
-				{
-					pointsInBucket.push([graph.x(xVal), 0, label, set1]);
-				}
-			}
-		}
-		
-		randomIndex = 20;
-		pointsInBucket = shuffle(pointsInBucket);
-		
-		for (var j = 0; j < pointsInBucket.length; j++){
-			points.push({"x":pointsInBucket[j][0],
-									 "y":graph.bucketDotSize + j*2*graph.bucketDotSize,
-									 "label":pointsInBucket[j][2],
-									 "isInSet1":pointsInBucket[j][3]
-								 });
-		}
-	}
-	
-	return points;
-}
 
 function shuffle(o){
 	for(var j, x, i = o.length; i; j = parseInt(nextNotSoRandom() * i), x = o[--i], o[i] = o[j], o[j] = x);
