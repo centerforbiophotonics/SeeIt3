@@ -243,8 +243,8 @@ Graph.prototype = {
 					label = dataObj.object.label;
 					set = dataObj.set;
 					
-				if (xVal >= bucketMin 
-					&& xVal < bucketMax)
+				if ((xVal >= bucketMin && xVal < bucketMax) 
+						|| drawMode == "gravity")
 				{
 					pointsInBucket.push([this.x(xVal), label, set, 0]);
 				}
@@ -277,12 +277,20 @@ Graph.prototype = {
 			case "gravity":
 				for (var j = 0; j < pointsInBucket.length; j++){
 					var comparePoint = pointsInBucket[j];
-					for (var k = (j-1); k > 0; k--){
-						var otherPoint = pointsInBucket[k];
-						if (Math.abs(comparePoint[0]-otherPoint[0]) < this.graphCollection.bucketDotSize*2
-							&& otherPoint[3] >= comparePoint[3])
-						{
-							comparePoint[3] = otherPoint[3] + 1;
+					//for (var k = (j-1); k > 0; k--){
+					var changed = true;
+					while(changed){
+						changed = false;
+						for (var k = 0; k < pointsInBucket.length; k++){
+							var otherPoint = pointsInBucket[k];
+							if (Math.abs(comparePoint[0]-otherPoint[0]) < this.graphCollection.bucketDotSize*1.7 && 
+									otherPoint[3] == comparePoint[3] &&
+									k != j)
+							{
+								
+								comparePoint[3] = otherPoint[3] + 1;
+								changed = true;
+							}
 						}
 					}
 					points.push({"x":pointsInBucket[j][0],

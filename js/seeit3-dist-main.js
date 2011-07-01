@@ -729,7 +729,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.events("all")
 			.event("click", function(){
 				graph.legendHidden = !graph.legendHidden;
-				vis.render();
+				legendPanel.render();
 			})
 			.add(pv.Label)
 				.text(function() {
@@ -1012,7 +1012,7 @@ jQuery('#sliderTextSize').slider({
 });
 	
 jQuery('#sliderDotSize').slider({ 
-	orientation:'vertical', min:1, max:10, value:5, step:1,
+	orientation:'vertical', min:1, max:20, value:5, step:1,
 	slide:function(event, ui) {
 		graphCollection.bucketDotSize = ui.value; 
 		vis.render(); 
