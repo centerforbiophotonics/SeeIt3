@@ -22,9 +22,6 @@ function constructVis(){
 		.left(graphCollection.padLeft)
 		.right(graphCollection.padRight)
 		.top(graphCollection.padTop)
-		//.event("click", function(){
-		//	$('#groupingOptions').slideUp();
-		//})
 	
 	/* Divider Between Graphs and Data Sets */
 	vis.add(pv.Rule)
@@ -46,6 +43,19 @@ function constructVis(){
 		.textAngle(0)
 		.text(graphCollection.worksheet.title)
 		.font("bold 20px sans-serif");
+	
+	/* Display Options Menu Button */
+	graphPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/eye.png")  //fix this
+		.width(30)
+		.height(30)
+		.top(-30)
+		.left(-30)
+		.cursor("pointer")
+		.title("Show display option menu")
+		.event("click", function(){
+			$('#displayOptions').slideDown();
+		})
 	
 	constructCategoryPanel(vis);
 	
@@ -1004,8 +1014,11 @@ $('#groupingOptions').hide();
 
 $('#displayOptions').hide();
 $('#displayOptions').css('position', 'absolute')
-										 .css('top', ($('#displayButton').position().top + 25) +"px")
-										 .css('left',($('#displayButton').position().left) +"px");
+										 .css('top', $('span').offset().top +
+																	graphCollection.padTop +"px")
+										 .css('left',$('span').offset().left +
+																	graphCollection.padLeft +"px");
+										 
 
 $('#displayButton').click(function(){
 	$('#displayOptions').slideToggle();
