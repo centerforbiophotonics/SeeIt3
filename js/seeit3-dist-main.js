@@ -689,7 +689,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		
 		/* Dots */
 		graphPanel.add(pv.Dot)
-			.data(function() {return graph.getDataDrawObjects()})
+			.data(function() {console.log(graph.getDataDrawObjects()); return graph.getDataDrawObjects()})
 			.visible(function(d) { return $('#checkboxHideData').attr('checked') == false  && (d.y+graph.baseLine) < graph.h})
 			.left(function(d) { return d.x })
 			.bottom(function(d) {
@@ -698,7 +698,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.radius(function() {return graphCollection.bucketDotSize})
 			.fillStyle(function(d) {return graphCollection.categoryColors[d.set]})
 			.strokeStyle(function(d) {return "black"})
-			.title(function(d) { return d.label+", "+graph.x.invert(d.x).toFixed(1) });
+			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) });
 			
 		/* Legend */
 		var legendPanel = graphPanel.add(pv.Panel)
@@ -859,10 +859,17 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.font(fontString)
 		graphPanel.add(pv.Label)
 			.left(graph.w/2)
-			.top(graph.h/2 + 15)
+			.top(graph.h/2 + 20)
 			.textAlign("center")
 			.textBaseline("center")
 			.text("Drag a Dataset from the Left to Add")
+			.font(fontString)
+		graphPanel.add(pv.Label)
+			.left(graph.w/2)
+			.top(graph.h/2 + 40)
+			.textAlign("center")
+			.textBaseline("center")
+			.text("Maximum 4 Datasets per Graph")
 			.font(fontString)
 	}
 }
@@ -1028,6 +1035,10 @@ $('#addGraph').click(function(event){
 
 $('#groupingOptions').hide();
 $('#displayOptions').hide();
+
+$('#displayOptions').change(function(){
+	vis.render();
+})
 
 
 $('#displayMenuClose').click(function(){

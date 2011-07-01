@@ -237,27 +237,27 @@ Graph.prototype = {
 			var bucketMax = xDomain[0] + (bucketSize * (i+1));
 			var pointsInBucket = [];
 			
+			for (var j = 0; j < data.length; j++){
+				var dataObj = data[j],
+					xVal = parseFloat(dataObj.object.value),
+					label = dataObj.object.label;
+					set = dataObj.set;
+					
+				if (xVal >= bucketMin 
+					&& xVal < bucketMax)
+				{
+					pointsInBucket.push([this.x(xVal), label, set, 0]);
+				}
+			}
+			randomIndex = 20;
+			pointsInBucket = shuffle(pointsInBucket);
+			
 			switch (drawMode)
 			{
 			case "floating":
-				for (var j = 0; j < data.length; j++){
-					var dataObj = data[j],
-						xVal = parseFloat(dataObj.object.value),
-						label = dataObj.object.label;
-						set = dataObj.set;
-						
-					if (xVal >= bucketMin 
-						&& xVal < bucketMax)
-					{
-						pointsInBucket.push([this.x(xVal), label, set]);
-					}
-				}
-				
-				randomIndex = 20;
-				pointsInBucket = shuffle(pointsInBucket);
-				
 				for (var j = 0; j < pointsInBucket.length; j++){
 					points.push({"x":pointsInBucket[j][0],
+											 "xReal":pointsInBucket[j][0],
 											 "y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
 											 "label":pointsInBucket[j][1],
 											 "set":pointsInBucket[j][2]
@@ -265,10 +265,33 @@ Graph.prototype = {
 				}
 				break;
 			case "center":
-				
+				for (var j = 0; j < pointsInBucket.length; j++){
+					points.push({"x":(this.x(bucketMin)+this.x(bucketMax))/2,
+											 "xReal":pointsInBucket[j][0],
+											 "y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
+											 "label":pointsInBucket[j][1],
+											 "set":pointsInBucket[j][2]
+										 });
+				}
 				break;
 			case "gravity":
-				
+				for (var j = 0; j < pointsInBucket.length; j++){
+					var comparePoint = pointsInBucket[j];
+					for (var k = (j-1); k > 0; k--){
+						var otherPoint = pointsInBucket[k];
+						if (Math.abs(comparePoint[0]-otherPoint[0]) < this.graphCollection.bucketDotSize*2
+							&& otherPoint[3] >= comparePoint[3])
+						{
+							comparePoint[3] = otherPoint[3] + 1;
+						}
+					}
+					points.push({"x":pointsInBucket[j][0],
+											 "xReal":pointsInBucket[j][0],
+											 "y":this.graphCollection.bucketDotSize + comparePoint[3]*2*this.graphCollection.bucketDotSize,
+											 "label":pointsInBucket[j][1],
+											 "set":pointsInBucket[j][2]
+										 });
+				}
 				break;
 			}
 		}
