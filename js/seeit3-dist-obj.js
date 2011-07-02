@@ -293,12 +293,14 @@ Graph.prototype = {
 							}
 						}
 					}
-					points.push({"x":pointsInBucket[j][0],
+					if (i == 0){
+						points.push({"x":pointsInBucket[j][0],
 											 "xReal":pointsInBucket[j][0],
 											 "y":this.graphCollection.bucketDotSize + comparePoint[3]*2*this.graphCollection.bucketDotSize,
 											 "label":pointsInBucket[j][1],
 											 "set":pointsInBucket[j][2]
 										 });
+					}
 				}
 				break;
 			}
