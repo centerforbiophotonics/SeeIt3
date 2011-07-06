@@ -31,6 +31,28 @@ function pointStrokeStyle(set){
 	}
 }
 
+function fitPointInGraph(candidate, collisions, radius){
+	var collides = false;
+	for (var i = 0; i < collisions.length; i++){
+		var dist = Math.sqrt(Math.pow(candidate.x-collisions[i].x,2) +
+												 Math.pow(candidate.y-collisions[i].y,2))
+		if (dist < radius*2)
+			collides = true;			
+	}
+	while (collides){
+		candidate.y++;
+		collides = false;
+		for (var i = 0; i < collisions.length; i++){
+			var dist = Math.sqrt(Math.pow(candidate.x-collisions[i].x,2) +
+													 Math.pow(candidate.y-collisions[i].y,2))
+			if (dist < radius*2)
+				collides = true;			
+		}
+	}
+	
+	return candidate.y
+}
+
 
 function partitionDataInTwo(graph){
 	var data = graph.dataVals();

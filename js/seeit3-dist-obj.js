@@ -275,37 +275,64 @@ Graph.prototype = {
 				}
 				break;
 			case "gravity":
-				for (var j = 0; j < pointsInBucket.length; j++){
-					var comparePoint = pointsInBucket[j];
-					//for (var k = (j-1); k > 0; k--){
-					var changed = true;
-					while(changed){
-						changed = false;
-						for (var k = 0; k < pointsInBucket.length; k++){
-							var otherPoint = pointsInBucket[k];
-							if (Math.abs(comparePoint[0]-otherPoint[0]) < this.graphCollection.bucketDotSize*1.7 && 
-									otherPoint[3] == comparePoint[3] &&
-									k != j)
-							{
-								
-								comparePoint[3] = otherPoint[3] + 1;
-								changed = true;
+				if ( i == 0 ) {
+					for (var j = 0; j < pointsInBucket.length; j++){
+						var candidatePoint = {
+							"x":pointsInBucket[j][0],
+							"xReal":pointsInBucket[j][0],
+							"y":graphCollection.bucketDotSize,
+							"label":pointsInBucket[j][1],
+							"set":pointsInBucket[j][2]
+							};
+							
+						var collisionPoints = [];
+						for (var k = 0; k < points.length; k++){
+							if (Math.abs(points[k].x-candidatePoint.x) < graphCollection.bucketDotSize*2) {
+								collisionPoints.push(points[k]);
 							}
 						}
-					}
-					if (i == 0){
-						points.push({"x":pointsInBucket[j][0],
-											 "xReal":pointsInBucket[j][0],
-											 "y":this.graphCollection.bucketDotSize + comparePoint[3]*2*this.graphCollection.bucketDotSize,
-											 "label":pointsInBucket[j][1],
-											 "set":pointsInBucket[j][2]
-										 });
+						
+						if (collisionPoints.length > 0)
+							candidatePoint.y = fitPointInGraph(candidatePoint, collisionPoints, graphCollection.bucketDotSize);
+						
+						points.push(candidatePoint);
 					}
 				}
+				
+				//THE OLD WAY
+				//for (var j = 0; j < pointsInBucket.length; j++){
+				//	var comparePoint = pointsInBucket[j];
+				//	//for (var k = (j-1); k > 0; k--){
+				//	var changed = true;
+				//	while(changed){
+				//		changed = false;
+				//		for (var k = 0; k < pointsInBucket.length; k++){
+				//			var otherPoint = pointsInBucket[k];
+				//			if (Math.abs(comparePoint[0]-otherPoint[0]) < this.graphCollection.bucketDotSize*2 && 
+				//					otherPoint[3] == comparePoint[3] &&
+				//					k != j)
+				//			{
+				//				
+				//				comparePoint[3] = otherPoint[3] + 1;
+				//				changed = true;
+				//			}
+				//		}
+				//	}
+				//	if (i == 0){
+				//		points.push({"x":pointsInBucket[j][0],
+				//							 "xReal":pointsInBucket[j][0],
+				//							 "y":this.graphCollection.bucketDotSize + comparePoint[3]*2*this.graphCollection.bucketDotSize,
+				//							 "label":pointsInBucket[j][1],
+				//							 "set":pointsInBucket[j][2]
+				//						 });
+				//	}
+				//}
+				
 				break;
 			}
 		}
 		return points;
+		
 	},
 	
 	
