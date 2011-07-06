@@ -1034,6 +1034,21 @@ $('#addGraph').click(function(event){
 	constructVis();
 });
 
+$('#applyOptionsToAll').click(function(event){
+	var selGraph = graphCollection.graphs[graphCollection.selectedGraphIndex];
+	
+	graphCollection.graphs.forEach(function(graph){
+		graph.histogram = selGraph.histogram;
+		graph.boxPlot = selGraph.boxPlot;
+		graph.fitScaleToData = selGraph.fitScaleToData;
+		graph.groupingMode = selGraph.groupingMode;
+		graph.udPartitions = selGraph.udPartitions;
+		graph.setXScale();
+	});
+	vis.render();
+	//constructVis();
+});
+
 $('#groupingOptions').hide();
 $('#displayOptions').hide();
 

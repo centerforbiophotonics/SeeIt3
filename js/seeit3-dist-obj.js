@@ -5,7 +5,6 @@ function GraphCollection(){
 	this.graphs = [];
 	this.selectedGraphIndex = 0;
 	
-	
 	//Drawing Variables
 	this.w = calcGraphWidth();
 	this.h = calcGraphHeight();
