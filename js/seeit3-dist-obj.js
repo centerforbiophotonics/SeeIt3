@@ -1,3 +1,24 @@
+//All variables related to a touch event
+function Touch(){
+	this.draggedObj = undefined;
+	this.dragging = false;
+	this.dragCat = undefined;
+	this.dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
+	this.finalX = undefined;
+	this.finalY = undefined;
+}
+
+Touch.prototype = {
+	reset: function(){
+		this.draggedObj = undefined;
+		this.dragging = false;
+		this.dragCat = undefined;
+		this.dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
+		this.finalX = undefined;
+		this.finalY = undefined;
+	},
+}
+
 // Represents the collection of graphs and the area where all graphs are drawn
 function GraphCollection(){
 	this.worksheet = getWorksheet();
@@ -156,7 +177,7 @@ function Graph(worksheet, graphCollection){
 	this.groupingMode = "NoGroups";
 	
 	/* Graph Overflow */
-	this.graphOverflowFlag = false;
+	this.overflowFlag = false;
 	
 	this.panel = {};
 	this.baseLine = 20;

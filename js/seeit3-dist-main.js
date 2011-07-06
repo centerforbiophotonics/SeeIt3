@@ -1,19 +1,19 @@
 var graphCollection = {};
 var vis = {};
+var touch = new Touch();
 
-var draggedObj = undefined;
-var dragging = false;
-var dragCat = undefined;
-var dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
-var finalX = undefined;
-var finalY = undefined;
+//var draggedObj = undefined;
+//var dragging = false;
+//var dragCat = undefined;
+//var dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
+//var finalX = undefined;
+//var finalY = undefined;
 
 $('#textXMin').hide();
 $('#textXMax').hide();
 
 function constructVis(){
 	jQuery('span').remove();
-	//graph.graphOverflowFlag = false;
 	
 	vis = new pv.Panel()
 		.width(graphCollection.w)
@@ -172,10 +172,10 @@ function constructCategoryPanel(vis){
 				constructVis();
 			})
 			.event("touchstart", function(event){
-				draggedObj = dragFeedbackPanels[this.row()];
-				dragging = true;
-				dragCat = this.category();
-				dragGraphIndex = -1;
+				touch.draggedObj = dragFeedbackPanels[this.row()];
+				touch.dragging = true;
+				touch.dragCat = this.category();
+				touch.dragGraphIndex = -1;
 			})
 			
 			
@@ -202,6 +202,7 @@ function constructCategoryPanel(vis){
 
 function constructGraphPanel(vis, graph, index, numberOfGraphs){
 	var fontString = "bold 14px sans-serif";
+	graph.overflowFlag = false;
 	
 	var graphPanel = vis.add(pv.Panel)
 		.top(function(){return graph.h*index})
@@ -691,7 +692,10 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		/* Dots */
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
-			.visible(function(d) { return $('#checkboxHideData').attr('checked') == false  && (d.y+graph.baseLine) < graph.h})
+			.visible(function(d) {
+				if ((d.y+graph.baseLine) > graph.h) graph.overflowFlag = true;
+				return $('#checkboxHideData').attr('checked') == false  && (d.y+graph.baseLine) < graph.h;
+			})
 			.left(function(d) { return d.x })
 			.bottom(function(d) {
 				return d.y + graph.baseLine; 
@@ -700,6 +704,17 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.fillStyle(function(d) {return pointFillStyle(d.set)})
 			.strokeStyle(function(d) {return pointStrokeStyle(d.set)})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) });
+		
+		//Graph Overflow Warning Message	
+		graphPanel.add(pv.Label)
+			.text("Warning! Data points exceed graph height.")
+			.textStyle("red")
+			.visible(function(){return graph.overflowFlag})
+			.font(fontString)
+			.top(35)
+			.left(graph.w/2)
+			.textAlign("center")
+			
 			
 		/* Legend */
 		var legendPanel = graphPanel.add(pv.Panel)
@@ -829,10 +844,10 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					dragFeedbackPanels[this.row()].render();
 				})
 				.event("touchstart", function(event){
-					draggedObj = dragFeedbackPanels[this.row()];
-					dragging = true;
-					dragCat = this.category();
-					dragGraphIndex = graphCollection.graphs.indexOf(graph);
+					touch.draggedObj = dragFeedbackPanels[this.row()];
+					touch.dragging = true;
+					touch.dragCat = this.category();
+					touch.dragGraphIndex = graphCollection.graphs.indexOf(graph);
 				})
 				
 				
@@ -1015,7 +1030,8 @@ jQuery('#sliderDotSize').slider({
 	orientation:'vertical', min:1, max:20, value:5, step:1,
 	slide:function(event, ui) {
 		graphCollection.bucketDotSize = ui.value; 
-		vis.render(); 
+		//vis.render();
+		constructVis(); 
 	}
 });
 
@@ -1071,7 +1087,7 @@ document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
 	//event.preventDefault(); 
-  if (!dragging) return;
+  if (!touch.dragging) return;
    
 	var targetTouches = event.targetTouches;  
 	var curX = event.targetTouches[0].pageX -
@@ -1081,18 +1097,18 @@ function touchStart(event){
 	var curY = event.targetTouches[0].pageY - 
 							$('span').offset().top - 
 							graphCollection.padTop;
-	draggedObj.left(curX);
-	draggedObj.top(curY);
-	draggedObj.visible(true);
+	touch.draggedObj.left(curX);
+	touch.draggedObj.top(curY);
+	touch.draggedObj.visible(true);
 	//vis.render();
-	draggedObj.render();
+	touch.draggedObj.render();
 }
 
 document.addEventListener("touchmove", touchMove, false);
 
 function touchMove(event){
 	//event.preventDefault(); 
-  if (!dragging) return;
+  if (!touch.dragging) return;
   
 	var targetTouches = event.targetTouches;  
 	var curX = event.targetTouches[0].pageX -
@@ -1102,55 +1118,56 @@ function touchMove(event){
 	var curY = event.targetTouches[0].pageY - 
 							$('span').offset().top - 
 							graphCollection.padTop;
-	draggedObj.left(curX);
-	draggedObj.top(curY);
-	finalX = curX;
-	finalY = curY;
+	touch.draggedObj.left(curX);
+	touch.draggedObj.top(curY);
+	touch.finalX = curX;
+	touch.finalY = curY;
 	//vis.render();
-	draggedObj.render();
+	touch.draggedObj.render();
 }
 
 document.addEventListener("touchend", touchEnd, false);
 
 function touchEnd(event){
 	//event.preventDefault(); 
-  if (!dragging) return;
+  if (!touch.dragging) return;
 
-  var curX = finalX;
+  var curX = touch.finalX;
 							
-	var curY = finalY;
+	var curY = touch.finalY;
 	
-	draggedObj.visible(false);
+	touch.draggedObj.visible(false);
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		if (graphCollection.graphs.length > 4){
 			var which = parseInt(curY/graphCollection.defaultGraphHeight);
-			if (dragGraphIndex == -1)
-				graphCollection.graphs[which].addCategory(dragCat);
+			if (touch.dragGraphIndex == -1)
+				graphCollection.graphs[which].addCategory(touch.dragCat);
 			else {
-				if (graphCollection.graphs[which].addCategory(dragCat))
-					graphCollection.graphs[dragGraphIndex].removeCategory(dragCat);
+				if (graphCollection.graphs[which].addCategory(touch.dragCat))
+					graphCollection.graphs[touch.dragGraphIndex].removeCategory(touch.dragCat);
 			}
 			graphCollection.updateMenuOptions();
 		} else {
 			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-			if (dragGraphIndex == -1)
-				graphCollection.graphs[which].addCategory(dragCat);
+			if (touch.dragGraphIndex == -1)
+				graphCollection.graphs[which].addCategory(touch.dragCat);
 			else {
-				if (graphCollection.graphs[which].addCategory(dragCat))
-					graphCollection.graphs[dragGraphIndex].removeCategory(dragCat);
+				if (graphCollection.graphs[which].addCategory(touch.dragCat))
+					graphCollection.graphs[touch.dragGraphIndex].removeCategory(touch.dragCat);
 			}
 			graphCollection.updateMenuOptions();
 		}
-	} else if (dragGraphIndex != -1) {
-		graphCollection.graphs[dragGraphIndex].removeCategory(dragCat);
+	} else if (touch.dragGraphIndex != -1) {
+		graphCollection.graphs[touch.dragGraphIndex].removeCategory(touch.dragCat);
 	}
 	
-	draggedObj = undefined;
-	dragging = false;
-	dragCat = undefined;
-	dragGraphIndex = undefined;
-	finalX = undefined;
-	finalY = undefined; 
+	//draggedObj = undefined;
+	//dragging = false;
+	//dragCat = undefined;
+	//dragGraphIndex = undefined;
+	//finalX = undefined;
+	//finalY = undefined; 
+	touch.reset();
 	constructVis();
 }
 
