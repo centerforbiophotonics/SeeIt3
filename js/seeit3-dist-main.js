@@ -208,6 +208,9 @@ function constructCategoryPanel(vis){
 			.width(160)
 			.left(-198)
 			.top(40*row - 5)
+			.event("click", function(){
+				$('#dataSetAddEdit').slideToggle();
+			})
 			
 		newDataPanel.add(pv.Dot)
 			.left(15)
@@ -1217,4 +1220,10 @@ function touchEnd(event){
 	touch.reset();
 	constructVis();
 }
+
+$('#dataSetAddEdit').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2)+"px");
+
+$('#dataSetAddEdit').hide();
 

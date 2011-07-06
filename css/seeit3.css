@@ -38,3 +38,9 @@ table#menuItems h3 {
 	border:1px solid black;
 	padding: 5px;
 }
+
+#dataSetAddEdit {
+	background: #ffffff;
+	border:1px solid black;
+	padding: 5px;
+}
