@@ -196,7 +196,43 @@ function constructCategoryPanel(vis){
 				.font(fontString)
 
 		row++;
-	}	
+	}
+	
+	//New Data Set Button
+	var newDataPanel = vis.add(pv.Panel)
+			.events("all")
+			.cursor("pointer")
+			.title("Add a Dataset")
+			.lineWidth(1)
+			.height(30)
+			.width(160)
+			.left(-198)
+			.top(40*row - 5)
+			
+		newDataPanel.add(pv.Dot)
+			.left(15)
+			.top(15)
+			.def("category", key)
+			.shape("square")
+			.cursor("pointer")
+			.size(80)
+			.strokeStyle("black")
+			.lineWidth(2)
+			.anchor("right").add(pv.Label)
+				.text("Add a Dataset")
+				.font(fontString)
+		
+		newDataPanel.add(pv.Dot)
+			.left(15)
+			.top(15)
+			.angle(Math.PI/4)
+			.shape("cross")
+			.cursor("pointer")
+			.events("all")
+			.size(20)
+			.lineWidth(2)
+			.title("Add a Dataset")
+			.strokeStyle("black")
 }
 
 
@@ -1145,7 +1181,6 @@ function touchEnd(event){
   if (!touch.dragging) return;
 
   var curX = touch.finalX;
-							
 	var curY = touch.finalY;
 	
 	touch.draggedObj.visible(false);
