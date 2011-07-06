@@ -109,9 +109,10 @@ function constructCategoryPanel(vis){
 			.top(15)
 			.shape("square")
 			.size(80)
-			.fillStyle(graphCollection.categoryColors[key])
+			.def("category", key)
+			.fillStyle(function(d) {return pointFillStyle(this.category())})
+			.strokeStyle(function(d) {return pointStrokeStyle(this.category())})
 			.lineWidth(2)
-			.strokeStyle("black")
 			.anchor("right").add(pv.Label)
 				.text(abbrevKey)
 				.font(fontString)
@@ -1053,12 +1054,23 @@ $('#addGraph').click(function(event){
 $('#applyOptionsToAll').click(function(event){
 	var selGraph = graphCollection.graphs[graphCollection.selectedGraphIndex];
 	
-	graphCollection.graphs.forEach(function(graph){
+	graphCollection.graphs.forEach(function(graph, index){
 		graph.histogram = selGraph.histogram;
 		graph.boxPlot = selGraph.boxPlot;
 		graph.fitScaleToData = selGraph.fitScaleToData;
 		graph.groupingMode = selGraph.groupingMode;
-		graph.udPartitions = selGraph.udPartitions;
+		
+		//Old way which caused udpartitions to share a reference.  Make this an option?
+		//graph.udPartitions = selGraph.udPartitions;
+		
+		//clone udPartitions
+		if (index != graphCollection.selectedGraphIndex){
+			graph.udPartitions = [];
+			for (var i = 0; i < selGraph.udPartitions.length; i++){
+				graph.udPartitions.push(pv.vector(selGraph.udPartitions[i].x, selGraph.udPartitions[i].y))
+			}
+		}
+
 		graph.setXScale();
 	});
 	vis.render();
