@@ -192,7 +192,7 @@ function parseSpreadsheetKeyFromURL(URL) {
 }
 
 function calcGraphWidth(){
-	return window.innerWidth - 255;
+	return window.innerWidth - 290;
 }
 
 function calcGraphHeight(){

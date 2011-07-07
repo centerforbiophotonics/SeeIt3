@@ -119,6 +119,23 @@ function constructCategoryPanel(vis){
 				.text(abbrevKey)
 				.font(fontString)
 		
+		//Edit category button
+		vis.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/edit.png")  //fix this
+		.def("category", key)
+		.def("row",row)
+		.width(30)
+		.height(30)
+		.left(-228)
+		.top(40*row - 5)
+		.cursor("pointer")
+		.title("Edit dataset")
+		.event("click", function(){
+			
+		})
+		
+		
+		//Panel representing a data category/set
 		var catPanel = vis.add(pv.Panel)
 			.data([{"x":0,"y":0}])
 			.def("category", key)
@@ -211,7 +228,7 @@ function constructCategoryPanel(vis){
 			.left(-198)
 			.top(40*row - 5)
 			.event("click", function(){
-				$('#dataSetAddEdit').slideToggle();
+				$('#dataSetAdd').slideToggle();
 			})
 			
 		newDataPanel.add(pv.Dot)
@@ -800,7 +817,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 
 		var dragFeedbackPanels = [];
 		graph.includedCategories.forEach(function(category, index){
-			var abbrevKey = category.slice(0,15)+"..."
+			var abbrevKey = category.slice(0,15);//+"..."
+			if (category.length > 15)
+			abbrevKey += "...";
 			
 			//Copy of category panel which follows mouse as it is dragged
 			dragFeedbackPanels[index] = vis.add(pv.Panel)
@@ -1223,11 +1242,11 @@ function touchEnd(event){
 	constructVis();
 }
 
-$('#dataSetAddEdit').css('position', 'absolute')
-										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetAddEdit').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetAddEdit').width()/2)+"px");
+$('#dataSetAdd').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetAdd').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetAdd').width()/2)+"px");
 
-$('#dataSetAddEdit').hide();
+$('#dataSetAdd').hide();
 
 $('#nonnumWarning').hide();
 $('#noTitleWarning').hide();
@@ -1240,23 +1259,43 @@ $('#labLast').change(function(){
 	$('#valLast').focus();
 });
 
-$('#valLast').change(function(){
+var firstKey = true;
+$('#valLast').keyup(function(evt){
 	if (isNaN(parseFloat($('#valLast').val()))){
-		$('#valLast').val("");
+		if ($('#valLast').val() != "-" && $('#valLast').val() != ".")
+			$('#valLast').val("");
 		$('#valLast').focus();
-		$('#nonnumWarning').show();
+		if (event.keyCode != '9')
+			$('#nonnumWarning').show();
 	} else {
 		$('#nonnumWarning').hide();
-		//$('#otherEntryRows').prepend("<tr><td><input type='text' id='lab"+nextRow+"'></td><td><input type='text' onChange ='entryValidate(this)' id='val"+nextRow+"'></td></tr>");
 		$('#dataSetEntry tr:last').before("<tr id='row"+nextRow+"'><td><input type='text' id='lab"+nextRow+"'></td><td><input type='text' onChange ='entryValidate(this)' id='val"+nextRow+"'></td></tr>");
 		$('#lab'+nextRow).val($('#labLast').val());
 		$('#val'+nextRow).val(parseFloat($('#valLast').val()));
 		$('#valLast').val("");
 		$('#labLast').val("");
-		$('#labLast').focus();
+		$('#val'+nextRow).focus();
 		nextRow++;
 	}
 });
+
+//$('#valLast').change(function(){
+//	if (isNaN(parseFloat($('#valLast').val()))){
+//		$('#valLast').val("");
+//		$('#valLast').focus();
+//		$('#nonnumWarning').show();
+//	} else {
+//		$('#nonnumWarning').hide();
+//		//$('#otherEntryRows').prepend("<tr><td><input type='text' id='lab"+nextRow+"'></td><td><input type='text' onChange ='entryValidate(this)' id='val"+nextRow+"'></td></tr>");
+//		$('#dataSetEntry tr:last').before("<tr id='row"+nextRow+"'><td><input type='text' id='lab"+nextRow+"'></td><td><input type='text' onChange ='entryValidate(this)' id='val"+nextRow+"'></td></tr>");
+//		$('#lab'+nextRow).val($('#labLast').val());
+//		$('#val'+nextRow).val(parseFloat($('#valLast').val()));
+//		$('#valLast').val("");
+//		$('#labLast').val("");
+//		$('#labLast').focus();
+//		nextRow++;
+//	}
+//});
 
 function entryValidate(elem){
 	if (isNaN(parseFloat(elem.value))){
@@ -1332,8 +1371,9 @@ $("#entryFormAdd").click(function(){
 		$('#noLabelWarning').hide();
 		$('#noValueWarning').hide();
 		graphCollection.addData(datasetTitle, data);
+		constructVis();
+		$('#dataSetAdd').slideUp();
 	}
-	constructVis();
 });
 
 $('#entryFormCancel').click(function(){
@@ -1344,12 +1384,18 @@ $('#entryFormCancel').click(function(){
 	for (var i=0; i<nextRow; i++)
 		$('#row'+i).remove();
 	nextRow = 1;
-	//$('#dataSetEntry').html("<tr><th>Label</th><th>Value</th></tr><tr><td><input type='text' id='labLast'></td><td><input type='text' id='valLast'></td></tr>");
+	$('#dataSetAdd').slideUp();
 });
 
-function readEntryForm(){
-	
-}
+$('#entryFormClear').click(function(){
+	$('#dataSetTitle').val("");
+	$('#valLast').val("");
+	$('#labLast').val("");
+	$('#labLast').focus();
+	for (var i=0; i<nextRow; i++)
+		$('#row'+i).remove();
+	nextRow = 1;
+});
 
 function populateLabelsFromExisting(){
 	
