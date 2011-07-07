@@ -126,25 +126,20 @@
 	<label for="dataSetTitle">Title:</label>
 	<input type="text" id="dataSetTitle" style="width:200px;"><br>
 	<input type="button" value="Copy Labels From Existing"><br>
-	<table>
+	<center><p id="nonnumWarning" style="color:red;">Value must be a number!</p></center>
+	<center><p id="noTitleWarning" style="color:red;">Dataset must have a title!</p></center>
+	<center><p id="noLabelWarning" style="color:red;">All values must have labels!</p></center>
+	<center><p id="noValueWarning" style="color:red;">All labels must have values!</p></center>
+	<table id="dataSetEntry">
 		<tr>
 			<th>Label</th><th>Value</th>
 		</tr>
 		<tr>
-			<td><input type="text" id="lab1"></td><td><input type="text" id="val1"></td>
-		</tr>
-		<tr>
-			<td><input type="text" id="lab2"></td><td><input type="text" id="val2"></td>
-		</tr>
-		<tr>
-			<td><input type="text" id="lab3"></td><td><input type="text" id="val3"></td>
-		</tr>
-		<tr>
-			<td><input type="text" id="lab4"></td><td><input type="text" id="val4"></td>
+			<td><input type="text" id="labLast"></td><td><input type="text" id="valLast"></td>
 		</tr>
 	</table><br>
-	<input type="button" value="Add">
-	<input type="button" value="Cancel">
+	<input type="button" value="Add" id="entryFormAdd">
+	<input type="button" value="Cancel" id="entryFormCancel">
 </div>
 
 <p id="loadingMsg">Loading...</p>

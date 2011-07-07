@@ -143,8 +143,24 @@ GraphCollection.prototype = {
 			if (graph.xMin < min) min = graph.xMin
 		});
 		this.graphs.forEach(function(graph){
-			graph.setXScale(min, Math.ceil(max));
+			graph.setXScale(min, Math.ceil(max)+0.1);
 		});
+	},
+	
+	addData: function(title, data){
+		this.worksheet.data[title] = data;
+		this.graphs.forEach(function(graph){
+			graph.data[title] = data;
+		});
+		this.numberOfCategories++;
+		
+		this.categoryColors = {};
+		var colorScale = pv.Colors.category20(0,this.numberOfCategories);
+		var counter = 0;
+		for (var key in this.worksheet.data){
+			this.categoryColors[key] = colorScale(counter);
+			counter++;
+		}
 	},
 }
 

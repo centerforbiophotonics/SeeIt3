@@ -92,7 +92,9 @@ function constructCategoryPanel(vis){
 	
 	var dragFeedbackPanels = [];	
 	for (var key in graphCollection.worksheet.data){
-		var abbrevKey = key.slice(0,15)+"..."
+		var abbrevKey = key.slice(0,15);
+		if (key.length > 15)
+			abbrevKey += "...";
 		
 		//Copy of category panel which follows mouse as it is dragged
 		dragFeedbackPanels[row] = vis.add(pv.Panel)
@@ -1222,8 +1224,133 @@ function touchEnd(event){
 }
 
 $('#dataSetAddEdit').css('position', 'absolute')
-										 .css('top', parseInt(window.innerHeight/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2)+"px");
+										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetAddEdit').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetAddEdit').width()/2)+"px");
 
 $('#dataSetAddEdit').hide();
 
+$('#nonnumWarning').hide();
+$('#noTitleWarning').hide();
+$('#noLabelWarning').hide();
+$('#noValueWarning').hide();
+
+var nextRow = 1;
+
+$('#labLast').change(function(){
+	$('#valLast').focus();
+});
+
+$('#valLast').change(function(){
+	if (isNaN(parseFloat($('#valLast').val()))){
+		$('#valLast').val("");
+		$('#valLast').focus();
+		$('#nonnumWarning').show();
+	} else {
+		$('#nonnumWarning').hide();
+		//$('#otherEntryRows').prepend("<tr><td><input type='text' id='lab"+nextRow+"'></td><td><input type='text' onChange ='entryValidate(this)' id='val"+nextRow+"'></td></tr>");
+		$('#dataSetEntry tr:last').before("<tr id='row"+nextRow+"'><td><input type='text' id='lab"+nextRow+"'></td><td><input type='text' onChange ='entryValidate(this)' id='val"+nextRow+"'></td></tr>");
+		$('#lab'+nextRow).val($('#labLast').val());
+		$('#val'+nextRow).val(parseFloat($('#valLast').val()));
+		$('#valLast').val("");
+		$('#labLast').val("");
+		$('#labLast').focus();
+		nextRow++;
+	}
+});
+
+function entryValidate(elem){
+	if (isNaN(parseFloat(elem.value))){
+		$('#nonnumWarning').show();
+		elem.value = "";
+	} else {
+		$('#nonnumWarning').hide();
+	}
+}
+
+$("#entryFormAdd").click(function(){
+	var labelError = false;
+	var titleError = false;
+	var valueError = false;
+	$('#noTitleWarning').hide();
+	$('#noLabelWarning').hide();
+	$('#noValueWarning').hide();
+	
+	var datasetTitle;
+	var data = [];
+	if ($('#dataSetTitle').val() == ""){
+		titleError = true;
+		$('#noTitleWarning').show();
+		$('#dataSetTitle').focus();
+	} else {
+		$('#noTitleWarning').hide();
+		datasetTitle = $('#dataSetTitle').val()
+	}
+	
+	for (var i=1; i<nextRow; i++){
+		var label = $('#lab'+i).val();
+		var value = $('#val'+i).val();
+		console.log("label: "+label);
+		console.log("value: "+value);
+		if (label == "" && value != ""){
+			labelError = true;
+			$('#noLabelWarning').show();
+			$('#lab'+i).focus();
+		}
+		if (value == "" && label != ""){
+			valueError = true;
+			$('#noValueWarning').show();
+			$('#val'+i).focus();
+		}
+		if (!isNaN(parseFloat(value)) && label != "")
+			data.push({"label":label, "value":parseFloat(value)})
+	}
+	
+	var label = $('#labLast').val();
+	var value = $('#valLast').val();
+	console.log("label: "+label);
+	console.log("value: "+value);
+	
+	if (label == "" && value != ""){
+		labelError = true;
+		$('#noLabelWarning').show();
+		$('#labLast').focus();
+	}
+	if (value == "" && label != ""){
+		valueError = true;
+		$('#noValueWarning').show();
+		$('#valLast').focus();
+	}
+	
+	if (!isNaN(parseFloat(value)) && label != "")
+		data.push({"label":label, "value":parseFloat(value)})
+
+	
+	
+	
+	if(!labelError && !titleError && !valueError){
+		$('#noTitleWarning').hide();
+		$('#noLabelWarning').hide();
+		$('#noValueWarning').hide();
+		graphCollection.addData(datasetTitle, data);
+	}
+	constructVis();
+});
+
+$('#entryFormCancel').click(function(){
+	$('#dataSetTitle').val("");
+	$('#valLast').val("");
+	$('#labLast').val("");
+	$('#labLast').focus();
+	for (var i=0; i<nextRow; i++)
+		$('#row'+i).remove();
+	nextRow = 1;
+	//$('#dataSetEntry').html("<tr><th>Label</th><th>Value</th></tr><tr><td><input type='text' id='labLast'></td><td><input type='text' id='valLast'></td></tr>");
+});
+
+function readEntryForm(){
+	
+}
+
+function populateLabelsFromExisting(){
+	
+}
