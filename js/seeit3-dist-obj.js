@@ -31,7 +31,7 @@ function GraphCollection(){
 	this.h = calcGraphHeight();
 	this.padBot = 20;
 	this.padTop = 30;
-	this.padLeft = 230;
+	this.padLeft = 235;
 	this.padRight = 25;
 	this.defaultGraphHeight = 300;
 	this.labelTextSize = "16";
@@ -510,8 +510,4 @@ Spreadsheet.prototype = {
 	
 };
 
-var exampleSpreadsheets = [
-	//new Spreadsheet('0AuGPdilGXQlBdHlYdkZ0a0tlZ1F4N1FQc2luOTNtZUE'),  //Old Format
-	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),		//Combined Format
-];
 

@@ -23,6 +23,7 @@
     })();
 
   </script>
+  
 </head>
 <body>
 
@@ -126,10 +127,11 @@
 	<label for="dataSetTitle">Title:</label>
 	<input type="text" id="dataSetTitle" style="width:200px;"><br>
 	<input type="button" value="Copy Labels From Existing"><br>
-	<center><p id="nonnumWarning" style="color:red;">Value must be a number!</p></center>
+	<center><p id="nonNumWarning" style="color:red;">Value must be a number!</p></center>
 	<center><p id="noTitleWarning" style="color:red;">Dataset must have a title!</p></center>
 	<center><p id="noLabelWarning" style="color:red;">All values must have labels!</p></center>
 	<center><p id="noValueWarning" style="color:red;">All labels must have values!</p></center>
+	<center><p id="noDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
 	<table id="dataSetEntry">
 		<tr>
 			<th>Label</th><th>Value</th>
@@ -148,6 +150,7 @@
 <script type="text/javascript" src="js/seeit3-dist-util.js"></script>
 <script type="text/javascript" src="js/seeit3-dist-obj.js"></script>
 <script type="text/javascript" src="js/seeit3-dist-main.js"></script>
+<script type="text/javascript" src="js/seeit3-dist-evt.js"></script>
 <script type="text/javascript" src="js/seeit3-dist-local.js"></script>
 
 <div style="position:fixed; bottom:10px; left:20px; background-color:white">
