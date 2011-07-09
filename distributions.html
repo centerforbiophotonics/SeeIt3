@@ -95,9 +95,9 @@
 				
 				<b>Point Stack Mode</b></br>
 				<select id="drawMode">
-					<option value="floating" selected>Floating</option>
+					<option value="floating">Floating</option>
 					<option value="center">Center</option>
-					<option value="gravity">Gravity</option>
+					<option value="gravity" selected>Gravity</option>
 				</select><br> 
 			</td>
 			<td valign="top">
@@ -124,25 +124,51 @@
 </div>
 
 <div id="dataSetAdd">
-	<label for="dataSetTitle">Title:</label>
-	<input type="text" id="dataSetTitle" style="width:200px;"><br>
-	<input type="button" value="Copy Labels From Existing"><br>
-	<center><p id="nonNumWarning" style="color:red;">Value must be a number!</p></center>
-	<center><p id="noTitleWarning" style="color:red;">Dataset must have a title!</p></center>
-	<center><p id="noLabelWarning" style="color:red;">All values must have labels!</p></center>
-	<center><p id="noValueWarning" style="color:red;">All labels must have values!</p></center>
-	<center><p id="noDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
-	<table id="dataSetEntry">
+	<h2>New Dataset</h2>
+	<label for="addDataSetTitle"><b>Title:</b></label>
+	<input type="text" id="addDataSetTitle" style="width:200px;"><br>
+	<center><p id="addNonNumWarning" style="color:red;">Value must be a number!</p></center>
+	<center><p id="addNoTitleWarning" style="color:red;">Dataset must have a title!</p></center>
+	<center><p id="addNoLabelWarning" style="color:red;">All values must have labels!</p></center>
+	<center><p id="addNoValueWarning" style="color:red;">All labels must have values!</p></center>
+	<center><p id="addNoDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
+	<center><p id="addDupTitleWarning" style="color:red;">Another dataset with that title already exists!</p></center>
+	<b>Data:</b>
+	<table id="addDatasetEntry">
 		<tr>
 			<th>Label</th><th>Value</th>
 		</tr>
 		<tr>
-			<td><input type="text" id="labLast"></td><td><input type="text" id="valLast"></td>
+			<td><input type="text" id="addLabLast"></td><td><input type="text" id="addValLast"></td>
 		</tr>
 	</table><br>
-	<input type="button" value="Add" id="entryFormAdd">
-	<input type="button" value="Cancel" id="entryFormCancel">
-	<input type="button" value="Clear" id="entryFormClear">
+	<input type="button" value="Add" id="addFormAdd">
+	<input type="button" value="Cancel" id="addFormCancel">
+	<input type="button" value="Reset" id="addFormReset">
+</div>
+
+<div id="dataSetEdit">
+	<h2 id="datasetTitle">Title</h2>
+	<label for="editDataSetTitle"><b>Title:</b></label>
+	<input type="text" id="editDataSetTitle" style="width:275px;"><br>
+	<center><p id="editNonNumWarning" style="color:red;">Value must be a number!</p></center>
+	<center><p id="editNoTitleWarning" style="color:red;">Dataset must have a title!</p></center>
+	<center><p id="editNoLabelWarning" style="color:red;">All values must have labels!</p></center>
+	<center><p id="editNoValueWarning" style="color:red;">All labels must have values!</p></center>
+	<center><p id="editNoDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
+	<b>Data:</b>
+	<table id="editDatasetEntry">
+		<tr>
+			<th>Label</th><th>Value</th>
+		</tr>
+		<tr>
+			<td><input type="text" id="editLabLast"></td><td><input type="text" id="editValLast"></td>
+		</tr>
+	</table><br>
+	<input type="button" value="Apply" id="editFormApply">
+	<input type="button" value="Cancel" id="editFormCancel">
+	<input type="button" value="Reset" id="editFormReset">
+	<input type="button" value="Delete" id="editFormDelete">
 </div>
 
 <p id="loadingMsg">Loading...</p>

@@ -45,6 +45,16 @@ table#menuItems h3 {
   -ms-overflow-x: hidden;
 }
 
+#dataSetEdit {
+	background: #ffffff;
+	border:1px solid black;
+	padding: 5px;
+	max-height: 400px;
+  overflow:scroll;
+  overflow-x: hidden;
+  -ms-overflow-x: hidden;
+}
+
 #dataSetEntry {
 	border-collapse: collapse; 
 }

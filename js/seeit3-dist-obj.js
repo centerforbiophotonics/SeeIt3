@@ -52,6 +52,11 @@ function GraphCollection(){
 		counter++;
 	}
 	
+	this.editedCategories = {};
+	for (var key in this.worksheet.data){
+		this.editedCategories[key] = false;
+	}
+	
 	this.addGraph();
 	this.updateMenuOptions();
 }
@@ -153,7 +158,7 @@ GraphCollection.prototype = {
 			graph.data[title] = data;
 		});
 		this.numberOfCategories++;
-		
+		this.editedCategories[title] = true;
 		this.categoryColors = {};
 		var colorScale = pv.Colors.category20(0,this.numberOfCategories);
 		var counter = 0;
@@ -161,6 +166,39 @@ GraphCollection.prototype = {
 			this.categoryColors[key] = colorScale(counter);
 			counter++;
 		}
+	},
+	
+	editData: function(oldTitle, title, data){
+		//console.log(oldTitle);
+		delete this.worksheet.data[oldTitle];
+		this.worksheet.data[title] = data;
+		this.graphs.forEach(function(graph){
+			delete graph.data[oldTitle];
+			graph.data[title] = data;
+			if (graph.includedCategories.indexOf(oldTitle) != -1)
+				graph.includedCategories[graph.includedCategories.indexOf(oldTitle)] = title;
+		});
+		
+		delete this.editedCategories[oldTitle];
+		this.editedCategories[title] = true;
+		
+		if (oldTitle != title){
+			this.categoryColors[title] = this.categoryColors[oldTitle];
+			delete this.categoryColors[oldTitle];
+			
+		}
+	},
+	
+	deleteData: function(title){
+		delete this.worksheet.data[title];
+		this.graphs.forEach(function(graph){
+			delete graph.data[title];
+			if (graph.includedCategories.indexOf(title) != -1)
+				graph.includedCategories.splice(graph.includedCategories.indexOf(title), 1);
+		});
+		delete this.editedCategories[title];
+		delete this.categoryColors[title];
+		this.numberOfCategories--;
 	},
 }
 
@@ -335,35 +373,6 @@ Graph.prototype = {
 					}
 				}
 				
-				//THE OLD WAY
-				//for (var j = 0; j < pointsInBucket.length; j++){
-				//	var comparePoint = pointsInBucket[j];
-				//	//for (var k = (j-1); k > 0; k--){
-				//	var changed = true;
-				//	while(changed){
-				//		changed = false;
-				//		for (var k = 0; k < pointsInBucket.length; k++){
-				//			var otherPoint = pointsInBucket[k];
-				//			if (Math.abs(comparePoint[0]-otherPoint[0]) < this.graphCollection.bucketDotSize*2 && 
-				//					otherPoint[3] == comparePoint[3] &&
-				//					k != j)
-				//			{
-				//				
-				//				comparePoint[3] = otherPoint[3] + 1;
-				//				changed = true;
-				//			}
-				//		}
-				//	}
-				//	if (i == 0){
-				//		points.push({"x":pointsInBucket[j][0],
-				//							 "xReal":pointsInBucket[j][0],
-				//							 "y":this.graphCollection.bucketDotSize + comparePoint[3]*2*this.graphCollection.bucketDotSize,
-				//							 "label":pointsInBucket[j][1],
-				//							 "set":pointsInBucket[j][2]
-				//						 });
-				//	}
-				//}
-				
 				break;
 			}
 		}
@@ -411,7 +420,8 @@ Worksheet.prototype = {
 		jQuery.jsonp({ url:this.URL + '?alt=json', callbackParameter: "callback", 
 			success:function(feedData) {
 				worksheet.data = worksheet.transformFeedData(feedData);
-				worksheet.labelType = feedData.feed.entry[0].content.$t;        
+				worksheet.labelType = feedData.feed.entry[0].content.$t;
+				worksheet.labelMasterList = worksheet.getLabels(feedData);        
 				worksheet.title = feedData.feed.title.$t;
 				jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
 			},
@@ -462,6 +472,19 @@ Worksheet.prototype = {
 												});
 		globalData = data;		
 		return data;
+	},
+	
+	getLabels: function(feedData){
+		var labels = [];
+		feedData.feed.entry.filter(function(e) { 
+						return parseInt(e.title.$t.replace(/[A-Z]/g,"")) > 1 &&
+							e.title.$t.replace(/[0-9]/g,"") == "A"
+					})
+		.forEach(function(e){
+			labels.push(e.content.$t);
+			//rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))] = e.content.$t;
+		});
+		return labels;
 	},
 };
 

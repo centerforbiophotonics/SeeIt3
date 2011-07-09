@@ -7,7 +7,6 @@ var exampleSpreadsheets = [
 // Populate dataset drop down menu 
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
-	console.log(event);
   jQuery('#workSheetSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + " by " + event.worksheet.labelType + "</option>")).val(event.worksheet.URL);
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
@@ -136,8 +135,15 @@ function constructCategoryPanel(vis){
 			.strokeStyle(function(d) {return pointStrokeStyle(this.category())})
 			.lineWidth(2)
 			.anchor("right").add(pv.Label)
+				.def("category", key)
 				.text(abbrevKey)
 				.font(fontString)
+				.textStyle(function(){
+					if (graphCollection.editedCategories[this.category()])
+						return "red";
+					else 
+						return "black";
+				})
 		
 		//Edit category button
 		vis.add(pv.Image)
@@ -151,7 +157,9 @@ function constructCategoryPanel(vis){
 		.cursor("pointer")
 		.title("Edit dataset")
 		.event("click", function(){
-			
+			resetEditDataSetMenu();
+			populateEditMenuFromExisting(this.category());
+			$('#dataSetEdit').slideDown();
 		})
 		
 		
@@ -233,6 +241,13 @@ function constructCategoryPanel(vis){
 			.anchor("right").add(pv.Label)
 				.text(abbrevKey)
 				.font(fontString)
+				.def("category", key)
+				.textStyle(function(){
+					if (graphCollection.editedCategories[this.category()])
+						return "red";
+					else 
+						return "black";
+				})
 
 		row++;
 	}
@@ -248,9 +263,10 @@ function constructCategoryPanel(vis){
 			.left(-198)
 			.top(40*row - 5)
 			.event("click", function(){
-				clearAddDataSetMenu();
-				$('#dataSetAdd').slideToggle();
-			})
+				resetAddDataSetMenu();
+				populateAddMenuLabelsFromExisting();
+				$('#dataSetAdd').slideDown();
+			});
 			
 		newDataPanel.add(pv.Dot)
 			.left(15)
@@ -863,6 +879,12 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.anchor("right").add(pv.Label)
 					.text(abbrevKey)
 					.font(fontString)
+					.textStyle(function(){
+						if (graphCollection.editedCategories[category])
+							return "red";
+						else 
+							return "black";
+					});
 				
 			var catPanel = legendPanel.add(pv.Panel)
 				.left(5)
@@ -945,6 +967,12 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.anchor("right").add(pv.Label)
 					.text(abbrevKey)
 					.font(fontString)	
+					.textStyle(function(){
+						if (graphCollection.editedCategories[category])
+							return "red";
+						else 
+							return "black";
+					});
 		});	
 	} else {
 		//Empty Graph Message
