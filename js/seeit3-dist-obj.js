@@ -156,6 +156,8 @@ GraphCollection.prototype = {
 		this.worksheet.data[title] = data;
 		this.graphs.forEach(function(graph){
 			graph.data[title] = data;
+			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
+			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
 		});
 		this.numberOfCategories++;
 		this.editedCategories[title] = true;
@@ -166,6 +168,7 @@ GraphCollection.prototype = {
 			this.categoryColors[key] = colorScale(counter);
 			counter++;
 		}
+		this.scaleAllGraphsToFit();
 	},
 	
 	editData: function(oldTitle, title, data){
@@ -175,6 +178,8 @@ GraphCollection.prototype = {
 		this.graphs.forEach(function(graph){
 			delete graph.data[oldTitle];
 			graph.data[title] = data;
+			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
+			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
 			if (graph.includedCategories.indexOf(oldTitle) != -1)
 				graph.includedCategories[graph.includedCategories.indexOf(oldTitle)] = title;
 		});
@@ -187,18 +192,23 @@ GraphCollection.prototype = {
 			delete this.categoryColors[oldTitle];
 			
 		}
+		this.scaleAllGraphsToFit();
 	},
 	
 	deleteData: function(title){
 		delete this.worksheet.data[title];
 		this.graphs.forEach(function(graph){
 			delete graph.data[title];
+			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
+			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
 			if (graph.includedCategories.indexOf(title) != -1)
 				graph.includedCategories.splice(graph.includedCategories.indexOf(title), 1);
 		});
 		delete this.editedCategories[title];
 		delete this.categoryColors[title];
 		this.numberOfCategories--;
+		this.scaleAllGraphsToFit();
+		
 	},
 }
 
