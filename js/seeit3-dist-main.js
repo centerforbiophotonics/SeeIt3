@@ -489,16 +489,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.height(function(){return graph.h * 0.75})
 			.strokeStyle("green")
 			.visible(function(){return graph.groupingMode == "UserDefGroups"})
-			.event("dragstart", function() {
-				graph.udPartitions.push(vis.mouse())
-				graphPanel.render();
-			})
-			.event("drag", function(){
-				graph.udPartitions.slice(-1) = vis.mouse();
-			})
-			.event("dragend",function(){
-				graph.udPartitions.slice(-1) = vis.mouse();
-			}) 
+			
 			
 		/* UD Partition Data Count Label */
 		graphPanel.add(pv.Label)
@@ -820,10 +811,38 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.bottom(function(d) {
 				return d.y + graph.baseLine; 
 			})
+			.cursor(function(){
+				if (graphCollection.editModeEnabled)
+					return "move";
+				else
+					return "default";
+			})
 			.radius(function() {return graphCollection.bucketDotSize})
 			.fillStyle(function(d) {return pointFillStyle(d.set)})
 			.strokeStyle(function(d) {return pointStrokeStyle(d.set)})
-			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) });
+			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
+			.event("mousedown", pv.Behavior.drag())
+			.event("drag", function(d){
+				if (graphCollection.editModeEnabled){
+					graphCollection.worksheet.data[d.set].forEach(function(data){
+						if (data.label == d.label){
+							data.value = graph.x.invert(vis.mouse().x);
+							graphCollection.editedCategories[d.set] = true;
+							for (var h = 0; h < exampleSpreadsheets.length; h++) {
+								for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
+									if (exampleSpreadsheets[h].worksheets[i].URL == graph.worksheet.URL){
+										exampleSpreadsheets[h].worksheets[i].data[d.set].edited = true;
+									}
+								}
+							}
+						}
+					});
+					graph.xMax = pv.max(graph.dataVals(), function(val) { return val });
+					graph.xMin = pv.min(graph.dataVals(), function(val) { return val });
+					graphCollection.scaleAllGraphsToFit();
+					constructVis();
+				}
+			});
 		
 		//Graph Overflow Warning Message	
 		graphPanel.add(pv.Label)
@@ -853,7 +872,12 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			})
 			.lineWidth(1)
 			.strokeStyle("black")
-			.fillStyle("white")
+			.fillStyle(function(){
+				if (graphCollection.editModeEnabled)
+					return "#FCA8B3";
+				else
+				 return "white";
+			})
 		
 		legendPanel.add(pv.Panel)
 			.left(0)
