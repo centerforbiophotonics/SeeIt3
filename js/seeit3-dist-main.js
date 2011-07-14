@@ -41,6 +41,12 @@ function constructVis(){
 		.left(graphCollection.padLeft)
 		.right(graphCollection.padRight)
 		.top(graphCollection.padTop)
+		//.fillStyle(function(){
+		//	if (graphCollection.editModeEnabled)
+		//		return pv.rgb(252,168,179,1);
+		//	else
+		//		return "clear";
+		//})
 	
 	/* Divider Between Graphs and Data Sets */
 	vis.add(pv.Rule)
@@ -88,6 +94,24 @@ function constructVis(){
 		.event("click", function(){
 			graphCollection.addGraph();
 			constructVis();
+		})
+		
+	/* Toggle Edit Mode Button */
+	vis.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/hand.png")  //fix this
+		.width(30)
+		.height(30)
+		.top(-30)
+		.left(200)
+		.cursor("pointer")
+		.title("Toggle edit mode")
+		.event("click", function(){
+			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
+			if (graphCollection.editModeEnabled)
+				jQuery('body').css('background-color', "#FCA8B3")
+			else
+				jQuery('body').css('background-color', "#FFFFFF")
+			vis.render();
 		})
 	
 	constructCategoryPanel(vis);

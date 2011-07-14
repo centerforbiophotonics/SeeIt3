@@ -57,6 +57,8 @@ function GraphCollection(){
 		this.editedCategories[key] = this.worksheet.data[key].edited;
 	}
 	
+	this.editModeEnabled = false;
+	
 	this.addGraph();
 	this.updateMenuOptions();
 }
