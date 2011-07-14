@@ -58,3 +58,13 @@ table#menuItems h3 {
 #dataSetEntry {
 	border-collapse: collapse; 
 }
+
+#worksheetCreate {
+	background: #ffffff;
+	border:1px solid black;
+	padding: 5px;
+	max-height: 400px;
+  overflow:scroll;
+  overflow-x: hidden;
+  -ms-overflow-x: hidden;
+}

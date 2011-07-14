@@ -32,7 +32,11 @@
 		<table>
 			<tr>
 				<td>Select a dataset (worksheet):</td> 
-				<td><select id="workSheetSelector"></select></td>
+				<td>
+					<select id="workSheetSelector">
+						<option value="New">*Add a new worksheet*</option>
+					</select>
+				</td>
 				<td><input type="button" value="Refresh" id="refreshWorksheet"></td>
 				<td width="25%"><a href="#" id="editInGoogleDocs">Open in Google Docs</a></td>
 				<td><label for="newSpreadsheetURL">Add a new spreadsheet by pasting its URL:</label></td>
@@ -169,6 +173,31 @@
 	<input type="button" value="Cancel" id="editFormCancel">
 	<input type="button" value="Reset" id="editFormReset">
 	<input type="button" value="Delete" id="editFormDelete">
+</div>
+
+<div id="worksheetCreate">
+	<h2>New Worksheet</h2>
+	<center><p id="wcDupTitleWarning" style="color:red;">A worksheet with that title already exists!</p></center>
+	<center><p id="wcNoTitleWarning" style="color:red;">Worksheet must have a title!</p></center>
+	<center><p id="wcNoLabelTypeWarning" style="color:red;">Worksheet must have a label type!</p></center>
+	<center><p id="wcDupLabelWarning" style="color:red;">Two or more labels are identical!</p></center>
+	
+	<label for="wcTitle"><b>Title:</b></label>
+	<input type="text" id="wcTitle" style="width:200px;"><br>
+	<label for="wcLabelType"><b>Label Type:</b></label>
+	<input type="text" id="wcLabelType" style="width:200px;"><br>
+	<table id="wcLabelEntry">
+		<tr>
+			<b>Labels (Optional):</b>
+		</tr>
+		<tr>
+			<td><input type="text" id="wcLabLast"></td>
+		</tr>
+	</table><br>
+	<input type="button" value="Add" id="wcAdd">
+	<input type="button" value="Cancel" id="wcCancel">
+	<input type="button" value="Reset" id="wcReset">
+	
 </div>
 
 <p id="loadingMsg">Loading...</p>

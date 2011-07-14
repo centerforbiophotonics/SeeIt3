@@ -10,6 +10,7 @@ $(window).resize(function() {
 	positionDatasetAddMenu();
 	positionDatasetEditMenu();
 	positionDisplayMenu();
+	positionCreateWorksheetMenu();
 });
 
 /* Top Bar Menu Items */
@@ -29,11 +30,13 @@ jQuery('#editInGoogleDocs').click(function(event) {
 });
 
 jQuery('#workSheetSelector').change(function(event) {
-  graphCollection = new GraphCollection();
-  graph.setXScale();
-  updateScaleTextBoxes(graph);
-  toggleNetworkOptions(graph);
-  constructVis();
+	if (jQuery('#workSheetSelector').val() == "New"){
+		$('#worksheetCreate').slideDown();
+	} else {
+		graphCollection = new GraphCollection();
+		lastSelectedWorksheet = jQuery('#workSheetSelector').val();
+		constructVis();
+	}
 });
 
 $('#refreshWorksheet').click(function(event){
@@ -286,9 +289,6 @@ function positionDatasetAddMenu(){
 										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetAdd').width()/2)+"px");
 }
 positionDatasetAddMenu();
-//$('#dataSetAdd').css('position', 'absolute')
-//										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetAdd').height()/2)+"px")
-//										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetAdd').width()/2)+"px");
 
 $('#dataSetAdd').hide();
 
@@ -311,7 +311,6 @@ $('#addValLast').keyup(function(evt){
 	if (isNaN(parseFloat($('#addValLast').val()))){
 		if ($('#addValLast').val() != "-" && $('#addValLast').val() != ".")
 			$('#addValLast').val("");
-		//$('#addValLast').focus();
 		if (event.keyCode != '9'){
 			$('#addNonNumWarning').show();
 			$('#dataSetAdd').scrollTop(0);
@@ -374,8 +373,6 @@ $("#addFormAdd").click(function(){
 	for (var i=1; i<addNextRow; i++){
 		var label = $('#addLab'+i).val();
 		var value = $('#addVal'+i).val();
-		//console.log("label: "+label);
-		//console.log("value: "+value);
 		if (label == "" && value != ""){
 			labelError = true;
 			$('#addNoLabelWarning').show();
@@ -383,8 +380,6 @@ $("#addFormAdd").click(function(){
 		}
 		if (value == "" && label != ""){
 			valueError = true;
-			//$('#noValueWarning').show();
-			//$('#val'+i).focus();
 		}
 		if (!isNaN(parseFloat(value)) && label != "")
 			data.push({"label":label, "value":parseFloat(value)})
@@ -392,8 +387,6 @@ $("#addFormAdd").click(function(){
 	
 	var label = $('#addLabLast').val();
 	var value = $('#addValLast').val();
-	//console.log("label: "+label);
-	//console.log("value: "+value);
 	
 	if (label == "" && value != ""){
 		labelError = true;
@@ -481,9 +474,6 @@ function positionDatasetEditMenu(){
 										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetEdit').width()/2)+"px");
 }
 positionDatasetEditMenu();
-//$('#dataSetAdd').css('position', 'absolute')
-//										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetAdd').height()/2)+"px")
-//										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetAdd').width()/2)+"px");
 
 $('#dataSetEdit').hide();
 
@@ -506,7 +496,6 @@ $('#editValLast').keyup(function(evt){
 	if (isNaN(parseFloat($('#editValLast').val()))){
 		if ($('#editValLast').val() != "-" && $('#editValLast').val() != ".")
 			$('#editValLast').val("");
-		//$('#editValLast').focus();
 		if (event.keyCode != '9'){
 			$('#editNonNumWarning').show();
 			$('#dataSetEdit').scrollTop(0);
@@ -538,13 +527,11 @@ $("#editFormApply").click(function(){
 	var valueError = false;
 	var noDataError = false;
 	var applyConfirm = false;
-	//var dupTitle = false;
 	
 	$('#editNoTitleWarning').hide();
 	$('#editNoLabelWarning').hide();
 	$('#editNoValueWarning').hide();
 	$('#editNoDataWarning').hide();
-	//$('#editDupTitleWarning').hide();
 	
 	var oldDatasetTitle = $('#datasetTitle').html();
 	var datasetTitle;
@@ -558,19 +545,10 @@ $("#editFormApply").click(function(){
 		datasetTitle = $('#editDataSetTitle').val()
 	}
 	
-	//for (var key in graphCollection.worksheet.data){
-	//	if (datasetTitle == key){
-	//		dupTitle = true;
-	//		$('#editDupTitleWarning').show();
-	//		$('#editDataSetTitle').focus();
-	//	}
-	//}
-	
 	for (var i=1; i<editNextRow; i++){
 		var label = $('#editLab'+i).val();
 		var value = $('#editVal'+i).val();
-		//console.log("label: "+label);
-		//console.log("value: "+value);
+		
 		if (label == "" && value != ""){
 			labelError = true;
 			$('#editNoLabelWarning').show();
@@ -578,8 +556,6 @@ $("#editFormApply").click(function(){
 		}
 		if (value == "" && label != ""){
 			valueError = true;
-			//$('#noValueWarning').show();
-			//$('#val'+i).focus();
 		}
 		if (!isNaN(parseFloat(value)) && label != "")
 			data.push({"label":label, "value":parseFloat(value)})
@@ -587,8 +563,6 @@ $("#editFormApply").click(function(){
 	
 	var label = $('#editLabLast').val();
 	var value = $('#editValLast').val();
-	//console.log("label: "+label);
-	//console.log("value: "+value);
 	
 	if (label == "" && value != ""){
 		labelError = true;
@@ -650,7 +624,7 @@ function resetEditDataSetMenu(){
 	$('#editValLast').val("");
 	$('#editLabLast').val("");
 	$('#editLabLast').focus();
-	for (var i=0; i<editNextRow; i++)
+	for (var i=1; i<editNextRow; i++)
 		$('#editRow'+i).remove();
 	editNextRow = 1;
 }
@@ -682,16 +656,113 @@ function populateEditMenuFromExisting(dataset){
 			editNextRow++;
 		
 	});
-	
-	//graphCollection.worksheet.labelMasterList.forEach(function(label){
-	//	$('#editDatasetEntry tr:last').before(
-	//		"<tr id='editRow" +nextRow +
-	//		"'><td><input type='text' id='editLab"+nextRow +
-	//		"' value='"+label +
-	//		"'></td><td><input type='text' onChange ='editEntryValidate(this)' id='editVal"+nextRow +
-	//		"'></td></tr>");
-	//		
-	//		nextRow++;
-	//});
 }
 
+/* Create Worksheet Menu */
+function positionCreateWorksheetMenu(){
+	$('#worksheetCreate').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetCreate').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetCreate').width()/2)+"px");
+}
+positionCreateWorksheetMenu();
+
+$('#worksheetCreate').hide();
+
+$('#wcNoTitleWarning').hide();
+$('#wcNoLabelTypeWarning').hide();
+$('#wcDupTitleWarning').hide();
+$('#wcDupLabelWarning').hide();
+	
+
+var wcNextRow = 1;
+$('#wcLabLast').keyup(function(evt){
+	$('#wcLabelEntry tr:last').before(
+		"<tr id='wcRow" +
+		wcNextRow +
+		"'><td><input type='text' id='wcLab" +
+		wcNextRow +
+		"'></td></tr>");
+			
+		$('#wcLab'+wcNextRow).val($('#wcLabLast').val());
+		$('#wcLabLast').val("");
+		$('#wcLab'+wcNextRow).focus();
+		wcNextRow++;
+});
+
+$("#wcAdd").click(function(){
+	var dupLabelError = false;
+	var dupTitleError = false;
+	var noTitleError = false;
+	var noLabelTypeError = false;
+	
+	
+	var wcLabelMasterlist = [];
+	var wcTitle = $('#wcTitle').val();
+	var wcLabelType = $('#wcLabelType').val();
+	
+	if (wcTitle == ""){
+		noTitleError = true;
+		$('#wcNoTitleWarning').show();
+		$('#wcTitle').focus();
+	}
+	
+	if (wcLabelType == ""){
+		noLabelTypeError = true;
+		$('#wcNoLabelTypeWarning').show();
+		$('#wcLabelType').focus();
+	}
+	
+	$("#workSheetSelector option").each(function(){
+		if (wcTitle == $(this).html()){
+			dupTitleError = true;
+			$('#wcDupTitleWarning').show();
+			$('#wcTitle').focus();
+		}
+	});
+	
+	for (var i=1; i<wcNextRow; i++){
+		var label = $('#wcLab'+i).val();
+		
+		if(wcLabelMasterlist.indexOf(label) != -1){
+			dupLabelError = true;
+			$('#wcDupLabelWarning').show();
+			$('#wcLab'+i).focus();
+		}
+		
+		if (label != "")
+			wcLabelMasterlist.push(label);
+	}
+	
+	if (!dupLabelError && !dupTitleError && !noTitleError && !noLabelTypeError){
+		if (confirm("Are you sure you wish to add this worksheet?")){
+			var attr = {"title": wcTitle,
+									"labelType": wcLabelType,
+									"labelMasterlist": wcLabelMasterlist};
+			exampleSpreadsheets.push(new Spreadsheet(attr));
+			resetWCMenu();
+			$('#worksheetCreate').slideUp();
+			
+			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:userCreatedWorksheet});
+		}
+	}
+});
+
+$('#wcCancel').click(function(){
+	resetWCMenu();
+	$('#worksheetCreate').slideUp();
+	$('#workSheetSelector').val(lastSelectedWorksheet);
+});
+
+$('#wcReset').click(function(){
+	resetWCMenu();
+});
+
+function resetWCMenu(){
+	$('#wcTitle').val("");
+	$('#wcLabelType').val("");
+	$('#wcLabLast').val("");
+	$('#wcLabLast').focus();
+	for (var i=0; i<wcNextRow; i++)
+		$('#wcRow'+i).remove();
+	wcNextRow = 1;
+}

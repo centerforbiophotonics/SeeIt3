@@ -4,15 +4,15 @@ var exampleSpreadsheets = [
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),		//Combined Format
 ];
 
-// Populate dataset drop down menu 
+// Populate dataset drop down menu
+var lastSelectedWorksheet; 
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
-  jQuery('#workSheetSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + " by " + event.worksheet.labelType + "</option>")).val(event.worksheet.URL);
+  jQuery('#workSheetSelector').prepend(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + " by " + event.worksheet.labelType + "</option>")).val(event.worksheet.URL);
+  lastSelectedWorksheet = event.worksheet.URL;
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
 		jQuery('p#loadingMsg').hide();	
-		$('#textXMin').show();
-		$('#textXMax').show();
 		graphCollection = new GraphCollection();
 		constructVis();
 		positionGroupingMenuOverGraph(0,graphCollection);

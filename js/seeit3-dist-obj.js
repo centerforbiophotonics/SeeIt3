@@ -54,7 +54,7 @@ function GraphCollection(){
 	
 	this.editedCategories = {};
 	for (var key in this.worksheet.data){
-		this.editedCategories[key] = false;
+		this.editedCategories[key] = this.worksheet.data[key].edited;
 	}
 	
 	this.addGraph();
@@ -161,6 +161,15 @@ GraphCollection.prototype = {
 		});
 		this.numberOfCategories++;
 		this.editedCategories[title] = true;
+		
+		for (var h = 0; h < exampleSpreadsheets.length; h++) {
+			for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
+				if (exampleSpreadsheets[h].worksheets[i].URL == this.worksheet.URL){
+					exampleSpreadsheets[h].worksheets[i].data[title].edited = true;
+				}
+			}
+		}
+		
 		this.categoryColors = {};
 		var colorScale = pv.Colors.category20(0,this.numberOfCategories);
 		var counter = 0;
@@ -186,6 +195,16 @@ GraphCollection.prototype = {
 		
 		delete this.editedCategories[oldTitle];
 		this.editedCategories[title] = true;
+		
+		for (var h = 0; h < exampleSpreadsheets.length; h++) {
+			for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
+				if (exampleSpreadsheets[h].worksheets[i].URL == this.worksheet.URL){
+					exampleSpreadsheets[h].worksheets[i].data[title].edited = true;
+				}
+			}
+		}
+		
+		this.worksheet.data[title].edited = true;
 		
 		if (oldTitle != title){
 			this.categoryColors[title] = this.categoryColors[oldTitle];
@@ -409,6 +428,8 @@ function getWorksheet(){
 	return worksheet;
 }
 
+var userCreatedWorksheet;
+
 var numWorksheets = 0;
 function Worksheet(param) {
 	if (typeof param == 'string'){
@@ -416,13 +437,22 @@ function Worksheet(param) {
 		this.local = false;
 		this.fetchWorksheetData();
 	} else {
-		this.URL = param.feed.link[1].href + "***";
-		this.local = true;
-		this.fetchLocalData(param);
+		if (param.hasOwnProperty('labelMasterlist') == false){
+			this.URL = param.feed.link[1].href + "***";
+			this.local = true;
+			this.fetchLocalData(param);
+		} else {
+			this.URL = param.title;
+			this.local = true;
+			this.title = param.title;
+			this.labelMasterList = param.labelMasterlist;
+			this.labelType = param.labelType;
+			this.data = {};
+			userCreatedWorksheet = this;
+		}
 	}
 }
 
-var globalData;
 
 Worksheet.prototype = {
 	fetchWorksheetData: function() {
@@ -444,7 +474,8 @@ Worksheet.prototype = {
 	fetchLocalData: function(feedData) {
 		var worksheet = this;
 		worksheet.data = worksheet.transformFeedData(feedData);
-		worksheet.labelType = feedData.feed.entry[0].content.$t;        
+		worksheet.labelType = feedData.feed.entry[0].content.$t;
+		worksheet.labelMasterList = worksheet.getLabels(feedData);        
 		worksheet.title = feedData.feed.title.$t;
 		jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
 	},
@@ -478,9 +509,9 @@ Worksheet.prototype = {
 												.forEach(function(e) {
 													data[columnToCategory[e.title.$t.replace(/[0-9]/g,"")]].push(
 														{"label": rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))],
-														 "value": parseFloat(e.content.$t)});
-												});
-		globalData = data;		
+														 "value": parseFloat(e.content.$t),
+														 "edited":false});
+												});		
 		return data;
 	},
 	
@@ -506,9 +537,15 @@ function Spreadsheet(key) {
 		this.fetchWorksheets();
 		this.local = false;
 	} else {
-		this.key == 'local'
-		this.constructLocalWorksheets(key);
-		this.local = true;
+		if (key.hasOwnProperty('labelMasterlist') == false){
+			this.key = 'local'
+			this.constructLocalWorksheets(key);
+			this.local = true;
+		} else {
+			this.key = 'local';
+			this.local = true;
+			this.constructBlankWorksheet(key);
+		}
 	}
 }
 
@@ -541,6 +578,10 @@ Spreadsheet.prototype = {
 		numWorksheets += local.length;  
 	},
 	
+	constructBlankWorksheet: function(attr){
+		this.worksheets.push(new Worksheet(attr));
+		numWorksheets++;
+	},
 };
 
 
