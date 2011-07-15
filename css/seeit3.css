@@ -26,6 +26,7 @@ table#menuItems h3 {
 	background: #ffffff;
 	border:1px solid black;
 	padding: 5px;
+	display: hidden;
 	
 }
 
@@ -33,6 +34,7 @@ table#menuItems h3 {
 	background: #ffffff;
 	border:1px solid black;
 	padding: 5px;
+	display: hidden;
 }
 
 #dataSetAdd {
@@ -43,6 +45,7 @@ table#menuItems h3 {
   overflow:scroll;
   overflow-x: hidden;
   -ms-overflow-x: hidden;
+  display: hidden;
 }
 
 #dataSetEdit {
@@ -53,6 +56,7 @@ table#menuItems h3 {
   overflow:scroll;
   overflow-x: hidden;
   -ms-overflow-x: hidden;
+  display: hidden;
 }
 
 #dataSetEntry {
@@ -67,4 +71,5 @@ table#menuItems h3 {
   overflow:scroll;
   overflow-x: hidden;
   -ms-overflow-x: hidden;
+  display: hidden;
 }

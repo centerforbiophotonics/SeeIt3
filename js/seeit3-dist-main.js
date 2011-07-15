@@ -54,6 +54,18 @@ function constructVis(){
 		.top(-1)
 		.right(-25)
 		.left(-35)
+		.lineWidth(function(){
+			if (graphCollection.editModeEnabled)
+				return 2;
+			else
+				return 1;
+		})
+		.strokeStyle(function(){
+			if (graphCollection.editModeEnabled)
+				return "red"
+			else
+				return "black"
+		})
 	
 	/*Graph Title*/		  
 	vis.add(pv.Label)
@@ -225,16 +237,10 @@ function constructVis(){
 				return 40;
 			}
 		})
-		//.left(240)
 		.top(-60)
-		//.fillStyle("blue")
 		.lineWidth(1)
 		.event("click", function(){
 			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
-			if (graphCollection.editModeEnabled)
-				jQuery('body').css('background-color', "#FCA8B3")
-			else
-				jQuery('body').css('background-color', "#FFFFFF")
 			vis.render();
 		})
 		.event("mouseover", function(d){
@@ -247,7 +253,12 @@ function constructVis(){
 		})
 		
 	togEditPanel.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/hand.png")  //fix this
+		.url(function(){
+			if (graphCollection.editModeEnabled)
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/handON.png"
+			else
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/hand.png"
+		})  //fix this
 		.width(30)
 		.height(26)
 		.top(2)
@@ -256,10 +267,6 @@ function constructVis(){
 		.title("Toggle edit mode")
 		.event("click", function(){
 			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
-			if (graphCollection.editModeEnabled)
-				jQuery('body').css('background-color', "#FCA8B3")
-			else
-				jQuery('body').css('background-color', "#FFFFFF")
 			vis.render();
 		})
 		.visible(function() {
@@ -277,6 +284,12 @@ function constructVis(){
 			})
 			.text("Edit Mode")
 			.font(fontString)
+			.textStyle(function(){
+				if (graphCollection.editModeEnabled)
+					return "red"
+				else
+					return "black"
+			})
 			.visible(function() {
 				if (graphCollection.buttonText)
 					return true;
@@ -562,6 +575,52 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.bottom(0)
 		.left(-35)
 		.right(-25)
+		.lineWidth(function(){
+			if (graphCollection.editModeEnabled)
+				return 2;
+			else
+				return 1;
+		})
+		.strokeStyle(function(){
+			if (graphCollection.editModeEnabled)
+				return "red"
+			else
+				return "black"
+		})
+		
+	graphPanel.add(pv.Rule)
+		.left(-35)
+		.bottom(0)
+		.top(0)
+		.lineWidth(function(){
+			if (graphCollection.editModeEnabled)
+				return 2;
+			else
+				return 1;
+		})
+		.strokeStyle(function(){
+			if (graphCollection.editModeEnabled)
+				return "red"
+			else
+				return "black"
+		})
+		
+	graphPanel.add(pv.Rule)
+		.right(-25)
+		.bottom(0)
+		.top(0)
+		.lineWidth(function(){
+			if (graphCollection.editModeEnabled)
+				return 2;
+			else
+				return 1;
+		})
+		.strokeStyle(function(){
+			if (graphCollection.editModeEnabled)
+				return "red"
+			else
+				return "black"
+		})
 	
 	if (graph.includedCategories.length > 0){
 		/* Number of datapoints N */

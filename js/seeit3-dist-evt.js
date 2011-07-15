@@ -662,7 +662,7 @@ function populateEditMenuFromExisting(dataset){
 			"'><td><input type='text' id='editLab"+editNextRow +
 			"' value='"+data.label +
 			"'></td><td><input type='text' onChange ='editEntryValidate(this)' id='editVal"+editNextRow +
-			"' value='"+data.value + 
+			"' value='"+data.value.toFixed(2) + 
 			"'></td></tr>");
 			
 			editNextRow++;
