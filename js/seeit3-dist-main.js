@@ -23,6 +23,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 var graphCollection = {};
 var vis = {};
 var touch = new Touch();
+var fontString = "bold 14px sans-serif";
 
 //var draggedObj = undefined;
 //var dragging = false;
@@ -41,18 +42,12 @@ function constructVis(){
 		.left(graphCollection.padLeft)
 		.right(graphCollection.padRight)
 		.top(graphCollection.padTop)
-		//.fillStyle(function(){
-		//	if (graphCollection.editModeEnabled)
-		//		return pv.rgb(252,168,179,1);
-		//	else
-		//		return "clear";
-		//})
 	
 	/* Divider Between Graphs and Data Sets */
 	vis.add(pv.Rule)
 		.left(-35)
 		.bottom(0)
-		.top(-30)
+		.top(-60)
 		
 	/*Divider Between Top Graph and Title*/
 	vis.add(pv.Rule)
@@ -70,39 +65,193 @@ function constructVis(){
 		.font("bold 20px sans-serif");
 	
 	/* Display Options Menu Button */
-	vis.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/eye.png")  //fix this
-		.width(30)
-		.height(30)
-		.top(-30)
-		.left(-30)
+	var dispOptPanel = vis.add(pv.Panel)
+		.events("all")
 		.cursor("pointer")
 		.title("Show display option menu")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 150;
+			}else if (!graphCollection.buttonIcon){
+				return 120;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(-34)
+		.top(-60)
+		//.fillStyle("blue")
+		.lineWidth(1)
 		.event("click", function(){
 			$('#displayOptions').slideDown();
 		})
-		
-	/* Add New Graph Button */
-	vis.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png")  //fix this
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+	
+	dispOptPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/eye.png")  //fix this
 		.width(30)
 		.height(30)
-		.top(-30)
-		.left(100)
+		.top(0)
+		.left(2)
 		.cursor("pointer")
-		.title("Add new graph")
+		.title("Show display option menu")
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.event("click", function(){
+			$('#displayOptions').slideDown();
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text("Display Options")
+			.font(fontString)
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
+		
+	/* Add New Graph Button */
+	var newGrphPanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Add a new empty graph")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 115;
+			}else if (!graphCollection.buttonIcon){
+				return 85;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 120;
+			}else if (!graphCollection.buttonIcon){
+				return 90;
+			}else if (!graphCollection.buttonText){
+				return 4;
+			}
+		})//120)
+		.top(-60)
+		.lineWidth(1)
 		.event("click", function(){
 			graphCollection.addGraph();
 			constructVis();
 		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
 		
-	/* Toggle Edit Mode Button */
-	vis.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/hand.png")  //fix this
+	newGrphPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png")  //fix this
 		.width(30)
 		.height(30)
-		.top(-30)
-		.left(200)
+		.top(0)
+		.left(2)
+		.cursor("pointer")
+		.title("Add a new empty graph")
+		.event("click", function(){
+			graphCollection.addGraph();
+			constructVis();
+		})
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text("New Graph")
+			.font(fontString)
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
+		
+	/* Toggle Edit Mode Button */
+	var togEditPanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Toggle edit mode")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 110;
+			}else if (!graphCollection.buttonIcon){
+				return 80;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 240;
+			}else if (!graphCollection.buttonIcon){
+				return 180;
+			}else if (!graphCollection.buttonText){
+				return 40;
+			}
+		})
+		//.left(240)
+		.top(-60)
+		//.fillStyle("blue")
+		.lineWidth(1)
+		.event("click", function(){
+			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
+			if (graphCollection.editModeEnabled)
+				jQuery('body').css('background-color', "#FCA8B3")
+			else
+				jQuery('body').css('background-color', "#FFFFFF")
+			vis.render();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+		
+	togEditPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/hand.png")  //fix this
+		.width(30)
+		.height(26)
+		.top(2)
+		.left(0)
 		.cursor("pointer")
 		.title("Toggle edit mode")
 		.event("click", function(){
@@ -113,6 +262,27 @@ function constructVis(){
 				jQuery('body').css('background-color', "#FFFFFF")
 			vis.render();
 		})
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text("Edit Mode")
+			.font(fontString)
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
 	
 	constructCategoryPanel(vis);
 	
@@ -130,7 +300,7 @@ function constructCategoryPanel(vis){
 	vis.add(pv.Label)
 		.text("Data Sets:")
 		.left(-197)
-		.top(-10)
+		.top(-40)
 		.font(fontString);
 	
 	var dragFeedbackPanels = [];	
@@ -177,7 +347,7 @@ function constructCategoryPanel(vis){
 		.width(30)
 		.height(30)
 		.left(-232)
-		.top(40*row - 5)
+		.top(40*row - 35)
 		.cursor("pointer")
 		.title("Edit dataset")
 		.event("click", function(){
@@ -199,7 +369,7 @@ function constructCategoryPanel(vis){
 			.height(30)
 			.width(160)
 			.left(-198)
-			.top(40*row - 5)
+			.top(40*row - 35)
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
 				this.render();
@@ -285,7 +455,7 @@ function constructCategoryPanel(vis){
 			.height(30)
 			.width(160)
 			.left(-198)
-			.top(40*row - 5)
+			.top(40*row - 35)
 			.event("click", function(){
 				resetAddDataSetMenu();
 				populateAddMenuLabelsFromExisting();
@@ -825,7 +995,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.event("drag", function(d){
 				if (graphCollection.editModeEnabled){
 					graphCollection.worksheet.data[d.set].forEach(function(data){
-						if (data.label == d.label){
+						if (data.label == d.label && 
+						vis.mouse().x >= 0 &&
+						vis.mouse().x <= graph.w - 5){
 							data.value = graph.x.invert(vis.mouse().x);
 							graphCollection.editedCategories[d.set] = true;
 							for (var h = 0; h < exampleSpreadsheets.length; h++) {
@@ -835,14 +1007,17 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 									}
 								}
 							}
+							graph.xMax = pv.max(graph.dataVals(), function(val) { return val });
+							graph.xMin = pv.min(graph.dataVals(), function(val) { return val });
+							//graphCollection.scaleAllGraphsToFit();
+							//vis.render();
+							constructVis();
 						}
 					});
-					graph.xMax = pv.max(graph.dataVals(), function(val) { return val });
-					graph.xMin = pv.min(graph.dataVals(), function(val) { return val });
-					graphCollection.scaleAllGraphsToFit();
-					constructVis();
+					
 				}
 			});
+			
 		
 		//Graph Overflow Warning Message	
 		graphPanel.add(pv.Label)

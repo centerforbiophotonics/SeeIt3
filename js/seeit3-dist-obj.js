@@ -30,7 +30,7 @@ function GraphCollection(){
 	this.w = calcGraphWidth();
 	this.h = calcGraphHeight();
 	this.padBot = 20;
-	this.padTop = 30;
+	this.padTop = 60;
 	this.padLeft = 235;
 	this.padRight = 25;
 	this.defaultGraphHeight = 300;
@@ -58,6 +58,9 @@ function GraphCollection(){
 	}
 	
 	this.editModeEnabled = false;
+	
+	this.buttonIcon = true;
+	this.buttonText = true;
 	
 	this.addGraph();
 	this.updateMenuOptions();

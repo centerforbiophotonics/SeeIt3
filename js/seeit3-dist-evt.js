@@ -179,17 +179,29 @@ jQuery('#sliderDivisions').slider({
 
 $('#checkboxHideData').change(function() { constructVis();});
 
-//$('#addGraph').click(function(event){
-//	graphCollection.addGraph();
-//	constructVis();
-//});
-
 $('#displayOptions').change(function(){
 	vis.render();
 })
 
 $('#displayMenuClose').click(function(){
 	$('#displayOptions').slideUp();
+});
+
+$("#buttonMode").change(function(){
+	console.log("test");
+	var val = jQuery("#buttonMode option:selected").val();
+	
+	if (val == "both"){
+		graphCollection.buttonText = true;
+		graphCollection.buttonIcon = true;
+	} else if (val == "icon"){
+		graphCollection.buttonText = false;
+		graphCollection.buttonIcon = true;
+	} else if (val == "text"){
+		graphCollection.buttonText = true;
+		graphCollection.buttonIcon = false;
+	}
+	vis.render();
 });
 
 
