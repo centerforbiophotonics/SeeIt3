@@ -25,13 +25,6 @@ var vis = {};
 var touch = new Touch();
 var fontString = "bold 14px sans-serif";
 
-//var draggedObj = undefined;
-//var dragging = false;
-//var dragCat = undefined;
-//var dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
-//var finalX = undefined;
-//var finalY = undefined;
-
 function constructVis(){
 	jQuery('span').remove();
 	
@@ -514,8 +507,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.events("all")
 		.event("click", function(){
 			var oldIndex = graphCollection.selectedGraphIndex;
-			if (oldIndex != index)
+			if (oldIndex != index){
 				graphCollection.selectAUserDefPartition();
+			}
 			graphCollection.selectedGraphIndex = index;
 			graphCollection.updateMenuOptions();
 			
@@ -589,14 +583,14 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		})
 		
 	graphPanel.add(pv.Rule)
-		.left(-35)
+		.left(-34)
 		.bottom(0)
-		.top(0)
+		.top(-2)
 		.lineWidth(function(){
 			if (graphCollection.editModeEnabled)
 				return 2;
 			else
-				return 1;
+				return 0;
 		})
 		.strokeStyle(function(){
 			if (graphCollection.editModeEnabled)
@@ -1181,6 +1175,11 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.cursor("move")
 				.events("all")
 				.width(180)
+				.event("click", function(){
+					this.strokeStyle("black");
+					console.log("test")
+					this.render();
+				})
 				.event("mouseover", function(d){
 					this.strokeStyle("black");
 					this.render();
@@ -1255,6 +1254,24 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 						else 
 							return "black";
 					});
+					
+			catPanel.add(pv.Image)
+				.url(function(){
+					if (graph.selectedCategory == category)
+						return "http://centerforbiophotonics.github.com/SeeIt3/img/checkbox_checked.png"
+					else
+						return "http://centerforbiophotonics.github.com/SeeIt3/img/checkbox_unchecked.png"
+				})  
+				.width(30)
+				.height(30)
+				.top(0)
+				.left(0)
+				.cursor("pointer")
+				.title("Select this category to add data.")
+				.event("click", function(){
+					graph.selectedCategory = category;
+				})
+				
 		});	
 	} else {
 		//Empty Graph Message

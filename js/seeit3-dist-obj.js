@@ -241,6 +241,7 @@ function Graph(worksheet, graphCollection){
 	this.worksheet = worksheet;
 	this.data = worksheet.data;
 	this.includedCategories = [];
+	this.selectedCategory = null;
 	
 	this.w = calcGraphWidth();
 	this.h = 200;
@@ -440,11 +441,13 @@ function Worksheet(param) {
 	if (typeof param == 'string'){
 		this.URL = param;
 		this.local = false;
+		this.userCreated = false;
 		this.fetchWorksheetData();
 	} else {
 		if (param.hasOwnProperty('labelMasterlist') == false){
 			this.URL = param.feed.link[1].href + "***";
 			this.local = true;
+			this.userCreated = false;
 			this.fetchLocalData(param);
 		} else {
 			this.URL = param.title;
@@ -452,6 +455,7 @@ function Worksheet(param) {
 			this.title = param.title;
 			this.labelMasterList = param.labelMasterlist;
 			this.labelType = param.labelType;
+			this.userCreated = true;
 			this.data = {};
 			userCreatedWorksheet = this;
 		}

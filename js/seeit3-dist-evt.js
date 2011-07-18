@@ -283,12 +283,6 @@ function touchEnd(event){
 		graphCollection.graphs[touch.dragGraphIndex].removeCategory(touch.dragCat);
 	}
 	
-	//draggedObj = undefined;
-	//dragging = false;
-	//dragCat = undefined;
-	//dragGraphIndex = undefined;
-	//finalX = undefined;
-	//finalY = undefined; 
 	touch.reset();
 	constructVis();
 }
