@@ -515,10 +515,24 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 			positionGroupingMenuOverGraph(index, graphCollection);
 					
-			if (oldIndex == index) $('#groupingOptions').slideUp();
+			if (oldIndex == index){
+				$('#groupingOptions').slideUp();
+				if (graph.selectedCategory != null && graphCollection.editModeEnabled){
+					var loc = graphPanel.mouse().x;
+					var newData = graph.cloneData(graph.selectedCategory);  //graph.data[graph.selectedCategory];
+					newData.push({"label": "default"+graph.nextDefaultLabel[graph.selectedCategory]++,
+												"value": graph.x.invert(loc)});
+					if (graph.worksheet.userCreated){
+						graphCollection.editData(graph.selectedCategory, graph.selectedCategory, newData);
+					} else {
+						graph.editData(graph.selectedCategory, newData);
+					}
+				}
+			}
 			else $('#groupingOptions').hide();
 			$('#displayOptions').slideUp();
-			vis.render();
+			//vis.render();
+			constructVis();
 		});
 		
 	graph.panel = graphPanel;
@@ -1047,27 +1061,32 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.event("mousedown", pv.Behavior.drag())
 			.event("drag", function(d){
 				if (graphCollection.editModeEnabled){
-					graphCollection.worksheet.data[d.set].forEach(function(data){
+					var newData = graphCollection.worksheet.data[d.set];
+					newData.forEach(function(data){
 						if (data.label == d.label && 
 						vis.mouse().x >= 0 &&
 						vis.mouse().x <= graph.w - 5){
 							data.value = graph.x.invert(vis.mouse().x);
-							graphCollection.editedCategories[d.set] = true;
-							for (var h = 0; h < exampleSpreadsheets.length; h++) {
-								for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
-									if (exampleSpreadsheets[h].worksheets[i].URL == graph.worksheet.URL){
-										exampleSpreadsheets[h].worksheets[i].data[d.set].edited = true;
-									}
-								}
-							}
-							graph.xMax = pv.max(graph.dataVals(), function(val) { return val });
-							graph.xMin = pv.min(graph.dataVals(), function(val) { return val });
+							//var value = graph.x.invert(vis.mouse().x);
+							//var newData = graphCollection.worksheet.data[d.set];
+							//newData
+							//graphCollection.editedCategories[d.set] = true;
+							//for (var h = 0; h < exampleSpreadsheets.length; h++) {
+							//	for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
+							//		if (exampleSpreadsheets[h].worksheets[i].URL == graph.worksheet.URL){
+							//			exampleSpreadsheets[h].worksheets[i].edited[d.set] = true;
+							//		}
+							//	}
+							//}
+							//graph.xMax = pv.max(graph.dataVals(), function(val) { return val });
+							//graph.xMin = pv.min(graph.dataVals(), function(val) { return val });
 							//graphCollection.scaleAllGraphsToFit();
 							//vis.render();
-							constructVis();
+							
 						}
 					});
-					
+					graphCollection.editData(d.set,d.set,newData);
+					constructVis();
 				}
 			});
 			
@@ -1085,12 +1104,12 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 		/* Legend */
 		var legendPanel = graphPanel.add(pv.Panel)
-			.right(5)
+			.right(15)
 			.top(4)
 			.overflow("hidden")
 			.width(function(){
 				if(graph.legendHidden) return 110;
-				else return 190;
+				else return 220;
 			})
 			.height(function(){
 				if (graph.legendHidden)
@@ -1175,11 +1194,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.cursor("move")
 				.events("all")
 				.width(180)
-				.event("click", function(){
-					this.strokeStyle("black");
-					console.log("test")
-					this.render();
-				})
 				.event("mouseover", function(d){
 					this.strokeStyle("black");
 					this.render();
@@ -1196,17 +1210,25 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
 						if (graphCollection.graphs.length > 4){
 							var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
-							if (graphCollection.graphs[which].addCategory(this.category()))
+							if (graphCollection.graphs[which].addCategory(this.category())){
 								graph.removeCategory(this.category());
+								if (graph.selectedCategory == this.category())
+									graph.selectedCategory = null;
+							}
 							graphCollection.updateMenuOptions();
 						} else {
 							var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
-							if (graphCollection.graphs[which].addCategory(this.category()))
+							if (graphCollection.graphs[which].addCategory(this.category())){
 								graph.removeCategory(this.category());
+								if (graph.selectedCategory == this.category())
+									graph.selectedCategory = null;
+							}
 							graphCollection.updateMenuOptions();
 						}
 					} else {
 						graph.removeCategory(category);
+						if (graph.selectedCategory == category)
+							graph.selectedCategory = null;
 					}
 					dragFeedbackPanels[this.row()].visible(false);
 					document.body.style.cursor="default";
@@ -1255,7 +1277,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 							return "black";
 					});
 					
-			catPanel.add(pv.Image)
+			legendPanel.add(pv.Image)
 				.url(function(){
 					if (graph.selectedCategory == category)
 						return "http://centerforbiophotonics.github.com/SeeIt3/img/checkbox_checked.png"
@@ -1264,12 +1286,17 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				})  
 				.width(30)
 				.height(30)
-				.top(0)
-				.left(0)
+				.top(30*index+23)
+				.right(3)
 				.cursor("pointer")
 				.title("Select this category to add data.")
+				.events("all")
 				.event("click", function(){
-					graph.selectedCategory = category;
+					if (graph.selectedCategory == category)
+						graph.selectedCategory = null;
+					else
+						graph.selectedCategory = category;
+					legendPanel.render();
 				})
 				
 		});	

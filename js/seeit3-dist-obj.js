@@ -54,7 +54,7 @@ function GraphCollection(){
 	
 	this.editedCategories = {};
 	for (var key in this.worksheet.data){
-		this.editedCategories[key] = this.worksheet.data[key].edited;
+		this.editedCategories[key] = this.worksheet.edited[key];
 	}
 	
 	this.editModeEnabled = false;
@@ -163,17 +163,21 @@ GraphCollection.prototype = {
 			graph.data[title] = data;
 			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
 			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
+			graph.editedCategories[title] = true;
+			graph.nextDefaultLabel[title] = 0;
 		});
 		this.numberOfCategories++;
+		
 		this.editedCategories[title] = true;
 		
 		for (var h = 0; h < exampleSpreadsheets.length; h++) {
 			for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
 				if (exampleSpreadsheets[h].worksheets[i].URL == this.worksheet.URL){
-					exampleSpreadsheets[h].worksheets[i].data[title].edited = true;
+					exampleSpreadsheets[h].worksheets[i].edited[title] = true;
 				}
 			}
 		}
+		this.worksheet.edited[title] = true;
 		
 		this.categoryColors = {};
 		var colorScale = pv.Colors.category20(0,this.numberOfCategories);
@@ -186,7 +190,6 @@ GraphCollection.prototype = {
 	},
 	
 	editData: function(oldTitle, title, data){
-		//console.log(oldTitle);
 		delete this.worksheet.data[oldTitle];
 		this.worksheet.data[title] = data;
 		this.graphs.forEach(function(graph){
@@ -194,6 +197,9 @@ GraphCollection.prototype = {
 			graph.data[title] = data;
 			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
 			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
+			graph.editedCategories[title] = true;
+			graph.n = (graph.dataVals()).length;
+			
 			if (graph.includedCategories.indexOf(oldTitle) != -1)
 				graph.includedCategories[graph.includedCategories.indexOf(oldTitle)] = title;
 		});
@@ -204,12 +210,11 @@ GraphCollection.prototype = {
 		for (var h = 0; h < exampleSpreadsheets.length; h++) {
 			for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
 				if (exampleSpreadsheets[h].worksheets[i].URL == this.worksheet.URL){
-					exampleSpreadsheets[h].worksheets[i].data[title].edited = true;
+					exampleSpreadsheets[h].worksheets[i].edited[title] = true;
 				}
 			}
 		}
-		
-		this.worksheet.data[title].edited = true;
+		this.worksheet.edited[title] = true;
 		
 		if (oldTitle != title){
 			this.categoryColors[title] = this.categoryColors[oldTitle];
@@ -242,6 +247,12 @@ function Graph(worksheet, graphCollection){
 	this.data = worksheet.data;
 	this.includedCategories = [];
 	this.selectedCategory = null;
+	this.editedCategories = this.graphCollection.editedCategories;
+	
+	this.nextDefaultLabel = {};
+	for (var key in this.editedCategories){
+		this.nextDefaultLabel[key] = 0;
+	}
 	
 	this.w = calcGraphWidth();
 	this.h = 200;
@@ -289,9 +300,9 @@ Graph.prototype = {
 		}
 	},
 	
-	addCategory: function(name){
-		if (this.includedCategories.indexOf(name) == -1 && this.includedCategories.length < 4){
-			this.includedCategories.push(name);
+	addCategory: function(category){
+		if (this.includedCategories.indexOf(category) == -1 && this.includedCategories.length < 4){
+			this.includedCategories.push(category);
 			this.xMax = pv.max(this.dataVals(), function(d) { return d });
 			this.xMin = pv.min(this.dataVals(), function(d) { return d });
 			this.n = this.dataVals().length;
@@ -302,6 +313,29 @@ Graph.prototype = {
 			return false;
 		}
 	},
+	
+	editData: function(title,newData){
+		delete this.data[title];
+		this.data[title] = newData;
+		this.xMax = pv.max(this.dataVals(), function(d) { return d });
+		this.xMin = pv.min(this.dataVals(), function(d) { return d });
+		this.editedCategories[title] = true;
+		this.n = (this.dataVals()).length;
+	},
+	
+	cloneData: function(category){
+		//NOT WORKING
+		//var clonedData = jQuery.extend({}, oldObject);
+
+		var clonedData = [];
+		this.data[category].forEach(function(d){
+			var label = d.label;
+			var value = d.value;
+			clonedData.push(jQuery.extend({}, d));
+		});
+		return clonedData;
+	},
+	
 	
 	removeCategory: function(name){
 		this.includedCategories.splice(this.includedCategories.indexOf(name),1);
@@ -414,8 +448,6 @@ Graph.prototype = {
 		return points;
 		
 	},
-	
-	
 }
 
 function getWorksheetByURL(URL) {
@@ -457,6 +489,7 @@ function Worksheet(param) {
 			this.labelType = param.labelType;
 			this.userCreated = true;
 			this.data = {};
+			this.edited = {};
 			userCreatedWorksheet = this;
 		}
 	}
@@ -472,6 +505,10 @@ Worksheet.prototype = {
 				worksheet.labelType = feedData.feed.entry[0].content.$t;
 				worksheet.labelMasterList = worksheet.getLabels(feedData);        
 				worksheet.title = feedData.feed.title.$t;
+				worksheet.edited = {}
+				for (var key in worksheet.data){
+					worksheet.edited[key] = false;
+				}
 				jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
 			},
 			error:function() {
@@ -518,8 +555,9 @@ Worksheet.prototype = {
 												.forEach(function(e) {
 													data[columnToCategory[e.title.$t.replace(/[0-9]/g,"")]].push(
 														{"label": rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))],
-														 "value": parseFloat(e.content.$t),
-														 "edited":false});
+														 "value": parseFloat(e.content.$t)//,
+														 //"edited":false
+														 });
 												});		
 		return data;
 	},
