@@ -4,6 +4,7 @@ var exampleSpreadsheets = [
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),		//Combined Format
 ];
 
+
 // Populate dataset drop down menu
 var lastSelectedWorksheet; 
 var numWorksheetsLoaded = 0;
@@ -456,6 +457,7 @@ function constructCategoryPanel(vis){
 	var newDataPanel = vis.add(pv.Panel)
 			.events("all")
 			.cursor("pointer")
+			.def("row", row)
 			.title("Add a Dataset")
 			.lineWidth(1)
 			.height(30)
@@ -519,14 +521,25 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				$('#groupingOptions').slideUp();
 				if (graph.selectedCategory != null && graphCollection.editModeEnabled){
 					var loc = graphPanel.mouse().x;
-					var newData = graph.cloneData(graph.selectedCategory);  //graph.data[graph.selectedCategory];
-					newData.push({"label": "default"+graph.nextDefaultLabel[graph.selectedCategory]++,
-												"value": graph.x.invert(loc)});
-					if (graph.worksheet.userCreated){
-						graphCollection.editData(graph.selectedCategory, graph.selectedCategory, newData);
-					} else {
-						graph.editData(graph.selectedCategory, newData);
-					}
+					
+					
+					graph.data[graph.selectedCategory].push(
+						{"label": "default"+graph.nextDefaultLabel[graph.selectedCategory]++,
+						 "value": graph.x.invert(loc)}
+					);
+					
+					graphCollection.editData(graph.selectedCategory, graph.selectedCategory, graph.data[graph.selectedCategory]);
+				} else if (graphCollection.editModeEnabled && 
+										graph.includedCategories.length < 4 &&
+										graph.includedCategories.length > 0) {
+					var loc = graphPanel.mouse().x;
+					
+					var dataTitle = "userCreatedCategory"+graphCollection.nextDefaultCategory++;
+					var data = [{"label":"first", "value":graph.x.invert(loc)}];
+					
+					graphCollection.addData(dataTitle, data);
+					graph.addCategory(dataTitle);
+					graph.selectedCategory = dataTitle;
 				}
 			}
 			else $('#groupingOptions').hide();
@@ -638,7 +651,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.textAlign("center")
 			.textAngle(0)
 			.textBaseline("top")
-			.text("N = " + graph.n)
+			.text(function(){return "N = " + graph.n})
 			.font(fontString);
 			
 		/* X-axis ticks */
@@ -1109,7 +1122,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.overflow("hidden")
 			.width(function(){
 				if(graph.legendHidden) return 110;
-				else return 220;
+				else if (graphCollection.editModeEnabled) return 220;
+				else return 190;
 			})
 			.height(function(){
 				if (graph.legendHidden)
@@ -1276,7 +1290,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 						else 
 							return "black";
 					});
-					
+			
+			/* Edit Mode Select Checkboxes */		
 			legendPanel.add(pv.Image)
 				.url(function(){
 					if (graph.selectedCategory == category)
@@ -1288,6 +1303,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.height(30)
 				.top(30*index+23)
 				.right(3)
+				.visible(function(){return graphCollection.editModeEnabled})
 				.cursor("pointer")
 				.title("Select this category to add data.")
 				.events("all")

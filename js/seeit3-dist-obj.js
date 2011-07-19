@@ -28,7 +28,6 @@ function GraphCollection(){
 	
 	//Drawing Variables
 	this.w = calcGraphWidth();
-	this.h = calcGraphHeight();
 	this.padBot = 20;
 	this.padTop = 60;
 	this.padLeft = 235;
@@ -39,9 +38,14 @@ function GraphCollection(){
 	this.buckets = 30;
 	this.bucketDotSize = 5;
 	this.numberOfCategories = 0;
+	
 	for (var key in this.worksheet.data){
 		this.numberOfCategories++;
 	}
+	this.h = this.calcGraphHeight();
+
+	
+	this.nextDefaultCategory = 0;
 	
 	//Colors
 	this.categoryColors = {};
@@ -62,27 +66,35 @@ function GraphCollection(){
 	this.buttonIcon = true;
 	this.buttonText = true;
 	
+	
+	
 	this.addGraph();
 	this.updateMenuOptions();
 }
 
 GraphCollection.prototype = {
+	calcGraphHeight: function (){
+		if (this.graphs.length > 4)
+			return Math.max(this.defaultGraphHeight*this.graphs.length,
+											this.numberOfCategories*40,
+											(window.innerHeight - jQuery('div#notGraph').height()) - 120
+										 );
+		else
+			return Math.max(this.numberOfCategories*40,
+											(window.innerHeight - jQuery('div#notGraph').height()) - 120
+										 );
+	},
+	
 	addGraph: function() {
 		this.graphs.push(new Graph(this.worksheet, this));
 		
-		if (this.graphs.length > 4)
-			this.setH(this.defaultGraphHeight*this.graphs.length);
-		else 
-			this.setH(calcGraphHeight());
+		this.setH(this.calcGraphHeight());
 	},
 	
 	removeGraph: function(graph){
 		this.graphs.splice(this.graphs.indexOf(graph),1);
 		
-		if (this.graphs.length > 4)
-			this.setH(this.defaultGraphHeight*this.graphs.length);
-		else 
-			this.setH(calcGraphHeight());
+		this.setH(this.calcGraphHeight());
 			
 		this.selectedGraphIndex = -1;
 			
@@ -168,6 +180,8 @@ GraphCollection.prototype = {
 		});
 		this.numberOfCategories++;
 		
+		this.setH(this.calcGraphHeight());
+		
 		this.editedCategories[title] = true;
 		
 		for (var h = 0; h < exampleSpreadsheets.length; h++) {
@@ -236,6 +250,9 @@ GraphCollection.prototype = {
 		delete this.editedCategories[title];
 		delete this.categoryColors[title];
 		this.numberOfCategories--;
+		
+		this.setH(this.calcGraphHeight());
+		
 		this.scaleAllGraphsToFit();
 		
 	},
@@ -283,7 +300,6 @@ function Graph(worksheet, graphCollection){
 	this.baseLine = 20;
 	
 	this.legendHidden = false;
-	
 }
 
 Graph.prototype = {	
@@ -323,18 +339,18 @@ Graph.prototype = {
 		this.n = (this.dataVals()).length;
 	},
 	
-	cloneData: function(category){
-		//NOT WORKING
-		//var clonedData = jQuery.extend({}, oldObject);
+	//cloneData: function(category){
+	//	//NOT WORKING
+	//	//var clonedData = jQuery.extend({}, oldObject);
 
-		var clonedData = [];
-		this.data[category].forEach(function(d){
-			var label = d.label;
-			var value = d.value;
-			clonedData.push(jQuery.extend({}, d));
-		});
-		return clonedData;
-	},
+	//	var clonedData = [];
+	//	this.data[category].forEach(function(d){
+	//		var label = d.label;
+	//		var value = d.value;
+	//		clonedData.push(jQuery.extend({}, d));
+	//	});
+	//	return clonedData;
+	//},
 	
 	
 	removeCategory: function(name){
@@ -449,6 +465,7 @@ Graph.prototype = {
 		
 	},
 }
+
 
 function getWorksheetByURL(URL) {
 	for (var h = 0; h < exampleSpreadsheets.length; h++) {
@@ -630,5 +647,6 @@ Spreadsheet.prototype = {
 		numWorksheets++;
 	},
 };
+
 
 

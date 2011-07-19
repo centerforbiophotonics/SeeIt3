@@ -195,9 +195,9 @@ function calcGraphWidth(){
 	return window.innerWidth - 290;
 }
 
-function calcGraphHeight(){
-	return (window.innerHeight - jQuery('div#notGraph').height()) - 120; 
-}
+//function calcGraphHeight(){
+//	return (window.innerHeight - jQuery('div#notGraph').height()) - 120;
+//}
 
 function countDataInPartitions(graph, partitions){
 	var counts = [];

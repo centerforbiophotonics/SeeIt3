@@ -3,8 +3,9 @@
 /* Dynamic Graph Resizing */
 $(window).resize(function() {
 	graphCollection.setW(calcGraphWidth());
-	if (graphCollection.graphs.length <= 4)
-		graphCollection.setH(calcGraphHeight());
+	
+	graphCollection.setH(graphCollection.calcGraphHeight());
+	
 	constructVis();
 	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 	positionDatasetAddMenu();
