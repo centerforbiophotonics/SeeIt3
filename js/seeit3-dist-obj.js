@@ -242,10 +242,11 @@ GraphCollection.prototype = {
 		delete this.worksheet.data[title];
 		this.graphs.forEach(function(graph){
 			delete graph.data[title];
-			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
-			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
 			if (graph.includedCategories.indexOf(title) != -1)
 				graph.includedCategories.splice(graph.includedCategories.indexOf(title), 1);
+			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
+			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
+			
 		});
 		delete this.editedCategories[title];
 		delete this.categoryColors[title];
@@ -338,20 +339,6 @@ Graph.prototype = {
 		this.editedCategories[title] = true;
 		this.n = (this.dataVals()).length;
 	},
-	
-	//cloneData: function(category){
-	//	//NOT WORKING
-	//	//var clonedData = jQuery.extend({}, oldObject);
-
-	//	var clonedData = [];
-	//	this.data[category].forEach(function(d){
-	//		var label = d.label;
-	//		var value = d.value;
-	//		clonedData.push(jQuery.extend({}, d));
-	//	});
-	//	return clonedData;
-	//},
-	
 	
 	removeCategory: function(name){
 		this.includedCategories.splice(this.includedCategories.indexOf(name),1);
@@ -587,7 +574,6 @@ Worksheet.prototype = {
 					})
 		.forEach(function(e){
 			labels.push(e.content.$t);
-			//rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))] = e.content.$t;
 		});
 		return labels;
 	},
@@ -627,7 +613,6 @@ Spreadsheet.prototype = {
 	fetchWorksheets: function() {
 		var spreadsheet = this;
 		this.getWorksheetURLs(function(feedData) {
-			//globalFeedData = feedData;
 			for (var i = 0; i < feedData.feed.entry.length; i++) {
 				spreadsheet.worksheets.push(new Worksheet(feedData.feed.entry[i].link[1].href));
 			}

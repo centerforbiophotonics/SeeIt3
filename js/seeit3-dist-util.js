@@ -136,7 +136,6 @@ function positionGroupingMenuOverGraph(index, graphCollection){
 							graphCollection.padLeft - 34;
 					
 	if (yPos + $('#groupingOptions').height() > graphCollection.h){
-		//console.log("reposition");
 		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 10  ;//- 62;
 	}
 		
@@ -194,10 +193,6 @@ function parseSpreadsheetKeyFromURL(URL) {
 function calcGraphWidth(){
 	return window.innerWidth - 290;
 }
-
-//function calcGraphHeight(){
-//	return (window.innerHeight - jQuery('div#notGraph').height()) - 120;
-//}
 
 function countDataInPartitions(graph, partitions){
 	var counts = [];

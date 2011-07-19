@@ -137,7 +137,6 @@ $('#applyOptionsToAll').click(function(event){
 
 		graph.setXScale();
 	});
-	//vis.render();
 	constructVis();
 });
 
@@ -165,7 +164,6 @@ jQuery('#sliderDotSize').slider({
 	orientation:'vertical', min:1, max:20, value:5, step:1,
 	slide:function(event, ui) {
 		graphCollection.bucketDotSize = ui.value; 
-		//vis.render();
 		constructVis(); 
 	}
 });
@@ -210,7 +208,6 @@ $("#buttonMode").change(function(){
 document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
-	//event.preventDefault(); 
   if (!touch.dragging) return;
    
 	var targetTouches = event.targetTouches;  
@@ -224,14 +221,12 @@ function touchStart(event){
 	touch.draggedObj.left(curX);
 	touch.draggedObj.top(curY);
 	touch.draggedObj.visible(true);
-	//vis.render();
 	touch.draggedObj.render();
 }
 
 document.addEventListener("touchmove", touchMove, false);
 
 function touchMove(event){
-	//event.preventDefault(); 
   if (!touch.dragging) return;
   
 	var targetTouches = event.targetTouches;  
@@ -246,14 +241,12 @@ function touchMove(event){
 	touch.draggedObj.top(curY);
 	touch.finalX = curX;
 	touch.finalY = curY;
-	//vis.render();
 	touch.draggedObj.render();
 }
 
 document.addEventListener("touchend", touchEnd, false);
 
-function touchEnd(event){
-	//event.preventDefault(); 
+function touchEnd(event){ 
   if (!touch.dragging) return;
 
   var curX = touch.finalX;

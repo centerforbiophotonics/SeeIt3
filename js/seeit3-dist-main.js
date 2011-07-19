@@ -1,6 +1,5 @@
 //Entry Point
 var exampleSpreadsheets = [
-	//new Spreadsheet('0AuGPdilGXQlBdHlYdkZ0a0tlZ1F4N1FQc2luOTNtZUE'),  //Old Format
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),		//Combined Format
 ];
 
@@ -87,7 +86,6 @@ function constructVis(){
 		})
 		.left(-34)
 		.top(-60)
-		//.fillStyle("blue")
 		.lineWidth(1)
 		.event("click", function(){
 			$('#displayOptions').slideDown();
@@ -157,7 +155,7 @@ function constructVis(){
 			}else if (!graphCollection.buttonText){
 				return 4;
 			}
-		})//120)
+		})
 		.top(-60)
 		.lineWidth(1)
 		.event("click", function(){
@@ -252,7 +250,7 @@ function constructVis(){
 				return "http://centerforbiophotonics.github.com/SeeIt3/img/handON.png"
 			else
 				return "http://centerforbiophotonics.github.com/SeeIt3/img/hand.png"
-		})  //fix this
+		})
 		.width(30)
 		.height(26)
 		.top(2)
@@ -544,7 +542,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			}
 			else $('#groupingOptions').hide();
 			$('#displayOptions').slideUp();
-			//vis.render();
 			constructVis();
 		});
 		
@@ -1080,22 +1077,6 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 						vis.mouse().x >= 0 &&
 						vis.mouse().x <= graph.w - 5){
 							data.value = graph.x.invert(vis.mouse().x);
-							//var value = graph.x.invert(vis.mouse().x);
-							//var newData = graphCollection.worksheet.data[d.set];
-							//newData
-							//graphCollection.editedCategories[d.set] = true;
-							//for (var h = 0; h < exampleSpreadsheets.length; h++) {
-							//	for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
-							//		if (exampleSpreadsheets[h].worksheets[i].URL == graph.worksheet.URL){
-							//			exampleSpreadsheets[h].worksheets[i].edited[d.set] = true;
-							//		}
-							//	}
-							//}
-							//graph.xMax = pv.max(graph.dataVals(), function(val) { return val });
-							//graph.xMin = pv.min(graph.dataVals(), function(val) { return val });
-							//graphCollection.scaleAllGraphsToFit();
-							//vis.render();
-							
 						}
 					});
 					graphCollection.editData(d.set,d.set,newData);
