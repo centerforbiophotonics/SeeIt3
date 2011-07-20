@@ -3,7 +3,6 @@
 /* Dynamic Graph Resizing */
 $(window).resize(function() {
 	graphCollection.setW(calcGraphWidth());
-	
 	graphCollection.setH(graphCollection.calcGraphHeight());
 	
 	constructVis();
@@ -12,6 +11,7 @@ $(window).resize(function() {
 	positionDatasetEditMenu();
 	positionDisplayMenu();
 	positionCreateWorksheetMenu();
+	positionClipboardPrompt();
 });
 
 /* Top Bar Menu Items */

@@ -68,22 +68,33 @@ function partitionDataInTwo(graph){
 }
 
 function partitionDataInFour(graph){
-	var data = graph.dataVals(),
-			size = (data.length >= 8) ? Math.ceil(data.length/4) : Math.floor(data.length/4);
-			divs = [getMinOfArray(data)],
-			count = 0,
-			numInteriorDivs = 0;
-	for (var i = 0; i<data.length-1; i++){
-		count++;
-		if (count == size){
-			count = 0;
-			divs.push((data[i]+data[i+1])/2);
-			numInteriorDivs++;
-		}
-		if (numInteriorDivs == 3) break;
+	var data = graph.dataVals();
+	var divs = [getMinOfArray(data)];
+	
+	if (data.length >= 4){
+		divs.push((data[Math.floor(data.length/4)] + data[Math.floor(data.length/4) - 1])/2);
+		divs.push((data[Math.floor(data.length/4)*2] + data[Math.floor(data.length/4)*2 - 1])/2);
+		divs.push((data[Math.floor(data.length/4)*3] + data[Math.floor(data.length/4)*3 - 1])/2);
+		divs.push(getMaxOfArray(data));
 	}
-	divs.push(getMaxOfArray(data));
 	return divs;
+}
+
+function countsInFourGroups(length){
+	var counts = [0,0,0,0];
+	if (Math.floor(length/4) == 0){
+		for (var i=0; i<length; i++){
+			if (i+1 <= length)
+				counts[i] = 1
+		}
+		return counts;
+	} else {
+		counts[0] = Math.floor(length/4);
+		counts[1] = Math.floor(length/4);
+		counts[2] = Math.floor(length/4);
+		counts[3] = Math.floor(length/4) + length%4;
+		return counts;
+	}
 }
 
 function partitionDataInFixedSizeGroups(graph){
@@ -196,15 +207,15 @@ function calcGraphWidth(){
 
 function countDataInPartitions(graph, partitions){
 	var counts = [];
-	for (var index=0; index<partitions.length; index++){
+	//console.log(partitions.length);
+	var partLength = partitions.length;
+	for (var index=0; index< partLength-1; index++){
 		var count = 0;
 		var data = graph.dataVals();
-		if(index != partitions.length-1){
-			for (var i=0; i<data.length; i++){
-				if (data[i] >= partitions[index] && data[i] < partitions[index+1])
-					count++;
-			}
-		}
+		for (var i=0; i<data.length; i++){
+			if (data[i] >= partitions[index] && data[i] <= partitions[index+1])
+				count++;
+		}	
 		counts.push(count);
 	}
 	return counts;

@@ -881,6 +881,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				else return graph.dataVals().length % graph.partitionGroupSize;
 				
 			})
+		
 			
 		/* Two Equal Partitions */
 		var twoPartitions = partitionDataInTwo(graph);
@@ -889,7 +890,10 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return graph.h * 0.75})
-			.visible(function(){return graph.groupingMode == "TwoEqualGroups"})
+			.visible(function(){
+				return graph.groupingMode == "TwoEqualGroups" &&
+							 !graph.insufDataForTwo;
+			})
 			.strokeStyle("green")
 			.title(function(d){return d})
 			.anchor("top").add(pv.Dot)
@@ -912,7 +916,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			})
 			.visible(function(){
 				return this.index != twoPartitions.length-1 &&
-							 graph.groupingMode == "TwoEqualGroups";
+							 graph.groupingMode == "TwoEqualGroups" &&
+							 !graph.insufDataForTwo;
 			})
 			.text(function(){
 				if (graph.dataVals().length % 2 == 0)
@@ -924,6 +929,20 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				
 			})
 		
+		/*Insufficient Data for Two Warning */	
+		graphPanel.add(pv.Label)
+			.text("Insufficient data.")
+			.textStyle("red")
+			.visible(function(){
+				return graph.groupingMode == "TwoEqualGroups" &&
+							 graph.insufDataForTwo;
+			})
+			.font(fontString)
+			.top(35)
+			.left(graph.w/2)
+			.textAlign("center")
+			
+		
 		/* Four Equal Partitions */
 		var fourPartitions = partitionDataInFour(graph);
 		graphPanel.add(pv.Rule)
@@ -932,7 +951,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return graph.h * 0.75})
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																 graph.boxPlot == false;})
+																 graph.boxPlot == false &&
+																 !graph.insufDataForFour;
+			})
 			.strokeStyle("green")
 			.title(function(d){return d})
 			.anchor("top").add(pv.Dot)
@@ -941,10 +962,14 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot == false; })
+																	 graph.boxPlot == false &&
+																	 !graph.insufDataForFour; 
+				})
 				.size(4);
 				
 		/*Four Partition Size Labels*/
+		var fourPartLabels = countDataInPartitions(graph, fourPartitions);
+		//console.log(fourPartLabels);
 		graphPanel.add(pv.Label)
 			.data(fourPartitions)
 			.textAlign("center")
@@ -958,23 +983,13 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.visible(function(){
 				return this.index != fourPartitions.length-1 &&
 							graph.groupingMode == "FourEqualGroups" &&
-							graph.boxPlot == false;
+							graph.boxPlot == false &&
+							!graph.insufDataForFour;
 			})
 			.text(function(){
-				var dataLength = graph.dataVals().length;
-				if (dataLength >= 8){
-					if (dataLength % 4 == 0)
-						return dataLength/4;
-					else if(this.index != fourPartitions.length-2)
-						return Math.ceil(dataLength/4);
-					else
-						return dataLength % Math.ceil(dataLength/4);
-				} else {
-					if(this.index != fourPartitions.length-2)
-						return 1;
-					else
-						return dataLength - 3;
-				}
+				if (this.index != fourPartitions.length-1){
+					return fourPartLabels[this.index];
+				} else return 0;
 			})
 			
 		/* Box Plot Extra Lines */
@@ -986,7 +1001,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot; })
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+			})
 																	 
 		graphPanel.add(pv.Line)
 			.data([[fourPartitions[4], graph.baseLine],
@@ -996,7 +1013,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot; })
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+			})
 																	 
 		graphPanel.add(pv.Line)
 			.data([[fourPartitions[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
@@ -1006,7 +1025,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot; })
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+		})
 																	 
 		graphPanel.add(pv.Line)
 			.data([[fourPartitions[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
@@ -1016,7 +1037,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot; })
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+			})
 																	 
 		graphPanel.add(pv.Line)
 			.data([[fourPartitions[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
@@ -1026,7 +1049,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot; })						
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+			})						
 																	 						
 		graphPanel.add(pv.Line)
 			.data([[fourPartitions[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
@@ -1036,7 +1061,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot; })
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+			})
 			
 		graphPanel.add(pv.Line)
 			.data([[fourPartitions[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
@@ -1046,7 +1073,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot; })
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+			})
 			
 		graphPanel.add(pv.Line)
 			.data([[fourPartitions[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
@@ -1056,7 +1085,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot; })
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+			})
 			
 		graphPanel.add(pv.Line)
 			.data([[fourPartitions[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
@@ -1066,8 +1097,22 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot; })
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+			})
 		
+		/*Insufficient Data for Four Warning */	
+		graphPanel.add(pv.Label)
+			.text("Insufficient data.")
+			.textStyle("red")
+			.visible(function(){
+				return graph.groupingMode == "FourEqualGroups" &&
+							 graph.insufDataForFour;
+			})
+			.font(fontString)
+			.top(35)
+			.left(graph.w/2)
+			.textAlign("center")
 		
 		/* Dots */
 		graphPanel.add(pv.Dot)

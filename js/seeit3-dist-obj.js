@@ -177,6 +177,15 @@ GraphCollection.prototype = {
 			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
 			graph.editedCategories[title] = true;
 			graph.nextDefaultLabel[title] = 0;
+			if (graph.dataVals().length < 4)
+				graph.insufDataForFour = true;
+			else 
+				graph.insufDataForFour = false;
+			
+			if (graph.dataVals().length < 2)
+				graph.insufDataForTwo = true;
+			else 
+				graph.insufDataForTwo = false;
 		});
 		this.numberOfCategories++;
 		
@@ -191,7 +200,7 @@ GraphCollection.prototype = {
 				}
 			}
 		}
-		this.worksheet.edited[title] = true;
+		this.worksheet.edited[title] = true;	
 		
 		this.categoryColors = {};
 		var colorScale = pv.Colors.category20(0,this.numberOfCategories);
@@ -216,6 +225,16 @@ GraphCollection.prototype = {
 			
 			if (graph.includedCategories.indexOf(oldTitle) != -1)
 				graph.includedCategories[graph.includedCategories.indexOf(oldTitle)] = title;
+				
+			if (graph.dataVals().length < 4)
+				graph.insufDataForFour = true;
+			else 
+				graph.insufDataForFour = false;
+			
+			if (graph.dataVals().length < 2)
+				graph.insufDataForTwo = true;
+			else 
+				graph.insufDataForTwo = false;
 		});
 		
 		delete this.editedCategories[oldTitle];
@@ -246,6 +265,16 @@ GraphCollection.prototype = {
 				graph.includedCategories.splice(graph.includedCategories.indexOf(title), 1);
 			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
 			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
+			
+			if (graph.dataVals().length < 4)
+				graph.insufDataForFour = true;
+			else 
+				graph.insufDataForFour = false;
+			
+			if (graph.dataVals().length < 2)
+				graph.insufDataForTwo = true;
+			else 
+				graph.insufDataForTwo = false;
 			
 		});
 		delete this.editedCategories[title];
@@ -296,6 +325,8 @@ function Graph(worksheet, graphCollection){
 	
 	/* Graph Overflow */
 	this.overflowFlag = false;
+	this.insufDataForFour = true;
+	this.insufDataForTwo = true;
 	
 	this.panel = {};
 	this.baseLine = 20;
@@ -325,20 +356,31 @@ Graph.prototype = {
 			this.n = this.dataVals().length;
 			this.graphCollection.scaleAllGraphsToFit();
 			this.legendHidden = false;
+			
+			if (this.dataVals().length < 4)
+				this.insufDataForFour = true;
+			else 
+				this.insufDataForFour = false;
+			
+			if (this.dataVals().length < 2)
+				this.insufDataForTwo = true;
+			else 
+				this.insufDataForTwo = false;
+			
 			return true;
 		} else {
 			return false;
 		}
 	},
 	
-	editData: function(title,newData){
-		delete this.data[title];
-		this.data[title] = newData;
-		this.xMax = pv.max(this.dataVals(), function(d) { return d });
-		this.xMin = pv.min(this.dataVals(), function(d) { return d });
-		this.editedCategories[title] = true;
-		this.n = (this.dataVals()).length;
-	},
+	//editData: function(title,newData){
+	//	delete this.data[title];
+	//	this.data[title] = newData;
+	//	this.xMax = pv.max(this.dataVals(), function(d) { return d });
+	//	this.xMin = pv.min(this.dataVals(), function(d) { return d });
+	//	this.editedCategories[title] = true;
+	//	this.n = (this.dataVals()).length;
+	//},
 	
 	removeCategory: function(name){
 		this.includedCategories.splice(this.includedCategories.indexOf(name),1);
@@ -346,6 +388,16 @@ Graph.prototype = {
 		this.xMin = pv.min(this.dataVals(), function(d) { return d });
 		this.n = this.dataVals().length;
 		this.graphCollection.scaleAllGraphsToFit();
+		
+		if (this.dataVals().length < 4)
+			this.insufDataForFour = true;
+		else 
+			this.insufDataForFour = false;
+		
+		if (this.dataVals().length < 2)
+			this.insufDataForTwo = true;
+		else 
+			this.insufDataForTwo = false;
 	},
 	
 	dataVals: function(){
@@ -585,9 +637,9 @@ Worksheet.prototype = {
 												.forEach(function(e) {
 													data[columnToCategory[e.title.$t.replace(/[0-9]/g,"")]].push(
 														{"label": rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))],
-														 "value": parseFloat(e.content.$t)//,
-														 //"edited":false
-														 });
+														 "value": parseFloat(e.content.$t)
+														}
+													);
 												});		
 		return data;
 	},
