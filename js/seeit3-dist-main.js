@@ -1082,7 +1082,25 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					graphCollection.editData(d.set,d.set,newData);
 					constructVis();
 				}
-			});
+			})
+			.event("dragend",function(d){
+				if (graphCollection.editModeEnabled){
+					var newData = graphCollection.worksheet.data[d.set];
+					var remIndex = null;
+					newData.forEach(function(data, index){
+						if (data.label == d.label && 
+						(vis.mouse().x < 0 ||
+						vis.mouse().x > graph.w - 5)){
+							remIndex = index;
+							console.log("test");
+						}
+					});
+					if (remIndex != null)
+						newData.splice(remIndex,1);
+					graphCollection.editData(d.set,d.set,newData);
+					constructVis();
+				}
+			})
 			
 		
 		//Graph Overflow Warning Message	
