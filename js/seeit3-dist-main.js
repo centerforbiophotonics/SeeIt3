@@ -587,6 +587,28 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			positionGroupingMenuOverGraph(index, graphCollection);
 			$('#groupingOptions').slideDown();
 		})
+		
+	//Copy to clipboard button
+	graphPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/clipboard.png")  //fix this
+		.width(30)
+		.height(30)
+		.top(4)
+		.left(30)
+		.cursor("pointer")
+		.title("Copy data to clipboard.")
+		.event("click", function(){
+			var text = graph.toString();
+			var numLines = text.split('\n').length;
+			$('#cbText').val(graph.toString());
+			$('#cbText').attr('rows', ""+numLines);
+			positionClipboardPrompt();
+			$('#clipboardPrompt').slideDown();
+			$('#cbText').focus();
+			$('#cbText').select();
+			$('#clipboardPrompt').scrollTop(0);
+		
+		})
 				
 	//Divider Line Between Graphs
 	graphPanel.add(pv.Rule)
@@ -1080,6 +1102,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 						}
 					});
 					graphCollection.editData(d.set,d.set,newData);
+					graph.selectedCategory = d.set;
 					constructVis();
 				}
 			})
@@ -1304,7 +1327,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.right(3)
 				.visible(function(){return graphCollection.editModeEnabled})
 				.cursor("pointer")
-				.title("Select this category to add data.")
+				.title("Clicking the graph will add data to the checked category or to a new category if none is checked.")
 				.events("all")
 				.event("click", function(){
 					if (graph.selectedCategory == category)

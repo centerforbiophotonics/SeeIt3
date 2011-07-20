@@ -371,6 +371,32 @@ Graph.prototype = {
 		return subset;
 	},
 	
+	toString: function(){
+		var heading = "";
+		var colHead = "";
+		var data = [];
+		var fullData = this.data;
+		
+		this.includedCategories.forEach(function(cat){
+			fullData[cat].forEach(function(d, i){
+				data[i] = "";
+			});
+		});
+		
+		this.includedCategories.forEach(function(cat){
+			heading += '"'+cat+'",,';
+			colHead += 'label,value,';
+			
+			fullData[cat].forEach(function(d, i){
+				data[i] += '"'+d.label+'","'+d.value+'",';
+			});
+		});
+		
+		var string = heading+'\n'+colHead+'\n';
+		data.forEach(function(d){string += d + '\n';});
+		return string;
+	},
+	 
 	getDataDrawObjects: function(){
 		var xDomain = this.x.domain();
 		var bucketSize = (xDomain[1]-xDomain[0])/this.graphCollection.buckets;

@@ -766,3 +766,23 @@ function resetWCMenu(){
 		$('#wcRow'+i).remove();
 	wcNextRow = 1;
 }
+
+/* Clipboard Prompt */
+function positionClipboardPrompt(){
+	$('#clipboardPrompt').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2 - $('#clipboardPrompt').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#clipboardPrompt').width()/2)+"px");
+}
+positionClipboardPrompt();
+
+$('#clipboardPrompt').hide();
+
+$('#cbText').keydown(function(event){
+	if (event.keyCode == '13')
+		$('#clipboardPrompt').slideUp();
+});
+
+$('#cbClose').click(function(){
+	$('#clipboardPrompt').slideUp();
+});
+
