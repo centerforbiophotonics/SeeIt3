@@ -213,10 +213,13 @@ GraphCollection.prototype = {
 	},
 	
 	editData: function(oldTitle, title, data){
-		delete this.worksheet.data[oldTitle];
+		
+		if (oldTitle != title)
+			delete this.worksheet.data[oldTitle];
 		this.worksheet.data[title] = data;
 		this.graphs.forEach(function(graph){
-			delete graph.data[oldTitle];
+			if (oldTitle != title)
+				delete graph.data[oldTitle];
 			graph.data[title] = data;
 			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
 			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
@@ -237,7 +240,8 @@ GraphCollection.prototype = {
 				graph.insufDataForTwo = false;
 		});
 		
-		delete this.editedCategories[oldTitle];
+		if (oldTitle != title)
+			delete this.editedCategories[oldTitle];
 		this.editedCategories[title] = true;
 		
 		for (var h = 0; h < exampleSpreadsheets.length; h++) {
@@ -255,6 +259,26 @@ GraphCollection.prototype = {
 			
 		}
 		this.scaleAllGraphsToFit();
+	},
+	
+	editSinglePoint: function(set, label, value){
+		var graphCol = this;
+		this.worksheet.data[set].forEach(function(data){
+			if (data.label == label){
+				data.value = value;
+				graphCol.graphs.forEach(function(graph){
+					graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
+					graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
+					graph.editedCategories[set] = true;
+				});
+				
+				graphCol.editedCategories[set] = true;
+				graphCol.worksheet.edited[set] = true;
+				
+				graphCol.scaleAllGraphsToFit();
+				
+			}
+		});
 	},
 	
 	deleteData: function(title){

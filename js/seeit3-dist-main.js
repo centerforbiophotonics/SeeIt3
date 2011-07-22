@@ -8,7 +8,8 @@ var exampleSpreadsheets = [
 var lastSelectedWorksheet; 
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
-  jQuery('#workSheetSelector').prepend(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + " by " + event.worksheet.labelType + "</option>")).val(event.worksheet.URL);
+	if ($('#workSheetSelector option[value='+event.worksheet.URL+']').length == 0)
+		jQuery('#workSheetSelector').prepend(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + " by " + event.worksheet.labelType + "</option>")).val(event.worksheet.URL);
   lastSelectedWorksheet = event.worksheet.URL;
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
@@ -27,7 +28,7 @@ var fontString = "bold 14px sans-serif";
 
 function constructVis(){
 	jQuery('span').remove();
-	
+	vis = {};
 	vis = new pv.Panel()
 		.width(graphCollection.w)
 		.height(graphCollection.h)
@@ -160,6 +161,7 @@ function constructVis(){
 		.lineWidth(1)
 		.event("click", function(){
 			graphCollection.addGraph();
+			//vis.render();
 			constructVis();
 		})
 		.event("mouseover", function(d){
@@ -308,7 +310,7 @@ function constructCategoryPanel(vis){
 		.top(-40)
 		.font(fontString);
 	
-	var dragFeedbackPanels = [];	
+	var dragFeedbackPanels = [];
 	for (var key in graphCollection.worksheet.data){
 		var abbrevKey = key.slice(0,15);
 		if (key.length > 15)
@@ -417,6 +419,7 @@ function constructCategoryPanel(vis){
 				dragFeedbackPanels[this.row()].visible(false);
 				document.body.style.cursor="default";
 				constructVis();
+				//vis.render();
 			})
 			.event("touchstart", function(event){
 				touch.draggedObj = dragFeedbackPanels[this.row()];
@@ -783,7 +786,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
     pv.listen(window, "mousedown", function() {self.focus()});
 		pv.listen(window, "keydown", function(e) {
 			//code 8 is backspace, code 46 is delete
-			if ((e.keyCode == 8 || e.keyCode == 46) && graph.selectedUDPart != null) {			
+			if ((e.keyCode == 8 || e.keyCode == 46) && graph.selectedUDPart != null) {
 				graph.udPartitions.splice(graph.selectedUDPart, 1);
 				graphCollection.selectAUserDefPartition();
 				e.preventDefault();
@@ -792,9 +795,9 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		});
 		
 		/* Fixed Interval Width Partitions */
-		var fiwPartitions = partitionDataByIntervalWidth(graph);
+		//var fiwPartitions = partitionDataByIntervalWidth(graph);
 		graphPanel.add(pv.Rule)
-			.data(fiwPartitions)
+			.data(function(){return partitionDataByIntervalWidth(graph)})//fiwPartitions)
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return graph.h * 0.75})
@@ -810,41 +813,39 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 		/*Fixed Interval Width Partitions Size Labels*/
 		graphPanel.add(pv.Label)
-			.data(countDataInPartitions(graph,fiwPartitions))
+			.data(function(){return countDataInPartitions(graph,partitionDataByIntervalWidth(graph))})
 			.textAlign("center")
 			.textStyle("green")
 			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
 			.left(function(){
-				if (this.index != fiwPartitions.length-1){
-					return graph.x((fiwPartitions[this.index]+fiwPartitions[this.index+1])/2);
+				if (this.index != partitionDataByIntervalWidth(graph).length-1){
+					return graph.x((partitionDataByIntervalWidth(graph)[this.index]+partitionDataByIntervalWidth(graph)[this.index+1])/2);
 				} else return 0;
 			})
 			.visible(function(){
-				return this.index != fiwPartitions.length-1 &&
+				return this.index != partitionDataByIntervalWidth(graph).length-1 &&
 							 graph.groupingMode == "FixedIntervalGroups";
 			});
 			
 		/* Fixed Interval Width Histogram */
-		var histRects = fiwHistogram(graph,fiwPartitions);
-		for (var i=0; i < histRects.length; i++){	  									   
-			graphPanel.add(pv.Line)
-				.data(histRects[i])
-				.visible(function(d) { 
-					return ( graph.groupingMode == "FixedIntervalGroups" &&
-									 graph.histogram
-									) 
-				})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(0.5)
-				.strokeStyle("green")
-				.fillStyle(pv.rgb(0,225,0,0.05));
-		}
+		graphPanel.add(pv.Bar)
+			.data(function(){return fiwHistogram(graph,partitionDataByIntervalWidth(graph))})
+			.visible(function(d) { 
+				return ( graph.groupingMode == "FixedIntervalGroups" &&
+								 graph.histogram
+								) 
+			})
+			.left(function(d){return d.left})
+			.bottom(graph.baseLine)
+			.height(function(d){return d.height})
+			.width(function(d){return d.width})
+			.lineWidth(0.5)
+			.strokeStyle("green")
+			.fillStyle(pv.rgb(0,225,0,0.05));
 		
 		/* Fixed Group Size Partitions */
-		var fgPartitions = partitionDataInFixedSizeGroups(graph);
 		graphPanel.add(pv.Rule)
-			.data(fgPartitions)
+			.data(function(){return partitionDataInFixedSizeGroups(graph)})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return graph.h * 0.75})
@@ -858,24 +859,24 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.strokeStyle("green")
 				.size(4);
 			
-		/*Fixed Size Partition Size Labels*/
+		/*Fixed Group Size Partition Labels*/
 		graphPanel.add(pv.Label)
-			.data(fgPartitions)
+			.data(function(){return partitionDataInFixedSizeGroups(graph)})
 			.textAlign("center")
 			.textStyle("green")
 			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
 			.left(function(){
-				if (this.index != fgPartitions.length-1){
-					return graph.x((fgPartitions[this.index]+fgPartitions[this.index+1])/2);
+				if (this.index != partitionDataInFixedSizeGroups(graph).length-1){
+					return graph.x((partitionDataInFixedSizeGroups(graph)[this.index]+partitionDataInFixedSizeGroups(graph)[this.index+1])/2);
 				} else return 0;
 			})
 			.visible(function(){
-				return this.index != fgPartitions.length-1 &&
+				return this.index != partitionDataInFixedSizeGroups(graph).length-1 &&
 							 graph.groupingMode == "FixedSizeGroups";
 			})
 			.text(function(){
 				if (graph.dataVals().length % graph.partitionGroupSize == 0 ||
-						this.index != fgPartitions.length-2)
+						this.index != partitionDataInFixedSizeGroups(graph).length-2)
 					return graph.partitionGroupSize;
 				
 				else return graph.dataVals().length % graph.partitionGroupSize;
@@ -884,9 +885,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		
 			
 		/* Two Equal Partitions */
-		var twoPartitions = partitionDataInTwo(graph);
 		graphPanel.add(pv.Rule)
-			.data(twoPartitions)
+			.data(function(){return partitionDataInTwo(graph)})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return graph.h * 0.75})
@@ -905,24 +905,24 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				
 		/*Two Partition Size Labels*/
 		graphPanel.add(pv.Label)
-			.data(twoPartitions)
+			.data(function(){return partitionDataInTwo(graph)})
 			.textAlign("center")
 			.textStyle("green")
 			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
 			.left(function(){
-				if (this.index != twoPartitions.length-1){
-					return graph.x((twoPartitions[this.index]+twoPartitions[this.index+1])/2);
+				if (this.index != partitionDataInTwo(graph).length-1){
+					return graph.x((partitionDataInTwo(graph)[this.index]+partitionDataInTwo(graph)[this.index+1])/2);
 				} else return 0;
 			})
 			.visible(function(){
-				return this.index != twoPartitions.length-1 &&
+				return this.index != partitionDataInTwo(graph).length-1 &&
 							 graph.groupingMode == "TwoEqualGroups" &&
 							 !graph.insufDataForTwo;
 			})
 			.text(function(){
 				if (graph.dataVals().length % 2 == 0)
 					return graph.dataVals().length/2;
-				else if(this.index != twoPartitions.length-2)
+				else if(this.index != partitionDataInTwo(graph).length-2)
 					return Math.ceil(graph.dataVals().length/2);
 				else
 					return Math.floor(graph.dataVals().length/2);
@@ -944,9 +944,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 		
 		/* Four Equal Partitions */
-		var fourPartitions = partitionDataInFour(graph);
 		graphPanel.add(pv.Rule)
-			.data(fourPartitions)
+			.data(function(){return partitionDataInFour(graph)})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return graph.h * 0.75})
@@ -968,34 +967,32 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 				.size(4);
 				
 		/*Four Partition Size Labels*/
-		var fourPartLabels = countDataInPartitions(graph, fourPartitions);
-		//console.log(fourPartLabels);
 		graphPanel.add(pv.Label)
-			.data(fourPartitions)
+			.data(function(){return countDataInPartitions(graph, partitionDataInFour(graph))})
 			.textAlign("center")
 			.textStyle("green")
 			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
 			.left(function(){
-				if (this.index != fourPartitions.length-1){
-					return graph.x((fourPartitions[this.index]+fourPartitions[this.index+1])/2);
+				if (this.index != partitionDataInFour(graph).length-1){
+					return graph.x((partitionDataInFour(graph)[this.index]+partitionDataInFour(graph)[this.index+1])/2);
 				} else return 0;
 			})
 			.visible(function(){
-				return this.index != fourPartitions.length-1 &&
+				return this.index != partitionDataInFour(graph).length-1 &&
 							graph.groupingMode == "FourEqualGroups" &&
 							graph.boxPlot == false &&
 							!graph.insufDataForFour;
 			})
-			.text(function(){
-				if (this.index != fourPartitions.length-1){
-					return fourPartLabels[this.index];
+			.text(function(d){
+				if (this.index != partitionDataInFour(graph).length-1){
+					return d;
 				} else return 0;
 			})
 			
-		/* Box Plot Extra Lines */
+		/* Box Plot Lines */
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[0], graph.baseLine],
-						 [fourPartitions[0], graph.h * 0.80]])
+			.data(function(){return [[partitionDataInFour(graph)[0], graph.baseLine],
+						 [partitionDataInFour(graph)[0], graph.h * 0.80]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1006,8 +1003,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			})
 																	 
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[4], graph.baseLine],
-						 [fourPartitions[4], graph.h * 0.80]])
+			.data(function(){return [[partitionDataInFour(graph)[4], graph.baseLine],
+						 [partitionDataInFour(graph)[4], graph.h * 0.80]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1018,8 +1015,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			})
 																	 
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [fourPartitions[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]])
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1030,8 +1027,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		})
 																	 
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [fourPartitions[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]])
+			.data(function(){return [[partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1042,8 +1039,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			})
 																	 
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [fourPartitions[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]])
+			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1054,8 +1051,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			})						
 																	 						
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [fourPartitions[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]])
+			.data(function(){return [[partitionDataInFour(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1066,8 +1063,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			})
 			
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
-						 [fourPartitions[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]])
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1078,8 +1075,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			})
 			
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [fourPartitions[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]])
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1090,8 +1087,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			})
 			
 		graphPanel.add(pv.Line)
-			.data([[fourPartitions[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [fourPartitions[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]])
+			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [partitionDataInFour(graph)[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1136,19 +1133,14 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			.strokeStyle(function(d) {return pointStrokeStyle(d.set)})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
 			.event("mousedown", pv.Behavior.drag())
-			.event("drag", function(d){
-				if (graphCollection.editModeEnabled){
-					var newData = graphCollection.worksheet.data[d.set];
-					newData.forEach(function(data){
-						if (data.label == d.label && 
+			.event("drag", function(d){  //Memory leak here
+				if (graphCollection.editModeEnabled &&
 						vis.mouse().x >= 0 &&
 						vis.mouse().x <= graph.w - 5){
-							data.value = graph.x.invert(vis.mouse().x);
-						}
-					});
-					graphCollection.editData(d.set,d.set,newData);
+					
+					graphCollection.editSinglePoint(d.set,d.label,graph.x.invert(vis.mouse().x));
 					graph.selectedCategory = d.set;
-					constructVis();
+					vis.render();
 				}
 			})
 			.event("dragend",function(d){
@@ -1166,7 +1158,8 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 					if (remIndex != null)
 						newData.splice(remIndex,1);
 					graphCollection.editData(d.set,d.set,newData);
-					constructVis();
+					//constructVis();
+					vis.render();
 				}
 			})
 			

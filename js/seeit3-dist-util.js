@@ -233,17 +233,15 @@ function getSortedUDPartitionXVals(graph){
 	return udPartXVals;
 }
 
-function fiwHistogram(graph, partitions, mode){
+function fiwHistogram(graph, partitions){
 	var counts = countDataInPartitions(graph, partitions);
 	var maxCount = getMaxOfArray(counts);
 	var rectangles = [];
 
 	for (var i=0;i<counts.length;i++){
-		rectangles.push([[partitions[i], graph.baseLine],
-										 [partitions[i], graph.h * 0.75 * counts[i]/maxCount + graph.baseLine],
-										 [partitions[i+1], graph.h * 0.75 * counts[i]/maxCount + graph.baseLine],
-										 [partitions[i+1], graph.baseLine],
-										 [partitions[i], graph.baseLine]]);
+		rectangles.push({"left": graph.x(partitions[i]),
+										 "width": graph.x(partitions[i+1])-graph.x(partitions[i]),
+										 "height": graph.h * 0.75 * counts[i]/maxCount});
 	}
 
 	return rectangles;
