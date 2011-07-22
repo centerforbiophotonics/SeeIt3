@@ -24,7 +24,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 var graphCollection = {};
 var vis = {};
 var touch = new Touch();
-var fontString = "bold 14px sans-serif";
+var fontString = "bold 14px arial";
 
 function constructVis(){
 	jQuery('span').remove();
@@ -89,6 +89,7 @@ function constructVis(){
 		.top(-60)
 		.lineWidth(1)
 		.event("click", function(){
+			hideMenus();
 			$('#displayOptions').slideDown();
 		})
 		.event("mouseover", function(d){
@@ -115,6 +116,7 @@ function constructVis(){
 				return false;
 		})
 		.event("click", function(){
+			hideMenus();
 			$('#displayOptions').slideDown();
 		})
 		.anchor("left").add(pv.Label)
@@ -302,7 +304,7 @@ function constructVis(){
 		  
 function constructCategoryPanel(vis){
 	var row = 0;
-	var fontString = "bold 14px sans-serif";
+	//var fontString = "bold 14px sans-serif";
 	
 	vis.add(pv.Label)
 		.text("Data Sets:")
@@ -358,9 +360,11 @@ function constructCategoryPanel(vis){
 		.cursor("pointer")
 		.title("Edit dataset")
 		.event("click", function(){
+			hideMenus();
 			resetEditDataSetMenu();
 			populateEditMenuFromExisting(this.category());
 			$('#dataSetEdit').slideDown();
+			$('#dataSetEdit').scrollTop(0)
 		})
 		
 		
@@ -468,6 +472,7 @@ function constructCategoryPanel(vis){
 			.event("click", function(){
 				resetAddDataSetMenu();
 				populateAddMenuLabelsFromExisting();
+				hideMenus();
 				$('#dataSetAdd').slideDown();
 			});
 			
@@ -500,7 +505,7 @@ function constructCategoryPanel(vis){
 
 
 function constructGraphPanel(vis, graph, index, numberOfGraphs){
-	var fontString = "bold 14px sans-serif";
+	//var fontString = "bold 14px sans-serif";
 	graph.overflowFlag = false;
 	
 	var graphPanel = vis.add(pv.Panel)
@@ -588,6 +593,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			graphCollection.selectedGraphIndex = index;
 			graphCollection.updateMenuOptions();
 			positionGroupingMenuOverGraph(index, graphCollection);
+			hideMenus();
 			$('#groupingOptions').slideDown();
 		})
 		
@@ -606,6 +612,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			$('#cbText').val(graph.toString());
 			$('#cbText').attr('rows', ""+numLines);
 			positionClipboardPrompt();
+			hideMenus();
 			$('#clipboardPrompt').slideDown();
 			$('#cbText').focus();
 			$('#cbText').select();

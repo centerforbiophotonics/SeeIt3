@@ -325,7 +325,10 @@ $('#addValLast').keyup(function(evt){
 			addNextRow +
 			"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal" +
 			addNextRow +
-			"'></td></tr>");
+			"'></td>"+
+			"<td><input type='image' src='img/garbage.png' id='addGarbage"+
+			addNextRow +
+			"' onclick='delAddField()' width='20' height='20'></td></tr>");
 			
 		$('#addLab'+addNextRow).val($('#addLabLast').val());
 		$('#addVal'+addNextRow).val(parseFloat($('#addValLast').val()));
@@ -460,10 +463,28 @@ function populateAddMenuLabelsFromExisting(){
 			"'><td><input type='text' id='addLab"+addNextRow +
 			"' value='"+label +
 			"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal"+addNextRow +
-			"'></td></tr>");
+			"'></td>"+
+			"<td><input type='image' src='img/garbage.png' id='addGarbage"+
+			addNextRow +
+			"' onclick='delAddField()' width='20' height='20'></td></tr>");
 			
 			addNextRow++;
 	});
+}
+
+function delAddField(){
+	var which = parseInt((event.target.id).slice(10))
+	$('#addRow'+which).remove();
+	for (var i = which+1; i < addNextRow; i++){
+		$('#addRow'+i).attr("id","addRow"+(i-1));
+		$('#addLab'+i).attr("id","addLab"+(i-1));
+		$('#addVal'+i).attr("id","addVal"+(i-1));
+		$('#addGarbage'+i).attr("id","addGarbage"+(i-1));
+	}
+	addNextRow--;
+	if (addNextRow < 1)
+		addNextRow = 1;
+	
 }
 
 
@@ -510,7 +531,10 @@ $('#editValLast').keyup(function(evt){
 			editNextRow +
 			"'></td><td><input type='text' onChange ='editEntryValidate(this)' id='editVal" +
 			editNextRow +
-			"'></td></tr>");
+			"'></td>"+
+			"<td><input type='image' src='img/garbage.png' id='editGarbage"+
+			editNextRow +
+			"' onclick='delEditField()' width='20' height='20'></td></tr>");
 			
 		$('#editLab'+editNextRow).val($('#editLabLast').val());
 		$('#editVal'+editNextRow).val(parseFloat($('#editValLast').val()));
@@ -651,11 +675,29 @@ function populateEditMenuFromExisting(dataset){
 			"' value='"+data.label +
 			"'></td><td><input type='text' onChange ='editEntryValidate(this)' id='editVal"+editNextRow +
 			"' value='"+data.value.toFixed(2) + 
-			"'></td></tr>");
+			"'></td>"+
+			"<td><input type='image' src='img/garbage.png' id='editGarbage"+
+			editNextRow +
+			"' onclick='delEditField()' width='20' height='20'></td></tr>");
 			
 			editNextRow++;
 		
 	});
+}
+
+function delEditField(){
+	var which = parseInt((event.target.id).slice(11))
+	$('#editRow'+which).remove();
+	for (var i = which+1; i < editNextRow; i++){
+		$('#editRow'+i).attr("id","editRow"+(i-1));
+		$('#editLab'+i).attr("id","editLab"+(i-1));
+		$('#editVal'+i).attr("id","editVal"+(i-1));
+		$('#editGarbage'+i).attr("id","editGarbage"+(i-1));
+	}
+	editNextRow--;
+	if (editNextRow < 1)
+		editNextRow = 1;
+	
 }
 
 /* Create Worksheet Menu */
@@ -675,13 +717,15 @@ $('#wcDupLabelWarning').hide();
 	
 
 var wcNextRow = 1;
-$('#wcLabLast').keyup(function(evt){
+$('#wcLabLast').keydown(function(evt){
 	$('#wcLabelEntry tr:last').before(
 		"<tr id='wcRow" +
 		wcNextRow +
 		"'><td><input type='text' id='wcLab" +
 		wcNextRow +
-		"'></td></tr>");
+		"'></td><td><input type='image' src='img/garbage.png' id='wcGarbage"+
+		wcNextRow +
+		"' onclick='delWCField()' width='20' height='20'></td></tr>");
 			
 		$('#wcLab'+wcNextRow).val($('#wcLabLast').val());
 		$('#wcLabLast').val("");
@@ -766,6 +810,22 @@ function resetWCMenu(){
 		$('#wcRow'+i).remove();
 	wcNextRow = 1;
 }
+
+function delWCField(){
+	var which = parseInt((event.target.id).slice(9))
+	$('#wcRow'+which).remove();
+	for (var i = which+1; i < wcNextRow; i++){
+		$('#wcRow'+i).attr("id","wcRow"+(i-1));
+		$('#wcLab'+i).attr("id","wcLab"+(i-1));
+		$('#wcGarbage'+i).attr("id","wcGarbage"+(i-1));
+	}
+	wcNextRow--;
+	if (wcNextRow < 1)
+		wcNextRow = 1;
+	
+}
+
+
 
 /* Clipboard Prompt */
 function positionClipboardPrompt(){

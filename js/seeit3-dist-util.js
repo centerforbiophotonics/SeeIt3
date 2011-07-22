@@ -137,6 +137,15 @@ function toggleNetworkOptions(graph) {
 	
 }
 
+function hideMenus(){
+	$('#dataSetAdd').slideUp();
+	$('#dataSetEdit').slideUp();
+	$('#groupingOptions').slideUp();
+	$('#displayOptions').slideUp();
+	$('#worksheetCreate').slideUp();
+	$('#clipboardPrompt').slideUp();
+}
+
 function positionGroupingMenuOverGraph(index, graphCollection){
 	var yPos = $('span').offset().top +
 							graphCollection.padTop +
