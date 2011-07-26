@@ -141,6 +141,10 @@ $('#applyOptionsToAll').click(function(event){
 	constructVis();
 });
 
+$('#groupOptClose').click(function(){
+	hideMenus();
+});
+
 
 /* Visualization Options */
 $('#displayOptions').hide();
@@ -788,8 +792,6 @@ $('#wcClose').click(function(){
 	$('#worksheetCreate').slideUp();
 	$('#workSheetSelector').val(lastSelectedWorksheet);
 });
-
-
 
 $('#wcReset').click(function(){
 	resetWCMenu();
