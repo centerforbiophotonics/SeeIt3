@@ -46,6 +46,8 @@ table#menuItems h3 {
   overflow-x: hidden;
   -ms-overflow-x: hidden;
   display: hidden;
+  overflow-y: hidden;
+  -ms-overflow-y: hidden;
 }
 
 #dataSetEdit {
@@ -57,6 +59,8 @@ table#menuItems h3 {
   overflow-x: hidden;
   -ms-overflow-x: hidden;
   display: hidden;
+  overflow-y: hidden;
+  -ms-overflow-y: hidden;
 }
 
 #clipboardPrompt {
@@ -67,6 +71,8 @@ table#menuItems h3 {
   overflow:scroll;
   overflow-x: hidden;
   -ms-overflow-x: hidden;
+  overflow-y: hidden;
+  -ms-overflow-y: hidden;
   display: hidden;
 }
 
@@ -78,9 +84,12 @@ table#menuItems h3 {
 	background: #ffffff;
 	border:1px solid black;
 	padding: 5px;
+	width: 250px;
 	max-height: 400px;
   overflow:scroll;
   overflow-x: hidden;
   -ms-overflow-x: hidden;
   display: hidden;
+  overflow-y: hidden;
+  -ms-overflow-y: hidden;
 }

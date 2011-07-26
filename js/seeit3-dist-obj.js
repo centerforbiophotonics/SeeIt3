@@ -66,8 +66,6 @@ function GraphCollection(){
 	this.buttonIcon = true;
 	this.buttonText = true;
 	
-	
-	
 	this.addGraph();
 	this.updateMenuOptions();
 }
@@ -397,15 +395,6 @@ Graph.prototype = {
 		}
 	},
 	
-	//editData: function(title,newData){
-	//	delete this.data[title];
-	//	this.data[title] = newData;
-	//	this.xMax = pv.max(this.dataVals(), function(d) { return d });
-	//	this.xMin = pv.min(this.dataVals(), function(d) { return d });
-	//	this.editedCategories[title] = true;
-	//	this.n = (this.dataVals()).length;
-	//},
-	
 	removeCategory: function(name){
 		this.includedCategories.splice(this.includedCategories.indexOf(name),1);
 		this.xMax = pv.max(this.dataVals(), function(d) { return d });
@@ -558,11 +547,11 @@ Graph.prototype = {
 
 function getWorksheetByURL(URL) {
 	for (var h = 0; h < exampleSpreadsheets.length; h++) {
-	for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
-		if (exampleSpreadsheets[h].worksheets[i].URL == URL){
-		return exampleSpreadsheets[h].worksheets[i];
+		for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
+			if (exampleSpreadsheets[h].worksheets[i].URL == URL){
+			return exampleSpreadsheets[h].worksheets[i];
+			}
 		}
-	}
 	}
 }
 

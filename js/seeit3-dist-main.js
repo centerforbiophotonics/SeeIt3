@@ -28,7 +28,7 @@ var fontString = "bold 14px arial";
 
 function constructVis(){
 	jQuery('span').remove();
-	vis = {};
+	//vis = {};
 	vis = new pv.Panel()
 		.width(graphCollection.w)
 		.height(graphCollection.h)
@@ -293,18 +293,18 @@ function constructVis(){
 					return false;
 			})
 	
-	constructCategoryPanel(vis);
+	constructCategoryPanel();
+	
 	
 	graphCollection.graphs.forEach(function(graph,index,graphs){
-		constructGraphPanel(vis, graph, index, graphs.length);
+		constructGraphPanel(graph, index);
 	});
 	vis.render();
 	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 }
 		  
-function constructCategoryPanel(vis){
+function constructCategoryPanel(){
 	var row = 0;
-	//var fontString = "bold 14px sans-serif";
 	
 	vis.add(pv.Label)
 		.text("Data Sets:")
@@ -503,9 +503,7 @@ function constructCategoryPanel(vis){
 }
 
 
-
-function constructGraphPanel(vis, graph, index, numberOfGraphs){
-	//var fontString = "bold 14px sans-serif";
+function constructGraphPanel(graph, index){
 	graph.overflowFlag = false;
 	
 	var graphPanel = vis.add(pv.Panel)
@@ -523,33 +521,31 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 			
 			positionGroupingMenuOverGraph(index, graphCollection);
 					
-			if (oldIndex == index){
-				$('#groupingOptions').slideUp();
-				if (graph.selectedCategory != null && graphCollection.editModeEnabled){
-					var loc = graphPanel.mouse().x;
-					
-					
-					graph.data[graph.selectedCategory].push(
-						{"label": "default"+graph.nextDefaultLabel[graph.selectedCategory]++,
-						 "value": graph.x.invert(loc)}
-					);
-					
-					graphCollection.editData(graph.selectedCategory, graph.selectedCategory, graph.data[graph.selectedCategory]);
-				} else if (graphCollection.editModeEnabled && 
-										graph.includedCategories.length < 4 &&
-										graph.includedCategories.length > 0) {
-					var loc = graphPanel.mouse().x;
-					
-					var dataTitle = "userCreatedCategory"+graphCollection.nextDefaultCategory++;
-					var data = [{"label":"first", "value":graph.x.invert(loc)}];
-					
-					graphCollection.addData(dataTitle, data);
-					graph.addCategory(dataTitle);
-					graph.selectedCategory = dataTitle;
-				}
+			hideMenus();
+			if (graph.selectedCategory != null && graphCollection.editModeEnabled){
+				var loc = graphPanel.mouse().x;
+				
+				
+				graph.data[graph.selectedCategory].push(
+					{"label": "default"+graph.nextDefaultLabel[graph.selectedCategory]++,
+					 "value": graph.x.invert(loc)}
+				);
+				
+				graphCollection.editData(graph.selectedCategory, graph.selectedCategory, graph.data[graph.selectedCategory]);
+			} else if (graphCollection.editModeEnabled && 
+									graph.includedCategories.length < 4 &&
+									graph.includedCategories.length > 0) {
+				var loc = graphPanel.mouse().x;
+				
+				var dataTitle = "userCreatedCategory"+graphCollection.nextDefaultCategory++;
+				var data = [{"label":"first", "value":graph.x.invert(loc)}];
+				
+				graphCollection.addData(dataTitle, data);
+				graph.addCategory(dataTitle);
+				graph.selectedCategory = dataTitle;
 			}
-			else $('#groupingOptions').hide();
-			$('#displayOptions').slideUp();
+		
+			
 			constructVis();
 		});
 		
@@ -607,10 +603,7 @@ function constructGraphPanel(vis, graph, index, numberOfGraphs){
 		.cursor("pointer")
 		.title("Copy data to clipboard.")
 		.event("click", function(){
-			var text = graph.toString();
-			var numLines = text.split('\n').length;
 			$('#cbText').val(graph.toString());
-			$('#cbText').attr('rows', ""+numLines);
 			positionClipboardPrompt();
 			hideMenus();
 			$('#clipboardPrompt').slideDown();

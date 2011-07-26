@@ -49,7 +49,7 @@
 
 
 <div id="groupingOptions">
-	<input type="button" value="Close Menu" id="closeGroupingMenu"><br>
+	<input type='image' src='img/close.png' id='addFormClose' onclick='hideMenus()' width='20' height='20' align='right'>
 	<b>Groups:</b><br>
 	<input type="radio" id="radioNoGroups" name="mode" style="margin-left:10px;" checked>
 	<label for="radioNoGroups">None</label><br>
@@ -89,7 +89,7 @@
 </div>
 
 <div id="displayOptions" style="padding-bottom:20px">
-	<input type="button" value="Close" id="displayMenuClose">
+	<input type='image' src='img/close.png' id='dispOptClose' onclick='hideMenus()' width='20' height='20' align='right'><br>
 	<table>
 		<tr>
 			<td>
@@ -138,82 +138,130 @@
 </div>
 
 <div id="dataSetAdd">
-	<h2>New Dataset</h2>
-	<label for="addDataSetTitle"><b>Title:</b></label>
-	<input type="text" id="addDataSetTitle" style="width:200px;"><br>
-	<center><p id="addNonNumWarning" style="color:red;">Value must be a number!</p></center>
-	<center><p id="addNoTitleWarning" style="color:red;">Dataset must have a title!</p></center>
-	<center><p id="addNoLabelWarning" style="color:red;">All values must have labels!</p></center>
-	<center><p id="addNoValueWarning" style="color:red;">All labels must have values!</p></center>
-	<center><p id="addNoDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
-	<center><p id="addDupTitleWarning" style="color:red;">Another dataset with that title already exists!</p></center>
-	<b>Data:</b>
-	<table id="addDatasetEntry">
+	<table>
 		<tr>
-			<th>Label</th><th>Value</th>
+			<td> 
+				<input type="button" value="Add" id="addFormAdd">
+				<input type="button" value="Reset" id="addFormReset">
+				<input type='image' src='img/close.png' id='addFormClose' width='20' height='20' align='right'>
+				<h2>New Dataset</h2>
+				<center><p id="addNonNumWarning" style="color:red;">Value must be a number!</p></center>
+				<center><p id="addNoTitleWarning" style="color:red;">Dataset must have a title!</p></center>
+				<center><p id="addNoLabelWarning" style="color:red;">All values must have labels!</p></center>
+				<center><p id="addNoValueWarning" style="color:red;">All labels must have values!</p></center>
+				<center><p id="addNoDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
+				<center><p id="addDupTitleWarning" style="color:red;">Another dataset with that title already exists!</p></center>
+			</td>
 		</tr>
+		
 		<tr>
-			<td><input type="text" id="addLabLast"></td>
-			<td><input type="text" id="addValLast"></td>
+			<td>
+				<div style="width:400px; overflow:auto;height:150px;">
+					<label for="addDataSetTitle"><b>Title:</b></label>
+					<input type="text" id="addDataSetTitle" style="width:200px;"><br>
+					
+					<b>Data:</b>
+					<table id="addDatasetEntry">
+						<tr>
+							<th>Label</th><th>Value</th>
+						</tr>
+						<tr>
+							<td><input type="text" id="addLabLast"></td>
+							<td><input type="text" id="addValLast"></td>
+						</tr>
+					</table>
+				</div>
+			</td>
 		</tr>
-	</table><br>
-	<input type="button" value="Add" id="addFormAdd">
-	<input type="button" value="Cancel" id="addFormCancel">
-	<input type="button" value="Reset" id="addFormReset">
+	</table>
+	
+	
+	
+	
 </div>
 
 <div id="dataSetEdit">
-	<h2 id="datasetTitle">Title</h2>
-	<label for="editDataSetTitle"><b>Title:</b></label>
-	<input type="text" id="editDataSetTitle" style="width:275px;"><br>
-	<center><p id="editNonNumWarning" style="color:red;">Value must be a number!</p></center>
-	<center><p id="editNoTitleWarning" style="color:red;">Dataset must have a title!</p></center>
-	<center><p id="editNoLabelWarning" style="color:red;">All values must have labels!</p></center>
-	<center><p id="editNoValueWarning" style="color:red;">All labels must have values!</p></center>
-	<center><p id="editNoDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
-	<b>Data:</b>
-	<table id="editDatasetEntry">
+	<table>
 		<tr>
-			<th>Label</th><th>Value</th>
+			<td>
+				<input type="button" value="Apply" id="editFormApply">
+				<input type="button" value="Reset" id="editFormReset">
+				<input type="button" value="Delete" id="editFormDelete"> 
+				<input type='image' src='img/close.png' id='editFormClose' width='20' height='20' align='right'>
+				<h2 id="datasetTitle">Title</h2>
+				<center><p id="editNonNumWarning" style="color:red;">Value must be a number!</p></center>
+				<center><p id="editNoTitleWarning" style="color:red;">Dataset must have a title!</p></center>
+				<center><p id="editNoLabelWarning" style="color:red;">All values must have labels!</p></center>
+				<center><p id="editNoValueWarning" style="color:red;">All labels must have values!</p></center>
+				<center><p id="editNoDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
+			</td>
 		</tr>
+		
 		<tr>
-			<td><input type="text" id="editLabLast"></td><td><input type="text" id="editValLast"></td>
+			<td>
+				<div style="width:400px; overflow:auto;height:150px;">
+					<label for="editDataSetTitle"><b>Title:</b></label>
+					<input type="text" id="editDataSetTitle" style="width:275px;"><br>
+					
+					<b>Data:</b>
+					<table id="editDatasetEntry">
+						<tr>
+							<th>Label</th><th>Value</th>
+						</tr>
+						<tr>
+							<td><input type="text" id="editLabLast"></td><td><input type="text" id="editValLast"></td>
+						</tr>
+					</table>
+				</div>
+			</td>
 		</tr>
-	</table><br>
-	<input type="button" value="Apply" id="editFormApply">
-	<input type="button" value="Cancel" id="editFormCancel">
-	<input type="button" value="Reset" id="editFormReset">
-	<input type="button" value="Delete" id="editFormDelete">
+	</table>
+
+	
+	
 </div>
 
 <div id="worksheetCreate">
-	<h2>New Worksheet</h2>
-	<center><p id="wcDupTitleWarning" style="color:red;">A worksheet with that title already exists!</p></center>
-	<center><p id="wcNoTitleWarning" style="color:red;">Worksheet must have a title!</p></center>
-	<center><p id="wcNoLabelTypeWarning" style="color:red;">Worksheet must have a label type!</p></center>
-	<center><p id="wcDupLabelWarning" style="color:red;">Two or more labels are identical!</p></center>
-	
-	<label for="wcTitle"><b>Title:</b></label>
-	<input type="text" id="wcTitle" style="width:200px;"><br>
-	<label for="wcLabelType"><b>Label Type:</b></label>
-	<input type="text" id="wcLabelType" style="width:200px;"><br>
-	<table id="wcLabelEntry">
+	<table>
 		<tr>
-			<b>Labels (Optional):</b>
+			<td>
+				<input type="button" value="Add" id="wcAdd">
+				<input type="button" value="Reset" id="wcReset">
+				<input type='image' src='img/close.png' id='wcClose' width='20' height='20' align='right'>
+				<h2>New Worksheet</h2>
+				<center><p id="wcDupTitleWarning" style="color:red;">A worksheet with that title already exists!</p></center>
+				<center><p id="wcNoTitleWarning" style="color:red;">Worksheet must have a title!</p></center>
+				<center><p id="wcNoLabelTypeWarning" style="color:red;">Worksheet must have a label type!</p></center>
+				<center><p id="wcDupLabelWarning" style="color:red;">Two or more labels are identical!</p></center>
+			</td>
 		</tr>
 		<tr>
-			<td><input type="text" id="wcLabLast"></td>
+			<td>
+				<div style="width:250px; overflow:auto;height:150px;">
+					<label for="wcTitle"><b>Title:</b></label><br>
+					<input type="text" id="wcTitle" style="width:200px;"><br>
+					<label for="wcLabelType"><b>Label Type:</b></label><br>
+					<input type="text" id="wcLabelType" style="width:200px;"><br>
+					<table id="wcLabelEntry">
+						<tr>
+							<b>Labels (Optional):</b>
+						</tr>
+						<tr>
+							<td><input type="text" id="wcLabLast"></td>
+						</tr>
+					</table>
+				</div>
+			</td>
 		</tr>
-	</table><br>
-	<input type="button" value="Add" id="wcAdd">
-	<input type="button" value="Cancel" id="wcCancel">
-	<input type="button" value="Reset" id="wcReset">
+		
+	</table>
 	
 </div>
 
 <div id="clipboardPrompt">
+	<input type='image' src='img/close.png' id='cbClose' onclick='hideMenus()' width='20' height='20' align='right'>
 	<h2>Press Ctrl-C then Enter to Copy</h2>
-	<textarea id="cbText" cols="100"></textarea><br>
+	<textarea id="cbText" cols="50" rows="10"></textarea><br>
 	<input type="button" value="Close" id="cbClose">
 </div>
 

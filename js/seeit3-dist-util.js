@@ -18,14 +18,14 @@ function pointFillStyle(set){
 function pointStrokeStyle(set){
 	if (jQuery('#checkboxFillDots').is(':checked')){
 		return "black";
-	}else{
+	} else {
 		if (jQuery('#checkboxBWView').is(':checked')){
 			var color = graphCollection.categoryColors[set];
 			//var greyVal = parseInt((0.21 * color.r  + 0.71 * color.g + 0.07 * color.b)/3);  //luminosity
 			//var greyVal = parseInt((color.r  + color.g + color.b)/3);												//average
 			var greyVal = parseInt((Math.max(color.r, color.g, color.b) + Math.min(color.r,color.g,color.b))/2)  //lightness
 			return pv.rgb(greyVal, greyVal, greyVal, 1);
-		}else{ 
+		} else { 
 			return graphCollection.categoryColors[set]
 		}
 	}

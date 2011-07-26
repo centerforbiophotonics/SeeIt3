@@ -32,6 +32,7 @@ jQuery('#editInGoogleDocs').click(function(event) {
 
 jQuery('#workSheetSelector').change(function(event) {
 	if (jQuery('#workSheetSelector').val() == "New"){
+		hideMenus();
 		$('#worksheetCreate').slideDown();
 	} else {
 		graphCollection = new GraphCollection();
@@ -140,11 +141,6 @@ $('#applyOptionsToAll').click(function(event){
 	constructVis();
 });
 
-$('#closeGroupingMenu').click(function(){
-	$('#groupingOptions').slideUp();
-});
-
-
 
 /* Visualization Options */
 $('#displayOptions').hide();
@@ -181,10 +177,6 @@ $('#checkboxHideData').change(function() { constructVis();});
 $('#displayOptions').change(function(){
 	vis.render();
 })
-
-$('#displayMenuClose').click(function(){
-	$('#displayOptions').slideUp();
-});
 
 $("#buttonMode").change(function(){
 	console.log("test");
@@ -426,7 +418,7 @@ $("#addFormAdd").click(function(){
 	}
 });
 
-$('#addFormCancel').click(function(){
+$('#addFormClose').click(function(){
 	resetAddDataSetMenu();
 	$('#dataSetAdd').slideUp();
 });
@@ -623,7 +615,7 @@ $("#editFormApply").click(function(){
 	}
 });
 
-$('#editFormCancel').click(function(){
+$('#editFormClose').click(function(){
 	resetEditDataSetMenu();
 	$('#dataSetEdit').slideUp();
 });
@@ -791,11 +783,13 @@ $("#wcAdd").click(function(){
 	}
 });
 
-$('#wcCancel').click(function(){
+$('#wcClose').click(function(){
 	resetWCMenu();
 	$('#worksheetCreate').slideUp();
 	$('#workSheetSelector').val(lastSelectedWorksheet);
 });
+
+
 
 $('#wcReset').click(function(){
 	resetWCMenu();
