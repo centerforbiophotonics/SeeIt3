@@ -164,7 +164,9 @@ jQuery('#sliderDotSize').slider({
 	orientation:'vertical', min:1, max:20, value:5, step:1,
 	slide:function(event, ui) {
 		graphCollection.bucketDotSize = ui.value; 
-		constructVis(); 
+		
+		vis.render();
+		//constructVis(); 
 	}
 });
 
