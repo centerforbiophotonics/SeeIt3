@@ -30,12 +30,12 @@ function constructVis(){
 	jQuery('span').remove();
 	//vis = {};
 	vis = new pv.Panel()
-		.width(graphCollection.w)
-		.height(graphCollection.h)
-		.bottom(graphCollection.padBot)
-		.left(graphCollection.padLeft)
-		.right(graphCollection.padRight)
-		.top(graphCollection.padTop)
+		.width(function(){return graphCollection.w})
+		.height(function(){return graphCollection.h})
+		.bottom(function(){return graphCollection.padBot})
+		.left(function(){return graphCollection.padLeft})
+		.right(function(){return graphCollection.padRight})
+		.top(function(){return graphCollection.padTop})
 	
 	/* Divider Between Graphs and Data Sets */
 	vis.add(pv.Rule)
@@ -293,8 +293,83 @@ function constructVis(){
 					return false;
 			})
 	
-	constructCategoryPanel();
+	//Fit all graphs to scale button
+	var fitScalePanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Scale all graphs identically.")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 110;
+			}else if (!graphCollection.buttonIcon){
+				return 80;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 355;
+			}else if (!graphCollection.buttonIcon){
+				return 265;
+			}else if (!graphCollection.buttonText){
+				return 80;
+			}
+		})
+		.top(-60)
+		.lineWidth(1)
+		.event("click", function(){
+			graphCollection.scaleAllGraphsToFit();
+			vis.render();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+		
+	fitScalePanel.add(pv.Image)
+		.url(function(){
+			return "http://centerforbiophotonics.github.com/SeeIt3/img/ruler.png"
+		})
+		.width(30)
+		.height(30)
+		.top(2)
+		.left(0)
+		.cursor("pointer")
+		.title("Scale all graphs identically.")
+		.event("click", function(){
+			graphCollection.scaleAllGraphsToFit();
+			vis.render();
+		})
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text("Fit Scales")
+			.font(fontString)
+			.textStyle(function(){return "black"})
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
 	
+	constructCategoryPanel();
 	
 	graphCollection.graphs.forEach(function(graph,index,graphs){
 		constructGraphPanel(graph, index);
@@ -504,12 +579,11 @@ function constructCategoryPanel(){
 
 
 function constructGraphPanel(graph, index){
-	graph.overflowFlag = false;
-	
+		
 	var graphPanel = vis.add(pv.Panel)
 		.top(function(){return graph.h*index})
-		.height(graph.h)
-		.width(graph.w)
+		.height(function(){return graph.h})
+		.width(function(){return graph.w})
 		.events("all")
 		.event("click", function(){
 			var oldIndex = graphCollection.selectedGraphIndex;
@@ -545,7 +619,6 @@ function constructGraphPanel(graph, index){
 				graph.selectedCategory = dataTitle;
 			}
 		
-			
 			constructVis();
 		});
 		
@@ -790,7 +863,7 @@ function constructGraphPanel(graph, index){
 				graph.udPartitions.splice(graph.selectedUDPart, 1);
 				graphCollection.selectAUserDefPartition();
 				e.preventDefault();
-				constructVis();
+				vis.render();
 			}
 		});
 		
@@ -1115,8 +1188,8 @@ function constructGraphPanel(graph, index){
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
 			.visible(function(d) {
-				if ((d.y+graph.baseLine) > graph.h) graph.overflowFlag = true;
-				return $('#checkboxHideData').attr('checked') == false  && (d.y+graph.baseLine) < graph.h;
+				return $('#checkboxHideData').attr('checked') == false  && 
+					(d.y+graph.baseLine) < graph.h;
 			})
 			.left(function(d) { return d.x })
 			.bottom(function(d) {
@@ -1133,7 +1206,7 @@ function constructGraphPanel(graph, index){
 			.strokeStyle(function(d) {return pointStrokeStyle(d.set)})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
 			.event("mousedown", pv.Behavior.drag())
-			.event("drag", function(d){  //Memory leak here
+			.event("drag", function(d){  
 				if (graphCollection.editModeEnabled &&
 						vis.mouse().x >= 0 &&
 						vis.mouse().x <= graph.w - 5){
@@ -1152,27 +1225,32 @@ function constructGraphPanel(graph, index){
 						(vis.mouse().x < 0 ||
 						vis.mouse().x > graph.w - 5)){
 							remIndex = index;
-							console.log("test");
 						}
 					});
 					if (remIndex != null)
 						newData.splice(remIndex,1);
 					graphCollection.editData(d.set,d.set,newData);
-					//constructVis();
 					vis.render();
 				}
 			})
 			
 		
-		//Graph Overflow Warning Message	
+		//Graph Overflow Warning Message
 		graphPanel.add(pv.Label)
 			.text("Warning! Data points exceed graph height.")
 			.textStyle("red")
-			.visible(function(){return graph.overflowFlag})
 			.font(fontString)
 			.top(35)
 			.left(graph.w/2)
 			.textAlign("center")
+			.visible(function(){
+				var retVal = false;
+				graph.getDataDrawObjects().forEach(function(d){
+					if ((d.y+graph.baseLine) > graph.h)
+						retVal = true;
+				});
+				return retVal;
+			})
 			
 			
 		/* Legend */

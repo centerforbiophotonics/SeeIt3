@@ -207,7 +207,7 @@ GraphCollection.prototype = {
 			this.categoryColors[key] = colorScale(counter);
 			counter++;
 		}
-		this.scaleAllGraphsToFit();
+		//this.scaleAllGraphsToFit();
 	},
 	
 	editData: function(oldTitle, title, data){
@@ -218,6 +218,10 @@ GraphCollection.prototype = {
 		this.graphs.forEach(function(graph){
 			if (oldTitle != title)
 				delete graph.data[oldTitle];
+			
+			var oldMax = graph.xMax;
+			var oldMin = graph.xMin;
+			
 			graph.data[title] = data;
 			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
 			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
@@ -236,6 +240,14 @@ GraphCollection.prototype = {
 				graph.insufDataForTwo = true;
 			else 
 				graph.insufDataForTwo = false;
+				
+			if (oldMax < graph.xMax)
+				graph.setXScale(null, graph.xMax)
+			
+			if (oldMin > graph.xMin)
+				graph.setXScale(graph.xMin, null)
+				
+				
 		});
 		
 		if (oldTitle != title)
@@ -256,7 +268,7 @@ GraphCollection.prototype = {
 			delete this.categoryColors[oldTitle];
 			
 		}
-		this.scaleAllGraphsToFit();
+		//this.scaleAllGraphsToFit();
 	},
 	
 	editSinglePoint: function(set, label, value){
@@ -273,8 +285,9 @@ GraphCollection.prototype = {
 				graphCol.editedCategories[set] = true;
 				graphCol.worksheet.edited[set] = true;
 				
+				//
 				graphCol.scaleAllGraphsToFit();
-				
+				//
 			}
 		});
 	},
@@ -305,7 +318,9 @@ GraphCollection.prototype = {
 		
 		this.setH(this.calcGraphHeight());
 		
+		//
 		this.scaleAllGraphsToFit();
+		//
 		
 	},
 }
@@ -329,8 +344,12 @@ function Graph(worksheet, graphCollection){
 	this.xMin = pv.min(this.dataVals(), function(d) { return d });
 	this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 	this.n = this.dataVals().length
+	
+	// Scaling Variablez
 	this.scaleMin = 0;
 	this.scaleMax = Math.ceil(this.xMax);
+	this.fitScaleToData = false;
+	this.customScale = false;
 	
 	/* Partition Params */
 	this.partitionGroupSize = 4;
@@ -338,7 +357,7 @@ function Graph(worksheet, graphCollection){
 	
 	this.histogram = false;
 	this.boxPlot = false;
-	this.fitScaleToData = false;
+	
 	
 	this.selectedUDPart = null;
 	this.udPartitions = [];
@@ -346,7 +365,6 @@ function Graph(worksheet, graphCollection){
 	this.groupingMode = "NoGroups";
 	
 	/* Graph Overflow */
-	this.overflowFlag = false;
 	this.insufDataForFour = true;
 	this.insufDataForTwo = true;
 	
@@ -373,10 +391,17 @@ Graph.prototype = {
 	addCategory: function(category){
 		if (this.includedCategories.indexOf(category) == -1 && this.includedCategories.length < 4){
 			this.includedCategories.push(category);
+			
 			this.xMax = pv.max(this.dataVals(), function(d) { return d });
 			this.xMin = pv.min(this.dataVals(), function(d) { return d });
 			this.n = this.dataVals().length;
-			this.graphCollection.scaleAllGraphsToFit();
+			
+			//if (this.xMax > this.scaleMax)
+			//	this.setXScale(null,this.xMax);
+			
+			//if (this.xMin < this.scaleMin)
+			//	this.setXScale(this.xMin,null);
+			
 			this.legendHidden = false;
 			
 			if (this.dataVals().length < 4)
@@ -400,7 +425,10 @@ Graph.prototype = {
 		this.xMax = pv.max(this.dataVals(), function(d) { return d });
 		this.xMin = pv.min(this.dataVals(), function(d) { return d });
 		this.n = this.dataVals().length;
+		
+		//
 		this.graphCollection.scaleAllGraphsToFit();
+		//
 		
 		if (this.dataVals().length < 4)
 			this.insufDataForFour = true;
@@ -453,7 +481,7 @@ Graph.prototype = {
 			colHead += 'label,value,';
 			
 			fullData[cat].forEach(function(d, i){
-				data[i] += '"'+d.label+'","'+d.value+'",';
+				data[i] += '"'+d.label+'","'+d.value.toFixed(1)+'",';
 			});
 		});
 		

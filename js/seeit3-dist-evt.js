@@ -5,7 +5,7 @@ $(window).resize(function() {
 	graphCollection.setW(calcGraphWidth());
 	graphCollection.setH(graphCollection.calcGraphHeight());
 	
-	constructVis();
+	vis.render();
 	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 	positionDatasetAddMenu();
 	positionDatasetEditMenu();
@@ -57,7 +57,7 @@ jQuery('#groupingOptions').change(function(event) {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].groupingMode = $('input:radio[name=mode]:checked').attr('id').slice(5);
 	graphCollection.graphs[graphCollection.selectedGraphIndex].histogram = $('#checkboxHistogram').is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].boxPlot = $('#checkboxBoxPlot').is(':checked');
-  constructVis();
+  vis.render();
   event.stopPropagation();
 });
 
@@ -69,8 +69,9 @@ $('#textXMin').change(function(event) {
 	} else {
 		graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = false;
 		graphCollection.graphs[graphCollection.selectedGraphIndex].setXScale(textBoxVal, curMax);
+		graphCollection.graphs[graphCollection.selectedGraphIndex].customScale = true;
 		graphCollection.updateMenuOptions();
-		constructVis();
+		vis.render();
 	}
 });
 
@@ -82,8 +83,9 @@ $('#textXMax').change(function(event) {
 	} else {
 		graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = false;
 		graphCollection.graphs[graphCollection.selectedGraphIndex].setXScale(curMin, textBoxVal);
+		graphCollection.graphs[graphCollection.selectedGraphIndex].customScale = true;
 		graphCollection.updateMenuOptions();
-		constructVis();
+		vis.render();
 	}
 });
 
@@ -93,7 +95,7 @@ $('#fixedGroupSize').change(function(event) {
 		$('#fixedGroupSize').val(graphCollection.graphs[graphCollection.selectedGraphIndex].partitionGroupSize);
 	} else {
 		graphCollection.graphs[graphCollection.selectedGraphIndex].partitionGroupSize = textBoxVal;
-		constructVis();
+		vis.render();
 	}
 });
 
@@ -103,7 +105,7 @@ $('#fixedIntervalWidth').change(function(event) {
 		$('#fixedIntervalWidth').val(graphCollection.graphs[graphCollection.selectedGraphIndex].partitionIntervalWidth);
 	} else {
 		graphCollection.graphs[graphCollection.selectedGraphIndex].partitionIntervalWidth = textBoxVal;
-		constructVis();
+		vis.render();
 	}
 });
 
@@ -111,7 +113,7 @@ $('#fitScaleToData').change(function() {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = jQuery('#fitScaleToData').is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].setXScale();
 	graphCollection.updateMenuOptions();
-	constructVis();
+	vis.render();
 });
 
 $('#applyOptionsToAll').click(function(event){
@@ -138,7 +140,7 @@ $('#applyOptionsToAll').click(function(event){
 
 		graph.setXScale();
 	});
-	constructVis();
+	vis.render();
 });
 
 $('#groupOptClose').click(function(){
@@ -149,7 +151,7 @@ $('#groupOptClose').click(function(){
 /* Visualization Options */
 $('#displayOptions').hide();
 
-$('#checkboxBWView').change(function() { return constructVis(); });
+$('#checkboxBWView').change(function() { vis.render() });
 
 jQuery('#sliderTextSize').slider({ 
 	orientation:'vertical', min:12, max:20, value:12, step:1,
@@ -164,9 +166,7 @@ jQuery('#sliderDotSize').slider({
 	orientation:'vertical', min:1, max:20, value:5, step:1,
 	slide:function(event, ui) {
 		graphCollection.bucketDotSize = ui.value; 
-		
 		vis.render();
-		//constructVis(); 
 	}
 });
 
@@ -174,11 +174,11 @@ jQuery('#sliderDivisions').slider({
 	orientation:'vertical', min:2, max:40, value:30, step:1,
 	slide:function(event, ui) { 
 		graphCollection.buckets = ui.value;
-		constructVis();
+		vis.render();
 	}
 });
 
-$('#checkboxHideData').change(function() { constructVis();});
+$('#checkboxHideData').change(function() { vis.render();});
 
 $('#displayOptions').change(function(){
 	vis.render();
@@ -418,7 +418,7 @@ $("#addFormAdd").click(function(){
 		$('#addNoLabelWarning').hide();
 		$('#addNoValueWarning').hide();
 		graphCollection.addData(datasetTitle, data);
-		constructVis();
+		vis.render();
 		$('#dataSetAdd').slideUp();
 		resetAddDataSetMenu();
 	}
@@ -615,7 +615,7 @@ $("#editFormApply").click(function(){
 		$('#editNoLabelWarning').hide();
 		$('#editNoValueWarning').hide();
 		graphCollection.editData(oldDatasetTitle, datasetTitle, data);
-		constructVis();
+		vis.render();
 		$('#dataSetEdit').slideUp();
 		resetEditDataSetMenu();
 	}
