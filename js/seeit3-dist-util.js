@@ -144,6 +144,7 @@ function hideMenus(){
 	$('#displayOptions').slideUp();
 	$('#worksheetCreate').slideUp();
 	$('#clipboardPrompt').slideUp();
+	$('#aboutPopup').slideUp();
 }
 
 function positionGroupingMenuOverGraph(index, graphCollection){

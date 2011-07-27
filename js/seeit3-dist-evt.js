@@ -12,6 +12,7 @@ $(window).resize(function() {
 	positionDisplayMenu();
 	positionCreateWorksheetMenu();
 	positionClipboardPrompt();
+	positionAboutPopup();
 });
 
 /* Top Bar Menu Items */
@@ -47,6 +48,19 @@ $('#refreshWorksheet').click(function(event){
 		jQuery('#fitScaleToData').attr('checked', false);
 	}
 });
+
+$('#about').click(function(){
+	$('#aboutPopup').slideToggle();
+});
+
+$('#aboutPopup').hide();
+
+function positionAboutPopup(){
+	$('#aboutPopup').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2 - $('#aboutPopup').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#aboutPopup').width()/2)+"px");
+}
+positionAboutPopup();
 
 /* Grouping Menu */
 $('#groupingOptions').hide();

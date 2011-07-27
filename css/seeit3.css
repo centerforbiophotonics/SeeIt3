@@ -93,3 +93,17 @@ table#menuItems h3 {
   overflow-y: hidden;
   -ms-overflow-y: hidden;
 }
+
+#aboutPopup {
+	background: #ffffff;
+	border:1px solid black;
+	padding: 5px;
+	width: 400px;
+	max-height: 400px;
+  overflow:scroll;
+  overflow-x: hidden;
+  -ms-overflow-x: hidden;
+  display: hidden;
+  overflow-y: hidden;
+  -ms-overflow-y: hidden;
+}

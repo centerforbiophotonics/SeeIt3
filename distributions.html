@@ -41,6 +41,7 @@
 				<td width="25%"><a href="#" id="editInGoogleDocs">Open in Google Docs</a></td>
 				<td><label for="newSpreadsheetURL">Add a new spreadsheet by pasting its URL:</label></td>
 				<td><input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." /></td>
+				<td width="10%" align='right'><input type="button" value="About" id="about"></td>
 			</tr>
 		</table>
 	</div>
@@ -83,7 +84,6 @@
 	<input type="checkbox" id="fitScaleToData" style="margin-left:10px;">
 	<label for="fitScaleToData">Fit Scale Individually</label><br>
 	
-	<!-- <input type="button" value="Apply to Selected" id="applyOptionsToSelected"> -->
 	<input type="button" value="Apply to All" id="applyOptionsToAll">
 </div>
 
@@ -262,6 +262,18 @@
 	<h2>Press Ctrl-C then Enter to Copy</h2>
 	<textarea id="cbText" cols="50" rows="10"></textarea><br>
 	<input type="button" value="Close" id="cbClose">
+</div>
+
+<div id="aboutPopup">
+	<input type='image' src='img/close.png' id='aboutClose' onclick='hideMenus()' width='20' height='20' align='right'>
+	<h2>SeeIt3: Distributions</h2>
+	<p>
+		SeeIt statistics visualization and interpretation program. <br>
+		Made at University of California - Davis, Copyright UC Regents 2011. <br>
+		Funded by NIH-SEPA grant# 1R25RR026008. <br>
+		Project Director: Marco Molinaro (mmolinaro@ucdavis.edu). <br>
+		Written by Matthew Steinwachs and Andrew Lague.
+	</p>
 </div>
 
 <p id="loadingMsg">Loading...</p>
