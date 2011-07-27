@@ -401,6 +401,7 @@ Graph.prototype = {
 			
 			//if (this.xMin < this.scaleMin)
 			//	this.setXScale(this.xMin,null);
+			this.graphCollection.scaleAllGraphsToFit();
 			
 			this.legendHidden = false;
 			

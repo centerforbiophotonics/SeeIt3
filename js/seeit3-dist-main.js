@@ -301,11 +301,11 @@ function constructVis(){
 		.height(30)
 		.width(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 110;
+				return 105;
 			}else if (!graphCollection.buttonIcon){
-				return 80;
+				return 75;
 			}else if (!graphCollection.buttonText){
-				return 34;
+				return 32;
 			}
 		})
 		.left(function() {
@@ -314,7 +314,7 @@ function constructVis(){
 			}else if (!graphCollection.buttonIcon){
 				return 265;
 			}else if (!graphCollection.buttonText){
-				return 80;
+				return 77;
 			}
 		})
 		.top(-60)
@@ -338,7 +338,7 @@ function constructVis(){
 		})
 		.width(30)
 		.height(30)
-		.top(2)
+		.top(1)
 		.left(0)
 		.cursor("pointer")
 		.title("Scale all graphs identically.")
