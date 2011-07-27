@@ -48,8 +48,6 @@ $('#refreshWorksheet').click(function(event){
 	}
 });
 
-
-
 /* Grouping Menu */
 $('#groupingOptions').hide();
 
@@ -422,6 +420,8 @@ $("#addFormAdd").click(function(){
 		$('#dataSetAdd').slideUp();
 		resetAddDataSetMenu();
 	}
+	
+	constructVis();
 });
 
 $('#addFormClose').click(function(){

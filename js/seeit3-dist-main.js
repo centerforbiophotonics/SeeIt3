@@ -63,7 +63,7 @@ function constructVis(){
 	
 	/*Graph Title*/		  
 	vis.add(pv.Label)
-		.left(graphCollection.w / 2)
+		.left(function(){return graphCollection.w / 2})
 		.top(-5)
 		.textAlign("center")
 		.textAngle(0)
@@ -320,6 +320,10 @@ function constructVis(){
 		.top(-60)
 		.lineWidth(1)
 		.event("click", function(){
+			graphCollection.graphs.forEach(function(graph){
+				graph.customScale = false;
+				graph.fitScaleToData = false;
+			});
 			graphCollection.scaleAllGraphsToFit();
 			vis.render();
 		})
@@ -343,6 +347,10 @@ function constructVis(){
 		.cursor("pointer")
 		.title("Scale all graphs identically.")
 		.event("click", function(){
+			graphCollection.graphs.forEach(function(graph){
+				graph.customScale = false;
+				graph.fitScaleToData = false;
+			});
 			graphCollection.scaleAllGraphsToFit();
 			vis.render();
 		})
@@ -1457,22 +1465,22 @@ function constructGraphPanel(graph, index){
 	} else {
 		//Empty Graph Message
 		graphPanel.add(pv.Label)
-			.left(graph.w/2)
-			.top(graph.h/2)
+			.left(function(){return graph.w/2})
+			.top(function(){return graph.h/2})
 			.textAlign("center")
 			.textBaseline("center")
 			.text("Empty Graph")
 			.font(fontString)
 		graphPanel.add(pv.Label)
-			.left(graph.w/2)
-			.top(graph.h/2 + 20)
+			.left(function(){return graph.w/2})
+			.top(function(){return graph.h/2 + 20})
 			.textAlign("center")
 			.textBaseline("center")
 			.text("Drag a Dataset from the Left to Add")
 			.font(fontString)
 		graphPanel.add(pv.Label)
-			.left(graph.w/2)
-			.top(graph.h/2 + 40)
+			.left(function(){return graph.w/2})
+			.top(function(){return graph.h/2 + 40})
 			.textAlign("center")
 			.textBaseline("center")
 			.text("Maximum 4 Datasets per Graph")

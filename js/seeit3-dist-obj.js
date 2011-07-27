@@ -28,7 +28,7 @@ function GraphCollection(){
 	
 	//Drawing Variables
 	this.w = calcGraphWidth();
-	this.padBot = 20;
+	this.padBot = 0;
 	this.padTop = 60;
 	this.padLeft = 235;
 	this.padRight = 25;
@@ -75,11 +75,11 @@ GraphCollection.prototype = {
 		if (this.graphs.length > 4)
 			return Math.max(this.defaultGraphHeight*this.graphs.length,
 											this.numberOfCategories*40,
-											(window.innerHeight - jQuery('div#notGraph').height()) - 120
+											(window.innerHeight - jQuery('div#notGraph').height()) - 105
 										 );
 		else
 			return Math.max(this.numberOfCategories*40,
-											(window.innerHeight - jQuery('div#notGraph').height()) - 120
+											(window.innerHeight - jQuery('div#notGraph').height()) - 105
 										 );
 	},
 	
@@ -163,7 +163,8 @@ GraphCollection.prototype = {
 			if (graph.xMin < min) min = graph.xMin
 		});
 		this.graphs.forEach(function(graph){
-			graph.setXScale(min, Math.ceil(max)+0.1);
+			if (!graph.customScale || graph.xMin < graph.scaleMin || graph.xMax > graph.scaleMax)
+				graph.setXScale(min, Math.ceil(max)+0.1);
 		});
 	},
 	
@@ -207,7 +208,7 @@ GraphCollection.prototype = {
 			this.categoryColors[key] = colorScale(counter);
 			counter++;
 		}
-		//this.scaleAllGraphsToFit();
+		this.scaleAllGraphsToFit();
 	},
 	
 	editData: function(oldTitle, title, data){
@@ -241,13 +242,11 @@ GraphCollection.prototype = {
 			else 
 				graph.insufDataForTwo = false;
 				
-			if (oldMax < graph.xMax)
+			if (graph.xMax > graph.scaleMax)
 				graph.setXScale(null, graph.xMax)
 			
-			if (oldMin > graph.xMin)
+			if (graph.xMin < graph.scaleMin)
 				graph.setXScale(graph.xMin, null)
-				
-				
 		});
 		
 		if (oldTitle != title)
@@ -268,7 +267,7 @@ GraphCollection.prototype = {
 			delete this.categoryColors[oldTitle];
 			
 		}
-		//this.scaleAllGraphsToFit();
+		this.scaleAllGraphsToFit();
 	},
 	
 	editSinglePoint: function(set, label, value){
@@ -379,9 +378,14 @@ Graph.prototype = {
 		var newMin = min || this.scaleMin;
 		var newMax = max || this.scaleMax;
 		
+		if (min == 0)
+			newMin = min;
+		
 		if (this.fitScaleToData) {
+			console.log("fit")
 			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
 		} else {
+			console.log(newMin + "..." + newMax)
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
 			this.scaleMin = newMin;
 			this.scaleMax = newMax;
@@ -396,11 +400,6 @@ Graph.prototype = {
 			this.xMin = pv.min(this.dataVals(), function(d) { return d });
 			this.n = this.dataVals().length;
 			
-			//if (this.xMax > this.scaleMax)
-			//	this.setXScale(null,this.xMax);
-			
-			//if (this.xMin < this.scaleMin)
-			//	this.setXScale(this.xMin,null);
 			this.graphCollection.scaleAllGraphsToFit();
 			
 			this.legendHidden = false;
@@ -427,9 +426,7 @@ Graph.prototype = {
 		this.xMin = pv.min(this.dataVals(), function(d) { return d });
 		this.n = this.dataVals().length;
 		
-		//
 		this.graphCollection.scaleAllGraphsToFit();
-		//
 		
 		if (this.dataVals().length < 4)
 			this.insufDataForFour = true;
