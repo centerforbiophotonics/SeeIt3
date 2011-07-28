@@ -308,6 +308,7 @@ $('#addNoLabelWarning').hide();
 $('#addNoValueWarning').hide();
 $('#addNoDataWarning').hide();
 $('#addDupTitleWarning').hide();
+$('#addPasteFormatWarning').hide();
 
 
 var addNextRow = 1;
@@ -349,6 +350,82 @@ $('#addValLast').keyup(function(evt){
 	}
 });
 
+//Paste data handlers
+var ctrlDown = false;
+var ctrlKey = 17, vKey = 86;
+
+$('#addPaste').keydown(function(e){
+  if (e.keyCode == ctrlKey) ctrlDown = true;
+}).keyup(function(e){
+	if (e.keyCode == ctrlKey) ctrlDown = false;
+	else if (e.keyCode == vKey && ctrlDown){
+		var rawText = $('#addPaste').val();
+		var cells = [];
+		rawText.split('\n').forEach(function(line){
+			cells.push(line.split('\t'));
+		});
+	}
+	console.log(cells);
+	resetAddDataSetMenu();
+	if (!populateAddMenuFromPaste(cells))
+		$('#addPasteFormatWarning').show();
+});
+
+function populateAddMenuFromPaste(cells){
+	var noFormatError = true;
+	if ($('#pasteHeading').is(':checked')){
+		if (cells[0].length == 1)
+			$('#addDataSetTitle').val(cells[0][0]);
+		else if (cells[0].length >= 2)
+			$('#addDataSetTitle').val(cells[0][1]);
+		else{
+			noFormatError = false;
+		}
+			
+		cells.slice(1).forEach(function(line){
+			if (line.length >= 2){
+				if (line.length > 2) noFormatError = false;
+				
+				$('#addDatasetEntry tr:last').before(
+					"<tr id='addRow" +addNextRow +
+					"'><td><input type='text' id='addLab"+addNextRow +
+					"' value='"+line[0] +
+					"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal"+addNextRow +
+					"' value='"+line[1] +
+					"'></td>"+
+					"<td><input type='image' src='img/garbage.png' id='addGarbage"+
+					addNextRow +
+					"' onclick='delAddField()' width='20' height='20'></td></tr>");
+					
+				addNextRow++;
+			} else if(line.length != 1 || line[0] != ""){
+				noFormatError = false;
+			}
+		});
+	} else {
+		cells.forEach(function(line){
+			if (line.length >= 2){
+				if (line.length > 2) noFormatError = false;
+				
+				$('#addDatasetEntry tr:last').before(
+					"<tr id='addRow" +addNextRow +
+					"'><td><input type='text' id='addLab"+addNextRow +
+					"' value='"+line[0] +
+					"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal"+addNextRow +
+					"' value='"+line[1] +
+					"'></td>"+
+					"<td><input type='image' src='img/garbage.png' id='addGarbage"+
+					addNextRow +
+					"' onclick='delAddField()' width='20' height='20'></td></tr>");
+					
+				addNextRow++;
+			} else if(line.length != 1 || line[0] != ""){
+				noFormatError = false;
+			}
+		});
+	}
+	return noFormatError;
+}
 
 $("#addFormAdd").click(function(){
 	var labelError = false;
@@ -363,6 +440,7 @@ $("#addFormAdd").click(function(){
 	$('#addNoValueWarning').hide();
 	$('#addNoDataWarning').hide();
 	$('#addDupTitleWarning').hide();
+	$('#addPasteFormatWarning').hide();
 	
 	var datasetTitle;
 	var data = [];
@@ -449,9 +527,18 @@ $('#addFormReset').click(function(){
 });
 
 function resetAddDataSetMenu(){
+	$('#addNonNumWarning').hide();
+	$('#addNoTitleWarning').hide();
+	$('#addNoLabelWarning').hide();
+	$('#addNoValueWarning').hide();
+	$('#addNoDataWarning').hide();
+	$('#addDupTitleWarning').hide();
+	$('#addPasteFormatWarning').hide();
+	
 	$('#addDataSetTitle').val("");
 	$('#addValLast').val("");
 	$('#addLabLast').val("");
+	$('#addPaste').val("");
 	$('#addLabLast').focus();
 	for (var i=0; i<addNextRow; i++)
 		$('#addRow'+i).remove();

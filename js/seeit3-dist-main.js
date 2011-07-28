@@ -1202,6 +1202,7 @@ function constructGraphPanel(graph, index){
 		var dragLabel = graphPanel.add(pv.Label)
 			.visible(false)
 			.font(fontString)
+			.textAlign("center")
 			.text("0")
 		
 		

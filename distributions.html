@@ -144,18 +144,25 @@
 				<input type="button" value="Reset" id="addFormReset">
 				<input type='image' src='img/close.png' id='addFormClose' width='20' height='20' align='right'>
 				<h2>New Dataset</h2>
+				<label for="addPaste"><b>Paste an entire dataset here:</b></label><br>
+				<label for="pasteHeading">With heading</label>
+				<input type="checkbox" id="pasteHeading" checked>
+				<textarea id="addPaste" rows="1" width="180px"></textarea><br>
+				
+				
 				<center><p id="addNonNumWarning" style="color:red;">Value must be a number!</p></center>
 				<center><p id="addNoTitleWarning" style="color:red;">Dataset must have a title!</p></center>
 				<center><p id="addNoLabelWarning" style="color:red;">All values must have labels!</p></center>
 				<center><p id="addNoValueWarning" style="color:red;">All labels must have values!</p></center>
 				<center><p id="addNoDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
 				<center><p id="addDupTitleWarning" style="color:red;">Another dataset with that title already exists!</p></center>
+				<center><p id="addPasteFormatWarning" style="color:red;">The data you pasted is formatted incorrectly<br>and may not have been imported correctly.</p></center>
 			</td>
 		</tr>
 		
 		<tr>
 			<td>
-				<div style="width:400px; overflow:auto;height:150px;">
+				<div style="width:400px; overflow:auto;height:200px;">
 					<label for="addDataSetTitle"><b>Title:</b></label>
 					<input type="text" id="addDataSetTitle" style="width:200px;"><br>
 					
@@ -166,6 +173,7 @@
 						</tr>
 						<tr>
 							<td><input type="text" id="addLabLast"></td>
+							<!-- <td><textarea id="addLabLast" rows="1" width="180px"></textarea></td> -->
 							<td><input type="text" id="addValLast"></td>
 						</tr>
 					</table>

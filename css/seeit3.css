@@ -107,3 +107,12 @@ table#menuItems h3 {
   overflow-y: hidden;
   -ms-overflow-y: hidden;
 }
+
+#addPaste{
+	resize: none;
+	vertical-align: middle;
+	overflow-x: hidden;
+	-ms-overflow-x: hidden;
+	overflow-y: hidden;
+	-ms-overflow-y: hidden;
+}
