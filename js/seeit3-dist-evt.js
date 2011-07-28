@@ -499,6 +499,16 @@ function delAddField(){
 	
 }
 
+//var ctrlDown = false;
+//var ctrlKey = 17, vKey = 86;
+
+//$('#dataSetAdd').keydown(function(e){
+//	console.log("tester");
+//  if (e.keyCode == ctrlKey) ctrlDown = true;
+//}).keyup(function(e){
+//	if (e.keyCode == ctrlKey) ctrlDown = false;
+//});
+
 
 /* Edit Data Set Menu */
 function positionDatasetEditMenu(){

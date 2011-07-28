@@ -385,7 +385,6 @@ Graph.prototype = {
 			console.log("fit")
 			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
 		} else {
-			console.log(newMin + "..." + newMax)
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
 			this.scaleMin = newMin;
 			this.scaleMax = newMax;
@@ -476,7 +475,7 @@ Graph.prototype = {
 		
 		this.includedCategories.forEach(function(cat){
 			heading += '"'+cat+'",,';
-			colHead += 'label,value,';
+			colHead += '"Label","value",';
 			
 			fullData[cat].forEach(function(d, i){
 				data[i] += '"'+d.label+'","'+d.value.toFixed(1)+'",';

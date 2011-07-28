@@ -26,6 +26,8 @@ var vis = {};
 var touch = new Touch();
 var fontString = "bold 14px arial";
 
+var dragging = false;
+
 function constructVis(){
 	jQuery('span').remove();
 	//vis = {};
@@ -297,7 +299,7 @@ function constructVis(){
 	var fitScalePanel = vis.add(pv.Panel)
 		.events("all")
 		.cursor("pointer")
-		.title("Scale all graphs identically.")
+		.title("Scale all graphs identically")
 		.height(30)
 		.width(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
@@ -594,40 +596,43 @@ function constructGraphPanel(graph, index){
 		.width(function(){return graph.w})
 		.events("all")
 		.event("click", function(){
-			var oldIndex = graphCollection.selectedGraphIndex;
-			if (oldIndex != index){
-				graphCollection.selectAUserDefPartition();
-			}
-			graphCollection.selectedGraphIndex = index;
-			graphCollection.updateMenuOptions();
-			
-			positionGroupingMenuOverGraph(index, graphCollection);
+			if (!dragging){
+				var oldIndex = graphCollection.selectedGraphIndex;
+				if (oldIndex != index){
+					graphCollection.selectAUserDefPartition();
+				}
+				graphCollection.selectedGraphIndex = index;
+				graphCollection.updateMenuOptions();
+				
+				positionGroupingMenuOverGraph(index, graphCollection);
+						
+				hideMenus();
+				if (graph.selectedCategory != null && graphCollection.editModeEnabled){
+					var loc = graphPanel.mouse().x;
 					
-			hideMenus();
-			if (graph.selectedCategory != null && graphCollection.editModeEnabled){
-				var loc = graphPanel.mouse().x;
-				
-				
-				graph.data[graph.selectedCategory].push(
-					{"label": "default"+graph.nextDefaultLabel[graph.selectedCategory]++,
-					 "value": graph.x.invert(loc)}
-				);
-				
-				graphCollection.editData(graph.selectedCategory, graph.selectedCategory, graph.data[graph.selectedCategory]);
-			} else if (graphCollection.editModeEnabled && 
-									graph.includedCategories.length < 4 &&
-									graph.includedCategories.length > 0) {
-				var loc = graphPanel.mouse().x;
-				
-				var dataTitle = "userCreatedCategory"+graphCollection.nextDefaultCategory++;
-				var data = [{"label":"first", "value":graph.x.invert(loc)}];
-				
-				graphCollection.addData(dataTitle, data);
-				graph.addCategory(dataTitle);
-				graph.selectedCategory = dataTitle;
+					
+					graph.data[graph.selectedCategory].push(
+						{"label": "default"+graph.nextDefaultLabel[graph.selectedCategory]++,
+						 "value": graph.x.invert(loc)}
+					);
+					
+					graphCollection.editData(graph.selectedCategory, graph.selectedCategory, graph.data[graph.selectedCategory]);
+				} else if (graphCollection.editModeEnabled && 
+										graph.includedCategories.length < 4 &&
+										graph.includedCategories.length > 0) {
+					var loc = graphPanel.mouse().x;
+					
+					var dataTitle = "userCreatedCategory"+graphCollection.nextDefaultCategory++;
+					var data = [{"label":"first", "value":graph.x.invert(loc)}];
+					
+					graphCollection.addData(dataTitle, data);
+					graph.addCategory(dataTitle);
+					graph.selectedCategory = dataTitle;
+				}
+			
+				constructVis();
 			}
-		
-			constructVis();
+			dragging = false;
 		});
 		
 	graph.panel = graphPanel;
@@ -1200,9 +1205,7 @@ function constructGraphPanel(graph, index){
 					(d.y+graph.baseLine) < graph.h;
 			})
 			.left(function(d) { return d.x })
-			.bottom(function(d) {
-				return d.y + graph.baseLine; 
-			})
+			.bottom(function(d) { return d.y + graph.baseLine })
 			.cursor(function(){
 				if (graphCollection.editModeEnabled)
 					return "move";
@@ -1239,6 +1242,13 @@ function constructGraphPanel(graph, index){
 						newData.splice(remIndex,1);
 					graphCollection.editData(d.set,d.set,newData);
 					vis.render();
+				
+					if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
+							Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
+					{
+						dragging = true;
+					}
+				
 				}
 			})
 			
