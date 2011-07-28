@@ -1197,6 +1197,14 @@ function constructGraphPanel(graph, index){
 			.left(graph.w/2)
 			.textAlign("center")
 		
+		
+		//Mouse position label for drag editing
+		var dragLabel = graphPanel.add(pv.Label)
+			.visible(false)
+			.font(fontString)
+			.text("0")
+		
+		
 		/* Dots */
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
@@ -1224,6 +1232,12 @@ function constructGraphPanel(graph, index){
 					
 					graphCollection.editSinglePoint(d.set,d.label,graph.x.invert(vis.mouse().x));
 					graph.selectedCategory = d.set;
+					
+					dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1));
+					dragLabel.left(graphPanel.mouse().x)
+					dragLabel.top(graphPanel.mouse().y - 10)
+					dragLabel.visible(true)
+					
 					vis.render();
 				}
 			})
@@ -1241,14 +1255,17 @@ function constructGraphPanel(graph, index){
 					if (remIndex != null)
 						newData.splice(remIndex,1);
 					graphCollection.editData(d.set,d.set,newData);
-					vis.render();
+					
 				
 					if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
 							Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
 					{
 						dragging = true;
 					}
-				
+					
+					dragLabel.visible(false);
+					
+					vis.render();
 				}
 			})
 			
