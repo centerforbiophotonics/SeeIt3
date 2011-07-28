@@ -1239,7 +1239,11 @@ function constructGraphPanel(graph, index){
 					dragLabel.visible(true)
 					
 					vis.render();
+				} else {
+					dragLabel.text("Delete");
+					vis.render();
 				}
+					
 			})
 			.event("dragend",function(d){
 				if (graphCollection.editModeEnabled){
