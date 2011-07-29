@@ -1084,8 +1084,10 @@ function constructGraphPanel(graph, index){
 			
 		/* Box Plot Lines */
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[0], graph.baseLine],
-						 [partitionDataInFour(graph)[0], graph.h * 0.80]]})
+			.data(function(){
+				return [[partitionDataInFour(graph)[1] - 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), graph.baseLine],
+						 [partitionDataInFour(graph)[1] - 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), graph.h * 0.80]]
+			})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1096,8 +1098,10 @@ function constructGraphPanel(graph, index){
 			})
 																	 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[4], graph.baseLine],
-						 [partitionDataInFour(graph)[4], graph.h * 0.80]]})
+			.data(function(){
+				return [[partitionDataInFour(graph)[3] + 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), graph.baseLine],
+						 [partitionDataInFour(graph)[3] + 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), graph.h * 0.80]]
+			})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1144,7 +1148,7 @@ function constructGraphPanel(graph, index){
 			})						
 																	 						
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+			.data(function(){return [[partitionDataInFour(graph)[1] - 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
 						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
@@ -1181,7 +1185,7 @@ function constructGraphPanel(graph, index){
 			
 		graphPanel.add(pv.Line)
 			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [partitionDataInFour(graph)[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+						 [partitionDataInFour(graph)[3] + 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)

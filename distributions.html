@@ -31,16 +31,18 @@
 	<div id="menu" class="menu">
 		<table width="100%">
 			<tr>
-				<td>Select a dataset (worksheet):</td> 
-				<td>
+				<td>Select a worksheet: 
 					<select id="workSheetSelector">
 						<option value="New">*Add a new worksheet*</option>
 					</select>
+					<input type="button" value="Refresh" id="refreshWorksheet">
+					<a href="#" id="editInGoogleDocs">View Data</a>
 				</td>
-				<td><input type="button" value="Refresh" id="refreshWorksheet"></td>
-				<td width="25%"><a href="#" id="editInGoogleDocs">Open in Google Docs</a></td>
-				<td><label for="newSpreadsheetURL">Add a new spreadsheet by pasting its URL:</label></td>
-				<td><input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." /></td>
+				<td>
+					<label for="newSpreadsheetURL">New worksheet URL:</label>
+					<input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
+				</td>
+				<td><a href="disthelp.html" id="help">Help</a></td>
 				<td width="10%" align='right'><input type="button" value="About" id="about"></td>
 			</tr>
 		</table>
