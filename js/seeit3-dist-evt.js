@@ -69,6 +69,7 @@ jQuery('#groupingOptions').change(function(event) {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].groupingMode = $('input:radio[name=mode]:checked').attr('id').slice(5);
 	graphCollection.graphs[graphCollection.selectedGraphIndex].histogram = $('#checkboxHistogram').is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].boxPlot = $('#checkboxBoxPlot').is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].showMMM = $('#checkboxMMM').is(':checked');
   vis.render();
   event.stopPropagation();
 });
@@ -197,7 +198,6 @@ $('#displayOptions').change(function(){
 })
 
 $("#buttonMode").change(function(){
-	console.log("test");
 	var val = jQuery("#buttonMode option:selected").val();
 	
 	if (val == "both"){
@@ -365,7 +365,6 @@ $('#addPaste').keydown(function(e){
 			cells.push(line.split('\t'));
 		});
 	}
-	console.log(cells);
 	resetAddDataSetMenu();
 	if (!populateAddMenuFromPaste(cells))
 		$('#addPasteFormatWarning').show();
@@ -585,16 +584,6 @@ function delAddField(){
 		addNextRow = 1;
 	
 }
-
-//var ctrlDown = false;
-//var ctrlKey = 17, vKey = 86;
-
-//$('#dataSetAdd').keydown(function(e){
-//	console.log("tester");
-//  if (e.keyCode == ctrlKey) ctrlDown = true;
-//}).keyup(function(e){
-//	if (e.keyCode == ctrlKey) ctrlDown = false;
-//});
 
 
 /* Edit Data Set Menu */

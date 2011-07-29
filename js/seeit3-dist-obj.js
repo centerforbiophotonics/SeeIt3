@@ -145,6 +145,8 @@ GraphCollection.prototype = {
 		}
 		
 		$('#fitScaleToData').attr('checked', this.graphs[this.selectedGraphIndex].fitScaleToData);
+		
+		$('#checkboxMMM').attr('checked', this.graphs[this.selectedGraphIndex].showMMM);
 	},
 	
 	selectAUserDefPartition: function(graphIndex, partIndex){
@@ -363,6 +365,8 @@ function Graph(worksheet, graphCollection){
 	
 	this.groupingMode = "NoGroups";
 	
+	this.showMMM = false;
+	
 	/* Graph Overflow */
 	this.insufDataForFour = true;
 	this.insufDataForTwo = true;
@@ -566,6 +570,48 @@ Graph.prototype = {
 		}
 		return points;
 		
+	},
+	
+	getMeanMedianMode: function(){
+		var data = this.dataVals();
+		var mean = 0;
+		var median;
+		var mode = [];
+		
+		data.forEach(function(d){
+			mean += d;
+		});
+		mean = mean/data.length;
+		
+		if (data.length % 2 == 0)
+			median = (data[data.length/2-1]+data[data.length/2])/2;
+		else
+			median = data[Math.floor(data.length/2)];
+			
+		var counts = {};
+		data.forEach(function(d){
+			if (counts.hasOwnProperty(d))
+				counts[d]++;
+			else
+				counts[d] = 1;
+		});
+		var max = 0;
+		for (var key in counts){
+			if (counts[key] == max)
+				mode.push(key);
+			else if (counts[key] > max){
+				mode = [key];
+				max = counts[key]
+			}
+		}
+		
+		var retVal = [mean, median];
+		if(max != 1)
+			mode.forEach(function(m){
+				retVal.push(parseFloat(m))
+			});
+		
+		return retVal;
 	},
 }
 

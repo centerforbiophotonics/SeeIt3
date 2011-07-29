@@ -1,6 +1,6 @@
 //Entry Point
 var exampleSpreadsheets = [
-	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),		//Combined Format
+	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
 ];
 
 
@@ -9,7 +9,14 @@ var lastSelectedWorksheet;
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
 	if ($('#workSheetSelector option[value='+event.worksheet.URL+']').length == 0)
-		jQuery('#workSheetSelector').prepend(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + " by " + event.worksheet.labelType + "</option>")).val(event.worksheet.URL);
+		jQuery('#workSheetSelector').prepend(jQuery("<option value='" + 
+																					event.worksheet.URL + 
+																					"'>" + 
+																					event.worksheet.title + 
+																					" by " + 
+																					event.worksheet.labelType + 
+																					"</option>"))
+																.val(event.worksheet.URL);
   lastSelectedWorksheet = event.worksheet.URL;
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
@@ -1183,6 +1190,71 @@ function constructGraphPanel(graph, index){
 																	 graph.boxPlot &&
 																	 !graph.insufDataForFour; 
 			})
+			
+		/*Mean Median Mode Lines */
+		graphPanel.add(pv.Rule)
+			.data(function(){return graph.getMeanMedianMode()})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return graph.h * 0.75})
+			.visible(function(){return graph.showMMM})
+			.strokeStyle(function(d){
+				if(this.index == 0)
+					return pv.rgb(255,0,0,0.5);
+				else if (this.index == 1)
+					return pv.rgb(0,0,255,0.5);
+				else
+					return pv.rgb(0,255,0,0.5);
+			})
+			.title(function(d){return d})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){return d})
+				.shape("square")
+				.fillStyle(function(d){
+					if(this.index == 0)
+						return pv.rgb(255,0,0,0.5);
+					else if (this.index == 1)
+						return pv.rgb(0,0,255,0.5);
+					else
+						return pv.rgb(0,255,0,0.5);
+				})
+				.strokeStyle(function(d){
+					if(this.index == 0)
+						return pv.rgb(255,0,0,0.5);
+					else if (this.index == 1)
+						return pv.rgb(0,0,255,0.5);
+					else
+						return pv.rgb(0,255,0,0.5);
+				})
+				.visible(function(){return graph.showMMM})
+				.size(4);
+				
+		// Mean, Median, Mode Labels
+		graphPanel.add(pv.Label)
+			.data(function(){return graph.getMeanMedianMode()})
+			.text(function(d){
+				if(this.index == 0)
+					return "Mean = " + d.toFixed(1);
+				else if (this.index == 1)
+					return "Median = " + d.toFixed(1);
+				else
+					return "Mode = " + d.toFixed(1);
+			})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(d){
+				return graph.baseLine + graph.h * 0.75 + 10*this.index;
+			})
+			.textStyle(function(d){
+				if(this.index == 0)
+					return pv.rgb(255,0,0,0.5);//"red"
+				else if (this.index == 1)
+					return pv.rgb(0,0,255,0.5);
+				else
+					return pv.rgb(0,255,0,0.5);
+			})
+			.textAlign("center")
+			.visible(function(){return graph.showMMM})
+		
 		
 		/*Insufficient Data for Four Warning */	
 		graphPanel.add(pv.Label)
