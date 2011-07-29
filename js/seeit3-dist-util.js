@@ -265,6 +265,22 @@ function getMinOfArray(numArray) {
   return Math.min.apply(null, numArray);
 }
 
+function removeOutliers(graph){
+	var fp = partitionDataInFour(graph);
+	var numArray = graph.dataVals();
+	var IQR = fp[3] - fp[1];
+	var retVal = [];
+	
+	numArray.forEach(function(num){
+		if (num >= fp[1]-1.5*IQR  && num <= fp[3]+1.5*IQR)
+			retVal.push(num);
+	});
+	
+	return retVal;
+	
+	
+}
+
 
 function objectToString(o){
 	var parse = function(_o){

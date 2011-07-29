@@ -1085,8 +1085,9 @@ function constructGraphPanel(graph, index){
 		/* Box Plot Lines */
 		graphPanel.add(pv.Line)
 			.data(function(){
-				return [[partitionDataInFour(graph)[1] - 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), graph.baseLine],
-						 [partitionDataInFour(graph)[1] - 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), graph.h * 0.80]]
+				var min = removeOutliers(graph)[0];
+				return [[min, graph.baseLine],
+						 [min, graph.h * 0.80]]
 			})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
@@ -1099,8 +1100,9 @@ function constructGraphPanel(graph, index){
 																	 
 		graphPanel.add(pv.Line)
 			.data(function(){
-				return [[partitionDataInFour(graph)[3] + 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), graph.baseLine],
-						 [partitionDataInFour(graph)[3] + 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), graph.h * 0.80]]
+				var max = removeOutliers(graph)[removeOutliers(graph).length-1];
+				return [[max, graph.baseLine],
+						 [max, graph.h * 0.80]]
 			})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
@@ -1148,8 +1150,11 @@ function constructGraphPanel(graph, index){
 			})						
 																	 						
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1] - 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+			.data(function(){
+				var min = removeOutliers(graph)[0];
+				return [[min, (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
+			})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1184,8 +1189,11 @@ function constructGraphPanel(graph, index){
 			})
 			
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [partitionDataInFour(graph)[3] + 1.5*(partitionDataInFour(graph)[3] -partitionDataInFour(graph)[1]), (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+			.data(function(){
+				var max = removeOutliers(graph)[removeOutliers(graph).length-1];
+				return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [max, (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
+			})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)

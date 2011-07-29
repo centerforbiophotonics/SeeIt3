@@ -139,6 +139,7 @@ $('#applyOptionsToAll').click(function(event){
 		graph.groupingMode = selGraph.groupingMode;
 		graph.partitionGroupSize = selGraph.partitionGroupSize;
 		graph.partitionIntervalWidth = selGraph.partitionIntervalWidth;
+		graph.showMMM = selGraph.showMMM;
 		
 		//Old way which caused udpartitions to share a reference.  Make this an option?
 		//graph.udPartitions = selGraph.udPartitions;
