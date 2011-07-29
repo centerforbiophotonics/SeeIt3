@@ -13,6 +13,8 @@ $(window).resize(function() {
 	positionCreateWorksheetMenu();
 	positionClipboardPrompt();
 	positionAboutPopup();
+	positionWorksheetDescriptionPopup();
+	positionDatasetPaste();
 });
 
 /* Top Bar Menu Items */
@@ -351,81 +353,6 @@ $('#addValLast').keyup(function(evt){
 	}
 });
 
-//Paste data handlers
-var ctrlDown = false;
-var ctrlKey = 17, vKey = 86;
-
-$('#addPaste').keydown(function(e){
-  if (e.keyCode == ctrlKey) ctrlDown = true;
-}).keyup(function(e){
-	if (e.keyCode == ctrlKey) ctrlDown = false;
-	else if (e.keyCode == vKey && ctrlDown){
-		var rawText = $('#addPaste').val();
-		var cells = [];
-		rawText.split('\n').forEach(function(line){
-			cells.push(line.split('\t'));
-		});
-	}
-	resetAddDataSetMenu();
-	if (!populateAddMenuFromPaste(cells))
-		$('#addPasteFormatWarning').show();
-});
-
-function populateAddMenuFromPaste(cells){
-	var noFormatError = true;
-	if ($('#pasteHeading').is(':checked')){
-		if (cells[0].length == 1)
-			$('#addDataSetTitle').val(cells[0][0]);
-		else if (cells[0].length >= 2)
-			$('#addDataSetTitle').val(cells[0][1]);
-		else{
-			noFormatError = false;
-		}
-			
-		cells.slice(1).forEach(function(line){
-			if (line.length >= 2){
-				if (line.length > 2) noFormatError = false;
-				
-				$('#addDatasetEntry tr:last').before(
-					"<tr id='addRow" +addNextRow +
-					"'><td><input type='text' id='addLab"+addNextRow +
-					"' value='"+line[0] +
-					"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal"+addNextRow +
-					"' value='"+line[1] +
-					"'></td>"+
-					"<td><input type='image' src='img/garbage.png' id='addGarbage"+
-					addNextRow +
-					"' onclick='delAddField()' width='20' height='20'></td></tr>");
-					
-				addNextRow++;
-			} else if(line.length != 1 || line[0] != ""){
-				noFormatError = false;
-			}
-		});
-	} else {
-		cells.forEach(function(line){
-			if (line.length >= 2){
-				if (line.length > 2) noFormatError = false;
-				
-				$('#addDatasetEntry tr:last').before(
-					"<tr id='addRow" +addNextRow +
-					"'><td><input type='text' id='addLab"+addNextRow +
-					"' value='"+line[0] +
-					"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal"+addNextRow +
-					"' value='"+line[1] +
-					"'></td>"+
-					"<td><input type='image' src='img/garbage.png' id='addGarbage"+
-					addNextRow +
-					"' onclick='delAddField()' width='20' height='20'></td></tr>");
-					
-				addNextRow++;
-			} else if(line.length != 1 || line[0] != ""){
-				noFormatError = false;
-			}
-		});
-	}
-	return noFormatError;
-}
 
 $("#addFormAdd").click(function(){
 	var labelError = false;
@@ -584,6 +511,117 @@ function delAddField(){
 	if (addNextRow < 1)
 		addNextRow = 1;
 	
+}
+
+$('#addFormPaste').click(function(e){
+	$('#dataSetAdd').slideUp();
+	$('#dataSetPaste').slideDown();
+})
+
+
+/* Paste Data Set Menu */
+$('#dataSetPaste').hide();
+function positionDatasetPaste(){
+	$('#dataSetPaste').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetPaste').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetPaste').width()/2)+"px");
+}
+positionDatasetPaste();
+
+$('#pasteClose').click(function(){
+	$('#addPasteText').val("");
+	$('#dataSetPaste').slideUp();
+	$('#dataSetAdd').slideDown();
+});
+
+$('#pasteImport').click(function(){
+	var rawText = $('#addPasteText').val();
+	var cells = [];
+	rawText.split('\n').forEach(function(line){
+		cells.push(line.split('\t'));
+	});
+	
+	resetAddDataSetMenu();
+	if (!populateAddMenuFromPaste(cells))
+		$('#addPasteFormatWarning').show();
+	$('#addPasteText').val("");
+	$('#dataSetPaste').slideUp();
+	$('#dataSetAdd').slideDown();
+	
+});
+
+/*
+$('#addPasteText').keydown(function(e){
+  if (e.keyCode == ctrlKey) ctrlDown = true;
+}).keyup(function(e){
+	if (e.keyCode == ctrlKey) ctrlDown = false;
+	else if (e.keyCode == vKey && ctrlDown){
+		var rawText = $('#addPasteText').val();
+		var cells = [];
+		rawText.split('\n').forEach(function(line){
+			cells.push(line.split('\t'));
+		});
+	}
+	resetAddDataSetMenu();
+	if (!populateAddMenuFromPaste(cells))
+		$('#addPasteFormatWarning').show();
+});
+*/
+
+function populateAddMenuFromPaste(cells){
+	var noFormatError = true;
+	if ($('#pasteHeading').is(':checked')){
+		if (cells[0].length == 1)
+			$('#addDataSetTitle').val(cells[0][0]);
+		else if (cells[0].length >= 2)
+			$('#addDataSetTitle').val(cells[0][1]);
+		else{
+			noFormatError = false;
+		}
+			
+		cells.slice(1).forEach(function(line){
+			if (line.length >= 2){
+				if (line.length > 2) noFormatError = false;
+				
+				$('#addDatasetEntry tr:last').before(
+					"<tr id='addRow" +addNextRow +
+					"'><td><input type='text' id='addLab"+addNextRow +
+					"' value='"+line[0] +
+					"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal"+addNextRow +
+					"' value='"+line[1] +
+					"'></td>"+
+					"<td><input type='image' src='img/garbage.png' id='addGarbage"+
+					addNextRow +
+					"' onclick='delAddField()' width='20' height='20'></td></tr>");
+					
+				addNextRow++;
+			} else if(line.length != 1 || line[0] != ""){
+				noFormatError = false;
+			}
+		});
+	} else {
+		cells.forEach(function(line){
+			if (line.length >= 2){
+				if (line.length > 2) noFormatError = false;
+				
+				$('#addDatasetEntry tr:last').before(
+					"<tr id='addRow" +addNextRow +
+					"'><td><input type='text' id='addLab"+addNextRow +
+					"' value='"+line[0] +
+					"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal"+addNextRow +
+					"' value='"+line[1] +
+					"'></td>"+
+					"<td><input type='image' src='img/garbage.png' id='addGarbage"+
+					addNextRow +
+					"' onclick='delAddField()' width='20' height='20'></td></tr>");
+					
+				addNextRow++;
+			} else if(line.length != 1 || line[0] != ""){
+				noFormatError = false;
+			}
+		});
+	}
+	return noFormatError;
 }
 
 
@@ -943,5 +981,24 @@ $('#cbText').keydown(function(event){
 
 $('#cbClose').click(function(){
 	$('#clipboardPrompt').slideUp();
+});
+
+
+/* Worksheet Description Popup */
+function positionWorksheetDescriptionPopup(){
+	$('#worksheetDescriptionPopup').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetDescriptionPopup').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetDescriptionPopup').width()/2)+"px");
+}
+positionWorksheetDescriptionPopup();
+
+
+$('#worksheetDescriptionPopup').hide();
+
+$('#worksheetDescriptionButton').click(function(){
+	$('#worksheetDescriptionParagraph').html(graphCollection.worksheet.description);
+	$('#worksheetDescriptionTitle').html(graphCollection.worksheet.title + "<br>by " + graphCollection.worksheet.labelType);
+	positionWorksheetDescriptionPopup();
+	$('#worksheetDescriptionPopup').slideToggle();
 });
 

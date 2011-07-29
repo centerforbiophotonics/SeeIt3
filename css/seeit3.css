@@ -108,11 +108,32 @@ table#menuItems h3 {
   -ms-overflow-y: hidden;
 }
 
-#addPaste{
+#addPasteText{
 	resize: none;
-	vertical-align: middle;
-	overflow-x: hidden;
-	-ms-overflow-x: hidden;
-	overflow-y: hidden;
-	-ms-overflow-y: hidden;
+}
+
+#dataSetPaste{
+	background: #ffffff;
+	border:1px solid black;
+	padding: 5px;
+	max-height: 400px;
+  overflow:scroll;
+  overflow-x: hidden;
+  -ms-overflow-x: hidden;
+  display: hidden;
+  overflow-y: hidden;
+  -ms-overflow-y: hidden;
+}
+
+#worksheetDescriptionPopup {
+	background: #ffffff;
+	border:1px solid black;
+	padding: 5px;
+	max-height: 400px;
+  overflow:scroll;
+  overflow-x: hidden;
+  -ms-overflow-x: hidden;
+  display: hidden;
+  overflow-y: hidden;
+  -ms-overflow-y: hidden;
 }

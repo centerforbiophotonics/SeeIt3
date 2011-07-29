@@ -36,6 +36,7 @@
 						<option value="New">*Add a new worksheet*</option>
 					</select>
 					<input type="button" value="Refresh" id="refreshWorksheet">
+					<input type="button" value="Worksheet Description" id="worksheetDescriptionButton">
 					<a href="#" id="editInGoogleDocs">View Data</a>
 				</td>
 				<td>
@@ -147,13 +148,9 @@
 			<td> 
 				<input type="button" value="Add" id="addFormAdd">
 				<input type="button" value="Reset" id="addFormReset">
+				<input type="button" value="Paste" id="addFormPaste">
 				<input type='image' src='img/close.png' id='addFormClose' width='20' height='20' align='right'>
 				<h2>New Dataset</h2>
-				<label for="addPaste"><b>Paste an entire dataset here:</b></label><br>
-				<label for="pasteHeading">With heading</label>
-				<input type="checkbox" id="pasteHeading" checked>
-				<textarea id="addPaste" rows="1" width="180px"></textarea><br>
-				
 				
 				<center><p id="addNonNumWarning" style="color:red;">Value must be a number!</p></center>
 				<center><p id="addNoTitleWarning" style="color:red;">Dataset must have a title!</p></center>
@@ -178,7 +175,6 @@
 						</tr>
 						<tr>
 							<td><input type="text" id="addLabLast"></td>
-							<!-- <td><textarea id="addLabLast" rows="1" width="180px"></textarea></td> -->
 							<td><input type="text" id="addValLast"></td>
 						</tr>
 					</table>
@@ -186,10 +182,15 @@
 			</td>
 		</tr>
 	</table>
-	
-	
-	
-	
+</div>
+
+<div id="dataSetPaste">
+	<input type="button" value="Import" id="pasteImport">
+	<input type='image' src='img/close.png' id='pasteClose' width='20' height='20' align='right'>
+	<h2>Paste Dataset</h2>
+	<label for="pasteHeading">With heading</label>
+	<input type="checkbox" id="pasteHeading" checked><br>
+	<textarea id="addPasteText" rows="10" cols="50"></textarea><br>
 </div>
 
 <div id="dataSetEdit">
@@ -228,9 +229,6 @@
 			</td>
 		</tr>
 	</table>
-
-	
-	
 </div>
 
 <div id="worksheetCreate">
@@ -287,6 +285,12 @@
 		Project Director: Marco Molinaro (mmolinaro@ucdavis.edu). <br>
 		Written by Matthew Steinwachs and Andrew Lague.
 	</p>
+</div>
+
+<div id="worksheetDescriptionPopup">
+	<input type='image' src='img/close.png' id='wdpClose' onclick='hideMenus()' width='20' height='20' align='right'>
+	<h2 id="worksheetDescriptionTitle"></h2>
+	<p id="worksheetDescriptionParagraph"></p>
 </div>
 
 <p id="loadingMsg">Loading...</p>

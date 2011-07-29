@@ -672,6 +672,7 @@ Worksheet.prototype = {
 				worksheet.labelMasterList = worksheet.getLabels(feedData);        
 				worksheet.title = feedData.feed.title.$t;
 				worksheet.edited = {}
+				worksheet.description = worksheet.getDescription(feedData);
 				for (var key in worksheet.data){
 					worksheet.edited[key] = false;
 				}
@@ -689,11 +690,14 @@ Worksheet.prototype = {
 		worksheet.labelType = feedData.feed.entry[0].content.$t;
 		worksheet.labelMasterList = worksheet.getLabels(feedData);        
 		worksheet.title = feedData.feed.title.$t;
+		worksheet.description = worksheet.getDescription(feedData);
 		jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
 	},
 	
+	
 	transformFeedData: function(feedData) {
 		var data = {};
+		var worksheet = this;
 		
 		//Creates of map of column letters to data categories; 
 		//ALSO maps each category to an empty array of maps (in data obj)
@@ -711,7 +715,8 @@ Worksheet.prototype = {
 																	e.title.$t.replace(/[0-9]/g,"") == "A"
 															})
 												.forEach(function(e){
-													rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))] = e.content.$t;
+													if (e.content.$t[0] != '*')
+														rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))] = e.content.$t;
 												});
 
 		feedData.feed.entry.filter(function(e) { 
@@ -723,9 +728,18 @@ Worksheet.prototype = {
 														{"label": rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))],
 														 "value": parseFloat(e.content.$t)
 														}
-													);
+													);													
 												});		
 		return data;
+	},
+	
+	getDescription: function(feedData){
+		var lastCell = feedData.feed.entry.slice(-1)[0].content.$t;
+		
+		if (lastCell[0] == '*')
+			return lastCell.slice(1)
+		else
+			return "";
 	},
 	
 	getLabels: function(feedData){
