@@ -783,6 +783,12 @@ $("#editFormApply").click(function(){
 		$('#editNoLabelWarning').hide();
 		$('#editNoValueWarning').hide();
 		graphCollection.editData(oldDatasetTitle, datasetTitle, data);
+		
+		var red = parseInt(document.getElementById('editDataSetColor').color.rgb[0]*255);
+		var green = parseInt(document.getElementById('editDataSetColor').color.rgb[1]*255);
+		var blue = parseInt(document.getElementById('editDataSetColor').color.rgb[2]*255);
+		
+		graphCollection.categoryColors[datasetTitle] = pv.rgb(red,green,blue,1);
 		vis.render();
 		$('#dataSetEdit').slideUp();
 		resetEditDataSetMenu();
@@ -833,6 +839,9 @@ function populateEditMenuFromExisting(dataset){
 	$('#datasetTitle').html(dataset);
 	
 	$('#editDataSetTitle').val(dataset);
+	
+	var color = graphCollection.categoryColors[dataset];
+	document.getElementById('editDataSetColor').color.fromRGB(color.r/255, color.g/255, color.b/255);
 	
 	graphCollection.worksheet.data[dataset].forEach(function(data){
 		$('#editDatasetEntry tr:last').before(
