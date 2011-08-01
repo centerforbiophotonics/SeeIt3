@@ -159,7 +159,7 @@ function positionGroupingMenuOverGraph(index, graphCollection){
 							graphCollection.padLeft - 34;
 					
 	if (yPos + $('#groupingOptions').height() > graphCollection.h){
-		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 30 ;//- 62;
+		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 20 ;
 	}
 		
 	$('#groupingOptions')
@@ -173,7 +173,7 @@ function positionDisplayMenu(){
 	$('#displayOptions').css('position', 'absolute')
 										 .css('top', $('span').offset().top +"px")
 										 .css('left',$('span').offset().left +
-																	graphCollection.padLeft - 34 +"px");
+													graphCollection.padLeft - 34 +"px");
 }
 
 

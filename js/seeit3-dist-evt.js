@@ -71,9 +71,38 @@ jQuery('#groupingOptions').change(function(event) {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].groupingMode = $('input:radio[name=mode]:checked').attr('id').slice(5);
 	graphCollection.graphs[graphCollection.selectedGraphIndex].histogram = $('#checkboxHistogram').is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].boxPlot = $('#checkboxBoxPlot').is(':checked');
+		
 	graphCollection.graphs[graphCollection.selectedGraphIndex].showMMM = $('#checkboxMMM').is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].showMean = $('#checkboxMean').is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].showMedian = $('#checkboxMedian').is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].showMode = $('#checkboxMode').is(':checked');
+	
   vis.render();
   event.stopPropagation();
+});
+
+$('#checkboxMMM').change(function(event){
+	$('#checkboxMean').attr('checked', $('#checkboxMMM').is(':checked'));
+	$('#checkboxMedian').attr('checked', $('#checkboxMMM').is(':checked'));
+	$('#checkboxMode').attr('checked', $('#checkboxMMM').is(':checked'));
+});
+
+$('#checkboxMean').change(function(event){
+	$('#checkboxMMM').attr('checked', $('#checkboxMean').is(':checked') &&
+																	$('#checkboxMedian').is(':checked') &&
+																	$('#checkboxMode').is(':checked'));
+});
+
+$('#checkboxMedian').change(function(event){
+	$('#checkboxMMM').attr('checked', $('#checkboxMean').is(':checked') &&
+																	$('#checkboxMedian').is(':checked') &&
+																	$('#checkboxMode').is(':checked'));
+});
+
+$('#checkboxMode').change(function(event){
+	$('#checkboxMMM').attr('checked', $('#checkboxMean').is(':checked') &&
+																	$('#checkboxMedian').is(':checked') &&
+																	$('#checkboxMode').is(':checked'));
 });
 
 $('#textXMin').change(function(event) {

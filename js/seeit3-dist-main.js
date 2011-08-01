@@ -1205,11 +1205,25 @@ function constructGraphPanel(graph, index){
 			
 		/*Mean Median Mode Lines */
 		graphPanel.add(pv.Rule)
-			.data(function(){return graph.getMeanMedianMode()})
+			.data(function(){
+				//graph.MMMLabelVis = [];
+				graph.getMeanMedianMode().forEach(function(m,i){
+					if (i > graph.MMMLabelVis.length-1)
+						graph.MMMLabelVis[i] = false;
+				});
+				return graph.getMeanMedianMode()
+			})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return graph.h * 0.75})
-			.visible(function(){return graph.showMMM})
+			.visible(function(){
+				if (this.index == 0)
+					return graph.showMMM || graph.showMean;
+				else if (this.index == 1)
+					return graph.showMMM || graph.showMedian;
+				else
+					return graph.showMMM || graph.showMode;
+			})
 			.strokeStyle(function(d){
 				if(this.index == 0)
 					return pv.rgb(255,0,0,0.5);
@@ -1220,15 +1234,15 @@ function constructGraphPanel(graph, index){
 			})
 			.title(function(d){return d})
 			.anchor("top").add(pv.Dot)
-				.title(function(d){return d})
+				.title(function(d){return d.toFixed(1)})
 				.shape("square")
 				.fillStyle(function(d){
 					if(this.index == 0)
-						return pv.rgb(255,0,0,0.5);
+						return pv.rgb(255,0,0,1);
 					else if (this.index == 1)
-						return pv.rgb(0,0,255,0.5);
+						return pv.rgb(0,0,255,1);
 					else
-						return pv.rgb(0,255,0,0.5);
+						return pv.rgb(0,255,0,1);
 				})
 				.strokeStyle(function(d){
 					if(this.index == 0)
@@ -1238,8 +1252,19 @@ function constructGraphPanel(graph, index){
 					else
 						return pv.rgb(0,255,0,0.5);
 				})
-				.visible(function(){return graph.showMMM})
-				.size(4);
+				.visible(function(){
+					if (this.index == 0)
+						return graph.showMMM || graph.showMean;
+					else if (this.index == 1)
+						return graph.showMMM || graph.showMedian;
+					else
+						return graph.showMMM || graph.showMode;
+				})
+				.size(10)
+				.event('click', function(){
+					graph.MMMLabelVis[this.index] = !(graph.MMMLabelVis[this.index]);
+					vis.render();
+				})
 				
 		// Mean, Median, Mode Labels
 		graphPanel.add(pv.Label)
@@ -1254,18 +1279,19 @@ function constructGraphPanel(graph, index){
 			})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(d){
-				return graph.baseLine + graph.h * 0.75 + 10*this.index;
+				return graph.baseLine + graph.h * 0.75 + 5;
 			})
 			.textStyle(function(d){
 				if(this.index == 0)
-					return pv.rgb(255,0,0,0.5);//"red"
+					return pv.rgb(255,0,0,0.5);
 				else if (this.index == 1)
 					return pv.rgb(0,0,255,0.5);
 				else
 					return pv.rgb(0,255,0,0.5);
 			})
+			.font(fontString)
 			.textAlign("center")
-			.visible(function(){return graph.showMMM})
+			.visible(function(){return graph.MMMLabelVis[this.index]})
 		
 		
 		/*Insufficient Data for Four Warning */	

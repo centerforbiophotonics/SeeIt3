@@ -311,6 +311,8 @@ GraphCollection.prototype = {
 				graph.insufDataForTwo = true;
 			else 
 				graph.insufDataForTwo = false;
+				
+			graph.n = (graph.dataVals()).length;
 			
 		});
 		delete this.editedCategories[title];
@@ -366,6 +368,11 @@ function Graph(worksheet, graphCollection){
 	this.groupingMode = "NoGroups";
 	
 	this.showMMM = false;
+	this.showMean = false;
+	this.showMedian = false;
+	this.showMode = false;
+	
+	this.MMMLabelVis = [];
 	
 	/* Graph Overflow */
 	this.insufDataForFour = true;
