@@ -49,12 +49,13 @@ function GraphCollection(){
 	
 	//Colors
 	this.categoryColors = {};
-	var colorScale = pv.Colors.category20(0,this.numberOfCategories);
+	this.colorScale = pv.Colors.category20(0,20);//this.numberOfCategories);
 	var counter = 0;
 	for (var key in this.worksheet.data){
-		this.categoryColors[key] = colorScale(counter);
+		this.categoryColors[key] = this.colorScale(counter);
 		counter++;
 	}
+	this.numberOfAddedCategories = this.numberOfCategories;
 	
 	this.editedCategories = {};
 	for (var key in this.worksheet.data){
@@ -203,13 +204,8 @@ GraphCollection.prototype = {
 		}
 		this.worksheet.edited[title] = true;	
 		
-		this.categoryColors = {};
-		var colorScale = pv.Colors.category20(0,this.numberOfCategories);
-		var counter = 0;
-		for (var key in this.worksheet.data){
-			this.categoryColors[key] = colorScale(counter);
-			counter++;
-		}
+		this.numberOfAddedCategories++;
+		this.categoryColors[title] = this.colorScale(this.numberOfAddedCategories);
 		this.scaleAllGraphsToFit();
 	},
 	
