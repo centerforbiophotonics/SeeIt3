@@ -831,7 +831,7 @@ function constructGraphPanel(graph, index){
 			.visible(function(){return graph.groupingMode == "UserDefGroups"})
 			.anchor("top").add(pv.Dot)
 				.left(function(d){return d.x + 9})
-				.title(function(d){return graph.x.invert(d.x)})
+				.title(function(d){return graph.x.invert(d.x).toFixed(1)})
 				.events("all")
 				.cursor("move")
 				.shape("square")
@@ -898,7 +898,7 @@ function constructGraphPanel(graph, index){
 			.strokeStyle("green")
 			.title(function(d){return d})
 			.anchor("top").add(pv.Dot)
-				.title(function(d){return d})
+				.title(function(d){return d.toFixed(1)})
 				.shape("square")
 				.fillStyle("green")
 				.strokeStyle("green")
@@ -934,7 +934,7 @@ function constructGraphPanel(graph, index){
 			.width(function(d){return d.width})
 			.lineWidth(0.5)
 			.strokeStyle("green")
-			.fillStyle(pv.rgb(0,225,0,0.05));
+			.fillStyle(pv.rgb(0,225,0,0.25));
 		
 		/* Fixed Group Size Partitions */
 		graphPanel.add(pv.Rule)
@@ -944,9 +944,9 @@ function constructGraphPanel(graph, index){
 			.height(function(){return graph.h * 0.75})
 			.visible(function(){return graph.groupingMode == "FixedSizeGroups"})
 			.strokeStyle("green")
-			.title(function(d){return d})
+			.title(function(d){return d.toFixed(1)})
 			.anchor("top").add(pv.Dot)
-				.title(function(d){return d})
+				.title(function(d){return d.toFixed(1)})
 				.shape("square")
 				.fillStyle("green")
 				.strokeStyle("green")
@@ -988,9 +988,9 @@ function constructGraphPanel(graph, index){
 							 !graph.insufDataForTwo;
 			})
 			.strokeStyle("green")
-			.title(function(d){return d})
+			.title(function(d){return d.toFixed(1)})
 			.anchor("top").add(pv.Dot)
-				.title(function(d){return d})
+				.title(function(d){return d.toFixed(1)})
 				.shape("square")
 				.fillStyle("green")
 				.strokeStyle("green")
@@ -1047,9 +1047,9 @@ function constructGraphPanel(graph, index){
 																 !graph.insufDataForFour;
 			})
 			.strokeStyle("green")
-			.title(function(d){return d})
+			.title(function(d){return d.toFixed(1)})
 			.anchor("top").add(pv.Dot)
-				.title(function(d){return d})
+				.title(function(d){return d.toFixed(1)})
 				.shape("square")
 				.fillStyle("green")
 				.strokeStyle("green")
@@ -1232,7 +1232,7 @@ function constructGraphPanel(graph, index){
 				else
 					return pv.rgb(0,255,0,0.5);
 			})
-			.title(function(d){return d})
+			.title(function(d){return d.toFixed(1)})
 			.anchor("top").add(pv.Dot)
 				.title(function(d){return d.toFixed(1)})
 				.shape("square")
@@ -1260,7 +1260,7 @@ function constructGraphPanel(graph, index){
 					else
 						return graph.showMMM || graph.showMode;
 				})
-				.size(10)
+				.size(20)
 				.event('click', function(){
 					graph.MMMLabelVis[this.index] = !(graph.MMMLabelVis[this.index]);
 					vis.render();
