@@ -13,7 +13,7 @@ svg {
 }
 
 table#menuItems {
-  width:100%;
+  /*width:100%;*/
   margin-bottom:10px;
 }
 
@@ -27,13 +27,19 @@ table#menuItems h3 {
 	border:1px solid black;
 	padding: 10px;
 	display: hidden;
-	
 }
 
 #displayOptions {
 	background: #ffffff;
 	border:1px solid black;
 	padding: 5px;
+	display: hidden;
+}
+
+#graphOptions {
+	background: #ffffff;
+	border:1px solid black;
+	padding: 10px;
 	display: hidden;
 }
 

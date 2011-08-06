@@ -282,9 +282,7 @@ GraphCollection.prototype = {
 				graphCol.editedCategories[set] = true;
 				graphCol.worksheet.edited[set] = true;
 				
-				//
-				graphCol.scaleAllGraphsToFit();
-				//
+				//graphCol.scaleAllGraphsToFit();
 			}
 		});
 	},

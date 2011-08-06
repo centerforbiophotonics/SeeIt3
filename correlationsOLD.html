@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SeeIt3 Correlations</title>
+  <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.7.custom.css"/>
+  <link rel="stylesheet" type="text/css" href="css/seeit3.css"/>
+  <script src="lib/protovis-3.2/protovis-d3.2.js"></script>
+  <script src="lib/jquery-1.4.4.js"></script>
+  <script src="lib/jquery-ui-1.8.7.custom.min.js"></script>
+  <script src="lib/jquery.jsonp-2.1.4.min.js"></script>
+  
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1184912-6']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+</head>
+<body>
+
+<div id="notGraph" class="notGraph">
+	<div id="menu" class="menu">
+	  <table>
+  	  <tr>
+  	    <td width="70%">
+    	    <div>
+    		    Select a dataset (worksheet): <select id="workSheetSelector"></select>
+      		  <input type="button" value="Refresh" id="refreshWorksheet">
+      		  <a href="#" id="editInGoogleDocs">Open in Google Docs</a>
+      		  
+      		  
+      	  </div>
+      	</td>
+	  
+    	  <td>
+      	  <div>
+        		<div><label for="newSpreadsheetURL">Add a new spreadsheet by pasting its URL:</label></div>
+        		<input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
+      	  </div>
+      	</td>
+    	</tr>
+  	</table>
+	</div>
+
+	<div id="menuOptions" class="menu">
+	  <table id="menuItems">
+	    <tr>
+		  <td valign="top">
+			<h3>Draw</h3>
+			<input type="checkbox" id="checkboxShowUserLine">
+		  <label for="checkboxShowUserLine" style="color:red">Show line?</label><br>
+		  <input type="checkbox" id="checkboxShowMMEllipse">
+		  <label for="checkboxShowMMEllipse">Show ellipse?</label><br>
+		  <input type="checkbox" id="checkboxShowData" checked>
+		  <label for="checkboxShowData">Show data?</label><br>
+		  <input type="checkbox" id="fitScalesToData"/>
+		  <label for="fitScalesToData">Fit scales to data</label>
+		  </td>
+		  <td valign="top">
+			<h3>Median-median</h3>
+			<input type="checkbox" id="checkboxShowMMDots">
+		  <label for="checkboxShowMMDots">Show dots?</label><br>
+		  <input type="checkbox" id="checkboxShowMMRects">
+		  <label for="checkboxShowMMRects">Show divisions?</label><br>
+		  <input type="checkbox" id="checkboxShowMMLine">
+		  <label for="checkboxShowMMLine" style="color:blue">Show line?</label><br>
+		  <input type="checkbox" id="checkboxShowMMEqn">
+		  <label for="checkboxShowMMEqn">Show equation?</label>
+		  </td>
+		  <td valign="top">
+			<h3>Least squares</h3>
+			<input type="checkbox" id="checkboxShowLeastSquaresLine">
+			<label for="checkboxShowLeastSquaresLine" style="color:green">Show line?</label><br>
+			<input type="checkbox" id="checkboxShowLeastSquaresSquares">
+			<label for="checkboxShowLeastSquaresSquares">Show squares?</label><br>
+			<input type="checkbox" id="checkboxShowLeastSquaresEquation">
+			<label for="checkboxShowLeastSquaresEquation">Show equation?</label><br>
+			<input type="checkbox" id="checkboxShowLeastSquaresRValue">
+			<label for="checkboxShowLeastSquaresRValue">Show r value?</label>
+		  </td>
+	      <td valign="top">
+	        <h3>Distribution</h3>
+	        <input type="radio" id="checkboxNormalView" name="mode" checked>
+	        <label for="checkboxNormalView">Normal View?</label><br>
+	        <input type="radio" id="checkboxDropDataOntoX" name="mode">
+	        <label for="checkboxDropDataOntoX">Drop data on X axis?</label><br>
+	        <input type="radio" id="checkboxDropDataOntoY" name="mode">
+	        <label for="checkboxDropDataOntoY">Drop data on Y axis?</label>
+	      </td>
+	      <td valign="top">
+	        <h3 style="margin-bottom:10px">Divisions</h3>
+	        <div id="sliderDivisions"></div>
+	      </td>
+	      <td valign="top">
+	        <h3 style="margin-bottom:10px">Dot Size</h3>
+	        <div id="sliderDotSize"></div>
+	      </td>
+	      <td valign="top">
+	        <h3 style="margin-bottom:10px">Text Size</h3>
+	        <div id="sliderTextSize"></div>
+	      </td>					
+	      <td valign="top">
+			<h3>Data Points</h3>
+			<input type="checkbox" id="checkboxBWView" name="color">
+	        <label for="checkboxBWView">Black</label><br>
+	        <input type="checkbox" id="checkboxFillDots" name="color">
+	        <label for="checkboxFillDots">Fill</label><br>
+	      </td>
+	    </tr>
+	  </table>
+	</div>
+</div>
+
+<div id="yMin">
+  <input type="text" id="textYMin" style="text-align:right"></div>
+
+<div id="yMax">
+  <input type="text" id="textYMax" style="text-align:right"></div>
+
+<div id="xMin">
+  <input type="text" id="textXMin" style="text-align:left"></div>
+
+<div id="xMax">
+  <input type="text" id="textXMax" style="text-align:right"></div>
+
+<p id="loadingMsg">Loading...</p>
+
+<script type="text/javascript" src="js/seeit3-corr-util-OLD.js"></script>
+<script type="text/javascript" src="js/seeit3-corr-obj-OLD.js"></script>
+<script type="text/javascript" src="js/seeit3-corr-main-OLD.js"></script>
+<script type="text/javascript" src="js/seeit3-corr-local-OLD.js"></script>
+
+<div style="position:fixed; bottom:10px; left:20px; background-color:white">
+  Copyright &copy; UC Regents, Davis campus. All rights reserved.</div>
+
+</body>
+</html>

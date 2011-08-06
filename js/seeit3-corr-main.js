@@ -1,679 +1,8 @@
-var vis = {};
-var graphics = {};
-
-$('#textYMin').hide();
-$('#textYMax').hide();
-$('#textXMin').hide();
-$('#textXMax').hide();
-
-function constructVis() {
-	positionAxisMinMaxWidgets();
-		
-	if (jQuery('#checkboxNormalView').is(':checked')) {
-		constructNormVis();
-		toggleNormalViewOptions();
-	}else if (jQuery('#checkboxDropDataOntoX').is(':checked')) {
-		constructXStackedVis();
-		toggleNormalViewOptions();
-	}else if (jQuery('#checkboxDropDataOntoY').is(':checked')) {
-		constructYStackedVis();
-		toggleNormalViewOptions();
-	}
-	
-	jQuery('#sliderTextSize').slider({ 
-	orientation:'vertical', min:12, max:20, value:parseInt(graphics.tickTextSize), step:1,
-	slide:function(event, ui) { 
-		graphics.labelTextSize = (ui.value + 4).toString();
-		graphics.tickTextSize = ui.value.toString();
-		vis.render(); 
-	}
-	});
-}
-
-/*Padding around main panel*/
-var padBot = 70,
-	padTop = 60,
-	padLeft = 90,
-	padRight = 20;
-
-
-
-function constructNormVis(){
-  jQuery('span').remove();
-
-  vis = new pv.Panel()
-		  .width(graphics.w)
-		  .height(graphics.h)
-		  .bottom(padBot)
-		  .left(padLeft)
-		  .right(padRight)
-		  .top(padTop)
-		  .events("all");
-  
-  /*Graph Title*/
-  vis.add(pv.Label)
-	.left(graphics.w / 2)
-	.top(-40)
-	.textAlign("center")
-	.textAngle(0)
-	.text(graphics.worksheet.title)
-	.font("bold 20px sans-serif");
-	
-  /* Number of datapoints N */
-  vis.add(pv.Label)
-	.right(0)
-	.top(-10)
-	.textAlign("right")
-	.textAngle(0)
-	.text("N = " + graphics.data.length)
-	.font("bold 14px sans-serif");
-
-  /* Y-axis label */		  
-  vis.add(pv.Label)
-	.data(graphics.worksheet.yAxisTitle)
-	.left(-65)
-	.top(graphics.h / 2)
-	.textAlign("center")
-	.textAngle(-Math.PI / 2)
-	.font(function(){return "bold "+graphics.labelTextSize+"px sans-serif"});
-
-  /* Y-axis ticks */
-  vis.add(pv.Rule)
-	 .data(function() { return graphics.y.ticks(graphics.normViewAxisDivisions) })
-	 .bottom(graphics.y)
-	 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
-	 .anchor('left').add(pv.Label)
-	   .text(graphics.y.tickFormat)
-	   .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
-	   .visible(function(){return this.index != 0});
-
-  /* X-axis ticks */
-  vis.add(pv.Rule)
-	 .data(function() { return graphics.x.ticks(graphics.normViewAxisDivisions) })
-	 .left(graphics.x)
-	 .strokeStyle(function(d) { return d ? "#eee" : "#000" })
-	 .anchor("bottom").add(pv.Label)
-	   .text(graphics.x.tickFormat)
-	   .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
-	   .visible(function(){return this.index != 0});
-	   
-  /* X-axis label */
-  vis.add(pv.Label)
-	.data(graphics.worksheet.xAxisTitle)
-	.left(graphics.w / 2)
-	.bottom(-50)
-	.textAlign("center")
-	.textAngle(0)
-	.font(function(){return "bold "+graphics.labelTextSize+"px sans-serif"});
-	
-	  
-  /* median median crosses and squares */
-  for (var i = 0; i < graphics.groups.length; i++) {
-	 var bounds = getBounds(graphics.groups[i]);
-	 var coords = getBoundingCoords(bounds);
-	 var n = graphics.groups[i].length;
-
-	 /* rectangle around median group */
-	 vis.add(pv.Line)
-		.visible(function() { return jQuery('#checkboxShowMMRects').is(':checked') })
-		.data(coords)
-		.left(function(d) { return graphics.x(d[0]) })
-		.bottom(function(d) { return graphics.y(d[1]) })
-		.lineWidth(0.5)
-		.strokeStyle("blue")
-		.fillStyle(pv.rgb(0,0,255,0.05))
-		.add(pv.Label)								
-			.text(function(d) {
-				if (this.index == 0) { return "N = "+ n;}
-				else {return ""}
-			})
-			.textAlign("left")
-			.textBaseline("top")
-			.textStyle("blue")
-			.textAngle(0)
-			.font("bold 12px sans-serif");
-
-	 /* median cross */
-	 vis.add(pv.Dot)
-		.visible(function() { return jQuery('#checkboxShowMMDots').is(':checked') })
-		.data([graphics.medians[i]]) // extra brackets so not to use x and y as seperate points
-		.left(function(d) { return graphics.x(d[0]) })
-		.bottom(function(d) { return graphics.y(d[1]) })
-		.radius(10)
-		.angle(Math.PI / 4)
-		.shape('cross')
-		.strokeStyle(pv.rgb(0,0,255,0.90));
-		//.title("Median dot");
-  }
-
-
-  /* median-median line:
-	   Is middle median dot higher or lower than line through outer median dots? 
-	   That is, middle median dot's y value - y value at same x of original median line 
-	   divided by three */
-  vis.add(pv.Line)
-	 .visible(function() { return jQuery('#checkboxShowMMLine').is(':checked') })
-	 .data([[graphics.xMin, graphics.mmFarLeftYVal], [graphics.xMax, graphics.mmFarRightYVal]])
-	 .left(function(d) { return graphics.x(d[0]) })
-	 .bottom(function(d) { return graphics.y(d[1]) })
-	 .title("Median-median line")
-	 .strokeStyle("blue")
-	 .lineWidth(2)
-	 .add(pv.Label)
-		.visible(function () { return (jQuery('#checkboxShowMMEqn').is(':checked') 
-										&& jQuery('#checkboxShowMMLine').is(':checked') )})
-		.text(function(d) {
-			if (this.index == 0) { return "Y = "+graphics.mmSlope.toFixed(3)+"X + "+graphics.mmIntercept.toFixed(3);}
-			else{return "";}
-		})
-		.textAlign("left")
-		.textBaseline("top")
-		.textStyle("blue")
-		.textAngle(getMMLineLabelAngle(graphics))
-		.font("bold 12px sans-serif");
-	 
-	 
-	 
-  /* Least Squares Regression Line */  
-  vis.add(pv.Line)
-	.visible(function() { return jQuery('#checkboxShowLeastSquaresLine').is(':checked') })
-	.data([[graphics.xMin, graphics.lsFarLeftYVal], [graphics.xMax, graphics.lsFarRightYVal]])
-	.left(function(d) { return graphics.x(d[0]) })
-	.bottom(function(d) { return graphics.y(d[1]) })
-	.title("Least-Squares Regression Line")
-	.strokeStyle(pv.rgb(0,225,0,1))
-	.lineWidth(2)
-	.add(pv.Label)									//Line Equation
-		.visible(function () { return (jQuery('#checkboxShowLeastSquaresEquation').is(':checked')
-										&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
-		.text(function(d) {
-			if (this.index == 0) { return "Y = "+graphics.lsSlope.toFixed(3)+"X + "+graphics.lsIntercept.toFixed(3);}
-			else {return ""}
-		})
-		.textAlign("left")
-		.textBaseline("top")
-		.textStyle(pv.rgb(0,225,0,1))
-		.textAngle(getLSLineLabelAngle(graphics))
-		.font("bold 12px sans-serif")
-	.add(pv.Label)									//R Value
-		.visible(function () { return (jQuery('#checkboxShowLeastSquaresRValue').is(':checked')
-										&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
-		.text(function(d) {
-			if (this.index == 0) { return "R = "+ getR(graphics.data).toFixed(2);}
-			else {return ""}
-		})
-		.textAlign("left")
-		.textBaseline("bottom")
-		.textStyle(pv.rgb(0,225,0,1))
-		.textAngle(getLSLineLabelAngle(graphics))
-		.font("bold 12px sans-serif");
-		
-  /*R Squares*/
-  for (var i=0; i < graphics.data.length; i++){	
-	var sqrBounds = getRSquareBounds(graphics, i);  									   
-	vis.add(pv.Line)
-		.visible(function() { return (jQuery('#checkboxShowLeastSquaresSquares').is(':checked')
-								&& jQuery('#checkboxShowLeastSquaresLine').is(':checked')) })
-		.data(sqrBounds)
-		.left(function(d) { return d[0] })
-		.bottom(function(d) { return d[1] })
-		.lineWidth(0.5)
-		.strokeStyle("green")
-		.fillStyle(pv.rgb(0,225,0,0.05));
-  }
-	 
-  /* user drawn line */
-  vis.add(pv.Line)
-	.data(graphics.userDrawnLinePoints)
-	.left(function(d) { return graphics.x(d.x) })
-	.bottom(function(d) { return graphics.y(d.y) })
-	.visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
-	.fillStyle("red")
-	.strokeStyle("red")
-	.lineWidth(2)
-	.add(pv.Label)									//Line Equation
-		.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
-		.text(function(d) {
-			if (this.index == 0) { return "Y = "+getUserLineSlope(graphics).toFixed(3)+"X + "+getUserLineIntercept(graphics).toFixed(3);}
-			else {return ""}
-		})
-		.textAlign("left")
-		.textBaseline("top")
-		.textStyle("red")
-		.textAngle(function() { return getUserLineLabelAngle(graphics)})
-		.font("bold 12px sans-serif")
-	.add(pv.Label)									//R Squared Value
-		.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
-		.text(function(d) {
-			if (this.index == 0) { return "Sum of Squares = "+ getUserLineR(graphics).toFixed(2);}
-			else {return ""}
-		})
-		.textAlign("left")
-		.textBaseline("bottom")
-		.textStyle("red")
-		.textAngle(function() {return getUserLineLabelAngle(graphics)})
-		.font("bold 12px sans-serif")
-	.add(pv.Dot)									//Endpoints
-		.fillStyle("red")
-		.shape('square')
-		.cursor('move')
-		.event("mousedown", pv.Behavior.drag())
-		.event("drag", function() {
-			var mouseX = graphics.x.invert(vis.mouse().x),
-				mouseY = graphics.y.invert(graphics.h - vis.mouse().y);
-			
-			graphics.userDrawnLinePoints[this.index].x = mouseX;
-			graphics.userDrawnLinePoints[this.index].y = mouseY;
-			
-			vis.render();
-		})		
-	.add(pv.Dot)									//Midpoint
-		.data(function() {return getUserLineMidpoint(graphics)})
-		.left(function(d) { return graphics.x(d.x) })
-		.bottom(function(d) { return graphics.y(d.y) })
-		.fillStyle(pv.rgb(255,0,0,0.1))
-		.strokeStyle(pv.rgb(255,0,0,0.5))
-		.shape('diamond')
-		.cursor('move')
-		.event("mousedown", pv.Behavior.drag())
-		.event("drag", function() {
-			var mouseX = graphics.x.invert(vis.mouse().x),
-				mouseY = graphics.y.invert(graphics.h - vis.mouse().y),
-				handle = getUserLineMidpoint(graphics);
-				
-			graphics.userDrawnLinePoints[0].x += mouseX - handle[0].x;
-			graphics.userDrawnLinePoints[1].x += mouseX - handle[0].x;
-			graphics.userDrawnLinePoints[0].y += mouseY - handle[0].y;
-			graphics.userDrawnLinePoints[1].y += mouseY - handle[0].y;
-						
-			vis.render();
-		});		
-	
-  /* user ellipse */
-  vis.add(pv.Line)
-	 .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
-	 .data(function() { return getRotatedEllipseCoords(graphics) })
-	 .left(function(d) { return d[0] })
-	 .bottom(function(d) { return d[1] })
-	 .strokeStyle("red");
-	 
-  function getEllipseManipCoords(){
-	var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
-	var ellipseXRadius = graphics.xRadius;
-	var ellipseYRadius = graphics.yRadius;
-	
-	var coords = [];
-	for (i = 0; i < cardinalAngs.length; i++) {
-	  coords.push([ ellipseXRadius * Math.cos(cardinalAngs[i]),
-					ellipseYRadius * Math.sin(cardinalAngs[i]) ]);
-	}
-	
-	for (var i = 0; i < coords.length; i++) {
-	  coords[i] = ([ coords[i][0] * Math.cos(graphics.angle) - coords[i][1] * Math.sin(graphics.angle) + graphics.ellipseCX,
-					 coords[i][0] * Math.sin(graphics.angle) + coords[i][1] * Math.cos(graphics.angle) + graphics.ellipseCY ]);
-	}
-	return coords;
-  }
-  
- 
-  vis.add(pv.Dot)
-	 .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
-	 .data(getEllipseManipCoords)
-	 .left(function(d) { return d[0] })
-	 .bottom(function(d) { return d[1] })
-	 .cursor('move')
-	 .shape('square')
-	 .radius(5)
-	 .fillStyle("red")
-	 .strokeStyle("red")
-	 .event("mousedown", pv.Behavior.drag())
-	 .event("drag", function(){
-		var mouseX = vis.mouse().x,
-			mouseY = graphics.h - vis.mouse().y,
-			handleX = getEllipseManipCoords()[this.index][0],
-			handleY = getEllipseManipCoords()[this.index][1],
-			
-			mouseVec = pv.vector(graphics.ellipseCX - mouseX
-								,graphics.ellipseCY - mouseY),
-			
-			handleVec = pv.vector(graphics.ellipseCX - handleX
-								,graphics.ellipseCY - handleY).norm();
-
-		var detHndlMs = determinantBtwnVec(handleVec, mouseVec);
-		var rotDist = angleBtwnVec(mouseVec, handleVec);			
-		
-		if (mouseX > (0 - padLeft) 
-			&& mouseX < (graphics.w + padRight) 
-			&& mouseY > (0 - padBot) 
-			&& mouseY < (graphics.h + padTop)){
-			
-			//Rotation
-			if (!isNaN(rotDist)){
-				if (detHndlMs > 0){
-					graphics.angle = (graphics.angle + rotDist) % (2*Math.PI);
-				}else{
-					graphics.angle = (graphics.angle - rotDist) % (2*Math.PI);
-				}
-			}
-			 
-			//Radius Inc/Dec
-			if (this.index % 2 == 0){
-				graphics.xRadius = mouseVec.length();
-			}else{
-				graphics.yRadius = mouseVec.length();
-			}
-		}
-		
-		graphics.pointsInEllipse = numPointsInEllipse(graphics);
-				
-		vis.render();
-	 })
-	 .add(pv.Label)								
-		.text(function(d) {
-			if (this.index == 3) { return "# of Points Inside = "+ numPointsInEllipse(graphics) }
-			else {return "";}
-		})
-		.textAlign("center")
-		.textBaseline("bottom")
-		.textStyle("red")
-		.textAngle(0)
-		.textMargin(10)
-		.font("bold 12px sans-serif");
-	 
-   vis.add(pv.Dot)
-	 .visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
-	 .data(function() {return [[graphics.ellipseCX, graphics.ellipseCY]]})
-	 .left(function(d) { return d[0] })
-	 .bottom(function(d) { return d[1] })
-	 .cursor('move')
-	 .shape('cross')
-	 .radius(8)
-	 .fillStyle(pv.rgb(255,0,0,0.20))
-	 .strokeStyle(pv.rgb(255,0,0,0.50))
-	 .event("mousedown", pv.Behavior.drag())
-	 .event("drag", function(){
-		var mouseX = vis.mouse().x,
-			mouseY = graphics.h - vis.mouse().y;
-		
-		if (mouseX > 0 && mouseX < graphics.w && mouseY > 0 && mouseY < graphics.h){
-			graphics.ellipseCX = mouseX;
-			graphics.ellipseCY = mouseY;
-		}
-		
-		graphics.pointsInEllipse = numPointsInEllipse(graphics);
-				
-		vis.render();
-	 });
-	 
-  /* dot plot */
-  vis.add(pv.Dot)
-	 .data(graphics.data)
-	 .visible(function() { return jQuery('#checkboxShowData').is(':checked') })
-	 .event("point", function() { return this.active(this.index).parent })
-	 .event("unpoint", function() { return this.active(-1).parent })
-	 .left(function(d) { return graphics.x(d.incidence) })
-	 .bottom(function(d) { return graphics.y(d.otherFactor) })
-	 .radius(function() { return graphics.normViewDotSize })
-	 .fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
-								if (jQuery('#checkboxBWView').is(':checked'))
-									return "black";
-								else 
-									return graphics.c[this.index];
-								
-							} else {
-								return pv.rgb(0,0,0,0.10);
-							}})
-	 .strokeStyle(function() {  if (jQuery('#checkboxBWView').is(':checked')){
-										return "black";
-									} else {
-										return graphics.c[this.index];
-									}})
-	 .title(function(d) { return d.state + ": " + d.incidence + ", " + d.otherFactor })
-	 .def('active', -1)
-	 .event("point", function() { return this.active(this.index).parent })
-	 .event("unpoint", function() { return this.active(-1).parent });
-	 
-  
-  jQuery('#sliderDotSize').slider({ 
-	orientation:'vertical', min:1, max:10, value:graphics.normViewDotSize, step:1,
-	slide:function(event, ui) {
-		graphics.normViewDotSize = ui.value; 
-		vis.render(); 
-	}
-  });
-  
-  jQuery('#sliderDivisions').slider({ 
-	orientation:'vertical', min:2, max:40, value:graphics.normViewAxisDivisions, step:1,
-	slide:function(event, ui) { 
-		graphics.normViewAxisDivisions = ui.value;
-		vis.render(); 
-	}
-  });
-  
-  
-  vis.render();
-		
-}
-
-function constructXStackedVis(){
-	jQuery('span').remove();
-	
-	vis = new pv.Panel()
-		  .width(graphics.w)
-		  .height(graphics.h)
-		  .bottom(padBot)
-		  .left(padLeft)
-		  .right(padRight)
-		  .top(padTop)
-		  .events("all");
-		  
-	/*Graph Title*/		  
-	vis.add(pv.Label)
-		.left(graphics.w / 2)
-		.top(-40)
-		.textAlign("center")
-		.textAngle(0)
-		.text(graphics.worksheet.title + " (Dropped onto X-axis)")
-		.font("bold 20px sans-serif");
-	
-	/* Number of datapoints N */
-	vis.add(pv.Label)
-		.right(0)
-		.top(-10)
-		.textAlign("right")
-		.textAngle(0)
-		.text("N = " + graphics.data.length)
-		.font("bold 14px sans-serif");
-
-		
-	/* X-axis ticks */
-	vis.add(pv.Rule)
-		.data(function() { return getXBuckets(graphics) })
-		.left(function(d) {return graphics.x(d)})
-		.strokeStyle("#aaa")
-		.anchor("bottom").add(pv.Label)
-		  .text(function(d) {return d.toFixed(1)})
-		  .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
-		  .visible(function(){return this.index != 0});
-		   
-	/* X-axis label */
-	vis.add(pv.Label)
-		.data(graphics.worksheet.xAxisTitle)
-		.left(graphics.w / 2)
-		.bottom(-50)
-		.textAlign("center")
-		.textAngle(0)
-		.font(function(){return "bold "+graphics.labelTextSize+"px sans-serif"});
-		
-	/* Y-axis ticks */
-	vis.add(pv.Rule)
-		.bottom(0)
-		.strokeStyle("#000")
-	
-	/* Dots */	
-	vis.add(pv.Dot)
-		.data(function() {return xDistributionPoints(graphics)})
-		.left(function(d) { return d[0] })
-		.bottom(function(d) { return d[1] })
-		.radius(function() {return graphics.bucketDotSize})
-		.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
-								if (jQuery('#checkboxBWView').is(':checked'))
-									return "black";
-								else 
-									return graphics.c[this.index];
-								
-							} else {
-								return "#eee";
-							}})
-		.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
-										return "black";
-									} else {
-										return graphics.c[this.index];
-									}})
-		.title(function(d) { return d[2] });
-		
-	jQuery('#sliderDotSize').slider({ 
-		orientation:'vertical', min:1, max:10, value:graphics.bucketDotSize, step:1,
-		slide:function(event, ui) {
-			graphics.bucketDotSize = ui.value; 
-			vis.render(); 
-		}
-	});
-  
-	jQuery('#sliderDivisions').slider({ 
-		orientation:'vertical', min:2, max:40, value:graphics.buckets, step:1,
-		slide:function(event, ui) { 
-			graphics.buckets = ui.value;
-			vis.render(); 
-		}
-	});
-					
-	vis.render();
-}
-	
-function constructYStackedVis(){
-	jQuery('span').remove();
-	
-	vis = new pv.Panel()
-		  .width(graphics.w)
-		  .height(graphics.h)
-		  .bottom(padBot)
-		  .left(padLeft)
-		  .right(padRight)
-		  .top(padTop)
-		  .events("all");
-		  
-	/*Graph Title*/		  
-	vis.add(pv.Label)
-		.left(graphics.w / 2)
-		.top(-40)
-		.textAlign("center")
-		.textAngle(0)
-		.text(graphics.worksheet.title + " (Dropped onto Y-axis)")
-		.font("bold 20px sans-serif");
-		
-	/* Number of datapoints N */
-	vis.add(pv.Label)
-		.right(0)
-		.top(-10)
-		.textAlign("right")
-		.textAngle(0)
-		.text("N = " + graphics.data.length)
-		.font("bold 14px sans-serif");
-
-		
-	/* Y-axis label */		  
-	vis.add(pv.Label)
-		.data(graphics.worksheet.yAxisTitle)
-		.left(-65)
-		.top(graphics.h / 2)
-		.textAlign("center")
-		.textAngle(-Math.PI / 2)
-		.font(function(){return "bold "+graphics.labelTextSize+"px sans-serif"});
-
-	/* Y-axis ticks */
-	vis.add(pv.Rule)
-		.data(function() { return getYBuckets(graphics) })
-		.bottom(function(d) {return graphics.y(d)})
-		.strokeStyle("#aaa")
-		.anchor("left").add(pv.Label)
-		  .text(function(d) {return d.toFixed(1)})
-		  .font(function(){return "bold "+graphics.tickTextSize+"px sans-serif"})
-		  .visible(function(){return this.index != 0});
-		
-	/* X-axis ticks */
-	vis.add(pv.Rule)
-		.left(0)
-		.strokeStyle("#000");
-	
-	/* Dots */	
-	vis.add(pv.Dot)
-		.data(function() {return yDistributionPoints(graphics)})
-		.left(function(d) {return d[0]})
-		.bottom(function(d) {return d[1]})
-		.radius(function() {return graphics.bucketDotSize})
-		.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
-								if (jQuery('#checkboxBWView').is(':checked'))
-									return "black";
-								else 
-									return graphics.c[this.index];
-								
-							} else {
-								return "#eee";
-							}})
-		.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
-										return "black"; 
-									} else {
-										return graphics.c[this.index];
-									}})
-		.title(function(d) { return d[2] });
-		
-	jQuery('#sliderDotSize').slider({ 
-		orientation:'vertical', min:1, max:10, value:graphics.bucketDotSize, step:1,
-		slide:function(event, ui) {
-			graphics.bucketDotSize = ui.value; 
-			vis.render(); 
-		}
-	});
-  
-	jQuery('#sliderDivisions').slider({ 
-		orientation:'vertical', min:2, max:40, value:graphics.buckets, step:1,
-		slide:function(event, ui) { 
-			graphics.buckets = ui.value;
-			vis.render(); 
-		}
-	});
-			
-	vis.render();
-}
-
-
-/* Events */	
-jQuery('#newSpreadsheetURL').keyup(function(event) {
-  if (event.keyCode == '13') {
-	var key = parseSpreadsheetKeyFromURL($(this).val());
-	$(this).val('');
-	exampleSpreadsheets.push(new Spreadsheet(key));
-  }
-});
-
-
-/* Dynamic Graph Resizing */
-$(window).resize(function() {
-	graphics.setW(calcGraphWidth());
-	graphics.setH(calcGraphHeight());
-	constructVis();
-})
-
-
-/* Updates value of x/y-axis scale text boxes */
-function updateScaleTextBoxes(graphics){
-	$('#textYMin').val(graphics.y.domain()[0]);
-	$('#textYMax').val(graphics.y.domain()[1]);
-	$('#textXMin').val(graphics.x.domain()[0]);
-	$('#textXMax').val(graphics.x.domain()[1]);	
-}
-
+//Entry Point
+var exampleSpreadsheets = [
+	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
+	new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'),
+];
 
 /* populate dataset drop down menu */
 var numWorksheetsLoaded = 0;
@@ -682,128 +11,1376 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
 	jQuery('p#loadingMsg').hide();	
-	$('#textYMin').show();
-	$('#textYMax').show();
-	$('#textXMin').show();
-	$('#textXMax').show();
-	graphics = new Graphics(event.worksheet, calcGraphWidth(), calcGraphHeight());
-	updateScaleTextBoxes(graphics);
-	toggleNetworkOptions(graphics);
+	graphCollection = new GraphCollection();
 	constructVis();
   }
 });
 
+var vis = {};
+var graphCollection = {};
+var fontString = "bold 14px arial";
 
-jQuery('#menu').change(function(event) {
-  constructVis();
-  event.stopPropagation();
-})
+function constructVis() {
+	jQuery('span').remove();
+	
+	vis = new pv.Panel()
+		.width(function(){return graphCollection.w})
+		.height(function(){return graphCollection.h})
+		.bottom(function(){return graphCollection.padBot})
+		.left(function(){return graphCollection.padLeft})
+		.right(function(){return graphCollection.padRight})
+		.top(function(){return graphCollection.padTop})
+	
+	/* Divider Between Graphs and Data Sets */
+	vis.add(pv.Rule)
+		.left(-35)
+		.bottom(graphCollection.padBot * -1)
+		.top(graphCollection.padTop * -1)
+		
+	/* Divider Between Graphs and Buttons */
+	vis.add(pv.Rule)
+		.left(-35)
+		.right(graphCollection.padRight * -1)
+		.top(-30)
+		
+	/* Display Options Menu Button */
+	var dispOptPanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Show display option menu")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 150;
+			}else if (!graphCollection.buttonIcon){
+				return 120;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(-34)
+		.top(-60)
+		.lineWidth(1)
+		.event("click", function(){
+			hideMenus();
+			$('#displayOptions').slideDown();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+	
+	dispOptPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/eye.png")  //fix this
+		.width(30)
+		.height(30)
+		.top(0)
+		.left(2)
+		.cursor("pointer")
+		.title("Show display option menu")
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.event("click", function(){
+			hideMenus();
+			$('#displayOptions').slideDown();
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text("Display Options")
+			.font(fontString)
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
+		
+	/* Add New Graph Button */
+	var newGrphPanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Add a new empty graph")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 115;
+			}else if (!graphCollection.buttonIcon){
+				return 85;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 120;
+			}else if (!graphCollection.buttonIcon){
+				return 90;
+			}else if (!graphCollection.buttonText){
+				return 4;
+			}
+		})
+		.top(-60)
+		.lineWidth(1)
+		.event("click", function(){
+			graphCollection.addGraph();
+			//vis.render();
+			constructVis();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+		
+	newGrphPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png")  //fix this
+		.width(30)
+		.height(30)
+		.top(0)
+		.left(2)
+		.cursor("pointer")
+		.title("Add a new empty graph")
+		.event("click", function(){
+			graphCollection.addGraph();
+			constructVis();
+		})
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text("New Graph")
+			.font(fontString)
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
+		
+	/* Toggle Edit Mode Button */
+	var togEditPanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Toggle edit mode")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 110;
+			}else if (!graphCollection.buttonIcon){
+				return 80;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 240;
+			}else if (!graphCollection.buttonIcon){
+				return 180;
+			}else if (!graphCollection.buttonText){
+				return 40;
+			}
+		})
+		.top(-60)
+		.lineWidth(1)
+		.event("click", function(){
+			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
+			vis.render();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+		
+	togEditPanel.add(pv.Image)
+		.url(function(){
+			if (graphCollection.editModeEnabled)
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/handON.png"
+			else
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/hand.png"
+		})
+		.width(30)
+		.height(26)
+		.top(2)
+		.left(0)
+		.cursor("pointer")
+		.title("Toggle edit mode")
+		.event("click", function(){
+			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
+			vis.render();
+		})
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text("Edit Mode")
+			.font(fontString)
+			.textStyle(function(){
+				if (graphCollection.editModeEnabled)
+					return "red"
+				else
+					return "black"
+			})
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
+	
+	constructSidePanel();
+	
+	graphCollection.graphs.forEach(function(graph, index){
+		constructGraphPanel(graph, index);
+	});
+	
+	vis.render();
+}
 
-jQuery('#editInGoogleDocs').click(function(event) {
-  var URL = jQuery('#workSheetSelector').val();
-  var matches = /feeds\/list\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
-  window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
-  event.preventDefault();
-});
+function constructSidePanel(){
+	var row = 0;
+	
+	vis.add(pv.Label)
+		.text("Data Sets:")
+		.left(-197)
+		.top(-40)
+		.font(fontString);
+	
+	var dragFeedbackPanels = [];
+	for (var key in graphCollection.worksheet.data){
+		var abbrevKey = key.slice(0,18);
+		if (key.length > 18)
+			abbrevKey += "...";
+		
+		//Copy of category panel which follows mouse as it is dragged
+		dragFeedbackPanels[row] = vis.add(pv.Panel)
+			.visible(false)
+			.lineWidth(1)
+			.strokeStyle("black")
+			.height(30)
+			.width(160)
+			.left(0)
+			.top(0)
+			
+		dragFeedbackPanels[row].add(pv.Dot)
+			.left(15)
+			.top(15)
+			.shape("square")
+			.size(80)
+			.def("category", key)
+			.fillStyle(function(d) {return pointFillStyle(this.category())})
+			.strokeStyle(function(d) {return pointStrokeStyle(this.category())})
+			.lineWidth(2)
+			.anchor("right").add(pv.Label)
+				.def("category", key)
+				.text(abbrevKey)
+				.font(fontString)
+				.textStyle(function(){
+					if (graphCollection.editedCategories[this.category()])
+						return "red";
+					else 
+						return "black";
+				})
+		
+		//Edit category button
+		vis.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/edit.png")  //fix this
+		.def("category", key)
+		.def("row",row)
+		.width(30)
+		.height(30)
+		.left(-232)
+		.top(40*row - 35)
+		.cursor("pointer")
+		.title("Edit dataset")
+		.event("click", function(){
+			hideMenus();
+			resetEditDataSetMenu();
+			populateEditMenuFromExisting(this.category());
+			$('#dataSetEdit').slideDown();
+			$('#dataSetEdit').scrollTop(0)
+		})
+		
+		
+		//Panel representing a data category/set
+		var catPanel = vis.add(pv.Panel)
+			.data([{"x":0,"y":0}])
+			.def("category", key)
+			.def("row",row)
+			.events("all")
+			.cursor("move")
+			.title(key)
+			.lineWidth(1)
+			.height(30)
+			.width(160)
+			.left(-198)
+			.top(40*row - 35)
+			.event("mouseover", function(d){
+				this.strokeStyle("black");
+				this.render();
+			})
+			.event("mouseout", function(d){ 
+				this.strokeStyle(pv.rgb(0,0,0,0));
+				this.render();
+			})
+			.event("mousedown", pv.Behavior.drag())
+			.event("dragstart", function(){
+				var mouseY = vis.mouse().y;
+				var mouseX = vis.mouse().x;
+				dragFeedbackPanels[this.row()].left(mouseX);
+				dragFeedbackPanels[this.row()].top(mouseY);
+				dragFeedbackPanels[this.row()].visible(true);
+				document.body.style.cursor="move";
+				dragFeedbackPanels[this.row()].render();
+			})
+			.event("drag", function(event){
+				var mouseY = vis.mouse().y;
+				var mouseX = vis.mouse().x;
+				dragFeedbackPanels[this.row()].left(mouseX);
+				dragFeedbackPanels[this.row()].top(mouseY);
+				dragFeedbackPanels[this.row()].render();
+			})
+			.event("dragend", function(){
+				var mouseY = vis.mouse().y;
+				var mouseX = vis.mouse().x;
+				if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
+					if (graphCollection.graphs.length > 4){
+						var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
+						graphCollection.graphs[which].addCategory(this.category());
+						graphCollection.updateMenuOptions();
+					} else {
+						var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
+						graphCollection.graphs[which].addCategory(this.category());
+						graphCollection.updateMenuOptions();
+					}
+				}
+				dragFeedbackPanels[this.row()].visible(false);
+				document.body.style.cursor="default";
+				constructVis();
+				//vis.render();
+			})
+			.event("touchstart", function(event){
+				touch.draggedObj = dragFeedbackPanels[this.row()];
+				touch.dragging = true;
+				touch.dragCat = this.category();
+				touch.dragGraphIndex = -1;
+			})
+			
+			
+			
+		catPanel.add(pv.Label)
+			.left(0)
+			.top(23)
+			.text(abbrevKey)
+			.font(fontString)
+			.def("category", key)
+			.textStyle(function(){
+				if (graphCollection.editedCategories[this.category()])
+					return "red";
+				else 
+					return "black";
+			})
 
-jQuery('#menuOptions').change(function(event) {
-  constructVis();
-  event.stopPropagation();
-});
-
-
-
-jQuery('#workSheetSelector').change(function(event) {
-  graphics = new Graphics(getWorksheet(), calcGraphWidth(), calcGraphHeight());
-  graphics.setXScale();
-  graphics.setYScale();
-  updateScaleTextBoxes(graphics);
-  toggleNetworkOptions(graphics);
-  constructVis();
-});
-
-
-jQuery('#fitScalesToData').change(function(event) {
-  graphics.setXScale();
-  graphics.setYScale();
-  updateScaleTextBoxes(graphics);
-  constructVis();
-});
-
-jQuery('#checkboxShowMMEqn').change(function(event) {
-  if (jQuery('#checkboxShowMMEqn').is(':checked'))
-	jQuery('#checkboxShowMMLine').attr('checked', true);
-  constructVis();
-});
-
-jQuery('#checkboxShowLeastSquaresEquation').change(function(event) {
-  if (jQuery('#checkboxShowLeastSquaresEquation').is(':checked'))
-	jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
-  constructVis();
-});
-
-jQuery('#checkboxShowLeastSquaresRValue').change(function(event) {
-  if (jQuery('#checkboxShowLeastSquaresRValue').is(':checked'))
-	jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
-  constructVis();
-});
-
-$('#textYMin').change(function(event) {
-	var textBoxVal = parseFloat($('#textYMin').val());
-	var curMax = graphics.y.domain()[1];
-	if (isNaN(textBoxVal) || textBoxVal >= curMax){
-		updateScaleTextBoxes(graphics);
-	} else {
-		jQuery('#fitScalesToData').attr('checked', false);
-		graphics.setYScale(textBoxVal, curMax);
-		constructVis();
-	}	
-});
-
-$('#textYMax').change(function(event) {
-	var textBoxVal = parseFloat($('#textYMax').val());
-	var curMin = graphics.y.domain()[0];
-	if (isNaN(textBoxVal) || textBoxVal <= curMin){
-		updateScaleTextBoxes(graphics);
-	} else {
-		jQuery('#fitScalesToData').attr('checked', false);
-		graphics.setYScale(curMin, textBoxVal);
-		constructVis();
-	}
-
-});
-
-$('#textXMin').change(function(event) {
-	var textBoxVal = parseFloat($('#textXMin').val());
-	var curMax = graphics.x.domain()[1];
-	if (isNaN(textBoxVal) || textBoxVal >= curMax){
-		updateScaleTextBoxes(graphics);
-	} else {
-		jQuery('#fitScalesToData').attr('checked', false);
-		graphics.setXScale(textBoxVal, curMax);
-		constructVis();
-	}
-});
-
-$('#textXMax').change(function(event) {
-	var textBoxVal = parseFloat($('#textXMax').val());
-	var curMin = graphics.x.domain()[0];
-	if (isNaN(textBoxVal) || textBoxVal <= curMin){
-		updateScaleTextBoxes(graphics);
-	} else {
-		jQuery('#fitScalesToData').attr('checked', false);
-		graphics.setXScale(curMin, textBoxVal);
-		constructVis();
+		row++;
 	}
 	
-});
+	//New Data Set Button
+	var newDataPanel = vis.add(pv.Panel)
+			.events("all")
+			.cursor("pointer")
+			.def("row", row)
+			.title("Add a Dataset")
+			.lineWidth(1)
+			.height(30)
+			.width(160)
+			.left(-198)
+			.top(40*row - 35)
+			.event("click", function(){
+				resetAddDataSetMenu();
+				populateAddMenuLabelsFromExisting();
+				hideMenus();
+				$('#dataSetAdd').slideDown();
+			});
+			
+		newDataPanel.add(pv.Dot)
+			.left(15)
+			.top(15)
+			.def("category", key)
+			.shape("square")
+			.cursor("pointer")
+			.size(80)
+			.strokeStyle("black")
+			.lineWidth(2)
+			.anchor("right").add(pv.Label)
+				.text("Add a Dataset")
+				.font(fontString)
+		
+		newDataPanel.add(pv.Dot)
+			.left(15)
+			.top(15)
+			.angle(Math.PI/4)
+			.shape("cross")
+			.cursor("pointer")
+			.events("all")
+			.size(20)
+			.lineWidth(2)
+			.title("Add a Dataset")
+			.strokeStyle("black")
+}
 
-$('#refreshWorksheet').click(function(event){
-	getWorksheet().fetchWorksheetData();
-	if ($('#fitScalesToData').is(':checked')){
-		jQuery('#fitScalesToData').attr('checked', false);
-	}
+function constructGraphPanel(graph,index){
+	var graphPanel = vis.add(pv.Panel)
+		.width(function(){return graph.w})
+		.height(function(){return graph.h})
+		.top(20)
+		.left(function(){return 40 + index * graph.w + index * 90})
+		.events("all");
+		
+	//Remove Graph Button
+	graphPanel.add(pv.Panel)
+		.right(0)
+		.top(-40)
+		.width(20)
+		.height(20)
+		.strokeStyle("black")
+		.cursor("pointer")
+		.events("all")
+		.title("Remove graph")
+		.event("click", function(){
+			graphCollection.removeGraph(graph);
+			constructVis();
+		})
+		.add(pv.Dot)
+			.left(10)
+			.top(10)
+			.shape("cross")
+			.cursor("pointer")
+			.events("all")
+			.size(20)
+			.lineWidth(2)
+			.title("Remove Graph")
+			.strokeStyle("black")
 	
-});
+	//Divider between graphs
+	graphPanel.add(pv.Rule)
+		.left(-75)
+		.top(-50)
+		.bottom(-75)
+		.visible(function(){ return index == 1 })
+			
+	//Show Graph Option Menu Button
+	graphPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/wrench.png")  //fix this
+		.width(30)
+		.height(30)
+		.top(-45)
+		.left(-60)
+		.cursor("pointer")
+		.title("Show graph option menu")
+		.event("click", function(){
+			graphCollection.selectedGraphIndex = index;
+			//graphCollection.updateMenuOptions();
+			positionGroupingMenuOverGraph(index, graphCollection);
+			hideMenus();
+			$('#graphOptions').slideDown();
+		})
+		
+	//Copy to clipboard button
+	graphPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/clipboard.png")  //fix this
+		.width(30)
+		.height(30)
+		.top(-45)
+		.left(-20)
+		.cursor("pointer")
+		.title("Copy data to clipboard.")
+		.event("click", function(){
+			$('#cbText').val(graph.toString());
+			positionClipboardPrompt();
+			hideMenus();
+			$('#clipboardPrompt').slideDown();
+			$('#cbText').focus();
+			$('#cbText').select();
+			$('#clipboardPrompt').scrollTop(0);
+		
+		})
+		
+	
+	
+	if (graph.yData != null && graph.xData != null){
+		if (graph.twoDistView)
+			constructTwoDistGraph(graph,index, graphPanel);
+		else
+			constructCorrGraph(graph, index, graphPanel);
+	} else if (graph.yData != null) {
+		constructYDistGraph(graph, index, graphPanel);
+	} else if (graph.xData != null) {
+		constructXDistGraph(graph, index, graphPanel);
+	} else {
+		constructEmptyGraph(graph, index, graphPanel);
+	}
+}
 
-$('#checkboxBWView').change(function() { return constructVis(); });
+function constructEmptyGraph(graph,index, graphPanel){
+	console.log("empty")
+	
+	//Empty Graph Message
+	graphPanel.add(pv.Label)
+		.left(function(){return graph.w/2})
+		.top(function(){return graph.h/2})
+		.textAlign("center")
+		.textBaseline("center")
+		.text("Empty Graph")
+		.font(fontString)
+	graphPanel.add(pv.Label)
+		.left(function(){return graph.w/2})
+		.top(function(){return graph.h/2 + 20})
+		.textAlign("center")
+		.textBaseline("center")
+		.text("Drag a Dataset from the Left to Add")
+		.font(fontString)
+		
+}
+
+function constructCorrGraph(graph, index, graphPanel){
+	//var graphPanel = vis.add(pv.Panel)
+	//	.width(function(){return graph.w})
+	//	.height(function(){return graph.h})
+	//	.top(20)
+	//	.left(function(){return 40 + index * graph.w + index * 80})
+	//	.events("all");
+		
+	console.log("corr")
+		
+	/*Graph Title*/
+  graphPanel.add(pv.Label)
+		.left(function(){return graph.w/2})
+		.top(-10)
+		.textAlign("center")
+		.textAngle(0)
+		.text(function(){return graph.worksheet.title})
+		.font("bold 20px sans-serif");
+	
+	/* Number of datapoints N */
+  graphPanel.add(pv.Label)
+		.right(function(){return graph.w/2})
+		.top(10)
+		.textAlign("center")
+		.textAngle(0)
+		.text(function(){return "N = " + graph.data.length})
+		.font("bold 14px sans-serif");
+		
+	/* Y-axis label */  
+  graphPanel.add(pv.Label)
+		.text(function(){return graph.yData})
+		.left(-40)
+		.top(graph.h / 2)
+		.textAlign("center")
+		.textAngle(-Math.PI / 2)
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
+		
+	 /* Y-axis ticks */
+  graphPanel.add(pv.Rule)
+		.data(function() { return graph.y.ticks(graphCollection.buckets) })
+		.bottom(graph.y)
+		.strokeStyle("#eee")
+		.anchor('left').add(pv.Label)
+			.text(graph.y.tickFormat)
+			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			
+	//Y-axis Line
+	graphPanel.add(pv.Rule)
+		.left(1)
+		.top(0)
+		.bottom(0)
+		.strokeStyle("#000")
+
+  /* X-axis ticks */
+  graphPanel.add(pv.Rule)
+		.data(function() { return graph.x.ticks(graphCollection.buckets) })
+		.left(graph.x)
+		.strokeStyle("#eee")
+		.anchor("bottom").add(pv.Label)
+			.text(graph.x.tickFormat)
+			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			
+	//X-axis Line
+	graphPanel.add(pv.Rule)
+		.left(1)
+		.right(0)
+		.bottom(1)
+		.strokeStyle("#000")
+			
+	/* X-axis label */
+  graphPanel.add(pv.Label)
+		.text(graph.xData)
+		.left(graph.w / 2)
+		.bottom(-40)
+		.textAlign("center")
+		.textAngle(0)
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
+	
+	
+}
+
+
+function constructCorrGraphNOT(graph, index){
+  var graphPanel = vis.add(pv.Panel)
+		.width(function(){return graph.w})
+		.height(function(){return graph.h})
+		.top(20)
+		.left(function(){return 40 + index * graph.w + index * 80})
+		.events("all");
+  
+  /*Graph Title*/
+  graphPanel.add(pv.Label)
+		.left(function(){return graph.w/2})
+		.top(-10)
+		.textAlign("center")
+		.textAngle(0)
+		.text(function(){return graph.worksheet.title})
+		.font("bold 20px sans-serif");
+	
+  /* Number of datapoints N */
+  graphPanel.add(pv.Label)
+		.right(function(){return graph.w/2})
+		.top(10)
+		.textAlign("center")
+		.textAngle(0)
+		.text(function(){return "N = " + graph.data.length})
+		.font("bold 14px sans-serif");
+
+  /* Y-axis label */  
+  graphPanel.add(pv.Label)
+		.data(function(){return graph.yData})
+		.left(-65)
+		.top(graph.h / 2)
+		.textAlign("center")
+		.textAngle(-Math.PI / 2)
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
+
+  /* Y-axis ticks */
+  graphPanel.add(pv.Rule)
+		.data(function() { return graph.y.ticks(graphCollection.buckets) })
+		.bottom(graph.y)
+		.strokeStyle(function(d) { return d ? "#eee" : "#000" })
+		.anchor('left').add(pv.Label)
+			.text(graph.y.tickFormat)
+			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			.visible(function(){return this.index != 0});
+
+  /* X-axis ticks */
+  graphPanel.add(pv.Rule)
+		.data(function() { return graph.x.ticks(graphCollection.buckets) })
+		.left(graph.x)
+		.strokeStyle(function(d) { return d ? "#eee" : "#000" })
+		.anchor("bottom").add(pv.Label)
+			.text(graph.x.tickFormat)
+			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			.visible(function(){return this.index != 0});
+
+  /* X-axis label */
+  graphPanel.add(pv.Label)
+		.text(graph.xData)
+		.left(graph.w / 2)
+		.bottom(-50)
+		.textAlign("center")
+		.textAngle(0)
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
+	
+	  
+  /* median median crosses and squares */
+	for (var i = 0; i < graph.groups.length; i++) {
+		var bounds = getBounds(graph.groups[i]);
+		var coords = getBoundingCoords(bounds);
+		var n = graph.groups[i].length;
+
+		/* rectangle around median group */
+		graphPanel.add(pv.Line)
+			.visible(function() { return jQuery('#checkboxShowMMRects').is(':checked') })
+			.data(coords)
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return graph.y(d[1]) })
+			.lineWidth(0.5)
+			.strokeStyle("blue")
+			.fillStyle(pv.rgb(0,0,255,0.05))
+			.add(pv.Label)								
+				.text(function(d) {
+					if (this.index == 0) { return "N = "+ n;}
+					else {return ""}
+				})
+				.textAlign("left")
+				.textBaseline("top")
+				.textStyle("blue")
+				.textAngle(0)
+				.font("bold 12px sans-serif");
+
+		/* median cross */
+		graphPanel.add(pv.Dot)
+			.visible(function() { return jQuery('#checkboxShowMMDots').is(':checked') })
+			.data([graph.medians[i]]) // extra brackets so not to use x and y as seperate points
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return graph.y(d[1]) })
+			.radius(10)
+			.angle(Math.PI / 4)
+			.shape('cross')
+			.strokeStyle(pv.rgb(0,0,255,0.90));
+	}
+
+
+  /* median-median line:
+	   Is middle median dot higher or lower than line through outer median dots? 
+	   That is, middle median dot's y value - y value at same x of original median line 
+	   divided by three */
+	graphPanel.add(pv.Line)
+		.visible(function() { return jQuery('#checkboxShowMMLine').is(':checked') })
+		.data([[graph.xMin, graph.mmFarLeftYVal], [graph.xMax, graph.mmFarRightYVal]])
+		.left(function(d) { return graph.x(d[0]) })
+		.bottom(function(d) { return graph.y(d[1]) })
+		.title("Median-median line")
+		.strokeStyle("blue")
+		.lineWidth(2)
+		.add(pv.Label)
+			.visible(function () { return (jQuery('#checkboxShowMMEqn').is(':checked') 
+											&& jQuery('#checkboxShowMMLine').is(':checked') )})
+			.text(function(d) {
+				if (this.index == 0) { return "Y = "+graph.mmSlope.toFixed(3)+"X + "+graph.mmIntercept.toFixed(3);}
+				else{return "";}
+			})
+			.textAlign("left")
+			.textBaseline("top")
+			.textStyle("blue")
+			.textAngle(getMMLineLabelAngle(graph))
+			.font("bold 12px sans-serif");
+		 
+	/* Least Squares Regression Line */  
+	graphPanel.add(pv.Line)
+		.visible(function() { return jQuery('#checkboxShowLeastSquaresLine').is(':checked') })
+		.data([[graph.xMin, graph.lsFarLeftYVal], [graph.xMax, graph.lsFarRightYVal]])
+		.left(function(d) { return graph.x(d[0]) })
+		.bottom(function(d) { return graph.y(d[1]) })
+		.title("Least-Squares Regression Line")
+		.strokeStyle(pv.rgb(0,225,0,1))
+		.lineWidth(2)
+		.add(pv.Label)									//Line Equation
+			.visible(function () { return (jQuery('#checkboxShowLeastSquaresEquation').is(':checked')
+											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
+			.text(function(d) {
+				if (this.index == 0) { return "Y = "+graph.lsSlope.toFixed(3)+"X + "+graph.lsIntercept.toFixed(3);}
+				else {return ""}
+			})
+			.textAlign("left")
+			.textBaseline("top")
+			.textStyle(pv.rgb(0,225,0,1))
+			.textAngle(getLSLineLabelAngle(graph))
+			.font("bold 12px sans-serif")
+		.add(pv.Label)									//R Value
+			.visible(function () { return (jQuery('#checkboxShowLeastSquaresRValue').is(':checked')
+											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
+			.text(function(d) {
+				if (this.index == 0) { return "R = "+ getR(graph.data).toFixed(2);}
+				else {return ""}
+			})
+			.textAlign("left")
+			.textBaseline("bottom")
+			.textStyle(pv.rgb(0,225,0,1))
+			.textAngle(getLSLineLabelAngle(graph))
+			.font("bold 12px sans-serif");
+		
+  /*R Squares*/
+	for (var i=0; i < graph.data.length; i++){	
+		var sqrBounds = getRSquareBounds(graph, i);  									   
+		graphPanel.add(pv.Line)
+			.visible(function() { return (jQuery('#checkboxShowLeastSquaresSquares').is(':checked')
+									&& jQuery('#checkboxShowLeastSquaresLine').is(':checked')) })
+			.data(sqrBounds)
+			.left(function(d) { return d[0] })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(0.5)
+			.strokeStyle("green")
+			.fillStyle(pv.rgb(0,225,0,0.05));
+  }
+	 
+	/* user drawn line */
+	graphPanel.add(pv.Line)
+		.data(graph.userDrawnLinePoints)
+		.left(function(d) { return graph.x(d.x) })
+		.bottom(function(d) { return graph.y(d.y) })
+		.visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
+		.fillStyle("red")
+		.strokeStyle("red")
+		.lineWidth(2)
+		.add(pv.Label)									//Line Equation
+			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
+			.text(function(d) {
+				if (this.index == 0) { return "Y = "+getUserLineSlope(graph).toFixed(3)+"X + "+getUserLineIntercept(graph).toFixed(3);}
+				else {return ""}
+			})
+			.textAlign("left")
+			.textBaseline("top")
+			.textStyle("red")
+			.textAngle(function() { return getUserLineLabelAngle(graph)})
+			.font("bold 12px sans-serif")
+		.add(pv.Label)									//R Squared Value
+			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
+			.text(function(d) {
+				if (this.index == 0) { return "Sum of Squares = "+ getUserLineR(graph).toFixed(2);}
+				else {return ""}
+			})
+			.textAlign("left")
+			.textBaseline("bottom")
+			.textStyle("red")
+			.textAngle(function() {return getUserLineLabelAngle(graph)})
+			.font("bold 12px sans-serif")
+		.add(pv.Dot)									//Endpoints
+			.fillStyle("red")
+			.shape('square')
+			.cursor('move')
+			.event("mousedown", pv.Behavior.drag())
+			.event("drag", function() {
+				var mouseX = graph.x.invert(vis.mouse().x),
+					mouseY = graph.y.invert(graph.h - vis.mouse().y);
+				
+				graph.userDrawnLinePoints[this.index].x = mouseX;
+				graph.userDrawnLinePoints[this.index].y = mouseY;
+				
+				vis.render();
+			})		
+		.add(pv.Dot)									//Midpoint
+			.data(function() {return getUserLineMidpoint(graph)})
+			.left(function(d) { return graph.x(d.x) })
+			.bottom(function(d) { return graph.y(d.y) })
+			.fillStyle(pv.rgb(255,0,0,0.1))
+			.strokeStyle(pv.rgb(255,0,0,0.5))
+			.shape('diamond')
+			.cursor('move')
+			.event("mousedown", pv.Behavior.drag())
+			.event("drag", function() {
+				var mouseX = graph.x.invert(vis.mouse().x),
+					mouseY = graph.y.invert(graph.h - vis.mouse().y),
+					handle = getUserLineMidpoint(graph);
+					
+				graph.userDrawnLinePoints[0].x += mouseX - handle[0].x;
+				graph.userDrawnLinePoints[1].x += mouseX - handle[0].x;
+				graph.userDrawnLinePoints[0].y += mouseY - handle[0].y;
+				graph.userDrawnLinePoints[1].y += mouseY - handle[0].y;
+							
+				vis.render();
+			});		
+	
+  /* user ellipse */
+	graphPanel.add(pv.Line)
+		.visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
+		.data(function() { return getRotatedEllipseCoords(graph) })
+		.left(function(d) { return d[0] })
+		.bottom(function(d) { return d[1] })
+		.strokeStyle("red");
+
+	function getEllipseManipCoords(){
+		var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
+		var ellipseXRadius = graph.xRadius;
+		var ellipseYRadius = graph.yRadius;
+		
+		var coords = [];
+		for (i = 0; i < cardinalAngs.length; i++) {
+			coords.push([ ellipseXRadius * Math.cos(cardinalAngs[i]),
+						ellipseYRadius * Math.sin(cardinalAngs[i]) ]);
+		}
+		
+		for (var i = 0; i < coords.length; i++) {
+			coords[i] = ([ coords[i][0] * Math.cos(graph.angle) - coords[i][1] * Math.sin(graph.angle) + graph.ellipseCX,
+						 coords[i][0] * Math.sin(graph.angle) + coords[i][1] * Math.cos(graph.angle) + graph.ellipseCY ]);
+		}
+		return coords;
+	}
+  
+ 
+	graphPanel.add(pv.Dot)
+		.visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
+		.data(getEllipseManipCoords)
+		.left(function(d) { return d[0] })
+		.bottom(function(d) { return d[1] })
+		.cursor('move')
+		.shape('square')
+		.radius(5)
+		.fillStyle("red")
+		.strokeStyle("red")
+		.event("mousedown", pv.Behavior.drag())
+		.event("drag", function(){
+			var mouseX = vis.mouse().x,
+				mouseY = graph.h - vis.mouse().y,
+				handleX = getEllipseManipCoords()[this.index][0],
+				handleY = getEllipseManipCoords()[this.index][1],
+				
+				mouseVec = pv.vector(graph.ellipseCX - mouseX
+									,graph.ellipseCY - mouseY),
+				
+				handleVec = pv.vector(graph.ellipseCX - handleX
+									,graph.ellipseCY - handleY).norm();
+
+			var detHndlMs = determinantBtwnVec(handleVec, mouseVec);
+			var rotDist = angleBtwnVec(mouseVec, handleVec);			
+
+			if (mouseX > (0 - padLeft) 
+				&& mouseX < (graph.w + padRight) 
+				&& mouseY > (0 - padBot) 
+				&& mouseY < (graph.h + padTop)){
+				
+				//Rotation
+				if (!isNaN(rotDist)){
+					if (detHndlMs > 0){
+						graph.angle = (graph.angle + rotDist) % (2*Math.PI);
+					}else{
+						graph.angle = (graph.angle - rotDist) % (2*Math.PI);
+					}
+				}
+				 
+				//Radius Inc/Dec
+				if (this.index % 2 == 0){
+					graph.xRadius = mouseVec.length();
+				}else{
+					graph.yRadius = mouseVec.length();
+				}
+			}
+
+			graph.pointsInEllipse = numPointsInEllipse(graph);
+					
+			vis.render();
+		})
+		.add(pv.Label)								
+			.text(function(d) {
+				if (this.index == 3) { return "# of Points Inside = "+ numPointsInEllipse(graph) }
+				else {return "";}
+			})
+			.textAlign("center")
+			.textBaseline("bottom")
+			.textStyle("red")
+			.textAngle(0)
+			.textMargin(10)
+			.font("bold 12px sans-serif");
+		 
+	graphPanel.add(pv.Dot)
+		.visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
+		.data(function() {return [[graph.ellipseCX, graph.ellipseCY]]})
+		.left(function(d) { return d[0] })
+		.bottom(function(d) { return d[1] })
+		.cursor('move')
+		.shape('cross')
+		.radius(8)
+		.fillStyle(pv.rgb(255,0,0,0.20))
+		.strokeStyle(pv.rgb(255,0,0,0.50))
+		.event("mousedown", pv.Behavior.drag())
+		.event("drag", function(){
+		var mouseX = vis.mouse().x,
+			mouseY = graph.h - vis.mouse().y;
+
+		if (mouseX > 0 && mouseX < graph.w && mouseY > 0 && mouseY < graph.h){
+			graph.ellipseCX = mouseX;
+			graph.ellipseCY = mouseY;
+		}
+
+		graph.pointsInEllipse = numPointsInEllipse(graph);
+				
+		vis.render();
+		});
+	 
+	/* dot plot */
+	graphPanel.add(pv.Dot)
+		.data(graph.data)
+		.visible(function() { return jQuery('#checkboxShowData').is(':checked') })
+		.event("point", function() { return this.active(this.index).parent })
+		.event("unpoint", function() { return this.active(-1).parent })
+		.left(function(d) { return graph.x(d.x) })
+		.bottom(function(d) { return graph.y(d.y) })
+		.radius(function() { return graph.normViewDotSize })
+		.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
+								if (jQuery('#checkboxBWView').is(':checked'))
+									return "black";
+								else 
+									return graph.c[this.index];
+								
+							} else {
+								return pv.rgb(0,0,0,0.10);
+							}
+		})
+		.strokeStyle(function() {  if (jQuery('#checkboxBWView').is(':checked')){
+										return "black";
+									} else {
+										return graph.c[this.index];
+									}
+		})
+		.title(function(d) { return d.label + ": " + d.x + ", " + d.y })
+		.def('active', -1)
+		.event("point", function() { return this.active(this.index).parent })
+		.event("unpoint", function() { return this.active(-1).parent });
+
+  
+  jQuery('#sliderDotSize').slider({ 
+	orientation:'vertical', min:1, max:10, value:graph.normViewDotSize, step:1,
+	slide:function(event, ui) {
+		graph.normViewDotSize = ui.value; 
+		vis.render(); 
+	}
+  });
+  
+  jQuery('#sliderDivisions').slider({ 
+	orientation:'vertical', min:2, max:40, value:graph.normViewAxisDivisions, step:1,
+	slide:function(event, ui) { 
+		graph.normViewAxisDivisions = ui.value;
+		vis.render(); 
+	}
+  });
+  
+  vis.render();
+}
+
+function constructTwoDistGraph(graph,index, graphPanel){
+	//var graphPanel = vis.add(pv.Panel)
+	//	.width(function(){return graph.w})
+	//	.height(function(){return graph.h})
+	//	.top(20)
+	//	.left(function(){return 40 + index * graph.w + index * 80})
+	//	.events("all");
+	
+	console.log("two dist")
+	
+	/*Graph Title*/
+	graphPanel.add(pv.Label)
+		.left(function(){return graph.w / 2})
+		.top(-20)
+		.textAlign("center")
+		.textAngle(0)
+		.text(graph.worksheet.title + " (Both Categories on X-axis)")
+		.font("bold 20px sans-serif");
+	
+	//Top subgraph is y-axis data
+	var topDist = graphPanel.add(pv.Panel)
+		.width(function(){return graph.w})
+		.height(function(){return (graph.h-80)/2})
+		.top(0)
+		.left(0)
+		.events("all");
+	
+	/* Number of datapoints N */
+	topDist.add(pv.Label)
+		.left(function(){return graph.w / 2})
+		.top(-5)
+		.textAlign("center")
+		.textAngle(0)
+		.text("N = " + graph.worksheet.data[graph.yData].length)
+		.font("bold 14px sans-serif");
+		
+	/* X-axis label */		  
+	topDist.add(pv.Label)
+		.text(graph.yData)
+		.left(function(){return graph.w/2})
+		.bottom(-40)
+		.textAlign("center")
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
+
+	/* X-axis ticks */
+	topDist.add(pv.Rule)
+		.data(function() { return getXBuckets(graph) })
+		.left(function(d) {return graph.x(d)})
+		.strokeStyle("#aaa")
+		.anchor("bottom").add(pv.Label)
+			//.bottom(-10)
+		  .text(function(d) {return d.toFixed(1)})
+		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+		  .visible(function(){return this.index % 2 == 0})
+		
+	/* X-axis line */
+	topDist.add(pv.Rule)
+		.bottom(0)
+		.strokeStyle("#000");
+	
+	/* Dots */	
+	topDist.add(pv.Dot)
+		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.yData])})
+		.left(function(d) {return d[0]})
+		.bottom(function(d) {return d[1]})
+		.radius(function() {return graphCollection.dotSize})
+		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
+		//						if (jQuery('#checkboxBWView').is(':checked'))
+		//							return "black";
+		//						else 
+		//							return graph.c[this.index];
+		//						
+		//					} else {
+		//						return "#eee";
+		//					}})
+		//.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
+		//								return "black"; 
+		//							} else {
+		//								return graph.c[this.index];
+		//							}})
+		.title(function(d) { return d[2] });
+	
+	//Divider Between graphs
+	topDist.add(pv.Rule)
+		.bottom(-50)
+		.left(0)
+		.right(0)
+		.strokeStyle("#000");
+		
+	//Bottom subgraph is x-axis data
+	var bottomDist = graphPanel.add(pv.Panel)
+		.width(function(){return graph.w})
+		.height(function(){return (graph.h-80)/2})
+		.top(function(){return (graph.h-80)/2 + 80})
+		.left(0)
+		.events("all");
+	
+	/* Number of datapoints N */
+	bottomDist.add(pv.Label)
+		.left(function(){return graph.w / 2})
+		.top(-5)
+		.textAlign("center")
+		.textAngle(0)
+		.text("N = " + graph.worksheet.data[graph.xData].length)
+		.font("bold 14px sans-serif");
+		
+	/* X-axis label */		  
+	bottomDist.add(pv.Label)
+		.text(graph.xData)
+		.left(function(){return graph.w/2})
+		.bottom(-40)
+		.textAlign("center")
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
+
+	/* X-axis ticks */
+	bottomDist.add(pv.Rule)
+		.data(function() { return getXBuckets(graph) })
+		.left(function(d) {return graph.x(d)})
+		.strokeStyle("#aaa")
+		.anchor("bottom").add(pv.Label)
+			//.bottom(-10)
+		  .text(function(d) {return d.toFixed(1)})
+		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+		  .visible(function(){return this.index % 2 == 0})
+		
+	/* X-axis line */
+	bottomDist.add(pv.Rule)
+		.bottom(0)
+		.strokeStyle("#000");
+	
+	/* Dots */	
+	bottomDist.add(pv.Dot)
+		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData])})
+		.left(function(d) {return d[0]})
+		.bottom(function(d) {return d[1]})
+		.radius(function() {return graphCollection.dotSize})
+		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
+		//						if (jQuery('#checkboxBWView').is(':checked'))
+		//							return "black";
+		//						else 
+		//							return graph.c[this.index];
+		//						
+		//					} else {
+		//						return "#eee";
+		//					}})
+		//.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
+		//								return "black"; 
+		//							} else {
+		//								return graph.c[this.index];
+		//							}})
+		.title(function(d) { return d[2] });
+		
+	vis.render();
+}
+
+function constructXDistGraph(graph, index, graphPanel){
+	//console.log("x dist");
+	//var graphPanel = vis.add(pv.Panel)
+	//	.width(function(){return graph.w})
+	//	.height(function(){return graph.h})
+	//	.top(20)
+	//	.left(function(){return 40 + index * graph.w + index * 80})
+	//	.events("all");
+	
+	console.log("x dist")
+		  
+	/*Graph Title*/		  
+	graphPanel.add(pv.Label)
+		.left(function(){return graph.w / 2})
+		.top(-20)
+		.textAlign("center")
+		.textAngle(0)
+		.text(graph.worksheet.title + " (Dropped onto X-axis)")
+		.font("bold 20px sans-serif");
+		
+	/* Number of datapoints N */
+	graphPanel.add(pv.Label)
+		.left(function(){return graph.w / 2})
+		.top(-5)
+		.textAlign("center")
+		.textAngle(0)
+		.text("N = " + graph.worksheet.data[graph.xData].length)
+		.font("bold 14px sans-serif");
+
+		
+	/* X-axis label */		  
+	graphPanel.add(pv.Label)
+		.text(graph.xData)
+		.left(function(){return graph.w/2})
+		.bottom(-40)
+		.textAlign("center")
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
+
+	/* X-axis ticks */
+	graphPanel.add(pv.Rule)
+		.data(function() { return getXBuckets(graph) })
+		.left(function(d) {return graph.x(d)})
+		.strokeStyle("#aaa")
+		.anchor("bottom").add(pv.Label)
+			.bottom(-10)
+		  .text(function(d) {return d.toFixed(1)})
+		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+		  .visible(function(){return this.index % 2 == 0})
+		
+	/* X-axis line */
+	graphPanel.add(pv.Rule)
+		.bottom(0)
+		.strokeStyle("#000");
+	
+	/* Dots */	
+	graphPanel.add(pv.Dot)
+		.data(function() {return xDistributionPoints(graph)})
+		.left(function(d) {return d[0]})
+		.bottom(function(d) {return d[1]})
+		.radius(function() {return graphCollection.dotSize})
+		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
+		//						if (jQuery('#checkboxBWView').is(':checked'))
+		//							return "black";
+		//						else 
+		//							return graph.c[this.index];
+		//						
+		//					} else {
+		//						return "#eee";
+		//					}})
+		//.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
+		//								return "black"; 
+		//							} else {
+		//								return graph.c[this.index];
+		//							}})
+		.title(function(d) { return d[2] });
+		
+	vis.render();
+}
+	
+function constructYDistGraph(graph,index, graphPanel){
+	//console.log("Y Dist Graph at "+index);
+	//var graphPanel = vis.add(pv.Panel)
+	//	.width(function(){return graph.w})
+	//	.height(function(){return graph.h})
+	//	.top(20)
+	//	.left(function(){return 40 + index * graph.w + index * 80})
+	//	.events("all");
+	console.log("y dist")
+		  
+	/*Graph Title*/		  
+	graphPanel.add(pv.Label)
+		.left(function(){return graph.w / 2})
+		.top(-20)
+		.textAlign("center")
+		.textAngle(0)
+		.text(graph.worksheet.title + " (Dropped onto Y-axis)")
+		.font("bold 20px sans-serif");
+		
+	/* Number of datapoints N */
+	graphPanel.add(pv.Label)
+		.left(function(){return graph.w / 2})
+		.top(-5)
+		.textAlign("center")
+		.textAngle(0)
+		.text("N = " + graph.worksheet.data[graph.yData].length)
+		.font("bold 14px sans-serif");
+
+	/* Y-axis label */		  
+	graphPanel.add(pv.Label)
+		.text(graph.yData)
+		.left(-40)
+		.top(graph.h / 2)
+		.textAlign("center")
+		.textAngle(-Math.PI / 2)
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
+
+	/* Y-axis ticks */
+	graphPanel.add(pv.Rule)
+		.data(function() { return getYBuckets(graph) })
+		.bottom(function(d) {return graph.y(d)})
+		.strokeStyle("#aaa")
+		.anchor("left").add(pv.Label)
+		  .text(function(d) {return d.toFixed(1)})
+		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+		  .visible(function(){return this.index % 2 == 0});
+		
+	/* Y-axis line */
+	graphPanel.add(pv.Rule)
+		.left(0)
+		.strokeStyle("#000");
+	
+	/* Dots */	
+	graphPanel.add(pv.Dot)
+		.data(function() {return yDistributionPoints(graph)})
+		.left(function(d) {return d[0]})
+		.bottom(function(d) {return d[1]})
+		.radius(function() {return graphCollection.dotSize})
+		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
+		//						if (jQuery('#checkboxBWView').is(':checked'))
+		//							return "black";
+		//						else 
+		//							return graph.c[this.index];
+		//						
+		//					} else {
+		//						return "#eee";
+		//					}})
+		//.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
+		//								return "black"; 
+		//							} else {
+		//								return graph.c[this.index];
+		//							}})
+		.title(function(d) { return d[2] });
+		
+	vis.render();
+}
+
+

@@ -31,53 +31,63 @@ function toggleNormalViewOptions(){
 	}
 }
 
-
-/*Drawing Related Functions*/
-function getUserLineMidpoint(graph){
-	return [{x: (graph.userDrawnLinePoints[0].x + graph.userDrawnLinePoints[1].x)/2,
-			y: (graph.userDrawnLinePoints[0].y + graph.userDrawnLinePoints[1].y)/2}];
+function toggleNetworkOptions(graphics) {
+	if (graphics.worksheet.local == true){
+		$('#refreshWorksheet').hide();
+		$('#editInGoogleDocs').hide();
+	} else {
+		$('#refreshWorksheet').show();
+		$('#editInGoogleDocs').show();
+	}
 	
 }
 
-function getRotatedEllipseCoords(graph) {
-	var ellipseXRadius = graph.xRadius;
-	var ellipseYRadius = graph.yRadius;
+/*Drawing Related Functions*/
+function getUserLineMidpoint(graphics){
+	return [{x: (graphics.userDrawnLinePoints[0].x + graphics.userDrawnLinePoints[1].x)/2,
+			y: (graphics.userDrawnLinePoints[0].y + graphics.userDrawnLinePoints[1].y)/2}];
+	
+}
+
+function getRotatedEllipseCoords(graphics) {
+	var ellipseXRadius = graphics.xRadius;
+	var ellipseYRadius = graphics.yRadius;
 	
 	var coords = [];
-	for (i = 0; i < graph.fullRot.length; i++) {
-	  coords.push([ ellipseXRadius * Math.cos(graph.fullRot[i]),
-					ellipseYRadius * Math.sin(graph.fullRot[i]) ]);
+	for (i = 0; i < graphics.fullRot.length; i++) {
+	  coords.push([ ellipseXRadius * Math.cos(graphics.fullRot[i]),
+					ellipseYRadius * Math.sin(graphics.fullRot[i]) ]);
 	}
 	
 	for (var i = 0; i < coords.length; i++) {
-	  coords[i] = ([ coords[i][0] * Math.cos(graph.angle) - coords[i][1] * Math.sin(graph.angle) + graph.ellipseCX,
-					 coords[i][0] * Math.sin(graph.angle) + coords[i][1] * Math.cos(graph.angle) + graph.ellipseCY ]);
+	  coords[i] = ([ coords[i][0] * Math.cos(graphics.angle) - coords[i][1] * Math.sin(graphics.angle) + graphics.ellipseCX,
+					 coords[i][0] * Math.sin(graphics.angle) + coords[i][1] * Math.cos(graphics.angle) + graphics.ellipseCY ]);
 	}
 	return coords;
 }
 
 
-function getVertDistToLS (graph, i){
-	var dataX = parseFloat(graph.data[i].x);
-	var dataY = parseFloat(graph.data[i].y);
-	return Math.abs(dataY - getYOnLSByX(dataX, graph));
+function getVertDistToLS (graphics, i){
+	var dataX = parseFloat(graphics.data[i].incidence);
+	var dataY = parseFloat(graphics.data[i].otherFactor);
+	return Math.abs(dataY - getYOnLSByX(dataX, graphics));
 }
 
-function getRSquareBounds(graph, i){
+function getRSquareBounds(graphics, i){
 
-	var dataX = parseFloat(graph.data[i].x);
-	var dataY = parseFloat(graph.data[i].y);
-	var vertDistToLS = getVertDistToLS(graph,i);
+	var dataX = parseFloat(graphics.data[i].incidence);
+	var dataY = parseFloat(graphics.data[i].otherFactor);
+	var vertDistToLS = getVertDistToLS(graphics,i);
 	
-	var above = (dataY - getYOnLSByX(dataX, graph)) >= 0;
+	var above = (dataY - getYOnLSByX(dataX, graphics)) >= 0;
 	
-	var dataXWindow = graph.x(dataX);
-	var dataYWindow = graph.y(dataY);
-	var vertDistToLSWindow = Math.abs(dataYWindow - graph.y(getYOnLSByX(dataX, graph)));
+	var dataXWindow = graphics.x(dataX);
+	var dataYWindow = graphics.y(dataY);
+	var vertDistToLSWindow = Math.abs(dataYWindow - graphics.y(getYOnLSByX(dataX, graphics)));
 	
 	var sqrBounds = [];
 	
-	if (graph.lsSlope >=0){
+	if (graphics.lsSlope >=0){
 		if (above){
 			sqrBounds = [[dataXWindow, dataYWindow],
 						[dataXWindow, dataYWindow - vertDistToLSWindow],
@@ -111,57 +121,57 @@ function getRSquareBounds(graph, i){
 
 
 
-function getMMLineLabelAngle(graph) {
+function getMMLineLabelAngle(graphics) {
 	var angle = Math.atan(
 						Math.abs(
-							graph.y(graph.mmFarRightYVal) 
-							- graph.y(graph.mmFarLeftYVal)
+							graphics.y(graphics.mmFarRightYVal) 
+							- graphics.y(graphics.mmFarLeftYVal)
 						) 
 						/ Math.abs(
-							graph.x(graph.xMax) 
-							- graph.x(graph.xMin)
+							graphics.x(graphics.xMax) 
+							- graphics.x(graphics.xMin)
 						)
 					);
 
-	if (graph.mmSlope <= 0){
+	if (graphics.mmSlope <= 0){
 		return angle; 
 	} else {
 		return -angle;
 	}	
 }
 
-function getLSLineLabelAngle(graph) {
+function getLSLineLabelAngle(graphics) {
 	var angle = Math.atan(
 						Math.abs(
-							graph.y(graph.lsFarRightYVal) 
-							- graph.y(graph.lsFarLeftYVal)
+							graphics.y(graphics.lsFarRightYVal) 
+							- graphics.y(graphics.lsFarLeftYVal)
 						) 
 						/ Math.abs(
-							graph.x(graph.xMax) 
-							- graph.x(graph.xMin)
+							graphics.x(graphics.xMax) 
+							- graphics.x(graphics.xMin)
 						)
 					);
 					
-	if (graph.lsSlope <= 0){
+	if (graphics.lsSlope <= 0){
 		return angle;
 	} else {
 		return -angle;
 	}	
 }
 
-function getUserLineLabelAngle(graph) {
+function getUserLineLabelAngle(graphics) {
 	var angle = Math.atan(
 						Math.abs(
-							graph.y(graph.userDrawnLinePoints[1].y) 
-							- graph.y(graph.userDrawnLinePoints[0].y)
+							graphics.y(graphics.userDrawnLinePoints[1].y) 
+							- graphics.y(graphics.userDrawnLinePoints[0].y)
 						) 
 						/ Math.abs(
-							graph.x(graph.userDrawnLinePoints[1].x) 
-							- graph.x(graph.userDrawnLinePoints[0].x)
+							graphics.x(graphics.userDrawnLinePoints[1].x) 
+							- graphics.x(graphics.userDrawnLinePoints[0].x)
 						)
 					);
 					
-	if (getUserLineSlope(graph) <= 0){
+	if (getUserLineSlope(graphics) <= 0){
 		return angle;
 	} else {
 		return -angle;
@@ -169,86 +179,86 @@ function getUserLineLabelAngle(graph) {
 }
 
 
-function getXBuckets(graph){
-	var xDomain = graph.x.domain();
-	var bucketSize = (xDomain[1]-xDomain[0])/graph.graphCollection.buckets;
+function getXBuckets(graphics){
+	var xDomain = graphics.x.domain();
+	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
 	var points = [];
 	
 	points.push(xDomain[0]);
 	
-	for (var i = 1; i <= graph.graphCollection.buckets; i++){
+	for (var i = 1; i <= graphics.buckets; i++){
 		points.push(xDomain[0] + (bucketSize * i));
 	}
 	
 	return points;
 }
 
-function getYBuckets(graph){
-	var yDomain = graph.y.domain();
-	var bucketSize = (yDomain[1]-yDomain[0])/graph.graphCollection.buckets;
+function getYBuckets(graphics){
+	var yDomain = graphics.y.domain();
+	var bucketSize = (yDomain[1]-yDomain[0])/graphics.buckets;
 	var points = [];
 	
 	points.push(yDomain[0]);
 	
-	for (var i = 1; i <= graph.graphCollection.buckets; i++){
+	for (var i = 1; i <= graphics.buckets; i++){
 		points.push(yDomain[0] + (bucketSize * i));
 	}
 	
 	return points;
 }
 
-function xDistributionPoints(graph, data){
-	var xDomain = graph.x.domain();
-	var bucketSize = (xDomain[1]-xDomain[0])/graph.graphCollection.buckets;
+function xDistributionPoints(graphics){
+	var xDomain = graphics.x.domain();
+	var bucketSize = (xDomain[1]-xDomain[0])/graphics.buckets;
 	var points = [];
 	
-	for (var i = 0; i < graph.graphCollection.buckets; i++){
+	for (var i = 0; i < graphics.buckets; i++){
 		var bucketMin = xDomain[0] + (bucketSize * i);
 		var bucketMax = xDomain[0] + (bucketSize * (i+1));
 		var pointsInBucket = [];
 		
-		for (var j = 0; j < data.length; j++){
-			var dataPoint = data[j],
-				xVal = parseFloat(dataPoint.value),
-				label = data[j].label;
+		for (var j = 0; j < graphics.data.length; j++){
+			var dataPoint = graphics.data[j],
+				xVal = parseFloat(dataPoint.incidence),
+				state = graphics.data[j].state;
 				
 			if (xVal >= bucketMin 
 				&& xVal < bucketMax)
 			{
-				pointsInBucket.push([graph.x(xVal), 0, label]);
+				pointsInBucket.push([graphics.x(xVal), 0, state]);
 			}
 		}
 		
 		pointsInBucket = shuffle(pointsInBucket);
 		
 		for (var j = 0; j < pointsInBucket.length; j++){
-			points.push([pointsInBucket[j][0], graph.graphCollection.dotSize + j*2*graph.graphCollection.dotSize, pointsInBucket[j][2]]);
+			points.push([pointsInBucket[j][0], graphics.bucketDotSize + j*2*graphics.bucketDotSize, pointsInBucket[j][2]]);
 		}
 	}
 	
 	return points;
 }
 
-function yDistributionPoints(graph){
-	var yDomain = graph.y.domain();
-	var bucketSize = (yDomain[1]-yDomain[0])/graph.graphCollection.buckets;
+function yDistributionPoints(graphics){
+	var yDomain = graphics.y.domain();
+	var bucketSize = (yDomain[1]-yDomain[0])/graphics.buckets;
 	var points = [];
 	
-	for (var i = 0; i < graph.graphCollection.buckets; i++){
+	for (var i = 0; i < graphics.buckets; i++){
 		var bucketMin = yDomain[0] + (bucketSize * i);
 		var bucketMax = yDomain[0] + (bucketSize * (i+1));
 		var pointsInBucket = [];
 		
 		//finds data points in the bucket
-		for (var j = 0; j < graph.worksheet.data[graph.yData].length; j++){
-			var dataPoint = graph.worksheet.data[graph.yData][j],
-				yVal = parseFloat(dataPoint.value),
-				label = graph.worksheet.data[graph.yData][j].label;
+		for (var j = 0; j < graphics.data.length; j++){
+			var dataPoint = graphics.data[j],
+				yVal = parseFloat(dataPoint.otherFactor),
+				state = graphics.data[j].state;
 				
 			if (yVal >= bucketMin 
 				&& yVal < bucketMax)
 			{
-				pointsInBucket.push([0, graph.y(yVal), label]);   //Converts to window coordinates here to simplify stacking computation
+				pointsInBucket.push([0, graphics.y(yVal), state]);   //Converts to window coordinates here to simplify stacking computation
 			}
 		}
 		
@@ -257,7 +267,7 @@ function yDistributionPoints(graph){
 		
 		//Computes Stack height for each point in the bucket
 		for (var j = 0; j < pointsInBucket.length; j++){
-			points.push([graph.graphCollection.dotSize + j*2*graph.graphCollection.dotSize, pointsInBucket[j][1], pointsInBucket[j][2] ]);
+			points.push([graphics.bucketDotSize + j*2*graphics.bucketDotSize, pointsInBucket[j][1], pointsInBucket[j][2] ]);
 			
 		}
 	}
@@ -283,22 +293,22 @@ function determinantBtwnVec(vec1, vec2){
 }
 
 
-function ellipseRadiusAtAngle(graph, angle){
-	var ellipseXRadius = graph.xRadius,
-		ellipseYRadius = graph.yRadius,
+function ellipseRadiusAtAngle(graphics, angle){
+	var ellipseXRadius = graphics.xRadius,
+		ellipseYRadius = graphics.yRadius,
 		
 		pointOnEllipse = [ ellipseXRadius * Math.cos(angle),
 				ellipseYRadius * Math.sin(angle) ];
 				
-		return calcDistance(graph.ellipseCX, graph.ellipseCY
+		return calcDistance(graphics.ellipseCX, graphics.ellipseCY
 							, pointOnEllipse[0], pointOnEllipse[1]);
 }
 
-function invertEllipseCoords(graph, coords){
+function invertEllipseCoords(graphics, coords){
 	var invertedCoords = [];
 	for (var i = 0; i < coords.length; i++){
-		invertedCoords.push([graph.x.invert(coords[i][0])
-								,graph.y.invert(coords[i][1])]);
+		invertedCoords.push([graphics.x.invert(coords[i][0])
+								,graphics.y.invert(coords[i][1])]);
 	}
 	return invertedCoords;
 }
@@ -323,13 +333,13 @@ function isPointBetweenTwoPoints(testPoint, refPoint1, refPoint2){
 }
 
 
-function numPointsInEllipse(graph){
+function numPointsInEllipse(graphics){
 	var tolerance = 10;
 	var count = 0;
-	var ellipsePoints = getRotatedEllipseCoords(graph);
-	for (var i = 0; i < graph.data.length; i++){
-		var dataPoint = [graph.x(parseFloat(graph.data[i].x))
-						 ,graph.y(parseFloat(graph.data[i].y))];
+	var ellipsePoints = getRotatedEllipseCoords(graphics);
+	for (var i = 0; i < graphics.data.length; i++){
+		var dataPoint = [graphics.x(parseFloat(graphics.data[i].incidence))
+						 ,graphics.y(parseFloat(graphics.data[i].otherFactor))];
 		var left = right = above = below = false; 
 		for (var j = 0; j < ellipsePoints.length; j++){
 			if (dataPoint[0] <= ellipsePoints[j][0]  && Math.abs(dataPoint[1] - ellipsePoints[j][1]) < tolerance){
@@ -354,26 +364,26 @@ function numPointsInEllipse(graph){
 
 
 
-function getYOnLSByX(x, graph){
-	 var y = graph.lsSlope * x + graph.lsIntercept;
+function getYOnLSByX(x, graphics){
+	 var y = graphics.lsSlope * x + graphics.lsIntercept;
 	 return y;
 }
 
 
-function getClosestPointOnLSLine(point, graph){
+function getClosestPointOnLSLine(point, graphics){
 	
-	var x = parseFloat(point.x);
-	var y = parseFloat(point.y);
-	var pntOnLine = [(graph.lsSlope*y + x
-						- graph.lsSlope*graph.lsIntercept
+	var x = parseFloat(point.incidence);
+	var y = parseFloat(point.otherFactor);
+	var pntOnLine = [(graphics.lsSlope*y + x
+						- graphics.lsSlope*graphics.lsIntercept
 					)
-					/(Math.pow(graph.lsSlope,2)+1),
+					/(Math.pow(graphics.lsSlope,2)+1),
 					
-					(Math.pow(graph.lsSlope,2)*y 
-						+ graph.lsSlope*x
-						+ graph.lsIntercept
+					(Math.pow(graphics.lsSlope,2)*y 
+						+ graphics.lsSlope*x
+						+ graphics.lsIntercept
 					)
-					/(Math.pow(graph.lsSlope,2)+1)]
+					/(Math.pow(graphics.lsSlope,2)+1)]
 					
 	return pntOnLine;
 }
@@ -415,34 +425,34 @@ function getR(data){
 		n = data.length;
 		
 	for (var i = 0; i < data.length; i++){
-		sumXY += parseFloat(data[i].x) * parseFloat(data[i].y);
-		sumX += parseFloat(data[i].x);
-		sumY += parseFloat(data[i].y);
-		sumXsqrd += Math.pow(parseFloat(data[i].x), 2);
-		sumYsqrd += Math.pow(parseFloat(data[i].y), 2);
+		sumXY += parseFloat(data[i].incidence) * parseFloat(data[i].otherFactor);
+		sumX += parseFloat(data[i].incidence);
+		sumY += parseFloat(data[i].otherFactor);
+		sumXsqrd += Math.pow(parseFloat(data[i].incidence), 2);
+		sumYsqrd += Math.pow(parseFloat(data[i].otherFactor), 2);
 	}
 	
 	var r = (sumXY - (sumX * sumY)/n)/Math.sqrt((sumXsqrd-Math.pow(sumX,2)/n)*(sumYsqrd-Math.pow(sumY,2)/n))
 	return r;
 }
 
-function getUserLineR(graph){
+function getUserLineR(graphics){
 	var r = 0;
-	for (var i = 0; i < graph.data.length; i++)
-		r += Math.pow(getVertDistToUserLine(graph, i), 2);
+	for (var i = 0; i < graphics.data.length; i++)
+		r += Math.pow(getVertDistToUserLine(graphics, i), 2);
 	
 	return r;
 }
 
-function getYOnUserLineByX(x, graph){
-	 var y = getUserLineSlope(graph) * x + getUserLineIntercept(graph);
+function getYOnUserLineByX(x, graphics){
+	 var y = getUserLineSlope(graphics) * x + getUserLineIntercept(graphics);
 	 return y;
 }
 
-function getVertDistToUserLine(graph, i){
-	var dataX = parseFloat(graph.data[i].x);
-	var dataY = parseFloat(graph.data[i].y);
-	return Math.abs(dataY - getYOnUserLineByX(dataX, graph));
+function getVertDistToUserLine(graphics, i){
+	var dataX = parseFloat(graphics.data[i].incidence);
+	var dataY = parseFloat(graphics.data[i].otherFactor);
+	return Math.abs(dataY - getYOnUserLineByX(dataX, graphics));
 }
 
 function calcDistance(x1, y1, x2, y2) {
@@ -458,37 +468,25 @@ function parseSpreadsheetKeyFromURL(URL) {
 }
 
 function calcGraphWidth(){
-	return window.innerWidth - 290;
+	return window.innerWidth - 135;
 }
 
-//function calcGraphHeight(){
-//	return (window.innerHeight - jQuery('div#notGraph').height()) - 165; 
-//}
+function calcGraphHeight(){
+	return (window.innerHeight - jQuery('div#notGraph').height()) - 165; 
+}
 
 function sortByXValues(data) {
   data.sort(function(a, b) {
-	return a.x - b.x;
+	return a.incidence - b.incidence;
   });
   return data;
 }
 
 function sortByYValues(data) {
   data.sort(function(a, b) {
-	return a.y - b.y;
+	return a.otherFactor - b.otherFactor;
   });
   return data;
-}
-
-function hideMenus(){
-	$('#dataSetAdd').slideUp();
-	$('#dataSetEdit').slideUp();
-	$('#groupingOptions').slideUp();
-	$('#displayOptions').slideUp();
-	$('#worksheetCreate').slideUp();
-	$('#clipboardPrompt').slideUp();
-	$('#aboutPopup').slideUp();
-	$('#worksheetDescriptionPopup').slideUp();
-	$('#dataSetPaste').slideUp();
 }
 
 /* Divides data into three groups, sorted by their X values */
@@ -500,33 +498,33 @@ function divideDataInto3(data) {
   var groups = [];
   
   if (data.length < 3) {
-		alert("The data selected has less than three rows of data.  Please add more.")
-		//console.error('Data length must be greater than 3')
-		return;
+	alert("The data selected has less than three rows of data.  Please add more.")
+	//console.error('Data length must be greater than 3')
+	return;
   }
 
   if (modulo == 0) {
-		groups[0] = data.slice(0, delta);
-		groups[1] = data.slice(delta, delta * 2);
-		groups[2] = data.slice(delta * 2);
+	groups[0] = data.slice(0, delta);
+	groups[1] = data.slice(delta, delta * 2);
+	groups[2] = data.slice(delta * 2);
   } else if (modulo == 1) {
-		groups[0] = data.slice(0, delta);
-		groups[1] = data.slice(delta, delta * 2 + 1);
-		groups[2] = data.slice(delta * 2 + 1);
+	groups[0] = data.slice(0, delta);
+	groups[1] = data.slice(delta, delta * 2 + 1);
+	groups[2] = data.slice(delta * 2 + 1);
   } else if (modulo == 2) {
-		groups[0] = data.slice(0, delta + 1);
-		groups[1] = data.slice(delta + 1, delta * 2 + 1);
-		groups[2] = data.slice(delta * 2 + 1);
+	groups[0] = data.slice(0, delta + 1);
+	groups[1] = data.slice(delta + 1, delta * 2 + 1);
+	groups[2] = data.slice(delta * 2 + 1);
   }
   return groups;
 }
 
 /* Get the minX, maxX, minY, maxY to surround a data group */
 function getBounds(group) {
-  var minX = pv.min(group, function(d) { return d.x || 0 }); // or 0 in case falsy value in data
-  var maxX = pv.max(group, function(d) { return d.x || 0 });
-  var minY = pv.min(group, function(d) { return d.y || 0 });
-  var maxY = pv.max(group, function(d) { return d.y || 0 });
+  var minX = pv.min(group, function(d) { return d.incidence || 0 }); // or 0 in case falsy value in data
+  var maxX = pv.max(group, function(d) { return d.incidence || 0 });
+  var minY = pv.min(group, function(d) { return d.otherFactor || 0 });
+  var maxY = pv.max(group, function(d) { return d.otherFactor || 0 });
   return { minX:minX, minY:minY, maxX:maxX, maxY:maxY };
 }
 
@@ -541,12 +539,12 @@ function getBoundingCoords(minsAndMaxs) {
 
 function removeInvalidData(data) {
   return jQuery.map(data, function(elem, index) {
-	if (!elem.x || !elem.y || 
-	  elem.x == "" || elem.y == "")
+	if (!elem.incidence || !elem.otherFactor || 
+	  elem.incidence == "" || elem.otherFactor == "")
 	  return null;
 	else {
-	  elem.x = parseFloat(elem.x);
-	  elem.y = parseFloat(elem.y);
+	  elem.incidence = parseFloat(elem.incidence);
+	  elem.otherFactor = parseFloat(elem.otherFactor);
 	  return elem;
 	}
   });
@@ -557,10 +555,10 @@ function medianXValue(dataSet) {
   if (dataSet.length % 2 == 0) {
 	var middle1 = dataSet[Math.floor((dataSet.length / 2)) - 1]; // round up
 	var middle2 = dataSet[Math.floor(dataSet.length / 2)]; // round down
-	return (parseFloat(middle1.x) + parseFloat(middle2.x)) / 2;
+	return (parseFloat(middle1.incidence) + parseFloat(middle2.incidence)) / 2;
   } else {
 	var middle = dataSet[parseInt(dataSet.length / 2)];
-	return parseFloat(middle.x);
+	return parseFloat(middle.incidence);
   }
 }
 
@@ -569,10 +567,10 @@ function medianYValue(dataSet) {
   if (dataSet.length % 2 == 0) {
 	var middle1 = dataSet[Math.floor((dataSet.length / 2)) - 1]; // round up
 	var middle2 = dataSet[Math.floor(dataSet.length / 2)]; // round down
-	return (parseFloat(middle1.y) + parseFloat(middle2.y)) / 2;
+	return (parseFloat(middle1.otherFactor) + parseFloat(middle2.otherFactor)) / 2;
   } else {
 	var middle = dataSet[parseInt(dataSet.length / 2)];
-	return parseFloat(middle.y);
+	return parseFloat(middle.otherFactor);
   }
 }
 
@@ -586,17 +584,17 @@ function getMedianValuesFrom(groups) {
   return results;
 }
 
-function getUserLineSlope(graph){
-	return findSlope(graph.userDrawnLinePoints[0].x
-			 ,graph.userDrawnLinePoints[1].x
-			 ,graph.userDrawnLinePoints[0].y
-			 ,graph.userDrawnLinePoints[1].y);
+function getUserLineSlope(graphics){
+	return findSlope(graphics.userDrawnLinePoints[0].x
+			 ,graphics.userDrawnLinePoints[1].x
+			 ,graphics.userDrawnLinePoints[0].y
+			 ,graphics.userDrawnLinePoints[1].y);
 }
 
-function getUserLineIntercept(graph){
-	return findIntercept(graph.userDrawnLinePoints[0].x
-						,graph.userDrawnLinePoints[0].y
-						,getUserLineSlope(graph));
+function getUserLineIntercept(graphics){
+	return findIntercept(graphics.userDrawnLinePoints[0].x
+						,graphics.userDrawnLinePoints[0].y
+						,getUserLineSlope(graphics));
 }
 
 function findSlope(x1, x2, y1, y2) {
@@ -621,27 +619,4 @@ function positionAxisMinMaxWidgets() {
   $('#yMax').css('position', 'absolute').css('top', '235px').css('left', '52px');
   $('#xMin').css('position', 'absolute').css('bottom', '60px').css('left', '99px');
   $('#xMax').css('position', 'absolute').css('bottom', '60px').css('right', '24px')
-}
-
-function trim(stringToTrim) {
-	return stringToTrim.replace(/^\s+|\s+$/g,"");
-}
-
-function positionGroupingMenuOverGraph(index, graphCollection){
-	var yPos = $('span').offset().top +
-							graphCollection.padTop - 29;
-	
-	var xPos = $('span').offset().left +
-							graphCollection.padLeft - 34 +
-							index * graphCollection.graphs[index].w;
-					
-	if (yPos + $('#groupingOptions').height() > graphCollection.h){
-		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 20 ;
-	}
-		
-	$('#graphOptions')
-		.css('position', 'absolute')
-		.css('top', yPos + "px")
-		.css('left', xPos + "px")
-	
 }

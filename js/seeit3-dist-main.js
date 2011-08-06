@@ -37,7 +37,7 @@ var dragging = false;
 
 function constructVis(){
 	jQuery('span').remove();
-	//vis = {};
+
 	vis = new pv.Panel()
 		.width(function(){return graphCollection.w})
 		.height(function(){return graphCollection.h})
@@ -50,7 +50,7 @@ function constructVis(){
 	vis.add(pv.Rule)
 		.left(-35)
 		.bottom(0)
-		.top(-60)
+		.top(graphCollection.padTop * -1)
 		
 	/*Divider Between Top Graph and Title*/
 	vis.add(pv.Rule)
