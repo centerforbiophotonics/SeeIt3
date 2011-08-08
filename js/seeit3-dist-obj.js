@@ -49,7 +49,7 @@ function GraphCollection(){
 	
 	//Colors
 	this.categoryColors = {};
-	this.colorScale = pv.Colors.category20(0,20);//this.numberOfCategories);
+	this.colorScale = pv.Colors.category20(0,20);
 	var counter = 0;
 	for (var key in this.worksheet.data){
 		this.categoryColors[key] = this.colorScale(counter);

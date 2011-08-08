@@ -1,5 +1,6 @@
 // Represents the collection of graphs and the area where all graphs are drawn
 function GraphCollection(){
+	var graphCollection = this;
 	this.worksheet = getWorksheet();
 	
 	this.graphs = [];
@@ -28,6 +29,13 @@ function GraphCollection(){
 	}
 	
 	this.editModeEnabled = false;
+	
+	//Colors
+	this.labelColors = {};
+	this.colorScale = pv.Colors.category20(0,20);
+	this.worksheet.labelMasterList.forEach(function(label, index){
+		graphCollection.labelColors[label] = graphCollection.colorScale(index);
+	});
 	
 	
 	//Display Options
@@ -370,6 +378,7 @@ Graph.prototype = {
 			this.yMax = pv.max(this.worksheet.data[this.yData], function(d) { return d.value });
 			this.yMin = pv.min(this.worksheet.data[this.yData], function(d) { return d.value });
 			this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
+			this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
 			this.n = this.worksheet.data[this.yData].length;
 		}
 		
@@ -417,6 +426,7 @@ Graph.prototype = {
 		this.yMin = pv.min(this.data, function(d) { return d.y });
 		this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 		this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
+		this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
 		this.n = this.data.length;
 		
 			

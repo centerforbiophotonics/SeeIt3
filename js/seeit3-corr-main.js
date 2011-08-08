@@ -769,6 +769,8 @@ function constructCorrGraph(graph, index, graphPanel){
 		.left(function(d) { return graph.x(d.x) })
 		.bottom(function(d) { return graph.y(d.y) })
 		.radius(function() { return graph.normViewDotSize })
+		.fillStyle(function(d) {return pointFillStyle(d.label)})
+		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
 		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
 		//						if (jQuery('#checkboxBWView').is(':checked'))
 		//							return "black";
@@ -1237,19 +1239,61 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.textAngle(0)
 		.text("N = " + graph.worksheet.data[graph.yData].length)
 		.font("bold 14px sans-serif");
+	
+	//Y-axis drag drop zone
+	graph.yAxisPanel = topDist.add(pv.Panel)
+		.height(function(){
+			if (graph.yData == null)
+				return 30;
+			else
+				return getPixelHeightOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData);
+		})
+		.width(function(){
+			if (graph.yData == null)
+				return graph.w;
+			else
+				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
+		})
+		.left(function(){return graph.w/2 - this.width()/2})
+		.bottom(-50)
+		//.fillStyle("red")
+		.lineWidth(1)
+		.events("all")
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+		
+	graph.yAxisPanel.add(pv.Label)
+		.text(function(){
+			if (graph.yData == null)
+				return "Drag here to assign a dataset to the y-axis."
+			else
+				return graph.yData;
+		})
+		.left(function(){return graph.yAxisPanel.width()/2})
+		.top(function(){return graph.yAxisPanel.height()/2})
+		.textAlign("center")
+		.textBaseline("middle")
+		.font("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData)
+	
 		
 	/* X-axis label */		  
-	topDist.add(pv.Label)
-		.text(graph.yData)
-		.left(function(){return graph.w/2})
-		.bottom(-40)
-		.textAlign("center")
-		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
+	//topDist.add(pv.Label)
+	//	.text(graph.yData)
+	//	.left(function(){return graph.w/2})
+	//	.bottom(-40)
+	//	.textAlign("center")
+	//	.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
 
 	/* X-axis ticks */
 	topDist.add(pv.Rule)
-		.data(function() { return getXBuckets(graph) })
-		.left(function(d) {return graph.x(d)})
+		.data(function() { return getYBuckets(graph) })
+		.left(function(d) {return graph.yHoriz(d)})
 		.strokeStyle("#aaa")
 		.anchor("bottom").add(pv.Label)
 			//.bottom(-10)
@@ -1268,20 +1312,8 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.left(function(d) {return d[0]})
 		.bottom(function(d) {return d[1]})
 		.radius(function() {return graphCollection.dotSize})
-		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
-		//						if (jQuery('#checkboxBWView').is(':checked'))
-		//							return "black";
-		//						else 
-		//							return graph.c[this.index];
-		//						
-		//					} else {
-		//						return "#eee";
-		//					}})
-		//.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
-		//								return "black"; 
-		//							} else {
-		//								return graph.c[this.index];
-		//							}})
+		.fillStyle(function(d) {return pointFillStyle(d[2])})
+		.strokeStyle(function(d) {return pointStrokeStyle(d[2])})
 		.title(function(d) { return d[2] });
 	
 	//Divider Between graphs
@@ -1309,12 +1341,12 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.font("bold 14px sans-serif");
 		
 	/* X-axis label */		  
-	bottomDist.add(pv.Label)
-		.text(graph.xData)
-		.left(function(){return graph.w/2})
-		.bottom(-40)
-		.textAlign("center")
-		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
+	//bottomDist.add(pv.Label)
+	//	.text(graph.xData)
+	//	.left(function(){return graph.w/2})
+	//	.bottom(-40)
+	//	.textAlign("center")
+	//	.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
 
 	/* X-axis ticks */
 	bottomDist.add(pv.Rule)
@@ -1352,6 +1384,8 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		//							} else {
 		//								return graph.c[this.index];
 		//							}})
+		.fillStyle(function(d) {return pointFillStyle(d[2])})
+		.strokeStyle(function(d) {return pointStrokeStyle(d[2])})
 		.title(function(d) { return d[2] });
 		
 	vis.render();
@@ -1413,7 +1447,7 @@ function constructXDistGraph(graph, index, graphPanel){
 	
 	/* Dots */	
 	graphPanel.add(pv.Dot)
-		.data(function() {return xDistributionPoints(graph)})
+		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData])})
 		.left(function(d) {return d[0]})
 		.bottom(function(d) {return d[1]})
 		.radius(function() {return graphCollection.dotSize})
@@ -1431,6 +1465,8 @@ function constructXDistGraph(graph, index, graphPanel){
 		//							} else {
 		//								return graph.c[this.index];
 		//							}})
+		.fillStyle(function(d) {return pointFillStyle(d[2])})
+		.strokeStyle(function(d) {return pointStrokeStyle(d[2])})
 		.title(function(d) { return d[2] });
 		
 	vis.render();
@@ -1508,6 +1544,8 @@ function constructYDistGraph(graph,index, graphPanel){
 		//							} else {
 		//								return graph.c[this.index];
 		//							}})
+		.fillStyle(function(d) {return pointFillStyle(d[2])})
+		.strokeStyle(function(d) {return pointStrokeStyle(d[2])})
 		.title(function(d) { return d[2] });
 		
 	vis.render();

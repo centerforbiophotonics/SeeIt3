@@ -56,6 +56,38 @@ function getRotatedEllipseCoords(graph) {
 	return coords;
 }
 
+function pointFillStyle(label){
+	if (jQuery('#checkboxFillDots').is(':checked')){
+		if (jQuery('#checkboxBWView').is(':checked')){
+			var color = graphCollection.labelColors[label];
+			//var greyVal = parseInt((0.21 * color.r  + 0.71 * color.g + 0.07 * color.b)/3);  //luminosity
+			//var greyVal = parseInt((color.r  + color.g + color.b)/3);												//average
+			var greyVal = parseInt((Math.max(color.r, color.g, color.b) + Math.min(color.r,color.g,color.b))/2)  //lightness
+			return pv.rgb(greyVal, greyVal, greyVal, 1);
+		}else{ 
+			return graphCollection.labelColors[label]
+		}
+	}else{
+		return "white";
+	}
+}
+
+function pointStrokeStyle(label){
+	if (jQuery('#checkboxFillDots').is(':checked')){
+		return "black";
+	} else {
+		if (jQuery('#checkboxBWView').is(':checked')){
+			var color = graphCollection.labelColors[label];
+			//var greyVal = parseInt((0.21 * color.r  + 0.71 * color.g + 0.07 * color.b)/3);  //luminosity
+			//var greyVal = parseInt((color.r  + color.g + color.b)/3);												//average
+			var greyVal = parseInt((Math.max(color.r, color.g, color.b) + Math.min(color.r,color.g,color.b))/2)  //lightness
+			return pv.rgb(greyVal, greyVal, greyVal, 1);
+		} else { 
+			return graphCollection.labelColors[label]
+		}
+	}
+}
+
 
 function getVertDistToLS (graph, i){
 	var dataX = parseFloat(graph.data[i].x);
@@ -197,7 +229,7 @@ function getYBuckets(graph){
 	return points;
 }
 
-function xDistributionPoints(graph){
+function xDistributionPoints(graph, data){
 	var xDomain = graph.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graph.graphCollection.buckets;
 	var points = [];
@@ -207,10 +239,10 @@ function xDistributionPoints(graph){
 		var bucketMax = xDomain[0] + (bucketSize * (i+1));
 		var pointsInBucket = [];
 		
-		for (var j = 0; j < graph.worksheet.data[graph.xData].length; j++){
-			var dataPoint = graph.worksheet.data[graph.xData][j],
+		for (var j = 0; j < data.length; j++){
+			var dataPoint = data[j],
 				xVal = parseFloat(dataPoint.value),
-				label = graph.worksheet.data[graph.xData][j].label;
+				label = data[j].label;
 				
 			if (xVal >= bucketMin 
 				&& xVal < bucketMax)
