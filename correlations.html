@@ -44,13 +44,14 @@
 </div>
 	
 <div id="graphOptions" class="menu">
+	<input type='image' src='img/close.png' id='graphOptClose' width='20' height='20' align='right'>
 	<table id="menuItems">
 		<tr>
 			<td valign="top">
 				<h3>Draw</h3>
 				<input type="checkbox" id="checkboxShowUserLine">
 				<label for="checkboxShowUserLine" style="color:red">Show line?</label><br>
-				<input type="checkbox" id="checkboxShowMMEllipse">
+				<input type="checkbox" id="checkboxShowEllipse">
 				<label for="checkboxShowMMEllipse">Show ellipse?</label><br>
 				<input type="checkbox" id="checkboxShowData" checked>
 				<label for="checkboxShowData">Show data?</label><br>
@@ -78,15 +79,6 @@
 				<label for="checkboxShowLeastSquaresEquation">Show equation?</label><br>
 				<input type="checkbox" id="checkboxShowLeastSquaresRValue">
 				<label for="checkboxShowLeastSquaresRValue">Show r value?</label>
-			</td>
-			<td valign="top">
-				<h3>Distribution</h3>
-				<input type="radio" id="checkboxNormalView" name="mode" checked>
-				<label for="checkboxNormalView">Normal View?</label><br>
-				<input type="radio" id="checkboxDropDataOntoX" name="mode">
-				<label for="checkboxDropDataOntoX">Drop data on X axis?</label><br>
-				<input type="radio" id="checkboxDropDataOntoY" name="mode">
-				<label for="checkboxDropDataOntoY">Drop data on Y axis?</label>
 			</td>
 		</tr>
 	</table>
@@ -135,6 +127,8 @@
 		</tr>
 	</table>
 </div>
+
+<div id="textWidthTest" style="position:absolute; visibility:hidden; width:auto; height:auto"></div>
 
 
 

@@ -13,33 +13,15 @@ function GraphCollection(){
 	this.padLeft = 235;
 	this.padRight = 25;
 	
-	this.labelTextSize = "16";
-	this.tickTextSize = "12";
-	this.buckets = 30;
-	this.dotSize = 5;
+	
 	this.numberOfCategories = 0;
 	
 	for (var key in this.worksheet.data){
 		this.numberOfCategories++;
 	}
 	
-	this.editModeEnabled = false;
-	
-	this.buttonIcon = true;
-	this.buttonText = true;
-	
 	this.nextDefaultCategory = 0;
-	
-	//Colors
-	//this.categoryColors = {};
-	//this.colorScale = pv.Colors.category20(0,20);
-	//var counter = 0;
-	//for (var key in this.worksheet.data){
-	//	this.categoryColors[key] = this.colorScale(counter);
-	//	counter++;
-	//}
-	//this.numberOfAddedCategories = this.numberOfCategories;
-	
+
 	this.editedCategories = {};
 	for (var key in this.worksheet.data){
 		this.editedCategories[key] = this.worksheet.edited[key];
@@ -47,8 +29,14 @@ function GraphCollection(){
 	
 	this.editModeEnabled = false;
 	
+	
+	//Display Options
 	this.buttonIcon = true;
 	this.buttonText = true;
+	this.labelTextSize = "16";
+	this.tickTextSize = "12";
+	this.buckets = 30;
+	this.dotSize = 5;
 	
 	this.numGraphs = 0;
 	this.addGraph();
@@ -118,6 +106,21 @@ GraphCollection.prototype = {
 	},
 	
 	updateMenuOptions: function(){
+		$("#checkboxShowUserLine").attr('checked',this.graphs[this.selectedGraphIndex].udLine);
+		$("#checkboxShowEllipse").attr('checked',this.graphs[this.selectedGraphIndex].udEllipse);
+		$("#checkboxShowData").attr('checked',this.graphs[this.selectedGraphIndex].showData);
+		$("#fitScalesToData").attr('checked',this.graphs[this.selectedGraphIndex].fitScaleToData);
+		
+		$("#checkboxShowMMDots").attr('checked',this.graphs[this.selectedGraphIndex].mmDots);
+		$("#checkboxShowMMRects").attr('checked',this.graphs[this.selectedGraphIndex].mmDivs);
+		$("#checkboxShowMMLine").attr('checked',this.graphs[this.selectedGraphIndex].mmLine);
+		$("#checkboxShowMMEqn").attr('checked',this.graphs[this.selectedGraphIndex].mmEQ);
+		
+		$("#checkboxShowLeastSquaresLine").attr('checked',this.graphs[this.selectedGraphIndex].lsLine);
+		$("#checkboxShowLeastSquaresSquares").attr('checked',this.graphs[this.selectedGraphIndex].lsSquares);
+		$("#checkboxShowLeastSquaresEquation").attr('checked',this.graphs[this.selectedGraphIndex].lsEQ);
+		$("#checkboxShowLeastSquaresRValue").attr('checked',this.graphs[this.selectedGraphIndex].lsR);
+		
 //		$('#radio'+this.graphs[this.selectedGraphIndex].groupingMode).attr('checked',true);
 //		$('#checkboxHistogram').attr('checked',this.graphs[this.selectedGraphIndex].histogram);
 //		$('#checkboxBoxPlot').attr('checked',this.graphs[this.selectedGraphIndex].boxPlot);
@@ -321,7 +324,30 @@ function Graph(worksheet, graphCollection){
 	
 	this.twoDistView = false;
 	
-	this.fitScalesToData = false;
+	//Scaling Variables
+	this.scaleMin = 0;
+	this.scaleMax = Math.ceil(this.xMax);
+	this.fitScaleToData = false;
+	this.customScale = false;
+	
+	//Graph Options
+	this.showData = true;
+	this.udLine = false;
+	this.udEllipse = false;
+	
+	this.mmLine = false;
+	this.mmDots = false;
+	this.mmDivs = false;
+	this.mmEQ = false;
+	
+	this.lsLine = false;
+	this.lsSquares = false;
+	this.lsEQ = false;
+	this.lsR = false;
+	
+	this.yAxisPanel = null;
+	this.xAxisPanel = null;
+	this.twoDistPanel = null;
 }
 
 Graph.prototype = {

@@ -197,7 +197,7 @@ function getYBuckets(graph){
 	return points;
 }
 
-function xDistributionPoints(graph, data){
+function xDistributionPoints(graph){
 	var xDomain = graph.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graph.graphCollection.buckets;
 	var points = [];
@@ -207,10 +207,10 @@ function xDistributionPoints(graph, data){
 		var bucketMax = xDomain[0] + (bucketSize * (i+1));
 		var pointsInBucket = [];
 		
-		for (var j = 0; j < data.length; j++){
-			var dataPoint = data[j],
+		for (var j = 0; j < graph.worksheet.data[graph.xData].length; j++){
+			var dataPoint = graph.worksheet.data[graph.xData][j],
 				xVal = parseFloat(dataPoint.value),
-				label = data[j].label;
+				label = graph.worksheet.data[graph.xData][j].label;
 				
 			if (xVal >= bucketMin 
 				&& xVal < bucketMax)
@@ -378,7 +378,22 @@ function getClosestPointOnLSLine(point, graph){
 	return pntOnLine;
 }
 
+function nextNotSoRandom(){
+	var val = randoms[randomIndex];
+	randomIndex++;
+	if (randomIndex == randoms.length) randomIndex = 0;
+	return val;
+}
 
+function getPixelWidthOfText(font, text){
+	$("#textWidthTest").html("<p style=\"font:"+font+"\">"+text+"</p>");
+	return $("#textWidthTest").outerWidth();
+}
+
+function getPixelHeightOfText(font, text){
+	$("#textWidthTest").html("<p style=\"font:"+font+"\">"+text+"</p>");
+	return $("#textWidthTest").outerHeight() - 20;
+}
 
 function getMean(data){
 	var sum = 0;
@@ -482,7 +497,7 @@ function sortByYValues(data) {
 function hideMenus(){
 	$('#dataSetAdd').slideUp();
 	$('#dataSetEdit').slideUp();
-	$('#groupingOptions').slideUp();
+	$('#graphOptions').slideUp();
 	$('#displayOptions').slideUp();
 	$('#worksheetCreate').slideUp();
 	$('#clipboardPrompt').slideUp();

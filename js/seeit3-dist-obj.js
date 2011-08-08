@@ -342,7 +342,7 @@ function Graph(worksheet, graphCollection){
 	this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 	this.n = this.dataVals().length
 	
-	// Scaling Variablez
+	// Scaling Variables
 	this.scaleMin = 0;
 	this.scaleMax = Math.ceil(this.xMax);
 	this.fitScaleToData = false;
