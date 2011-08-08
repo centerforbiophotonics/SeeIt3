@@ -107,81 +107,7 @@ function constructVis() {
 				else
 					return false;
 			})
-		
-	/* Add New Graph Button */
-	var newGrphPanel = vis.add(pv.Panel)
-		.events("all")
-		.cursor("pointer")
-		.title("Add a new empty graph")
-		.height(30)
-		.width(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 115;
-			}else if (!graphCollection.buttonIcon){
-				return 85;
-			}else if (!graphCollection.buttonText){
-				return 34;
-			}
-		})
-		.left(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 120;
-			}else if (!graphCollection.buttonIcon){
-				return 90;
-			}else if (!graphCollection.buttonText){
-				return 4;
-			}
-		})
-		.top(-60)
-		.lineWidth(1)
-		.event("click", function(){
-			graphCollection.addGraph();
-			//vis.render();
-			constructVis();
-		})
-		.event("mouseover", function(d){
-			this.strokeStyle("black");
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-		
-	newGrphPanel.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png")  //fix this
-		.width(30)
-		.height(30)
-		.top(0)
-		.left(2)
-		.cursor("pointer")
-		.title("Add a new empty graph")
-		.event("click", function(){
-			graphCollection.addGraph();
-			constructVis();
-		})
-		.visible(function() {
-			if (graphCollection.buttonIcon)
-				return true;
-			else
-				return false;
-		})
-		.anchor("left").add(pv.Label)
-			.left(function(){
-				if (graphCollection.buttonText && !graphCollection.buttonIcon)
-					return 2;
-				else
-				 return 32;
-			})
-			.text("New Graph")
-			.font(fontString)
-			.visible(function() {
-				if (graphCollection.buttonText)
-					return true;
-				else
-					return false;
-			})
-		
+	
 	/* Toggle Edit Mode Button */
 	var togEditPanel = vis.add(pv.Panel)
 		.events("all")
@@ -199,13 +125,22 @@ function constructVis() {
 		})
 		.left(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 240;
+				return 120;
 			}else if (!graphCollection.buttonIcon){
-				return 180;
+				return 90;
 			}else if (!graphCollection.buttonText){
-				return 40;
+				return 4;
 			}
 		})
+		//.left(function() {
+		//	if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+		//		return 240;
+		//	}else if (!graphCollection.buttonIcon){
+		//		return 180;
+		//	}else if (!graphCollection.buttonText){
+		//		return 40;
+		//	}
+		//})
 		.top(-60)
 		.lineWidth(1)
 		.event("click", function(){
@@ -265,6 +200,93 @@ function constructVis() {
 				else
 					return false;
 			})
+		
+	/* Add New Graph Button */
+	var newGrphPanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Add a new empty graph")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return graphCollection.numGraphs == 1 ? 120 : 110;
+			}else if (!graphCollection.buttonIcon){
+				return graphCollection.numGraphs == 1 ? 90 : 80;
+			}else if (!graphCollection.buttonText){
+				return graphCollection.numGraphs == 1 ? 39 : 30;//return 34;
+			}
+		})
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 235;
+			}else if (!graphCollection.buttonIcon){
+				return 175;
+			}else if (!graphCollection.buttonText){
+				return 43;
+			}
+		})
+		.top(-60)
+		.lineWidth(1)
+		.event("click", function(){
+			if (graphCollection.graphs.length == 1)
+				graphCollection.addGraph();
+			else
+				graphCollection.removeGraph();
+			
+			constructVis();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+		
+	newGrphPanel.add(pv.Image)
+		.url(function(){
+			if (graphCollection.numGraphs == 1)
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png";
+			else 
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/remGraph.png";
+		})  //fix this
+		.width(30)
+		.height(30)
+		.top(0)
+		.left(2)
+		.cursor("pointer")
+		.title("Add a new empty graph")
+		.event("click", function(){
+			graphCollection.addGraph();
+			constructVis();
+		})
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text(function(){
+				if(graphCollection.graphs.length == 1) return "Two Graphs";
+				else return "One Graph";
+			})
+			.font(fontString)
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
+		
+	
 	
 	constructSidePanel();
 	
@@ -518,7 +540,7 @@ function constructGraphPanel(graph,index){
 		.event("click", function(){
 			graphCollection.selectedGraphIndex = index;
 			//graphCollection.updateMenuOptions();
-			positionGroupingMenuOverGraph(index, graphCollection);
+			positionGraphMenuOverGraph(index, graphCollection);
 			hideMenus();
 			$('#graphOptions').slideDown();
 		})

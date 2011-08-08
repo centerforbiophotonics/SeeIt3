@@ -627,16 +627,20 @@ function trim(stringToTrim) {
 	return stringToTrim.replace(/^\s+|\s+$/g,"");
 }
 
-function positionGroupingMenuOverGraph(index, graphCollection){
+function positionGraphMenuOverGraph(index, graphCollection){
 	var yPos = $('span').offset().top +
 							graphCollection.padTop - 29;
 	
 	var xPos = $('span').offset().left +
 							graphCollection.padLeft - 34 +
-							index * graphCollection.graphs[index].w;
+							index * (graphCollection.graphs[index].w + 90);
+							
+	//if (xPos + $('#graphOptions').width() > graphCollection.w){
+	//	xPos -= (xPos + $('#graphOptions').width()) - graphCollection.w - graphCollection.padRight - graphCollection.padLeft - 20 ;
+	//}
 					
-	if (yPos + $('#groupingOptions').height() > graphCollection.h){
-		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 20 ;
+	if (yPos + $('#graphOptions').height() > graphCollection.h){
+		yPos -= (yPos + $('#graphOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 20 ;
 	}
 		
 	$('#graphOptions')

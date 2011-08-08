@@ -66,6 +66,7 @@ GraphCollection.prototype = {
 		if(this.graphs.length < 2) {
 			this.numGraphs++;
 			this.graphs.push(new Graph(this.worksheet, this));
+			this.setChildGraphWidths();
 			this.setH(this.calcGraphHeight());
 		}
 	},
@@ -80,6 +81,8 @@ GraphCollection.prototype = {
 		this.selectedGraphIndex = -1;
 			
 		if (this.graphs.length == 0) this.addGraph();
+		
+		this.setChildGraphWidths();
 	},
 	
 	setChildGraphHeights: function(){
@@ -99,7 +102,7 @@ GraphCollection.prototype = {
 			});
 		else
 			graphCollection.graphs.forEach(function(g){
-				g.w = graphCollection.w - 60;
+				g.w = graphCollection.w - 30;
 				g.setXScale();
 			});
 	},
