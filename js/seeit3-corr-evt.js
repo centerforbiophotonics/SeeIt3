@@ -165,10 +165,25 @@ $('#textXMax').change(function(event) {
 //Display Options
 $('#displayOptions').hide();
 
-$('#displayOptions')
-		.css('position', 'absolute')
-		.css('top', "0px")
-		.css('left', "0px")
+//$('#displayOptions')
+//		.css('position', 'absolute')
+//		.css('top', "0px")
+//		.css('left', "0px")
+function positionDisplayMenu(){		
+	$('#displayOptions')
+			.css('position', 'absolute')
+			.css('top', $('span').offset().top +"px")
+			.css('left', $('span').offset().left +
+					graphCollection.padLeft - 34 +"px")
+}
+		
+$('#displayOptClose').click(function(){
+	hideMenus();
+});
+
+$('#displayOptions').change(function(){
+	vis.render();
+})
 
 
 $('#checkboxBWView').change(function() { return constructVis(); });

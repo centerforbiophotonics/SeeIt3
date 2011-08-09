@@ -228,11 +228,12 @@ function getYBuckets(graph){
 	
 	return points;
 }
-
+/*
 function xDistributionPoints(graph, data){
 	var xDomain = graph.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graph.graphCollection.buckets;
 	var points = [];
+	var drawMode = jQuery("#drawMode option:selected").val();
 	
 	for (var i = 0; i < graph.graphCollection.buckets; i++){
 		var bucketMin = xDomain[0] + (bucketSize * i);
@@ -253,12 +254,171 @@ function xDistributionPoints(graph, data){
 		
 		pointsInBucket = shuffle(pointsInBucket);
 		
-		for (var j = 0; j < pointsInBucket.length; j++){
-			points.push([pointsInBucket[j][0], graph.graphCollection.dotSize + j*2*graph.graphCollection.dotSize, pointsInBucket[j][2]]);
+		switch (drawMode)
+		{
+		case "floating":
+			for (var j = 0; j < pointsInBucket.length; j++){
+				points.push({"x":pointsInBucket[j][0],
+										 "xReal":pointsInBucket[j][0],
+										 "y":graph.graphCollection.dotSize + j*2*graph.graphCollection.dotSize,
+										 "label":pointsInBucket[j][1],
+										 "set":pointsInBucket[j][2]
+									 });
+			}
+			break;
+		case "center":
+			for (var j = 0; j < pointsInBucket.length; j++){
+				points.push({"x":(graph.x(bucketMin)+graph.x(bucketMax))/2,
+										 "xReal":pointsInBucket[j][0],
+										 "y":graph.graphCollection.dotSize + j*2*graph.graphCollection.dotSize,
+										 "label":pointsInBucket[j][1],
+										 "set":pointsInBucket[j][2]
+									 });
+			}
+			break;
+		case "gravity":
+			if ( i == 0 ) {
+				for (var j = 0; j < pointsInBucket.length; j++){
+					var candidatePoint = {
+						"x":pointsInBucket[j][0],
+						"xReal":pointsInBucket[j][0],
+						"y":graphCollection.dotSize,
+						"label":pointsInBucket[j][1],
+						"set":pointsInBucket[j][2]
+						};
+						
+					var collisionPoints = [];
+					for (var k = 0; k < points.length; k++){
+						if (Math.abs(points[k].x-candidatePoint.x) < graphCollection.dotSize*2) {
+							collisionPoints.push(points[k]);
+						}
+					}
+					
+					if (collisionPoints.length > 0)
+						candidatePoint.y = fitPointInGraph(candidatePoint, collisionPoints, graphCollection.dotSize);
+					
+					points.push(candidatePoint);
+				}
+			}
+			
+			break;
+		}
+	}
+	return points;
+		
+		//for (var j = 0; j < pointsInBucket.length; j++){
+		//	points.push([pointsInBucket[j][0], graph.graphCollection.dotSize + j*2*graph.graphCollection.dotSize, pointsInBucket[j][2]]);
+		//}
+	//}
+	
+	//return points;
+}
+*/
+
+function xDistributionPoints(graph, data, scale){
+	var xDomain = graph.x.domain();
+	var bucketSize = (xDomain[1]-xDomain[0])/graph.graphCollection.buckets;
+	var points = [];
+	//var data = graph.dataObjects();
+	var drawMode = jQuery("#drawMode option:selected").val();
+	
+	for (var i = 0; i < graph.graphCollection.buckets; i++){
+		var bucketMin = xDomain[0] + (bucketSize * i);
+		var bucketMax = xDomain[0] + (bucketSize * (i+1));
+		var pointsInBucket = [];
+		
+		for (var j = 0; j < data.length; j++){
+			var dataObj = data[j],
+				xVal = scale(dataObj.value),
+				label = dataObj.label;
+				//set = dataObj.set;
+				
+			if ((xVal >= bucketMin && xVal < bucketMax) 
+					|| drawMode == "gravity")
+			{
+				pointsInBucket.push([xVal, label, 0]);
+			}
+		}
+		randomIndex = 20;
+		pointsInBucket = shuffle(pointsInBucket);
+		
+		switch (drawMode)
+		{
+		case "floating":
+			for (var j = 0; j < pointsInBucket.length; j++){
+				points.push({"x":pointsInBucket[j][0],
+										 "xReal":pointsInBucket[j][0],
+										 "y":graph.graphCollection.dotSize + j*2*graph.graphCollection.dotSize,
+										 "label":pointsInBucket[j][1],
+										 //"set":pointsInBucket[j][2]
+									 });
+			}
+			break;
+		case "center":
+			for (var j = 0; j < pointsInBucket.length; j++){
+				points.push({"x":(bucketMin+bucketMax)/2,
+										 "xReal":pointsInBucket[j][0],
+										 "y":graphCollection.dotSize + j*2*graph.graphCollection.dotSize,
+										 "label":pointsInBucket[j][1],
+										 //"set":pointsInBucket[j][2]
+									 });
+			}
+			break;
+		case "gravity":
+			if ( i == 0 ) {
+				for (var j = 0; j < pointsInBucket.length; j++){
+					var candidatePoint = {
+						"x":pointsInBucket[j][0],
+						"xReal":pointsInBucket[j][0],
+						"y":graphCollection.dotSize,
+						"label":pointsInBucket[j][1],
+						//"set":pointsInBucket[j][2]
+						};
+						
+					var collisionPoints = [];
+					for (var k = 0; k < points.length; k++){
+						if (Math.abs(points[k].x-candidatePoint.x) < graphCollection.dotSize*2) {
+							collisionPoints.push(points[k]);
+						}
+					}
+					
+					if (collisionPoints.length > 0)
+						candidatePoint.y = fitPointInGraph(candidatePoint, collisionPoints, graphCollection.dotSize);
+					
+					points.push(candidatePoint);
+				}
+			}
+			
+			break;
+		}
+	}
+	//points.forEach(function(p){
+	//	p.x = graph.x.invert(p.x);
+	//})
+	return points;
+	
+}
+
+function fitPointInGraph(candidate, collisions, radius){
+	var collides = false;
+	for (var i = 0; i < collisions.length; i++){
+		var dist = Math.sqrt(Math.pow(candidate.x-collisions[i].x,2) +
+												 Math.pow(candidate.y-collisions[i].y,2))
+		if (dist < radius*2)
+			collides = true;			
+	}
+	while (collides){
+		candidate.y++;
+		collides = false;
+		for (var i = 0; i < collisions.length; i++){
+			var dist = Math.sqrt(Math.pow(candidate.x-collisions[i].x,2) +
+													 Math.pow(candidate.y-collisions[i].y,2))
+			if (dist < radius*2)
+				collides = true;			
 		}
 	}
 	
-	return points;
+	return candidate.y
 }
 
 function yDistributionPoints(graph){
@@ -300,9 +460,16 @@ function yDistributionPoints(graph){
 /* Data Manipulation Functions */
 
 function shuffle(o){
-	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	for(var j, x, i = o.length; i; j = parseInt(nextNotSoRandom() * i), x = o[--i], o[i] = o[j], o[j] = x);
 	return o;
 };
+
+function nextNotSoRandom(){
+	var val = randoms[randomIndex];
+	randomIndex++;
+	if (randomIndex == randoms.length) randomIndex = 0;
+	return val;
+}
 
 
 function angleBtwnVec(vec1, vec2){

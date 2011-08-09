@@ -103,6 +103,7 @@
 </div>
 
 <div id="displayOptions">
+	<input type='image' src='img/close.png' id='displayOptClose' width='20' height='20' align='right'>
 	<table>
 		<tr>
 			<td valign="top">
@@ -124,6 +125,14 @@
 				<input type="checkbox" id="checkboxFillDots" name="color" checked>
 				<label for="checkboxFillDots">Fill</label><br>
 			</td>
+			<td>
+				<b>Point Stack Mode</b></br>
+				<select id="drawMode">
+					<option value="floating">Floating</option>
+					<option value="center">Center</option>
+					<option value="gravity" selected>Gravity</option>
+				</select><br> 
+			</td>
 		</tr>
 	</table>
 </div>
@@ -139,7 +148,7 @@
 <script type="text/javascript" src="js/seeit3-corr-obj.js"></script>
 <script type="text/javascript" src="js/seeit3-corr-main.js"></script>
 <script type="text/javascript" src="js/seeit3-corr-evt.js"></script>
-<!-- <script type="text/javascript" src="js/seeit3-corr-local.js"></script> -->
+<script type="text/javascript" src="js/seeit3-corr-local.js"></script> 
 
 <div style="position:fixed; bottom:10px; left:20px; background-color:white">
   Copyright &copy; UC Regents, Davis campus. All rights reserved.</div>

@@ -13,6 +13,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 	jQuery('p#loadingMsg').hide();	
 	graphCollection = new GraphCollection();
 	constructVis();
+	positionDisplayMenu();
   }
 });
 
@@ -1310,13 +1311,13 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	
 	/* Dots */	
 	topDist.add(pv.Dot)
-		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.yData])})
-		.left(function(d) {return graph.yHoriz(d[0])})
-		.bottom(function(d) {return d[1]})
+		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.yData], graph.yHoriz)})
+		.left(function(d) {return d.x})
+		.bottom(function(d) {return d.y})
 		.radius(function() {return graphCollection.dotSize})
-		.fillStyle(function(d) {return pointFillStyle(d[2])})
-		.strokeStyle(function(d) {return pointStrokeStyle(d[2])})
-		.title(function(d) { return d[2] });
+		.fillStyle(function(d) {return pointFillStyle(d.label)})
+		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
+		.title(function(d) { return d.label });
 	
 	//Divider Between graphs
 	topDist.add(pv.Rule)
@@ -1368,27 +1369,13 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	
 	/* Dots */	
 	bottomDist.add(pv.Dot)
-		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData])})
-		.left(function(d) {return graph.x(d[0])})
-		.bottom(function(d) {return d[1]})
+		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x)})
+		.left(function(d) {return d.x})
+		.bottom(function(d) {return d.y})
 		.radius(function() {return graphCollection.dotSize})
-		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
-		//						if (jQuery('#checkboxBWView').is(':checked'))
-		//							return "black";
-		//						else 
-		//							return graph.c[this.index];
-		//						
-		//					} else {
-		//						return "#eee";
-		//					}})
-		//.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
-		//								return "black"; 
-		//							} else {
-		//								return graph.c[this.index];
-		//							}})
-		.fillStyle(function(d) {return pointFillStyle(d[2])})
-		.strokeStyle(function(d) {return pointStrokeStyle(d[2])})
-		.title(function(d) { return d[2] });
+		.fillStyle(function(d) {return pointFillStyle(d.label)})
+		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
+		.title(function(d) { return d.label });
 		
 	vis.render();
 }
@@ -1449,27 +1436,13 @@ function constructXDistGraph(graph, index, graphPanel){
 	
 	/* Dots */	
 	graphPanel.add(pv.Dot)
-		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData])})
-		.left(function(d) {return graph.x(d[0])})
-		.bottom(function(d) {return d[1]})
+		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x)})
+		.left(function(d) {return d.x})
+		.bottom(function(d) {return d.y})
 		.radius(function() {return graphCollection.dotSize})
-		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
-		//						if (jQuery('#checkboxBWView').is(':checked'))
-		//							return "black";
-		//						else 
-		//							return graph.c[this.index];
-		//						
-		//					} else {
-		//						return "#eee";
-		//					}})
-		//.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
-		//								return "black"; 
-		//							} else {
-		//								return graph.c[this.index];
-		//							}})
-		.fillStyle(function(d) {return pointFillStyle(d[2])})
-		.strokeStyle(function(d) {return pointStrokeStyle(d[2])})
-		.title(function(d) { return d[2] });
+		.fillStyle(function(d) {return pointFillStyle(d.label)})
+		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
+		.title(function(d) { return d.label });
 		
 	vis.render();
 }
