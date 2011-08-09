@@ -1502,8 +1502,8 @@ function constructYDistGraph(graph,index, graphPanel){
 	/* Dots */	
 	graphPanel.add(pv.Dot)
 		.data(function() {return yDistributionPoints(graph)})
-		.left(function(d) {return d[0]})
-		.bottom(function(d) {return d[1]})
+		.left(function(d) {return d.x})
+		.bottom(function(d) {return d.y})
 		.radius(function() {return graphCollection.dotSize})
 		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
 		//						if (jQuery('#checkboxBWView').is(':checked'))
@@ -1519,9 +1519,9 @@ function constructYDistGraph(graph,index, graphPanel){
 		//							} else {
 		//								return graph.c[this.index];
 		//							}})
-		.fillStyle(function(d) {return pointFillStyle(d[2])})
-		.strokeStyle(function(d) {return pointStrokeStyle(d[2])})
-		.title(function(d) { return d[2] });
+		.fillStyle(function(d) {return pointFillStyle(d.label)})
+		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
+		.title(function(d) { return d.label });
 		
 	vis.render();
 }

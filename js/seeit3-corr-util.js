@@ -333,7 +333,7 @@ function xDistributionPoints(graph, data, scale){
 				label = dataObj.label;
 				//set = dataObj.set;
 				
-			if ((xVal >= bucketMin && xVal < bucketMax) 
+			if ((xVal >= scale(bucketMin) && xVal < scale(bucketMax)) 
 					|| drawMode == "gravity")
 			{
 				pointsInBucket.push([xVal, label, 0]);
@@ -356,7 +356,7 @@ function xDistributionPoints(graph, data, scale){
 			break;
 		case "center":
 			for (var j = 0; j < pointsInBucket.length; j++){
-				points.push({"x":(bucketMin+bucketMax)/2,
+				points.push({"x":(scale(bucketMin)+scale(bucketMax))/2,
 										 "xReal":pointsInBucket[j][0],
 										 "y":graphCollection.dotSize + j*2*graph.graphCollection.dotSize,
 										 "label":pointsInBucket[j][1],
@@ -392,9 +392,6 @@ function xDistributionPoints(graph, data, scale){
 			break;
 		}
 	}
-	//points.forEach(function(p){
-	//	p.x = graph.x.invert(p.x);
-	//})
 	return points;
 	
 }
@@ -421,6 +418,29 @@ function fitPointInGraph(candidate, collisions, radius){
 	return candidate.y
 }
 
+function fitPointInYGraph(candidate, collisions, radius){
+	var collides = false;
+	for (var i = 0; i < collisions.length; i++){
+		var dist = Math.sqrt(Math.pow(candidate.x-collisions[i].x,2) +
+												 Math.pow(candidate.y-collisions[i].y,2))
+		if (dist < radius*2)
+			collides = true;			
+	}
+	while (collides){
+		candidate.x++;
+		collides = false;
+		for (var i = 0; i < collisions.length; i++){
+			var dist = Math.sqrt(Math.pow(candidate.x-collisions[i].x,2) +
+													 Math.pow(candidate.y-collisions[i].y,2))
+			if (dist < radius*2)
+				collides = true;			
+		}
+	}
+	
+	return candidate.x
+}
+
+/*
 function yDistributionPoints(graph){
 	var yDomain = graph.y.domain();
 	var bucketSize = (yDomain[1]-yDomain[0])/graph.graphCollection.buckets;
@@ -457,8 +477,91 @@ function yDistributionPoints(graph){
 	return points;
 	
 }
-/* Data Manipulation Functions */
+*/
 
+function yDistributionPoints(graph){//, data, scale){
+	var yDomain = graph.y.domain();
+	var bucketSize = (yDomain[1]-yDomain[0])/graph.graphCollection.buckets;
+	var points = [];
+	var data = graph.worksheet.data[graph.yData];
+	var drawMode = jQuery("#drawMode option:selected").val();
+	
+	for (var i = 0; i < graph.graphCollection.buckets; i++){
+		var bucketMin = yDomain[0] + (bucketSize * i);
+		var bucketMax = yDomain[0] + (bucketSize * (i+1));
+		var pointsInBucket = [];
+		
+		for (var j = 0; j < data.length; j++){
+			var dataObj = data[j],
+				yVal = graph.y(dataObj.value),
+				label = dataObj.label;
+				//set = dataObj.set;
+				
+			if ((yVal >= graph.y(bucketMin) && yVal < graph.y(bucketMax)) 
+					|| drawMode == "gravity")
+			{
+				pointsInBucket.push([yVal, label, 0]);
+			}
+		}
+		randomIndex = 20;
+		pointsInBucket = shuffle(pointsInBucket);
+		
+		switch (drawMode)
+		{
+		case "floating":
+			for (var j = 0; j < pointsInBucket.length; j++){
+				points.push({"x":graph.graphCollection.dotSize + j*2*graph.graphCollection.dotSize,
+										 "xReal":pointsInBucket[j][0],
+										 "y":pointsInBucket[j][0],
+										 "label":pointsInBucket[j][1],
+										 //"set":pointsInBucket[j][2]
+									 });
+			}
+			break;
+		case "center":
+			for (var j = 0; j < pointsInBucket.length; j++){
+				points.push({"x":graphCollection.dotSize + j*2*graph.graphCollection.dotSize,
+										 "yReal":pointsInBucket[j][0],
+										 "y":(graph.y(bucketMin)+graph.y(bucketMax))/2,
+										 "label":pointsInBucket[j][1],
+										 //"set":pointsInBucket[j][2]
+									 });
+			}
+			break;
+		case "gravity":
+			if ( i == 0 ) {
+				for (var j = 0; j < pointsInBucket.length; j++){
+					var candidatePoint = {
+						"x":graphCollection.dotSize,
+						"xReal":pointsInBucket[j][0],
+						"y":pointsInBucket[j][0],
+						"label":pointsInBucket[j][1],
+						//"set":pointsInBucket[j][2]
+						};
+						
+					var collisionPoints = [];
+					for (var k = 0; k < points.length; k++){
+						if (Math.abs(points[k].y-candidatePoint.y) < graphCollection.dotSize*2) {
+							collisionPoints.push(points[k]);
+						}
+					}
+					
+					if (collisionPoints.length > 0)
+						candidatePoint.x = fitPointInYGraph(candidatePoint, collisionPoints, graphCollection.dotSize);
+					
+					points.push(candidatePoint);
+				}
+			}
+			
+			break;
+		}
+	}
+	return points;
+	
+}
+
+
+/* Data Manipulation Functions */
 function shuffle(o){
 	for(var j, x, i = o.length; i; j = parseInt(nextNotSoRandom() * i), x = o[--i], o[i] = o[j], o[j] = x);
 	return o;
