@@ -247,7 +247,7 @@ function xDistributionPoints(graph, data){
 			if (xVal >= bucketMin 
 				&& xVal < bucketMax)
 			{
-				pointsInBucket.push([graph.x(xVal), 0, label]);
+				pointsInBucket.push([xVal, 0, label]);
 			}
 		}
 		

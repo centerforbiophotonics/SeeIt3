@@ -14,7 +14,6 @@ function GraphCollection(){
 	this.padLeft = 235;
 	this.padRight = 25;
 	
-	
 	this.numberOfCategories = 0;
 	
 	for (var key in this.worksheet.data){

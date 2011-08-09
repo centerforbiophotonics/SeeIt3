@@ -709,6 +709,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.anchor('left').add(pv.Label)
 			.text(graph.y.tickFormat)
 			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			.visible(function(){return this.index % 2 == 0})
 	
 	/* X-axis ticks */
   graphPanel.add(pv.Rule)
@@ -718,6 +719,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.anchor("bottom").add(pv.Label)
 			.text(graph.x.tickFormat)
 			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			.visible(function(){return this.index % 2 == 0})
 	
 	/* Number of datapoints N */
   graphPanel.add(pv.Label)
@@ -1309,7 +1311,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	/* Dots */	
 	topDist.add(pv.Dot)
 		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.yData])})
-		.left(function(d) {return d[0]})
+		.left(function(d) {return graph.yHoriz(d[0])})
 		.bottom(function(d) {return d[1]})
 		.radius(function() {return graphCollection.dotSize})
 		.fillStyle(function(d) {return pointFillStyle(d[2])})
@@ -1367,7 +1369,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	/* Dots */	
 	bottomDist.add(pv.Dot)
 		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData])})
-		.left(function(d) {return d[0]})
+		.left(function(d) {return graph.x(d[0])})
 		.bottom(function(d) {return d[1]})
 		.radius(function() {return graphCollection.dotSize})
 		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
@@ -1448,7 +1450,7 @@ function constructXDistGraph(graph, index, graphPanel){
 	/* Dots */	
 	graphPanel.add(pv.Dot)
 		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData])})
-		.left(function(d) {return d[0]})
+		.left(function(d) {return graph.x(d[0])})
 		.bottom(function(d) {return d[1]})
 		.radius(function() {return graphCollection.dotSize})
 		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
