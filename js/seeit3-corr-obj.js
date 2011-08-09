@@ -83,8 +83,10 @@ GraphCollection.prototype = {
 	setChildGraphHeights: function(){
 		var graphCollection = this;
 		graphCollection.graphs.forEach(function(g){
+			var oldGH = g.h;
 			g.h = graphCollection.h - 40;
 			g.setYScale();
+			g.ellipseCY *= g.h/oldGH;
 		});
 	},
 	
@@ -92,13 +94,17 @@ GraphCollection.prototype = {
 		var graphCollection = this;
 		if (graphCollection.graphs.length > 1)
 			graphCollection.graphs.forEach(function(g){
+				var oldGW = g.w;
 				g.w = (graphCollection.w-160)/2;
 				g.setXScale();
+				g.ellipseCX *= g.w/oldGW; 
 			});
 		else
 			graphCollection.graphs.forEach(function(g){
+				var oldGW = g.w;
 				g.w = graphCollection.w - 50;
 				g.setXScale();
+				g.ellipseCX *= g.w/oldGW; 
 			});
 	},
 	
@@ -127,6 +133,7 @@ GraphCollection.prototype = {
 		$("#checkboxShowLeastSquaresSquares").attr('checked',this.graphs[this.selectedGraphIndex].lsSquares);
 		$("#checkboxShowLeastSquaresEquation").attr('checked',this.graphs[this.selectedGraphIndex].lsEQ);
 		$("#checkboxShowLeastSquaresRValue").attr('checked',this.graphs[this.selectedGraphIndex].lsR);
+		$("#showBothDist").attr('checked',this.graphs[this.selectedGraphIndex].twoDistView);
 		
 //		$('#radio'+this.graphs[this.selectedGraphIndex].groupingMode).attr('checked',true);
 //		$('#checkboxHistogram').attr('checked',this.graphs[this.selectedGraphIndex].histogram);
@@ -134,13 +141,21 @@ GraphCollection.prototype = {
 //		$('#fixedIntervalWidth').val(this.graphs[this.selectedGraphIndex].partitionIntervalWidth);
 //		$('#fixedGroupSize').val(this.graphs[this.selectedGraphIndex].partitionGroupSize);
 //		
-//		if (this.graphs[this.selectedGraphIndex].includedCategories.length > 0){
-//			$('#textXMin').val(this.graphs[this.selectedGraphIndex].x.domain()[0]);
-//			$('#textXMax').val(this.graphs[this.selectedGraphIndex].x.domain()[1]);
-//		} else {
-//			$('#textXMin').val("NA");
-//			$('#textXMax').val("NA");
-//		}
+		if (this.graphs[this.selectedGraphIndex].xData != null){
+			$('#textXMin').val(this.graphs[this.selectedGraphIndex].x.domain()[0]);
+			$('#textXMax').val(this.graphs[this.selectedGraphIndex].x.domain()[1]);
+		} else {
+			$('#textXMin').val("NA");
+			$('#textXMax').val("NA");
+		}
+		
+		if (this.graphs[this.selectedGraphIndex].yData != null){
+			$('#textYMin').val(this.graphs[this.selectedGraphIndex].y.domain()[0]);
+			$('#textYMax').val(this.graphs[this.selectedGraphIndex].y.domain()[1]);
+		} else {
+			$('#textYMin').val("NA");
+			$('#textYMax').val("NA");
+		}
 //		
 //		$('#fitScaleToData').attr('checked', this.graphs[this.selectedGraphIndex].fitScaleToData);
 //		
@@ -294,8 +309,7 @@ GraphCollection.prototype = {
 	},
 }
 
-/* Contains variables required for graphics
- * DO NOT MODIFY DIRECTLY */
+/* Contains variables required for graphics */
 function Graph(worksheet, graphCollection){
 	var graph = this;
 	
@@ -315,15 +329,6 @@ function Graph(worksheet, graphCollection){
 	
 	this.h = this.graphCollection.h - 20;
 	
-	//this.graphCollection.setChildGraphWidths();
-	
-	//this.colorScale = pv.Scale.linear(0, 1/4, 1/2, 3/4, 1).range("red", "blue", "green", "yellow", "black");
-	//this.c = jQuery.map(this.data, function() { return graph.colorScale(Math.random()) });
-							 
-	
-	
-	this.twoDistView = false;
-	
 	//Scaling Variables
 	this.scaleMin = 0;
 	this.scaleMax = Math.ceil(this.xMax);
@@ -334,6 +339,7 @@ function Graph(worksheet, graphCollection){
 	this.showData = true;
 	this.udLine = false;
 	this.udEllipse = false;
+	this.twoDistView = false;
 	
 	this.mmLine = false;
 	this.mmDots = false;
@@ -348,6 +354,10 @@ function Graph(worksheet, graphCollection){
 	this.yAxisPanel = null;
 	this.xAxisPanel = null;
 	this.twoDistPanel = null;
+	
+	//Ellipse
+	this.ellipseCX = this.w/2;
+	this.ellipseCY = this.h/2;
 }
 
 Graph.prototype = {

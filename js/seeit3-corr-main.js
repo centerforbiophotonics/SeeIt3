@@ -23,6 +23,7 @@ var fontString = "bold 14px arial";
 
 function constructVis() {
 	jQuery('span').remove();
+	graphCollection.updateMenuOptions();
 	
 	vis = new pv.Panel()
 		.width(function(){return graphCollection.w})
@@ -862,8 +863,6 @@ function constructGraphPanel(graph,index){
 }
 
 function constructEmptyGraph(graph,index, graphPanel){
-	console.log("empty")
-	
 	//Empty Graph Message
 	graphPanel.add(pv.Label)
 		.left(function(){return graph.w/2})
@@ -876,9 +875,6 @@ function constructEmptyGraph(graph,index, graphPanel){
 }
 
 function constructCorrGraph(graph, index, graphPanel){		
-	console.log("corr")
-	
-	
 	 /* Y-axis ticks */
   graphPanel.add(pv.Rule)
 		.data(function() { return graph.y.ticks(graphCollection.buckets) })
@@ -1113,7 +1109,7 @@ function constructCorrGraph(graph, index, graphPanel){
 				graphPanel.render();
 			});		
 	
-	 /* user ellipse */
+	/* user ellipse */
 	graphPanel.add(pv.Line)
 		.visible(function() { return graph.udEllipse })//jQuery('#checkboxShowMMEllipse').is(':checked') })
 		.data(function() { return getRotatedEllipseCoords(graph) })
@@ -1232,412 +1228,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		 
 }
 
-
-function constructCorrGraphNOT(graph, index){
-  var graphPanel = vis.add(pv.Panel)
-		.width(function(){return graph.w})
-		.height(function(){return graph.h})
-		.top(20)
-		.left(function(){return 40 + index * graph.w + index * 80})
-		.events("all");
-  
-  /*Graph Title*/
-  graphPanel.add(pv.Label)
-		.left(function(){return graph.w/2})
-		.top(-10)
-		.textAlign("center")
-		.textAngle(0)
-		.text(function(){return graph.worksheet.title})
-		.font("bold 20px sans-serif");
-	
-  /* Number of datapoints N */
-  graphPanel.add(pv.Label)
-		.right(function(){return graph.w/2})
-		.top(10)
-		.textAlign("center")
-		.textAngle(0)
-		.text(function(){return "N = " + graph.data.length})
-		.font("bold 14px sans-serif");
-
-  /* Y-axis label */  
-  graphPanel.add(pv.Label)
-		.data(function(){return graph.yData})
-		.left(-65)
-		.top(graph.h / 2)
-		.textAlign("center")
-		.textAngle(-Math.PI / 2)
-		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
-
-  /* Y-axis ticks */
-  graphPanel.add(pv.Rule)
-		.data(function() { return graph.y.ticks(graphCollection.buckets) })
-		.bottom(graph.y)
-		.strokeStyle(function(d) { return d ? "#eee" : "#000" })
-		.anchor('left').add(pv.Label)
-			.text(graph.y.tickFormat)
-			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-			.visible(function(){return this.index != 0});
-
-  /* X-axis ticks */
-  graphPanel.add(pv.Rule)
-		.data(function() { return graph.x.ticks(graphCollection.buckets) })
-		.left(graph.x)
-		.strokeStyle(function(d) { return d ? "#eee" : "#000" })
-		.anchor("bottom").add(pv.Label)
-			.text(graph.x.tickFormat)
-			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-			.visible(function(){return this.index != 0});
-
-  /* X-axis label */
-  graphPanel.add(pv.Label)
-		.text(graph.xData)
-		.left(graph.w / 2)
-		.bottom(-50)
-		.textAlign("center")
-		.textAngle(0)
-		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
-	
-	  
-  /* median median crosses and squares */
-	for (var i = 0; i < graph.groups.length; i++) {
-		var bounds = getBounds(graph.groups[i]);
-		var coords = getBoundingCoords(bounds);
-		var n = graph.groups[i].length;
-
-		/* rectangle around median group */
-		graphPanel.add(pv.Line)
-			.visible(function() { return jQuery('#checkboxShowMMRects').is(':checked') })
-			.data(coords)
-			.left(function(d) { return graph.x(d[0]) })
-			.bottom(function(d) { return graph.y(d[1]) })
-			.lineWidth(0.5)
-			.strokeStyle("blue")
-			.fillStyle(pv.rgb(0,0,255,0.05))
-			.add(pv.Label)								
-				.text(function(d) {
-					if (this.index == 0) { return "N = "+ n;}
-					else {return ""}
-				})
-				.textAlign("left")
-				.textBaseline("top")
-				.textStyle("blue")
-				.textAngle(0)
-				.font("bold 12px sans-serif");
-
-		/* median cross */
-		graphPanel.add(pv.Dot)
-			.visible(function() { return jQuery('#checkboxShowMMDots').is(':checked') })
-			.data([graph.medians[i]]) // extra brackets so not to use x and y as seperate points
-			.left(function(d) { return graph.x(d[0]) })
-			.bottom(function(d) { return graph.y(d[1]) })
-			.radius(10)
-			.angle(Math.PI / 4)
-			.shape('cross')
-			.strokeStyle(pv.rgb(0,0,255,0.90));
-	}
-
-
-  /* median-median line:
-	   Is middle median dot higher or lower than line through outer median dots? 
-	   That is, middle median dot's y value - y value at same x of original median line 
-	   divided by three */
-	graphPanel.add(pv.Line)
-		.visible(function() { return jQuery('#checkboxShowMMLine').is(':checked') })
-		.data([[graph.xMin, graph.mmFarLeftYVal], [graph.xMax, graph.mmFarRightYVal]])
-		.left(function(d) { return graph.x(d[0]) })
-		.bottom(function(d) { return graph.y(d[1]) })
-		.title("Median-median line")
-		.strokeStyle("blue")
-		.lineWidth(2)
-		.add(pv.Label)
-			.visible(function () { return (jQuery('#checkboxShowMMEqn').is(':checked') 
-											&& jQuery('#checkboxShowMMLine').is(':checked') )})
-			.text(function(d) {
-				if (this.index == 0) { return "Y = "+graph.mmSlope.toFixed(3)+"X + "+graph.mmIntercept.toFixed(3);}
-				else{return "";}
-			})
-			.textAlign("left")
-			.textBaseline("top")
-			.textStyle("blue")
-			.textAngle(getMMLineLabelAngle(graph))
-			.font("bold 12px sans-serif");
-		 
-	/* Least Squares Regression Line */  
-	graphPanel.add(pv.Line)
-		.visible(function() { return jQuery('#checkboxShowLeastSquaresLine').is(':checked') })
-		.data([[graph.xMin, graph.lsFarLeftYVal], [graph.xMax, graph.lsFarRightYVal]])
-		.left(function(d) { return graph.x(d[0]) })
-		.bottom(function(d) { return graph.y(d[1]) })
-		.title("Least-Squares Regression Line")
-		.strokeStyle(pv.rgb(0,225,0,1))
-		.lineWidth(2)
-		.add(pv.Label)									//Line Equation
-			.visible(function () { return (jQuery('#checkboxShowLeastSquaresEquation').is(':checked')
-											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
-			.text(function(d) {
-				if (this.index == 0) { return "Y = "+graph.lsSlope.toFixed(3)+"X + "+graph.lsIntercept.toFixed(3);}
-				else {return ""}
-			})
-			.textAlign("left")
-			.textBaseline("top")
-			.textStyle(pv.rgb(0,225,0,1))
-			.textAngle(getLSLineLabelAngle(graph))
-			.font("bold 12px sans-serif")
-		.add(pv.Label)									//R Value
-			.visible(function () { return (jQuery('#checkboxShowLeastSquaresRValue').is(':checked')
-											&& jQuery('#checkboxShowLeastSquaresLine').is(':checked') )})
-			.text(function(d) {
-				if (this.index == 0) { return "R = "+ getR(graph.data).toFixed(2);}
-				else {return ""}
-			})
-			.textAlign("left")
-			.textBaseline("bottom")
-			.textStyle(pv.rgb(0,225,0,1))
-			.textAngle(getLSLineLabelAngle(graph))
-			.font("bold 12px sans-serif");
-		
-  /*R Squares*/
-	for (var i=0; i < graph.data.length; i++){	
-		var sqrBounds = getRSquareBounds(graph, i);  									   
-		graphPanel.add(pv.Line)
-			.visible(function() { return (jQuery('#checkboxShowLeastSquaresSquares').is(':checked')
-									&& jQuery('#checkboxShowLeastSquaresLine').is(':checked')) })
-			.data(sqrBounds)
-			.left(function(d) { return d[0] })
-			.bottom(function(d) { return d[1] })
-			.lineWidth(0.5)
-			.strokeStyle("green")
-			.fillStyle(pv.rgb(0,225,0,0.05));
-  }
-	 
-	/* user drawn line */
-	graphPanel.add(pv.Line)
-		.data(graph.userDrawnLinePoints)
-		.left(function(d) { return graph.x(d.x) })
-		.bottom(function(d) { return graph.y(d.y) })
-		.visible(function() { return jQuery('#checkboxShowUserLine').is(':checked') })
-		.fillStyle("red")
-		.strokeStyle("red")
-		.lineWidth(2)
-		.add(pv.Label)									//Line Equation
-			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
-			.text(function(d) {
-				if (this.index == 0) { return "Y = "+getUserLineSlope(graph).toFixed(3)+"X + "+getUserLineIntercept(graph).toFixed(3);}
-				else {return ""}
-			})
-			.textAlign("left")
-			.textBaseline("top")
-			.textStyle("red")
-			.textAngle(function() { return getUserLineLabelAngle(graph)})
-			.font("bold 12px sans-serif")
-		.add(pv.Label)									//R Squared Value
-			.visible(function () { return jQuery('#checkboxShowUserLine').is(':checked') })
-			.text(function(d) {
-				if (this.index == 0) { return "Sum of Squares = "+ getUserLineR(graph).toFixed(2);}
-				else {return ""}
-			})
-			.textAlign("left")
-			.textBaseline("bottom")
-			.textStyle("red")
-			.textAngle(function() {return getUserLineLabelAngle(graph)})
-			.font("bold 12px sans-serif")
-		.add(pv.Dot)									//Endpoints
-			.fillStyle("red")
-			.shape('square')
-			.cursor('move')
-			.event("mousedown", pv.Behavior.drag())
-			.event("drag", function() {
-				var mouseX = graph.x.invert(vis.mouse().x),
-					mouseY = graph.y.invert(graph.h - vis.mouse().y);
-				
-				graph.userDrawnLinePoints[this.index].x = mouseX;
-				graph.userDrawnLinePoints[this.index].y = mouseY;
-				
-				vis.render();
-			})		
-		.add(pv.Dot)									//Midpoint
-			.data(function() {return getUserLineMidpoint(graph)})
-			.left(function(d) { return graph.x(d.x) })
-			.bottom(function(d) { return graph.y(d.y) })
-			.fillStyle(pv.rgb(255,0,0,0.1))
-			.strokeStyle(pv.rgb(255,0,0,0.5))
-			.shape('diamond')
-			.cursor('move')
-			.event("mousedown", pv.Behavior.drag())
-			.event("drag", function() {
-				var mouseX = graph.x.invert(vis.mouse().x),
-					mouseY = graph.y.invert(graph.h - vis.mouse().y),
-					handle = getUserLineMidpoint(graph);
-					
-				graph.userDrawnLinePoints[0].x += mouseX - handle[0].x;
-				graph.userDrawnLinePoints[1].x += mouseX - handle[0].x;
-				graph.userDrawnLinePoints[0].y += mouseY - handle[0].y;
-				graph.userDrawnLinePoints[1].y += mouseY - handle[0].y;
-							
-				vis.render();
-			});		
-	
-  /* user ellipse */
-	graphPanel.add(pv.Line)
-		.visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
-		.data(function() { return getRotatedEllipseCoords(graph) })
-		.left(function(d) { return d[0] })
-		.bottom(function(d) { return d[1] })
-		.strokeStyle("red");
-
-	function getEllipseManipCoords(){
-		var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
-		var ellipseXRadius = graph.xRadius;
-		var ellipseYRadius = graph.yRadius;
-		
-		var coords = [];
-		for (i = 0; i < cardinalAngs.length; i++) {
-			coords.push([ ellipseXRadius * Math.cos(cardinalAngs[i]),
-						ellipseYRadius * Math.sin(cardinalAngs[i]) ]);
-		}
-		
-		for (var i = 0; i < coords.length; i++) {
-			coords[i] = ([ coords[i][0] * Math.cos(graph.angle) - coords[i][1] * Math.sin(graph.angle) + graph.ellipseCX,
-						 coords[i][0] * Math.sin(graph.angle) + coords[i][1] * Math.cos(graph.angle) + graph.ellipseCY ]);
-		}
-		return coords;
-	}
-  
- 
-	graphPanel.add(pv.Dot)
-		.visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
-		.data(getEllipseManipCoords)
-		.left(function(d) { return d[0] })
-		.bottom(function(d) { return d[1] })
-		.cursor('move')
-		.shape('square')
-		.radius(5)
-		.fillStyle("red")
-		.strokeStyle("red")
-		.event("mousedown", pv.Behavior.drag())
-		.event("drag", function(){
-			var mouseX = vis.mouse().x,
-				mouseY = graph.h - vis.mouse().y,
-				handleX = getEllipseManipCoords()[this.index][0],
-				handleY = getEllipseManipCoords()[this.index][1],
-				
-				mouseVec = pv.vector(graph.ellipseCX - mouseX
-									,graph.ellipseCY - mouseY),
-				
-				handleVec = pv.vector(graph.ellipseCX - handleX
-									,graph.ellipseCY - handleY).norm();
-
-			var detHndlMs = determinantBtwnVec(handleVec, mouseVec);
-			var rotDist = angleBtwnVec(mouseVec, handleVec);			
-
-			if (mouseX > (0 - padLeft) 
-				&& mouseX < (graph.w + padRight) 
-				&& mouseY > (0 - padBot) 
-				&& mouseY < (graph.h + padTop)){
-				
-				//Rotation
-				if (!isNaN(rotDist)){
-					if (detHndlMs > 0){
-						graph.angle = (graph.angle + rotDist) % (2*Math.PI);
-					}else{
-						graph.angle = (graph.angle - rotDist) % (2*Math.PI);
-					}
-				}
-				 
-				//Radius Inc/Dec
-				if (this.index % 2 == 0){
-					graph.xRadius = mouseVec.length();
-				}else{
-					graph.yRadius = mouseVec.length();
-				}
-			}
-
-			graph.pointsInEllipse = numPointsInEllipse(graph);
-					
-			vis.render();
-		})
-		.add(pv.Label)								
-			.text(function(d) {
-				if (this.index == 3) { return "# of Points Inside = "+ numPointsInEllipse(graph) }
-				else {return "";}
-			})
-			.textAlign("center")
-			.textBaseline("bottom")
-			.textStyle("red")
-			.textAngle(0)
-			.textMargin(10)
-			.font("bold 12px sans-serif");
-		 
-	graphPanel.add(pv.Dot)
-		.visible(function() { return jQuery('#checkboxShowMMEllipse').is(':checked') })
-		.data(function() {return [[graph.ellipseCX, graph.ellipseCY]]})
-		.left(function(d) { return d[0] })
-		.bottom(function(d) { return d[1] })
-		.cursor('move')
-		.shape('cross')
-		.radius(8)
-		.fillStyle(pv.rgb(255,0,0,0.20))
-		.strokeStyle(pv.rgb(255,0,0,0.50))
-		.event("mousedown", pv.Behavior.drag())
-		.event("drag", function(){
-			var mouseX = vis.mouse().x,
-				mouseY = graph.h - vis.mouse().y;
-
-			if (mouseX > 0 && mouseX < graph.w && mouseY > 0 && mouseY < graph.h){
-				graph.ellipseCX = mouseX;
-				graph.ellipseCY = mouseY;
-			}
-
-			graph.pointsInEllipse = numPointsInEllipse(graph);
-					
-			vis.render();
-		});
-	 
-	/* dot plot */
-	graphPanel.add(pv.Dot)
-		.data(graph.data)
-		.visible(function() { return jQuery('#checkboxShowData').is(':checked') })
-		.event("point", function() { return this.active(this.index).parent })
-		.event("unpoint", function() { return this.active(-1).parent })
-		.left(function(d) { return graph.x(d.x) })
-		.bottom(function(d) { return graph.y(d.y) })
-		.radius(function() { return graph.normViewDotSize })
-		.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
-								if (jQuery('#checkboxBWView').is(':checked'))
-									return "black";
-								else 
-									return graph.c[this.index];
-								
-							} else {
-								return pv.rgb(0,0,0,0.10);
-							}
-		})
-		.strokeStyle(function() {  if (jQuery('#checkboxBWView').is(':checked')){
-										return "black";
-									} else {
-										return graph.c[this.index];
-									}
-		})
-		.title(function(d) { return d.label + ": " + d.x + ", " + d.y })
-		.def('active', -1)
-		.event("point", function() { return this.active(this.index).parent })
-		.event("unpoint", function() { return this.active(-1).parent });
-
-  vis.render();
-}
-
 function constructTwoDistGraph(graph,index, graphPanel){	
-	console.log("two dist")
-	
-	/*Graph Title*/
-	//graphPanel.add(pv.Label)
-	//	.left(function(){return graph.w / 2})
-	//	.top(-20)
-	//	.textAlign("center")
-	//	.textAngle(0)
-	//	.text(graph.worksheet.title + " (Both Categories on X-axis)")
-	//	.font("bold 20px sans-serif");
-	
 	//Top subgraph is y-axis data
 	var topDist = graphPanel.add(pv.Panel)
 		.width(function(){return graph.w})
@@ -1773,18 +1364,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	vis.render();
 }
 
-function constructXDistGraph(graph, index, graphPanel){
-	console.log("x dist")
-		  
-	/*Graph Title*/		  
-	//graphPanel.add(pv.Label)
-	//	.left(function(){return graph.w / 2})
-	//	.top(-20)
-	//	.textAlign("center")
-	//	.textAngle(0)
-	//	.text(graph.worksheet.title + " (Dropped onto X-axis)")
-	//	.font("bold 20px sans-serif");
-		
+function constructXDistGraph(graph, index, graphPanel){		  
 	/* Number of datapoints N */
 	graphPanel.add(pv.Label)
 		.left(function(){return graph.w / 2})
@@ -1824,17 +1404,6 @@ function constructXDistGraph(graph, index, graphPanel){
 }
 	
 function constructYDistGraph(graph,index, graphPanel){
-	console.log("y dist")
-		  
-	/*Graph Title*/		  
-	//graphPanel.add(pv.Label)
-	//	.left(function(){return graph.w / 2})
-	//	.top(-20)
-	//	.textAlign("center")
-	//	.textAngle(0)
-	//	.text(graph.worksheet.title + " (Dropped onto Y-axis)")
-	//	.font("bold 20px sans-serif");
-		
 	/* Number of datapoints N */
 	graphPanel.add(pv.Label)
 		.left(function(){return graph.w / 2})

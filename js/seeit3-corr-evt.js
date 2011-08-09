@@ -73,15 +73,19 @@ jQuery('#graphOptions').change(function(event) {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].lsSquares = $("#checkboxShowLeastSquaresSquares").is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].lsEQ = $("#checkboxShowLeastSquaresEquation").is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].lsR = $("#checkboxShowLeastSquaresRValue").is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].twoDistView = $("#showBothDist").is(':checked');
 	
   constructVis();
   event.stopPropagation();
 });
 
-jQuery('#fitScalesToData').change(function(event) {
-  //graphics.setXScale();
-  //graphics.setYScale();
-  constructVis();
+$('#fitScalesToData').change(function() {
+	graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = jQuery('#fitScalesToData').is(':checked');
+	//graphCollection.graphs[graphCollection.selectedGraphIndex].customScale = !jQuery('#fitScaleToData').is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].setXScale();
+	graphCollection.graphs[graphCollection.selectedGraphIndex].setYScale();
+	graphCollection.updateMenuOptions();
+	constructVis();
 });
 
 jQuery('#checkboxShowMMEqn').change(function(event) {
@@ -104,10 +108,11 @@ jQuery('#checkboxShowLeastSquaresRValue').change(function(event) {
 
 $('#textYMin').change(function(event) {
 	var textBoxVal = parseFloat($('#textYMin').val());
-	var curMax = graphics.y.domain()[1];
+	var curMax = graphCollection.graphs[graphCollection.selectedGraphIndex].y.domain()[1];
 	if (isNaN(textBoxVal) || textBoxVal >= curMax){
 		$('#textYMin').val(graphCollection.graphs[graphCollection.selectedGraphIndex].y.domain()[0]);
 	} else {
+		console.log("fit")
 		graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = false;
 		graphCollection.graphs[graphCollection.selectedGraphIndex].setYScale(textBoxVal, curMax);
 		graphCollection.graphs[graphCollection.selectedGraphIndex].customScale = true;
@@ -118,7 +123,7 @@ $('#textYMin').change(function(event) {
 
 $('#textYMax').change(function(event) {
 	var textBoxVal = parseFloat($('#textYMax').val());
-	var curMin = graphics.y.domain()[0];
+	var curMin = graphCollection.graphs[graphCollection.selectedGraphIndex].y.domain()[0];
 	if (isNaN(textBoxVal) || textBoxVal <= curMin){
 		$('#textYMax').val(graphCollection.graphs[graphCollection.selectedGraphIndex].y.domain()[1]);
 	} else {
