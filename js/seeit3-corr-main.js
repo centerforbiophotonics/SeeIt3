@@ -611,7 +611,7 @@ function constructGraphPanel(graph,index){
 			var category = graph.xData;
 			var thisGraphIndex = index;
 			
-			if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
+			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
 				graphCollection.graphs.forEach(function(g,i){
 					if (g.xAxisPanel.mouse().x > 0 &&
 							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
@@ -748,7 +748,7 @@ function constructGraphPanel(graph,index){
 			var mouseX = vis.mouse().x;
 			var category = graph.yData;
 			var thisGraphIndex = index;
-			if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
+			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
 				graphCollection.graphs.forEach(function(g,i){
 					if (g.xAxisPanel.mouse().x > 0 &&
 							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
