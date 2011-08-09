@@ -83,7 +83,7 @@ GraphCollection.prototype = {
 	setChildGraphHeights: function(){
 		var graphCollection = this;
 		graphCollection.graphs.forEach(function(g){
-			g.h = graphCollection.h - 20;
+			g.h = graphCollection.h - 40;
 			g.setYScale();
 		});
 	},
@@ -92,12 +92,12 @@ GraphCollection.prototype = {
 		var graphCollection = this;
 		if (graphCollection.graphs.length > 1)
 			graphCollection.graphs.forEach(function(g){
-				g.w = (graphCollection.w-120)/2;
+				g.w = (graphCollection.w-160)/2;
 				g.setXScale();
 			});
 		else
 			graphCollection.graphs.forEach(function(g){
-				g.w = graphCollection.w - 30;
+				g.w = graphCollection.w - 50;
 				g.setXScale();
 			});
 	},

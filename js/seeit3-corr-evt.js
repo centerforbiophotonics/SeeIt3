@@ -41,8 +41,6 @@ jQuery('#editInGoogleDocs').click(function(event) {
 
 jQuery('#workSheetSelector').change(function(event) {
   graphCollection = new GraphCollection();
-  //graphics.setXScale();
-  //graphics.setYScale();
   constructVis();
 });
 
@@ -193,6 +191,22 @@ jQuery('#sliderTextSize').slider({
 	slide:function(event, ui) { 
 		graphCollection.labelTextSize = (ui.value + 4).toString();
 		graphCollection.tickTextSize = ui.value.toString();
+		vis.render(); 
+	}
+});
+
+jQuery('#sliderDotSize').slider({ 
+	orientation:'vertical', min:1, max:10, value:5, step:1,
+	slide:function(event, ui) {
+		graphCollection.dotSize = ui.value; 
+		vis.render(); 
+	}
+});
+  
+jQuery('#sliderDivisions').slider({ 
+	orientation:'vertical', min:2, max:40, value:30, step:1,
+	slide:function(event, ui) { 
+		graphCollection.buckets = ui.value;
 		vis.render(); 
 	}
 });

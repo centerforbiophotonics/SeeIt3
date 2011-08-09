@@ -950,7 +950,7 @@ function positionGraphMenuOverGraph(index, graphCollection){
 	
 	var xPos = $('span').offset().left +
 							graphCollection.padLeft - 34 +
-							index * (graphCollection.graphs[index].w + 90);
+							index * (graphCollection.graphs[index].w + 110);
 							
 	//if (xPos + $('#graphOptions').width() > graphCollection.w){
 	//	xPos -= (xPos + $('#graphOptions').width()) - graphCollection.w - graphCollection.padRight - graphCollection.padLeft - 20 ;

@@ -489,9 +489,18 @@ function constructGraphPanel(graph,index){
 		.width(function(){return graph.w})
 		.height(function(){return graph.h})
 		.top(20)
-		.left(function(){return 40 + index * graph.w + index * 90})
+		.left(function(){return 60 + index * graph.w + index * 110})
 		.events("all");
-		
+	
+	/*Graph Title*/		  
+	graphPanel.add(pv.Label)
+		.left(function(){return graph.w / 2})
+		.top(-20)
+		.textAlign("center")
+		.textAngle(0)
+		.text(graph.worksheet.title)//+ " (Dropped onto Y-axis)")
+		.font("bold 20px sans-serif");
+	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
 		.right(0)
@@ -517,8 +526,8 @@ function constructGraphPanel(graph,index){
 			.title("Remove Graph")
 			.strokeStyle("black")
 	
-	//X-axis drag drop zone
-	graph.xAxisPanel = graphPanel.add(pv.Panel)
+	//X-axis drag feedback
+	var xAxisDragFeedbackPanel = vis.add(pv.Panel)
 		.height(function(){
 			if (graph.xData == null)
 				return 30;
@@ -532,9 +541,44 @@ function constructGraphPanel(graph,index){
 				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.xData) + 20;
 		})
 		.left(function(){return graph.w/2 - this.width()/2})
-		.bottom(-50)
-		//.fillStyle("red")
+		.bottom(-70)
 		.lineWidth(1)
+		.strokeStyle("black")
+		.visible(false)
+		
+	xAxisDragFeedbackPanel.add(pv.Label)
+		.text(function(){
+			if (graph.xData == null)
+				return "Drag here to assign a dataset to the x-axis."
+			else
+				return graph.xData;
+		})
+		.left(function(){return graph.xAxisPanel.width()/2})
+		.top(function(){return graph.xAxisPanel.height()/2})
+		.textAlign("center")
+		.textBaseline("middle")
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
+		
+		
+	//X-axis drag drop zone
+	graph.xAxisPanel = graphPanel.add(pv.Panel)
+		.data([{"x":0,"y":0}])
+		.height(function(){
+			if (graph.xData == null)
+				return 30;
+			else
+				return getPixelHeightOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.xData);
+		})
+		.width(function(){
+			if (graph.xData == null)
+				return graph.w;
+			else
+				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.xData) + 20;
+		})
+		.left(function(){return graph.w/2 - this.width()/2})
+		.bottom(-70)
+		.lineWidth(1)
+		.cursor("move")
 		.events("all")
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
@@ -543,6 +587,65 @@ function constructGraphPanel(graph,index){
 		.event("mouseout", function(d){ 
 			this.strokeStyle(pv.rgb(0,0,0,0));
 			this.render();
+		})
+		.event("mousedown", pv.Behavior.drag())
+		.event("dragstart", function(){
+			var mouseY = vis.mouse().y;
+			var mouseX = vis.mouse().x;
+			xAxisDragFeedbackPanel.left(mouseX);
+			xAxisDragFeedbackPanel.top(mouseY);
+			xAxisDragFeedbackPanel.visible(true);
+			document.body.style.cursor="move";
+			xAxisDragFeedbackPanel.render();
+		})
+		.event("drag", function(event){
+			var mouseY = vis.mouse().y;
+			var mouseX = vis.mouse().x;
+			xAxisDragFeedbackPanel.left(mouseX);
+			xAxisDragFeedbackPanel.top(mouseY);
+			xAxisDragFeedbackPanel.render();
+		})
+		.event("dragend", function(){
+			var mouseY = vis.mouse().y;
+			var mouseX = vis.mouse().x;
+			var category = graph.xData;
+			var thisGraphIndex = index;
+			
+			if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
+				graphCollection.graphs.forEach(function(g,i){
+					if (g.xAxisPanel.mouse().x > 0 &&
+							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
+							g.xAxisPanel.mouse().y > 0 &&
+							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
+					{
+						if (i != thisGraphIndex){
+							g.assignX(category);
+							graph.assignX(null);
+						}
+					}
+					
+					if (g.yAxisPanel.mouse().x > 0 &&
+							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
+							g.yAxisPanel.mouse().y > 0 &&
+							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
+					{
+						if (i == thisGraphIndex){
+							g.assignX(g.yData);
+							g.assignY(category);
+						} else {
+							g.assignY(category);
+							graph.assignX(null);
+						}
+					}
+				});
+			} else {
+				graph.assignX(null);
+			}
+			
+			xAxisDragFeedbackPanel.visible(false);
+			document.body.style.cursor="default";
+			constructVis();
+			//vis.render();
 		})
 		
 	graph.xAxisPanel.add(pv.Label)
@@ -556,10 +659,10 @@ function constructGraphPanel(graph,index){
 		.top(function(){return graph.xAxisPanel.height()/2})
 		.textAlign("center")
 		.textBaseline("middle")
-		.font("bold "+graphCollection.labelTextSize+"px sans-serif", graph.xData)
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
 		
-	//Y-axis drag drop zone
-	graph.yAxisPanel = graphPanel.add(pv.Panel)
+	//Y-axis drag feedback panel
+	var yAxisDragFeedbackPanel = vis.add(pv.Panel)
 		.width(function(){
 			if (graph.yData == null)
 				return 30;
@@ -572,12 +675,50 @@ function constructGraphPanel(graph,index){
 			else
 				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
 		})
-		.left(-65)
+		.left(-85)
 		.visible(function(){return graph.twoDistView == false})
 		.bottom(function(){return graph.h/2 - this.height()/2})
-		//.fillStyle("red")
 		.lineWidth(1)
+		.strokeStyle("black")
+		.visible(false)
+		
+		
+	yAxisDragFeedbackPanel.add(pv.Label)
+		.text(function(){
+			if (graph.yData == null)
+				return "Drag here to assign a dataset to the y-axis."
+			else
+				return graph.yData;
+		})
+		.left(function(){return graph.yAxisPanel.width()/2})
+		.top(function(){return graph.yAxisPanel.height()/2})
+		.textAngle(-Math.PI/2)
+		.textAlign("center")
+		.textBaseline("middle")
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
+		
+	//Y-axis drag drop zone
+	graph.yAxisPanel = graphPanel.add(pv.Panel)
+		.data([{"x":0,"y":0}])
+		.width(function(){
+			if (graph.yData == null)
+				return 30;
+			else
+				return getPixelHeightOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData);
+		})
+		.height(function(){
+			if (graph.yData == null)
+				return graph.h;
+			else
+				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
+		})
+		.left(-85)
+		.visible(function(){return graph.twoDistView == false})
+		.bottom(function(){return graph.h/2 - this.height()/2})
+		.lineWidth(1)
+		.cursor("move")
 		.events("all")
+		.event("mousedown", pv.Behavior.drag())
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
 			this.render();
@@ -586,6 +727,64 @@ function constructGraphPanel(graph,index){
 			this.strokeStyle(pv.rgb(0,0,0,0));
 			this.render();
 		})
+		.event("dragstart", function(){
+			var mouseY = vis.mouse().y;
+			var mouseX = vis.mouse().x;
+			yAxisDragFeedbackPanel.left(mouseX);
+			yAxisDragFeedbackPanel.top(mouseY);
+			yAxisDragFeedbackPanel.visible(true);
+			document.body.style.cursor="move";
+			yAxisDragFeedbackPanel.render();
+		})
+		.event("drag", function(event){
+			var mouseY = vis.mouse().y;
+			var mouseX = vis.mouse().x;
+			yAxisDragFeedbackPanel.left(mouseX);
+			yAxisDragFeedbackPanel.top(mouseY);
+			yAxisDragFeedbackPanel.render();
+		})
+		.event("dragend", function(){
+			var mouseY = vis.mouse().y;
+			var mouseX = vis.mouse().x;
+			var category = graph.yData;
+			var thisGraphIndex = index;
+			if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
+				graphCollection.graphs.forEach(function(g,i){
+					if (g.xAxisPanel.mouse().x > 0 &&
+							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
+							g.xAxisPanel.mouse().y > 0 &&
+							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
+					{
+						if (i == thisGraphIndex){
+							g.assignY(g.xData);
+							g.assignX(category);
+						} else {
+							g.assignX(category);
+							graph.assignY(null);
+						}
+					}
+					
+					if (g.yAxisPanel.mouse().x > 0 &&
+							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
+							g.yAxisPanel.mouse().y > 0 &&
+							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
+					{
+						if (i != thisGraphIndex){
+							g.assignY(category);
+							graph.assignY(null);
+						}
+					}
+				});
+			} else {
+				graph.assignY(null);
+			}
+			
+			yAxisDragFeedbackPanel.visible(false);
+			document.body.style.cursor="default";
+			constructVis();
+			//vis.render();
+		})
+		
 		
 	graph.yAxisPanel.add(pv.Label)
 		.text(function(){
@@ -599,12 +798,12 @@ function constructGraphPanel(graph,index){
 		.textAngle(-Math.PI/2)
 		.textAlign("center")
 		.textBaseline("middle")
-		.font("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData)
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
 		
 	
 	//Divider between graphs
 	graphPanel.add(pv.Rule)
-		.left(-75)
+		.left(-95)
 		.top(-50)
 		.bottom(-75)
 		.visible(function(){ return index == 1 })
@@ -615,7 +814,7 @@ function constructGraphPanel(graph,index){
 		.width(30)
 		.height(30)
 		.top(-45)
-		.left(-60)
+		.left(-80)
 		.cursor("pointer")
 		.title("Show graph option menu")
 		.event("click", function(){
@@ -673,34 +872,20 @@ function constructEmptyGraph(graph,index, graphPanel){
 		.textBaseline("center")
 		.text("Empty Graph")
 		.font(fontString)
-	//graphPanel.add(pv.Label)
-	//	.left(function(){return graph.w/2})
-	//	.top(function(){return graph.h/2 + 20})
-	//	.textAlign("center")
-	//	.textBaseline("center")
-	//	.text("Drag a Dataset from the Left to Add")
-	//	.font(fontString)
 		
 }
 
-function constructCorrGraph(graph, index, graphPanel){
-	//var graphPanel = vis.add(pv.Panel)
-	//	.width(function(){return graph.w})
-	//	.height(function(){return graph.h})
-	//	.top(20)
-	//	.left(function(){return 40 + index * graph.w + index * 80})
-	//	.events("all");
-		
+function constructCorrGraph(graph, index, graphPanel){		
 	console.log("corr")
 		
 	/*Graph Title*/
-  graphPanel.add(pv.Label)
-		.left(function(){return graph.w/2})
-		.top(-10)
-		.textAlign("center")
-		.textAngle(0)
-		.text(function(){return graph.worksheet.title})
-		.font("bold 20px sans-serif");
+  //graphPanel.add(pv.Label)
+	//	.left(function(){return graph.w/2})
+	//	.top(-10)
+	//	.textAlign("center")
+	//	.textAngle(0)
+	//	.text(function(){return graph.worksheet.title})
+	//	.font("bold 20px sans-serif");
 		
 	 /* Y-axis ticks */
   graphPanel.add(pv.Rule)
@@ -725,20 +910,11 @@ function constructCorrGraph(graph, index, graphPanel){
 	/* Number of datapoints N */
   graphPanel.add(pv.Label)
 		.right(function(){return graph.w/2})
-		.top(10)
+		.top(-5)
 		.textAlign("center")
 		.textAngle(0)
 		.text(function(){return "N = " + graph.data.length})
 		.font("bold 14px sans-serif");
-		
-	/* Y-axis label */  
-  //graphPanel.add(pv.Label)
-	//	.text(function(){return graph.yData})
-	//	.left(-40)
-	//	.top(graph.h / 2)
-	//	.textAlign("center")
-	//	.textAngle(-Math.PI / 2)
-	//	.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
 			
 	//Y-axis Line
 	graphPanel.add(pv.Rule)
@@ -754,15 +930,6 @@ function constructCorrGraph(graph, index, graphPanel){
 		.bottom(1)
 		.strokeStyle("#000")
 			
-	/* X-axis label */
-  //graphPanel.add(pv.Label)
-	//	.text(graph.xData)
-	//	.left(graph.w / 2)
-	//	.bottom(-40)
-	//	.textAlign("center")
-	//	.textAngle(0)
-	//	.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
-	
 	/* dot plot */
 	graphPanel.add(pv.Dot)
 		.data(graph.data)
@@ -774,22 +941,6 @@ function constructCorrGraph(graph, index, graphPanel){
 		.radius(function() { return graph.normViewDotSize })
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
-		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
-		//						if (jQuery('#checkboxBWView').is(':checked'))
-		//							return "black";
-		//						else 
-		//							return graph.c[this.index];
-		//						
-		//					} else {
-		//						return pv.rgb(0,0,0,0.10);
-		//					}
-		//})
-		//.strokeStyle(function() {  if (jQuery('#checkboxBWView').is(':checked')){
-		//								return "black";
-		//							} else {
-		//								return graph.c[this.index];
-		//							}
-		//})
 		.title(function(d) { return d.label + ": " + d.x + ", " + d.y })
 		.def('active', -1)
 		.event("point", function() { return this.active(this.index).parent })
@@ -1187,44 +1338,20 @@ function constructCorrGraphNOT(graph, index){
 		.event("point", function() { return this.active(this.index).parent })
 		.event("unpoint", function() { return this.active(-1).parent });
 
-  
-  jQuery('#sliderDotSize').slider({ 
-	orientation:'vertical', min:1, max:10, value:graph.normViewDotSize, step:1,
-	slide:function(event, ui) {
-		graph.normViewDotSize = ui.value; 
-		vis.render(); 
-	}
-  });
-  
-  jQuery('#sliderDivisions').slider({ 
-	orientation:'vertical', min:2, max:40, value:graph.normViewAxisDivisions, step:1,
-	slide:function(event, ui) { 
-		graph.normViewAxisDivisions = ui.value;
-		vis.render(); 
-	}
-  });
-  
   vis.render();
 }
 
-function constructTwoDistGraph(graph,index, graphPanel){
-	//var graphPanel = vis.add(pv.Panel)
-	//	.width(function(){return graph.w})
-	//	.height(function(){return graph.h})
-	//	.top(20)
-	//	.left(function(){return 40 + index * graph.w + index * 80})
-	//	.events("all");
-	
+function constructTwoDistGraph(graph,index, graphPanel){	
 	console.log("two dist")
 	
 	/*Graph Title*/
-	graphPanel.add(pv.Label)
-		.left(function(){return graph.w / 2})
-		.top(-20)
-		.textAlign("center")
-		.textAngle(0)
-		.text(graph.worksheet.title + " (Both Categories on X-axis)")
-		.font("bold 20px sans-serif");
+	//graphPanel.add(pv.Label)
+	//	.left(function(){return graph.w / 2})
+	//	.top(-20)
+	//	.textAlign("center")
+	//	.textAngle(0)
+	//	.text(graph.worksheet.title + " (Both Categories on X-axis)")
+	//	.font("bold 20px sans-serif");
 	
 	//Top subgraph is y-axis data
 	var topDist = graphPanel.add(pv.Panel)
@@ -1259,7 +1386,6 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		})
 		.left(function(){return graph.w/2 - this.width()/2})
 		.bottom(-50)
-		//.fillStyle("red")
 		.lineWidth(1)
 		.events("all")
 		.event("mouseover", function(d){
@@ -1283,16 +1409,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.textAlign("center")
 		.textBaseline("middle")
 		.font("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData)
-	
 		
-	/* X-axis label */		  
-	//topDist.add(pv.Label)
-	//	.text(graph.yData)
-	//	.left(function(){return graph.w/2})
-	//	.bottom(-40)
-	//	.textAlign("center")
-	//	.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
-
 	/* X-axis ticks */
 	topDist.add(pv.Rule)
 		.data(function() { return getYBuckets(graph) })
@@ -1343,21 +1460,12 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.text("N = " + graph.worksheet.data[graph.xData].length)
 		.font("bold 14px sans-serif");
 		
-	/* X-axis label */		  
-	//bottomDist.add(pv.Label)
-	//	.text(graph.xData)
-	//	.left(function(){return graph.w/2})
-	//	.bottom(-40)
-	//	.textAlign("center")
-	//	.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
-
 	/* X-axis ticks */
 	bottomDist.add(pv.Rule)
 		.data(function() { return getXBuckets(graph) })
 		.left(function(d) {return graph.x(d)})
 		.strokeStyle("#aaa")
 		.anchor("bottom").add(pv.Label)
-			//.bottom(-10)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
 		  .visible(function(){return this.index % 2 == 0})
@@ -1381,24 +1489,16 @@ function constructTwoDistGraph(graph,index, graphPanel){
 }
 
 function constructXDistGraph(graph, index, graphPanel){
-	//console.log("x dist");
-	//var graphPanel = vis.add(pv.Panel)
-	//	.width(function(){return graph.w})
-	//	.height(function(){return graph.h})
-	//	.top(20)
-	//	.left(function(){return 40 + index * graph.w + index * 80})
-	//	.events("all");
-	
 	console.log("x dist")
 		  
 	/*Graph Title*/		  
-	graphPanel.add(pv.Label)
-		.left(function(){return graph.w / 2})
-		.top(-20)
-		.textAlign("center")
-		.textAngle(0)
-		.text(graph.worksheet.title + " (Dropped onto X-axis)")
-		.font("bold 20px sans-serif");
+	//graphPanel.add(pv.Label)
+	//	.left(function(){return graph.w / 2})
+	//	.top(-20)
+	//	.textAlign("center")
+	//	.textAngle(0)
+	//	.text(graph.worksheet.title + " (Dropped onto X-axis)")
+	//	.font("bold 20px sans-serif");
 		
 	/* Number of datapoints N */
 	graphPanel.add(pv.Label)
@@ -1408,15 +1508,6 @@ function constructXDistGraph(graph, index, graphPanel){
 		.textAngle(0)
 		.text("N = " + graph.worksheet.data[graph.xData].length)
 		.font("bold 14px sans-serif");
-
-		
-	/* X-axis label */		  
-	//graphPanel.add(pv.Label)
-	//	.text(graph.xData)
-	//	.left(function(){return graph.w/2})
-	//	.bottom(-40)
-	//	.textAlign("center")
-	//	.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
 
 	/* X-axis ticks */
 	graphPanel.add(pv.Rule)
@@ -1448,23 +1539,16 @@ function constructXDistGraph(graph, index, graphPanel){
 }
 	
 function constructYDistGraph(graph,index, graphPanel){
-	//console.log("Y Dist Graph at "+index);
-	//var graphPanel = vis.add(pv.Panel)
-	//	.width(function(){return graph.w})
-	//	.height(function(){return graph.h})
-	//	.top(20)
-	//	.left(function(){return 40 + index * graph.w + index * 80})
-	//	.events("all");
 	console.log("y dist")
 		  
 	/*Graph Title*/		  
-	graphPanel.add(pv.Label)
-		.left(function(){return graph.w / 2})
-		.top(-20)
-		.textAlign("center")
-		.textAngle(0)
-		.text(graph.worksheet.title + " (Dropped onto Y-axis)")
-		.font("bold 20px sans-serif");
+	//graphPanel.add(pv.Label)
+	//	.left(function(){return graph.w / 2})
+	//	.top(-20)
+	//	.textAlign("center")
+	//	.textAngle(0)
+	//	.text(graph.worksheet.title + " (Dropped onto Y-axis)")
+	//	.font("bold 20px sans-serif");
 		
 	/* Number of datapoints N */
 	graphPanel.add(pv.Label)
@@ -1474,15 +1558,6 @@ function constructYDistGraph(graph,index, graphPanel){
 		.textAngle(0)
 		.text("N = " + graph.worksheet.data[graph.yData].length)
 		.font("bold 14px sans-serif");
-
-	/* Y-axis label */		  
-	//graphPanel.add(pv.Label)
-	//	.text(graph.yData)
-	//	.left(-40)
-	//	.top(graph.h / 2)
-	//	.textAlign("center")
-	//	.textAngle(-Math.PI / 2)
-	//	.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"});
 
 	/* Y-axis ticks */
 	graphPanel.add(pv.Rule)
@@ -1505,20 +1580,6 @@ function constructYDistGraph(graph,index, graphPanel){
 		.left(function(d) {return d.x})
 		.bottom(function(d) {return d.y})
 		.radius(function() {return graphCollection.dotSize})
-		//.fillStyle(function(){ if (jQuery('#checkboxFillDots').is(':checked')){
-		//						if (jQuery('#checkboxBWView').is(':checked'))
-		//							return "black";
-		//						else 
-		//							return graph.c[this.index];
-		//						
-		//					} else {
-		//						return "#eee";
-		//					}})
-		//.strokeStyle(function(d) { if (jQuery('#checkboxBWView').is(':checked')){
-		//								return "black"; 
-		//							} else {
-		//								return graph.c[this.index];
-		//							}})
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
 		.title(function(d) { return d.label });
