@@ -1318,7 +1318,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	
 	//Divider Between graphs
 	topDist.add(pv.Rule)
-		.bottom(-50)
+		.bottom(-52)
 		.left(0)
 		.right(0)
 		.strokeStyle("#000");
