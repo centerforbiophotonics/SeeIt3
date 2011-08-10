@@ -676,7 +676,7 @@ function constructGraphPanel(graph,index){
 				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
 		})
 		.left(-85)
-		.visible(function(){return graph.twoDistView == false})
+		//.visible(function(){return graph.twoDistView == false})
 		.bottom(function(){return graph.h/2 - this.height()/2})
 		.lineWidth(1)
 		.strokeStyle("black")
@@ -713,12 +713,11 @@ function constructGraphPanel(graph,index){
 				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
 		})
 		.left(-85)
-		.visible(function(){return graph.twoDistView == false})
+		.visible(function(){return graph.twoDistView == false || graph.xData == null || graph.yData == null})
 		.bottom(function(){return graph.h/2 - this.height()/2})
 		.lineWidth(1)
 		.cursor("move")
 		.events("all")
-		.event("mousedown", pv.Behavior.drag())
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
 			this.render();
@@ -727,6 +726,7 @@ function constructGraphPanel(graph,index){
 			this.strokeStyle(pv.rgb(0,0,0,0));
 			this.render();
 		})
+		.event("mousedown", pv.Behavior.drag())
 		.event("dragstart", function(){
 			var mouseY = vis.mouse().y;
 			var mouseX = vis.mouse().x;
@@ -878,21 +878,19 @@ function constructCorrGraph(graph, index, graphPanel){
   graphPanel.add(pv.Rule)
 		.data(function() { return graph.y.ticks(graphCollection.buckets) })
 		.bottom(graph.y)
-		.strokeStyle("#eee")
+		.strokeStyle("#ddd")
 		.anchor('left').add(pv.Label)
 			.text(graph.y.tickFormat)
 			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-			.visible(function(){return this.index % 2 == 0})
 	
 	/* X-axis ticks */
   graphPanel.add(pv.Rule)
 		.data(function() { return graph.x.ticks(graphCollection.buckets) })
 		.left(graph.x)
-		.strokeStyle("#eee")
+		.strokeStyle("#ddd")
 		.anchor("bottom").add(pv.Label)
 			.text(graph.x.tickFormat)
 			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-			.visible(function(){return this.index % 2 == 0})
 	
 	/* Number of datapoints N */
   graphPanel.add(pv.Label)
@@ -1245,8 +1243,8 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.text("N = " + graph.worksheet.data[graph.yData].length)
 		.font("bold 14px sans-serif");
 	
-	//Y-axis drag drop zone
-	graph.yAxisPanel = topDist.add(pv.Panel)
+	//Y-axis drag feedback panel
+	var yAxisDragFeedbackPanel = vis.add(pv.Panel)
 		.height(function(){
 			if (graph.yData == null)
 				return 30;
@@ -1262,6 +1260,43 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.left(function(){return graph.w/2 - this.width()/2})
 		.bottom(-50)
 		.lineWidth(1)
+		.strokeStyle("black")
+		.visible(false)
+		
+		
+	yAxisDragFeedbackPanel.add(pv.Label)
+		.text(function(){
+			if (graph.yData == null)
+				return "Drag here to assign a dataset to the y-axis."
+			else
+				return graph.yData;
+		})
+		.left(function(){return graph.yAxisPanel.width()/2})
+		.top(function(){return graph.yAxisPanel.height()/2})
+		.textAlign("center")
+		.textBaseline("middle")
+		.font("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData)
+	
+	
+	//Y-axis drag drop zone
+	graph.yAxisPanel = topDist.add(pv.Panel)
+		.data([{"x":0,"y":0}])
+		.height(function(){
+			if (graph.yData == null)
+				return 30;
+			else
+				return getPixelHeightOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData);
+		})
+		.width(function(){
+			if (graph.yData == null)
+				return graph.w;
+			else
+				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
+		})
+		.left(function(){return graph.w/2 - this.width()/2})
+		.bottom(-50)
+		.lineWidth(1)
+		.cursor("move")
 		.events("all")
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
@@ -1270,6 +1305,64 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.event("mouseout", function(d){ 
 			this.strokeStyle(pv.rgb(0,0,0,0));
 			this.render();
+		})
+		.event("mousedown", pv.Behavior.drag())
+		.event("dragstart", function(){
+			var mouseY = vis.mouse().y;
+			var mouseX = vis.mouse().x;
+			yAxisDragFeedbackPanel.left(mouseX);
+			yAxisDragFeedbackPanel.top(mouseY);
+			yAxisDragFeedbackPanel.visible(true);
+			document.body.style.cursor="move";
+			yAxisDragFeedbackPanel.render();
+		})
+		.event("drag", function(event){
+			var mouseY = vis.mouse().y;
+			var mouseX = vis.mouse().x;
+			yAxisDragFeedbackPanel.left(mouseX);
+			yAxisDragFeedbackPanel.top(mouseY);
+			yAxisDragFeedbackPanel.render();
+		})
+		.event("dragend", function(){
+			var mouseY = vis.mouse().y;
+			var mouseX = vis.mouse().x;
+			var category = graph.yData;
+			var thisGraphIndex = index;
+			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
+				graphCollection.graphs.forEach(function(g,i){
+					if (g.xAxisPanel.mouse().x > 0 &&
+							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
+							g.xAxisPanel.mouse().y > 0 &&
+							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
+					{
+						if (i == thisGraphIndex){
+							g.assignY(g.xData);
+							g.assignX(category);
+						} else {
+							g.assignX(category);
+							graph.assignY(null);
+						}
+					}
+					
+					if (g.yAxisPanel.mouse().x > 0 &&
+							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
+							g.yAxisPanel.mouse().y > 0 &&
+							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
+					{
+						if (i != thisGraphIndex){
+							g.assignY(category);
+							graph.assignY(null);
+						}
+					}
+				});
+			} else {
+				graph.assignY(null);
+			}
+			
+			yAxisDragFeedbackPanel.visible(false);
+			document.body.style.cursor="default";
+			constructVis();
+			//vis.render();
 		})
 		
 	graph.yAxisPanel.add(pv.Label)
@@ -1289,13 +1382,11 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	topDist.add(pv.Rule)
 		.data(function() { return getYBuckets(graph) })
 		.left(function(d) {return graph.yHoriz(d)})
-		.strokeStyle("#aaa")
+		.strokeStyle("#ddd")
 		.anchor("bottom").add(pv.Label)
-			//.bottom(-10)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-		  .visible(function(){return this.index % 2 == 0})
-		
+		  
 	/* X-axis line */
 	topDist.add(pv.Rule)
 		.bottom(0)
@@ -1309,7 +1400,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.radius(function() {return graphCollection.dotSize})
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
-		.title(function(d) { return d.label });
+		.title(function(d) { return d.label + ", " + graph.yHoriz.invert(d.x).toFixed(1) });
 	
 	//Divider Between graphs
 	topDist.add(pv.Rule)
@@ -1339,11 +1430,10 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	bottomDist.add(pv.Rule)
 		.data(function() { return getXBuckets(graph) })
 		.left(function(d) {return graph.x(d)})
-		.strokeStyle("#aaa")
+		.strokeStyle("#ddd")
 		.anchor("bottom").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-		  .visible(function(){return this.index % 2 == 0})
 		
 	/* X-axis line */
 	bottomDist.add(pv.Rule)
@@ -1358,7 +1448,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.radius(function() {return graphCollection.dotSize})
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
-		.title(function(d) { return d.label });
+		.title(function(d) { return d.label + ", " + graph.x.invert(d.x).toFixed(1)});
 		
 	vis.render();
 }
@@ -1377,12 +1467,11 @@ function constructXDistGraph(graph, index, graphPanel){
 	graphPanel.add(pv.Rule)
 		.data(function() { return getXBuckets(graph) })
 		.left(function(d) {return graph.x(d)})
-		.strokeStyle("#aaa")
+		.strokeStyle("#ddd")
 		.anchor("bottom").add(pv.Label)
 			.bottom(-10)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-		  .visible(function(){return this.index % 2 == 0})
 		
 	/* X-axis line */
 	graphPanel.add(pv.Rule)
@@ -1416,12 +1505,11 @@ function constructYDistGraph(graph,index, graphPanel){
 	graphPanel.add(pv.Rule)
 		.data(function() { return getYBuckets(graph) })
 		.bottom(function(d) {return graph.y(d)})
-		.strokeStyle("#aaa")
+		.strokeStyle("#ddd")
 		.anchor("left").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-		  .visible(function(){return this.index % 2 == 0});
-		
+		  
 	/* Y-axis line */
 	graphPanel.add(pv.Rule)
 		.left(0)
