@@ -23,7 +23,6 @@ var fontString = "bold 14px arial";
 
 function constructVis() {
 	jQuery('span').remove();
-	graphCollection.updateMenuOptions();
 	
 	vis = new pv.Panel()
 		.width(function(){return graphCollection.w})

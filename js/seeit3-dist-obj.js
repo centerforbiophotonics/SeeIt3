@@ -513,7 +513,7 @@ Graph.prototype = {
 				if ((xVal >= bucketMin && xVal < bucketMax) 
 						|| drawMode == "gravity")
 				{
-					pointsInBucket.push([xVal, label, set, 0]);
+					pointsInBucket.push([this.x(xVal), label, set, 0]);
 				}
 			}
 			randomIndex = 20;

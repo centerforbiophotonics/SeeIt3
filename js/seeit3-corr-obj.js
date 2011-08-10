@@ -382,7 +382,10 @@ Graph.prototype = {
 			this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
 			this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
 			this.n = this.worksheet.data[this.yData].length;
+			//this.graphCollection.updateMenuOptions();
 		}
+		
+		
 		
 		if (this.yData != null && this.xData != null){
 			this.setupData();
@@ -397,7 +400,10 @@ Graph.prototype = {
 			this.xMin = pv.max(this.worksheet.data[this.xData], function(d) { return d.value });
 			this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 			this.n = this.worksheet.data[this.xData].length;
+			//this.graphCollection.updateMenuOptions();
 		}
+		
+		
 		
 		if (this.yData != null && this.xData != null){
 			this.setupData();
@@ -417,7 +423,7 @@ Graph.prototype = {
 			});
 			
 		});
-		
+		this.graphCollection.updateMenuOptions();
 		this.setupStats();
 	},
 	
@@ -469,6 +475,8 @@ Graph.prototype = {
 		this.ellipseCX = this.w/2;
 		this.ellipseCY = this.h/2;
 		this.pointsInEllipse = numPointsInEllipse(this);
+		
+		this.graphCollection.updateMenuOptions();
 	},
 	
 	setXScale: function(min, max){
@@ -482,6 +490,7 @@ Graph.prototype = {
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
 			this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
 		}
+		this.graphCollection.updateMenuOptions();
 	},
 	
 	setYScale: function(min, max){
@@ -493,6 +502,7 @@ Graph.prototype = {
 		}else{
 			this.y = pv.Scale.linear(newMin, newMax).range(0, this.h);
 		}			
+		this.graphCollection.updateMenuOptions();
 	},
 }
 
