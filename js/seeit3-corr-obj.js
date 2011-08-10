@@ -379,8 +379,9 @@ Graph.prototype = {
 		if (this.yData != null){
 			this.yMax = pv.max(this.worksheet.data[this.yData], function(d) { return d.value });
 			this.yMin = pv.min(this.worksheet.data[this.yData], function(d) { return d.value });
-			this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
-			this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
+			//this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
+			//this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
+			this.setYScale();
 			this.n = this.worksheet.data[this.yData].length;
 			//this.graphCollection.updateMenuOptions();
 		}
@@ -397,8 +398,9 @@ Graph.prototype = {
 		
 		if (this.xData != null){
 			this.xMax = pv.max(this.worksheet.data[this.xData], function(d) { return d.value });
-			this.xMin = pv.max(this.worksheet.data[this.xData], function(d) { return d.value });
-			this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
+			this.xMin = pv.min(this.worksheet.data[this.xData], function(d) { return d.value });
+			//this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
+			this.setXScale();
 			this.n = this.worksheet.data[this.xData].length;
 			//this.graphCollection.updateMenuOptions();
 		}
@@ -423,7 +425,7 @@ Graph.prototype = {
 			});
 			
 		});
-		this.graphCollection.updateMenuOptions();
+		//this.graphCollection.updateMenuOptions();
 		this.setupStats();
 	},
 	
@@ -476,7 +478,7 @@ Graph.prototype = {
 		this.ellipseCY = this.h/2;
 		this.pointsInEllipse = numPointsInEllipse(this);
 		
-		this.graphCollection.updateMenuOptions();
+		//this.graphCollection.updateMenuOptions();
 	},
 	
 	setXScale: function(min, max){
@@ -490,7 +492,7 @@ Graph.prototype = {
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
 			this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
 		}
-		this.graphCollection.updateMenuOptions();
+		//this.graphCollection.updateMenuOptions();
 	},
 	
 	setYScale: function(min, max){
@@ -502,7 +504,7 @@ Graph.prototype = {
 		}else{
 			this.y = pv.Scale.linear(newMin, newMax).range(0, this.h);
 		}			
-		this.graphCollection.updateMenuOptions();
+		//this.graphCollection.updateMenuOptions();
 	},
 }
 

@@ -485,6 +485,7 @@ function constructSidePanel(){
 }
 
 function constructGraphPanel(graph,index){
+	//graph.setupData();
 	var graphPanel = vis.add(pv.Panel)
 		.width(function(){return graph.w})
 		.height(function(){return graph.h})
@@ -1226,6 +1227,13 @@ function constructCorrGraph(graph, index, graphPanel){
 }
 
 function constructTwoDistGraph(graph,index, graphPanel){	
+	graph.xMax = pv.max(graph.worksheet.data[graph.xData], function(d) { return d.value });
+	graph.xMin = pv.min(graph.worksheet.data[graph.xData], function(d) { return d.value });
+	graph.setXScale();
+	graph.yMax = pv.max(graph.worksheet.data[graph.yData], function(d) { return d.value });
+	graph.yMin = pv.min(graph.worksheet.data[graph.yData], function(d) { return d.value });
+	graph.setYScale();
+	
 	//Top subgraph is y-axis data
 	var topDist = graphPanel.add(pv.Panel)
 		.width(function(){return graph.w})
