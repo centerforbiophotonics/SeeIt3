@@ -434,9 +434,11 @@ Graph.prototype = {
 		this.yMax = pv.max(this.data, function(d) { return d.y });
 		this.xMin = pv.min(this.data, function(d) { return d.x });
 		this.yMin = pv.min(this.data, function(d) { return d.y });
-		this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
-		this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
-		this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
+		this.setXScale();
+		this.setYScale();
+		//this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
+		//this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
+		//this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
 		this.n = this.data.length;
 		
 			
