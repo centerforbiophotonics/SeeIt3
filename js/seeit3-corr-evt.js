@@ -88,23 +88,23 @@ $('#fitScalesToData').change(function() {
 	constructVis();
 });
 
-jQuery('#checkboxShowMMEqn').change(function(event) {
-  if (jQuery('#checkboxShowMMEqn').is(':checked'))
-	jQuery('#checkboxShowMMLine').attr('checked', true);
-  constructVis();
-});
+//jQuery('#checkboxShowMMEqn').change(function(event) {
+//  if (jQuery('#checkboxShowMMEqn').is(':checked'))
+//	jQuery('#checkboxShowMMLine').attr('checked', true);
+//  constructVis();
+//});
 
-jQuery('#checkboxShowLeastSquaresEquation').change(function(event) {
-  if (jQuery('#checkboxShowLeastSquaresEquation').is(':checked'))
-	jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
-  constructVis();
-});
+//jQuery('#checkboxShowLeastSquaresEquation').change(function(event) {
+//  if (jQuery('#checkboxShowLeastSquaresEquation').is(':checked'))
+//	jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
+//  constructVis();
+//});
 
-jQuery('#checkboxShowLeastSquaresRValue').change(function(event) {
-  if (jQuery('#checkboxShowLeastSquaresRValue').is(':checked'))
-	jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
-  constructVis();
-});
+//jQuery('#checkboxShowLeastSquaresRValue').change(function(event) {
+//  if (jQuery('#checkboxShowLeastSquaresRValue').is(':checked'))
+//	jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
+//  constructVis();
+//});
 
 $('#textYMin').change(function(event) {
 	var textBoxVal = parseFloat($('#textYMin').val());

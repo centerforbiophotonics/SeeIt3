@@ -258,6 +258,8 @@ GraphCollection.prototype = {
 			
 			if (graph.xMin < graph.scaleMin)
 				graph.setXScale(graph.xMin, null)
+				
+			graph.setupStats();
 		});
 		
 		if (oldTitle != title)
@@ -292,6 +294,7 @@ GraphCollection.prototype = {
 					graph.yMax = pv.max(graph.getData(), function(d) { return d.y });
 					graph.yMin = pv.min(graph.getData(), function(d) { return d.y });
 					//graph.editedCategories[set] = true;
+					graph.setupStats();
 				});
 				
 				graphCol.editedCategories[set] = true;
@@ -322,7 +325,6 @@ GraphCollection.prototype = {
 				graph.insufDataForTwo = false;
 				
 			graph.n = (graph.dataVals()).length;
-			
 		});
 		delete this.editedCategories[title];
 		delete this.categoryColors[title];

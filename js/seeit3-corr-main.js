@@ -881,7 +881,12 @@ function constructCorrGraph(graph, index, graphPanel){
   graphPanel.add(pv.Rule)
 		.data(function() { return graph.y.ticks(graphCollection.buckets) })
 		.bottom(graph.y)
-		.strokeStyle("#ddd")
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "#d00";
+			else
+				return "#ddd";
+		})
 		.anchor('left').add(pv.Label)
 			.text(graph.y.tickFormat)
 			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
@@ -891,7 +896,12 @@ function constructCorrGraph(graph, index, graphPanel){
   graphPanel.add(pv.Rule)
 		.data(function() { return graph.x.ticks(graphCollection.buckets) })
 		.left(graph.x)
-		.strokeStyle("#ddd")
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "#d00";
+			else
+				return "#ddd";
+		})
 		.anchor("bottom").add(pv.Label)
 			.bottom(-10)
 			.text(graph.x.tickFormat)
@@ -912,14 +922,24 @@ function constructCorrGraph(graph, index, graphPanel){
 		.left(1)
 		.top(0)
 		.bottom(0)
-		.strokeStyle("#000")
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "red";
+			else
+				return "#000";
+		})
 			
 	//X-axis Line
 	graphPanel.add(pv.Rule)
 		.left(1)
 		.right(0)
 		.bottom(1)
-		.strokeStyle("#000")
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "red";
+			else
+				return "#000";
+		})
 	
 	//Mouse position label for drag editing
 	var dragLabel = graphPanel.add(pv.Label)
@@ -927,93 +947,6 @@ function constructCorrGraph(graph, index, graphPanel){
 		.font(fontString)
 		.textAlign("center")
 		.text("0")
-			
-	/* dot plot */
-	graphPanel.add(pv.Dot)
-		.data(function(){return graph.getData()})
-		.visible(function() { return jQuery('#checkboxShowData').is(':checked') })
-		.event("point", function() { return this.active(this.index).parent })
-		.event("unpoint", function() { return this.active(-1).parent })
-		.left(function(d) { return graph.x(d.x) })
-		.bottom(function(d) { return graph.y(d.y) })
-		.radius(function() { return graphCollection.dotSize })
-		.fillStyle(function(d) {return pointFillStyle(d.label)})
-		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
-		.title(function(d) { return d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1) })
-		//.def('active', -1)
-		//.event("point", function() { return this.active(this.index).parent })
-		//.event("unpoint", function() { return this.active(-1).parent });
-		.event("mousedown", pv.Behavior.drag())
-		.event("drag", function(d){  
-			if (graphCollection.editModeEnabled &&
-					graphPanel.mouse().x >= 0 &&
-					graphPanel.mouse().x <= graph.w &&
-					graphPanel.mouse().y >= 0 &&
-					graphPanel.mouse().y <= graph.h){
-				
-				graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
-				graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
-				//graph.selectedCategory = d.set;
-				
-				dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1) +
-												", " +
-											graph.y.invert(graph.h - graphPanel.mouse().y).toFixed(1));
-				dragLabel.left(graphPanel.mouse().x)
-				dragLabel.top(graphPanel.mouse().y - 10)
-				dragLabel.visible(true)
-				
-				vis.render();
-			} else {
-				dragLabel.text("Delete");
-				vis.render();
-			}
-		})
-		.event("dragend",function(d){
-			if (graphCollection.editModeEnabled){
-				var newXData = graphCollection.worksheet.data[graph.xData];
-				var newYData = graphCollection.worksheet.data[graph.yData];
-				var remIndex = null;
-				newXData.forEach(function(data, index){
-					if (data.label == d.label && 
-					(graphPanel.mouse().x < 0 ||
-					 graphPanel.mouse().x > graph.w ||
-					 graphPanel.mouse().y < 0 ||
-					 graphPanel.mouse().y > graph.h))
-					{
-						remIndex = index;
-					}
-				});
-				if (remIndex != null)
-					newXData.splice(remIndex,1);
-				graphCollection.editData(graph.xData,graph.xData,newXData);
-				
-				remIndex = null;
-				newYData.forEach(function(data, index){
-					if (data.label == d.label && 
-					(graphPanel.mouse().x < 0 ||
-					 graphPanel.mouse().x > graph.w ||
-					 graphPanel.mouse().y < 0 ||
-					 graphPanel.mouse().y > graph.h))
-					{
-						remIndex = index;
-					}
-				});
-				if (remIndex != null)
-					newYData.splice(remIndex,1);
-				graphCollection.editData(graph.yData,graph.yData,newYData);
-				
-			
-				//if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
-				//		Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
-				//{
-				//	dragging = true;
-				//}
-				
-				dragLabel.visible(false);
-				
-				vis.render();
-			}
-		})
 		
 	/* median median crosses and squares */
 	for (var i = 0; i < graph.groups.length; i++) {
@@ -1081,7 +1014,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	/* Least Squares Regression Line */  
 	graphPanel.add(pv.Line)
 		.visible(function() { return graph.lsLine })
-		.data([[graph.xMin, graph.lsFarLeftYVal], [graph.xMax, graph.lsFarRightYVal]])
+		.data(function(){return [[graph.xMin, graph.lsFarLeftYVal], [graph.xMax, graph.lsFarRightYVal]]})
 		.left(function(d) { return graph.x(d[0]) })
 		.bottom(function(d) { return graph.y(d[1]) })
 		.title("Least-Squares Regression Line")
@@ -1559,7 +1492,12 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	topDist.add(pv.Rule)
 		.data(function() { return getYBuckets(graph) })
 		.left(function(d) {return graph.yHoriz(d)})
-		.strokeStyle("#ddd")
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "#d00";
+			else
+				return "#ddd";
+		})
 		.anchor("bottom").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
@@ -1568,7 +1506,12 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	/* X-axis line */
 	topDist.add(pv.Rule)
 		.bottom(0)
-		.strokeStyle("#000");
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "red";
+			else
+				return "#000";
+		})
 	
 	/* Dots */	
 	topDist.add(pv.Dot)
@@ -1608,7 +1551,12 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	bottomDist.add(pv.Rule)
 		.data(function() { return getXBuckets(graph) })
 		.left(function(d) {return graph.x(d)})
-		.strokeStyle("#ddd")
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "#d00";
+			else
+				return "#ddd";
+		})
 		.anchor("bottom").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
@@ -1617,7 +1565,12 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	/* X-axis line */
 	bottomDist.add(pv.Rule)
 		.bottom(0)
-		.strokeStyle("#000");
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "red";
+			else
+				return "#000";
+		})
 	
 	/* Dots */	
 	bottomDist.add(pv.Dot)
@@ -1646,7 +1599,12 @@ function constructXDistGraph(graph, index, graphPanel){
 	graphPanel.add(pv.Rule)
 		.data(function() { return getXBuckets(graph) })
 		.left(function(d) {return graph.x(d)})
-		.strokeStyle("#ddd")
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "#d00";
+			else
+				return "#ddd";
+		})
 		.anchor("bottom").add(pv.Label)
 			.bottom(-10)
 		  .text(function(d) {return d.toFixed(1)})
@@ -1656,7 +1614,12 @@ function constructXDistGraph(graph, index, graphPanel){
 	/* X-axis line */
 	graphPanel.add(pv.Rule)
 		.bottom(0)
-		.strokeStyle("#000");
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "red";
+			else
+				return "#000";
+		})
 	
 	/* Dots */	
 	graphPanel.add(pv.Dot)
@@ -1685,7 +1648,12 @@ function constructYDistGraph(graph,index, graphPanel){
 	graphPanel.add(pv.Rule)
 		.data(function() { return getYBuckets(graph) })
 		.bottom(function(d) {return graph.y(d)})
-		.strokeStyle("#ddd")
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "#d00";
+			else
+				return "#ddd";
+		})
 		.anchor("left").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
@@ -1694,7 +1662,12 @@ function constructYDistGraph(graph,index, graphPanel){
 	/* Y-axis line */
 	graphPanel.add(pv.Rule)
 		.left(0)
-		.strokeStyle("#000");
+		.strokeStyle(function(){
+			if(graphCollection.editModeEnabled)
+				return "red";
+			else
+				return "#000";
+		})
 	
 	/* Dots */	
 	graphPanel.add(pv.Dot)

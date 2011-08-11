@@ -888,9 +888,8 @@ function constructGraphPanel(graph, index){
 		});
 		
 		/* Fixed Interval Width Partitions */
-		//var fiwPartitions = partitionDataByIntervalWidth(graph);
 		graphPanel.add(pv.Rule)
-			.data(function(){return partitionDataByIntervalWidth(graph)})//fiwPartitions)
+			.data(function(){return partitionDataByIntervalWidth(graph)})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return graph.h * 0.75})
