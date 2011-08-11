@@ -95,7 +95,7 @@ GraphCollection.prototype = {
 		if (graphCollection.graphs.length > 1)
 			graphCollection.graphs.forEach(function(g){
 				var oldGW = g.w;
-				g.w = (graphCollection.w-160)/2;
+				g.w = (graphCollection.w-200)/2;
 				g.setXScale();
 				g.ellipseCX *= g.w/oldGW; 
 			});
@@ -425,7 +425,7 @@ Graph.prototype = {
 			});
 			
 		});
-		//this.graphCollection.updateMenuOptions();
+		this.graphCollection.updateMenuOptions();
 		this.setupStats();
 	},
 	
