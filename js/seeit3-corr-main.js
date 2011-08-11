@@ -19,9 +19,11 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 
 var vis = {};
 var graphCollection = {};
+var touch = new Touch();
 var fontString = "bold 14px arial";
 
 function constructVis() {
+	console.log("constructVis");
 	jQuery('span').remove();
 	
 	vis = new pv.Panel()
@@ -902,7 +904,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.top(-5)
 		.textAlign("center")
 		.textAngle(0)
-		.text(function(){return "N = " + graph.data.length})
+		.text(function(){return "N = " + graph.getData().length})
 		.font("bold 14px sans-serif");
 			
 	//Y-axis Line
@@ -918,10 +920,17 @@ function constructCorrGraph(graph, index, graphPanel){
 		.right(0)
 		.bottom(1)
 		.strokeStyle("#000")
+	
+	//Mouse position label for drag editing
+	var dragLabel = graphPanel.add(pv.Label)
+		.visible(false)
+		.font(fontString)
+		.textAlign("center")
+		.text("0")
 			
 	/* dot plot */
 	graphPanel.add(pv.Dot)
-		.data(graph.data)
+		.data(function(){return graph.getData()})
 		.visible(function() { return jQuery('#checkboxShowData').is(':checked') })
 		.event("point", function() { return this.active(this.index).parent })
 		.event("unpoint", function() { return this.active(-1).parent })
@@ -930,10 +939,81 @@ function constructCorrGraph(graph, index, graphPanel){
 		.radius(function() { return graphCollection.dotSize })
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
-		.title(function(d) { return d.label + ": " + d.x + ", " + d.y })
-		.def('active', -1)
-		.event("point", function() { return this.active(this.index).parent })
-		.event("unpoint", function() { return this.active(-1).parent });
+		.title(function(d) { return d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1) })
+		//.def('active', -1)
+		//.event("point", function() { return this.active(this.index).parent })
+		//.event("unpoint", function() { return this.active(-1).parent });
+		.event("mousedown", pv.Behavior.drag())
+		.event("drag", function(d){  
+			if (graphCollection.editModeEnabled &&
+					graphPanel.mouse().x >= 0 &&
+					graphPanel.mouse().x <= graph.w &&
+					graphPanel.mouse().y >= 0 &&
+					graphPanel.mouse().y <= graph.h){
+				
+				graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
+				graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
+				//graph.selectedCategory = d.set;
+				
+				dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1) +
+												", " +
+											graph.y.invert(graph.h - graphPanel.mouse().y).toFixed(1));
+				dragLabel.left(graphPanel.mouse().x)
+				dragLabel.top(graphPanel.mouse().y - 10)
+				dragLabel.visible(true)
+				
+				vis.render();
+			} else {
+				dragLabel.text("Delete");
+				vis.render();
+			}
+		})
+		.event("dragend",function(d){
+			if (graphCollection.editModeEnabled){
+				var newXData = graphCollection.worksheet.data[graph.xData];
+				var newYData = graphCollection.worksheet.data[graph.yData];
+				var remIndex = null;
+				newXData.forEach(function(data, index){
+					if (data.label == d.label && 
+					(graphPanel.mouse().x < 0 ||
+					 graphPanel.mouse().x > graph.w ||
+					 graphPanel.mouse().y < 0 ||
+					 graphPanel.mouse().y > graph.h))
+					{
+						remIndex = index;
+					}
+				});
+				if (remIndex != null)
+					newXData.splice(remIndex,1);
+				graphCollection.editData(graph.xData,graph.xData,newXData);
+				
+				remIndex = null;
+				newYData.forEach(function(data, index){
+					if (data.label == d.label && 
+					(graphPanel.mouse().x < 0 ||
+					 graphPanel.mouse().x > graph.w ||
+					 graphPanel.mouse().y < 0 ||
+					 graphPanel.mouse().y > graph.h))
+					{
+						remIndex = index;
+					}
+				});
+				if (remIndex != null)
+					newYData.splice(remIndex,1);
+				graphCollection.editData(graph.yData,graph.yData,newYData);
+				
+			
+				//if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
+				//		Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
+				//{
+				//	dragging = true;
+				//}
+				
+				dragLabel.visible(false);
+				
+				vis.render();
+			}
+		})
 		
 	/* median median crosses and squares */
 	for (var i = 0; i < graph.groups.length; i++) {
@@ -1021,7 +1101,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.add(pv.Label)									//R Value
 			.visible(function () { return graph.lsR && graph.lsLine })
 			.text(function(d) {
-				if (this.index == 0) { return "R = "+ getR(graph.data).toFixed(2);}
+				if (this.index == 0) { return "R = "+ getR(graph.getData()).toFixed(2);}
 				else {return ""}
 			})
 			.textAlign("left")
@@ -1031,7 +1111,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			.font("bold 12px sans-serif");
 		
   /*R Squares*/
-	for (var i=0; i < graph.data.length; i++){
+	for (var i=0; i < graph.getData().length; i++){
 		var sqrBounds = getRSquareBounds(graph, i);   
 		graphPanel.add(pv.Line)
 			.visible(function() { return graph.lsSquares && graph.lsLine })
@@ -1225,8 +1305,94 @@ function constructCorrGraph(graph, index, graphPanel){
 					
 			vis.render();
 		});
-	 
-		 
+	
+	/* dot plot */
+	graphPanel.add(pv.Dot)
+		.data(function(){return graph.getData()})
+		.visible(function() { return jQuery('#checkboxShowData').is(':checked') })
+		.event("point", function() { return this.active(this.index).parent })
+		.event("unpoint", function() { return this.active(-1).parent })
+		.left(function(d) { return graph.x(d.x) })
+		.bottom(function(d) { return graph.y(d.y) })
+		.radius(function() { return graphCollection.dotSize })
+		.fillStyle(function(d) {return pointFillStyle(d.label)})
+		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
+		.title(function(d) { return d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1) })
+		//.def('active', -1)
+		//.event("point", function() { return this.active(this.index).parent })
+		//.event("unpoint", function() { return this.active(-1).parent });
+		.event("mousedown", pv.Behavior.drag())
+		.event("drag", function(d){  
+			if (graphCollection.editModeEnabled &&
+					graphPanel.mouse().x >= 0 &&
+					graphPanel.mouse().x <= graph.w &&
+					graphPanel.mouse().y >= 0 &&
+					graphPanel.mouse().y <= graph.h){
+				
+				graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
+				graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
+				//graph.selectedCategory = d.set;
+				
+				dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1) +
+												", " +
+											graph.y.invert(graph.h - graphPanel.mouse().y).toFixed(1));
+				dragLabel.left(graphPanel.mouse().x)
+				dragLabel.top(graphPanel.mouse().y - 10)
+				dragLabel.visible(true)
+				
+				vis.render();
+			} else {
+				dragLabel.text("Delete");
+				vis.render();
+			}
+		})
+		.event("dragend",function(d){
+			if (graphCollection.editModeEnabled){
+				var newXData = graphCollection.worksheet.data[graph.xData];
+				var newYData = graphCollection.worksheet.data[graph.yData];
+				var remIndex = null;
+				newXData.forEach(function(data, index){
+					if (data.label == d.label && 
+					(graphPanel.mouse().x < 0 ||
+					 graphPanel.mouse().x > graph.w ||
+					 graphPanel.mouse().y < 0 ||
+					 graphPanel.mouse().y > graph.h))
+					{
+						remIndex = index;
+					}
+				});
+				if (remIndex != null)
+					newXData.splice(remIndex,1);
+				graphCollection.editData(graph.xData,graph.xData,newXData);
+				
+				remIndex = null;
+				newYData.forEach(function(data, index){
+					if (data.label == d.label && 
+					(graphPanel.mouse().x < 0 ||
+					 graphPanel.mouse().x > graph.w ||
+					 graphPanel.mouse().y < 0 ||
+					 graphPanel.mouse().y > graph.h))
+					{
+						remIndex = index;
+					}
+				});
+				if (remIndex != null)
+					newYData.splice(remIndex,1);
+				graphCollection.editData(graph.yData,graph.yData,newYData);
+				
+			
+				//if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
+				//		Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
+				//{
+				//	dragging = true;
+				//}
+				
+				dragLabel.visible(false);
+				
+				vis.render();
+			}
+		})
+ 
 }
 
 function constructTwoDistGraph(graph,index, graphPanel){	

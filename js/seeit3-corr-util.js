@@ -90,15 +90,15 @@ function pointStrokeStyle(label){
 
 
 function getVertDistToLS (graph, i){
-	var dataX = parseFloat(graph.data[i].x);
-	var dataY = parseFloat(graph.data[i].y);
+	var dataX = parseFloat(graph.getData()[i].x);
+	var dataY = parseFloat(graph.getData()[i].y);
 	return Math.abs(dataY - getYOnLSByX(dataX, graph));
 }
 
 function getRSquareBounds(graph, i){
 
-	var dataX = parseFloat(graph.data[i].x);
-	var dataY = parseFloat(graph.data[i].y);
+	var dataX = parseFloat(graph.getData()[i].x);
+	var dataY = parseFloat(graph.getData()[i].y);
 	var vertDistToLS = getVertDistToLS(graph,i);
 	
 	var above = (dataY - getYOnLSByX(dataX, graph)) >= 0;
@@ -629,9 +629,9 @@ function numPointsInEllipse(graph){
 	var tolerance = 10;
 	var count = 0;
 	var ellipsePoints = getRotatedEllipseCoords(graph);
-	for (var i = 0; i < graph.data.length; i++){
-		var dataPoint = [graph.x(parseFloat(graph.data[i].x))
-						 ,graph.y(parseFloat(graph.data[i].y))];
+	for (var i = 0; i < graph.getData().length; i++){
+		var dataPoint = [graph.x(parseFloat(graph.getData()[i].x))
+						 ,graph.y(parseFloat(graph.getData()[i].y))];
 		var left = right = above = below = false; 
 		for (var j = 0; j < ellipsePoints.length; j++){
 			if (dataPoint[0] <= ellipsePoints[j][0]  && Math.abs(dataPoint[1] - ellipsePoints[j][1]) < tolerance){
@@ -745,7 +745,7 @@ function getR(data){
 
 function getUserLineR(graph){
 	var r = 0;
-	for (var i = 0; i < graph.data.length; i++)
+	for (var i = 0; i < graph.getData().length; i++)
 		r += Math.pow(getVertDistToUserLine(graph, i), 2);
 	
 	return r;
@@ -757,8 +757,8 @@ function getYOnUserLineByX(x, graph){
 }
 
 function getVertDistToUserLine(graph, i){
-	var dataX = parseFloat(graph.data[i].x);
-	var dataY = parseFloat(graph.data[i].y);
+	var dataX = parseFloat(graph.getData()[i].x);
+	var dataY = parseFloat(graph.getData()[i].y);
 	return Math.abs(dataY - getYOnUserLineByX(dataX, graph));
 }
 

@@ -1,3 +1,25 @@
+//All variables related to a touch event
+function Touch(){
+	this.draggedObj = undefined;
+	this.dragging = false;
+	this.dragCat = undefined;
+	this.dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
+	this.finalX = undefined;
+	this.finalY = undefined;
+}
+
+Touch.prototype = {
+	reset: function(){
+		this.draggedObj = undefined;
+		this.dragging = false;
+		this.dragCat = undefined;
+		this.dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
+		this.finalX = undefined;
+		this.finalY = undefined;
+	},
+}
+
+
 // Represents the collection of graphs and the area where all graphs are drawn
 function GraphCollection(){
 	var graphCollection = this;
@@ -73,7 +95,7 @@ GraphCollection.prototype = {
 		
 		this.setH(this.calcGraphHeight());
 			
-		this.selectedGraphIndex = -1;
+		this.selectedGraphIndex = 0;
 			
 		if (this.graphs.length == 0) this.addGraph();
 		
@@ -210,19 +232,21 @@ GraphCollection.prototype = {
 			delete this.worksheet.data[oldTitle];
 		this.worksheet.data[title] = data;
 		this.graphs.forEach(function(graph){
-			if (oldTitle != title)
-				delete graph.data[oldTitle];
-			graph.data[title] = data;
+		//	if (oldTitle != title)
+		//		delete graph.data[oldTitle];
+		//	graph.data[title] = data;
+		//	
+		//	var oldMax = graph.xMax;
+		//	var oldMin = graph.xMin;
 			
-			var oldMax = graph.xMax;
-			var oldMin = graph.xMin;
 			
+			graph.xMax = pv.max(graph.getData(), function(d) { return d.x });
+			graph.xMin = pv.min(graph.getData(), function(d) { return d.x });
+			graph.yMax = pv.max(graph.getData(), function(d) { return d.y });
+			graph.yMin = pv.min(graph.getData(), function(d) { return d.y });
+		//	graph.setupData();
 			
-			//graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
-			//graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
-			graph.setupData();
-			
-			graph.editedCategories[title] = true;
+		//	graph.editedCategories[title] = true;
 			//graph.n = (graph.dataVals()).length;
 			
 			//if (graph.includedCategories.indexOf(oldTitle) != -1)
@@ -263,15 +287,17 @@ GraphCollection.prototype = {
 			if (data.label == label){
 				data.value = value;
 				graphCol.graphs.forEach(function(graph){
-					graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
-					graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
-					graph.editedCategories[set] = true;
+					graph.xMax = pv.max(graph.getData(), function(d) { return d.x });
+					graph.xMin = pv.min(graph.getData(), function(d) { return d.x });
+					graph.yMax = pv.max(graph.getData(), function(d) { return d.y });
+					graph.yMin = pv.min(graph.getData(), function(d) { return d.y });
+					//graph.editedCategories[set] = true;
 				});
 				
 				graphCol.editedCategories[set] = true;
 				graphCol.worksheet.edited[set] = true;
 				
-				graphCol.scaleAllGraphsToFit();
+				//graphCol.scaleAllGraphsToFit();
 			}
 		});
 	},
@@ -386,10 +412,8 @@ Graph.prototype = {
 			//this.graphCollection.updateMenuOptions();
 		}
 		
-		
-		
 		if (this.yData != null && this.xData != null){
-			this.setupData();
+			this.setupStats();
 		}
 	},
 	
@@ -407,46 +431,46 @@ Graph.prototype = {
 			//this.graphCollection.updateMenuOptions();
 		}
 		
-		
-		
 		if (this.yData != null && this.xData != null){
-			this.setupData();
+			this.setupStats();
 		}
 	},
 	
-	setupData: function(){
+	getData: function(){
 		var graph = this;
 		
-		this.data = [];
-		
-		this.worksheet.data[this.xData].forEach(function(dx){
-			var label = dx.label;
-			graph.worksheet.data[graph.yData].forEach(function(dy){
-				if(dy.label == label)
-					graph.data.push({"label":label, "x":dx.value, "y":dy.value});
+		var data = [];
+		if (this.xData != null && this.yData != null)
+			this.worksheet.data[this.xData].forEach(function(dx){
+				var label = dx.label;
+				graph.worksheet.data[graph.yData].forEach(function(dy){
+					if(dy.label == label)
+						data.push({"label":label, "x":dx.value, "y":dy.value});
+				});
+				
 			});
-			
-		});
 		this.graphCollection.updateMenuOptions();
-		this.setupStats();
+		//this.data = data;
+		return data;
 	},
 	
 	setupStats: function(){
-		this.xMax = pv.max(this.data, function(d) { return d.x });
-		this.yMax = pv.max(this.data, function(d) { return d.y });
-		this.xMin = pv.min(this.data, function(d) { return d.x });
-		this.yMin = pv.min(this.data, function(d) { return d.y });
+		var data = this.getData();
+		this.xMax = pv.max(data, function(d) { return d.x });
+		this.yMax = pv.max(data, function(d) { return d.y });
+		this.xMin = pv.min(data, function(d) { return d.x });
+		this.yMin = pv.min(data, function(d) { return d.y });
 		this.setXScale();
 		this.setYScale();
 		//this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 		//this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
 		//this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
-		this.n = this.data.length;
+		this.n = data.length;
 		
 			
 		/* Variables defined in normalized coordinates */
 		/* median median crosses and squares */
-		this.groups = divideDataInto3(this.data);
+		this.groups = divideDataInto3(data);
 		this.medians = getMedianValuesFrom(this.groups);
 		
 		/* median-median line */ 
@@ -460,11 +484,11 @@ Graph.prototype = {
 		/* Least-Squares Regression Line */
 		var xs = [];
 		var ys = [];
-		for (var i = 0; i < this.data.length; i++){
-			xs.push(this.data[i].x);
-			ys.push(this.data[i].y);
+		for (var i = 0; i < data.length; i++){
+			xs.push(data[i].x);
+			ys.push(data[i].y);
 		}
-		this.lsSlope = getR(this.data)*(getSD(ys)/getSD(xs));
+		this.lsSlope = getR(data)*(getSD(ys)/getSD(xs));
 		this.lsIntercept = getMean(ys) - this.lsSlope*getMean(xs);
 		this.lsFarLeftYVal = getYValue(this.xMin, this.lsSlope, this.lsIntercept);
 		this.lsFarRightYVal = getYValue(this.xMax, this.lsSlope, this.lsIntercept);
