@@ -330,8 +330,6 @@ function Graph(worksheet, graphCollection){
 	this.h = this.graphCollection.h - 20;
 	
 	//Scaling Variables
-	this.scaleMin = 0;
-	this.scaleMax = Math.ceil(this.xMax);
 	this.fitScaleToData = false;
 	this.customScale = false;
 	
@@ -379,6 +377,8 @@ Graph.prototype = {
 		if (this.yData != null){
 			this.yMax = pv.max(this.worksheet.data[this.yData], function(d) { return d.value });
 			this.yMin = pv.min(this.worksheet.data[this.yData], function(d) { return d.value });
+			this.yScaleMin = 0;
+			this.yScaleMax = Math.ceil(this.yMax);
 			//this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
 			//this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
 			this.setYScale();
@@ -399,6 +399,8 @@ Graph.prototype = {
 		if (this.xData != null){
 			this.xMax = pv.max(this.worksheet.data[this.xData], function(d) { return d.value });
 			this.xMin = pv.min(this.worksheet.data[this.xData], function(d) { return d.value });
+			this.xScaleMin = 0;
+			this.xScaleMax = Math.ceil(this.xMax);
 			//this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 			this.setXScale();
 			this.n = this.worksheet.data[this.xData].length;
@@ -484,27 +486,31 @@ Graph.prototype = {
 	},
 	
 	setXScale: function(min, max){
-		var newMin = min || 0;
-		var newMax = max || Math.ceil(this.xMax);
+		var newMin = min || this.xScaleMin;
+		var newMax = max || this.xScaleMax;
 		
-		if (jQuery('#fitScalesToData').is(':checked')) {
+		if (this.fitScaleToData) {
 			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);
 			this.yHoriz = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
 		}else{			
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
 			this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
+			this.xScaleMin = newMin;
+			this.xScaleMax = newMax;
 		}
 		//this.graphCollection.updateMenuOptions();
 	},
 	
 	setYScale: function(min, max){
-		var newMin = min || 0;
-		var newMax = max || Math.ceil(this.yMax);
+		var newMin = min || this.yScaleMin;
+		var newMax = max || this.yScaleMax;
 		
-		if (jQuery('#fitScalesToData').is(':checked')) {
+		if (this.fitScaleToData) {
 			this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
 		}else{
 			this.y = pv.Scale.linear(newMin, newMax).range(0, this.h);
+			this.yScaleMin = newMin;
+			this.yScaleMax = newMax;
 		}			
 		//this.graphCollection.updateMenuOptions();
 	},
