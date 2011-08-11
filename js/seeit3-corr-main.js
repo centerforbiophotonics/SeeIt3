@@ -1350,7 +1350,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.top(-5)
 		.textAlign("center")
 		.textAngle(0)
-		.text("N = " + graph.worksheet.data[graph.yData].length)
+		.text(function(){return "N = " + graph.worksheet.data[graph.yData].length})
 		.font("bold 14px sans-serif");
 	
 	//Y-axis drag feedback panel
@@ -1544,7 +1544,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.top(-5)
 		.textAlign("center")
 		.textAngle(0)
-		.text("N = " + graph.worksheet.data[graph.xData].length)
+		.text(function(){return "N = " + graph.worksheet.data[graph.xData].length})
 		.font("bold 14px sans-serif");
 		
 	/* X-axis ticks */
@@ -1592,7 +1592,7 @@ function constructXDistGraph(graph, index, graphPanel){
 		.top(-5)
 		.textAlign("center")
 		.textAngle(0)
-		.text("N = " + graph.worksheet.data[graph.xData].length)
+		.text(function(){return "N = " + graph.worksheet.data[graph.xData].length})
 		.font("bold 14px sans-serif");
 
 	/* X-axis ticks */
@@ -1621,6 +1621,13 @@ function constructXDistGraph(graph, index, graphPanel){
 				return "#000";
 		})
 	
+	//Mouse position label for drag editing
+	var dragLabel = graphPanel.add(pv.Label)
+		.visible(false)
+		.font(fontString)
+		.textAlign("center")
+		.text("0")
+	
 	/* Dots */	
 	graphPanel.add(pv.Dot)
 		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x)})
@@ -1629,7 +1636,54 @@ function constructXDistGraph(graph, index, graphPanel){
 		.radius(function() {return graphCollection.dotSize})
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
-		.title(function(d) { return d.label + ", " + graph.x.invert(d.x).toFixed(1)});
+		.title(function(d) { return d.label + ", " + graph.x.invert(d.x).toFixed(1)})
+		.event("mousedown", pv.Behavior.drag())
+		.event("drag", function(d){  
+			if (graphCollection.editModeEnabled &&
+					graphPanel.mouse().x >= 0 &&
+					graphPanel.mouse().x <= graph.w &&
+					graphPanel.mouse().y >= 0 &&
+					graphPanel.mouse().y <= graph.h){
+				
+				graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
+				//graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
+				//graph.selectedCategory = d.set;
+				
+				dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1))
+				dragLabel.left(graphPanel.mouse().x)
+				dragLabel.top(graphPanel.mouse().y - 10)
+				dragLabel.visible(true)
+				
+				vis.render();
+			} else {
+				dragLabel.text("Delete");
+				vis.render();
+			}
+		})
+		.event("dragend",function(d){
+			if (graphCollection.editModeEnabled){
+				var newXData = graphCollection.worksheet.data[graph.xData];
+				//var newYData = graphCollection.worksheet.data[graph.yData];
+				var remIndex = null;
+				newXData.forEach(function(data, index){
+					if (data.label == d.label && 
+					(graphPanel.mouse().x < 0 ||
+					 graphPanel.mouse().x > graph.w ||
+					 graphPanel.mouse().y < 0 ||
+					 graphPanel.mouse().y > graph.h))
+					{
+						remIndex = index;
+					}
+				});
+				if (remIndex != null)
+					newXData.splice(remIndex,1);
+				graphCollection.editData(graph.xData,graph.xData,newXData);
+				
+				dragLabel.visible(false);
+				
+				vis.render();
+			}
+		})
 		
 	vis.render();
 }
@@ -1641,7 +1695,7 @@ function constructYDistGraph(graph,index, graphPanel){
 		.top(-5)
 		.textAlign("center")
 		.textAngle(0)
-		.text("N = " + graph.worksheet.data[graph.yData].length)
+		.text(function(){return "N = " + graph.worksheet.data[graph.yData].length})
 		.font("bold 14px sans-serif");
 
 	/* Y-axis ticks */

@@ -240,10 +240,22 @@ GraphCollection.prototype = {
 		//	var oldMin = graph.xMin;
 			
 			
-			graph.xMax = pv.max(graph.getData(), function(d) { return d.x });
-			graph.xMin = pv.min(graph.getData(), function(d) { return d.x });
-			graph.yMax = pv.max(graph.getData(), function(d) { return d.y });
-			graph.yMin = pv.min(graph.getData(), function(d) { return d.y });
+			if (graph.xData != null && graph.yData != null){
+				graph.xMax = pv.max(graph.getData(), function(d) { return d.x });
+				graph.xMin = pv.min(graph.getData(), function(d) { return d.x });
+				graph.yMax = pv.max(graph.getData(), function(d) { return d.y });
+				graph.yMin = pv.min(graph.getData(), function(d) { return d.y });
+				graph.n = (graph.getData()).length;
+				graph.setupStats();
+			} else if ( graph.xData != null ){
+				graph.xMax = pv.max(graph.worksheet.data[graph.xData], function(d) { return d.value });
+				graph.xMin = pv.min(graph.worksheet.data[graph.xData], function(d) { return d.value });
+				graph.n = graph.worksheet.data[graph.xData].length;
+			} else if (graph.yData != null){
+				graph.yMax = pv.max(graph.worksheet.data[graph.yData], function(d) { return d.value });
+				graph.yMin = pv.min(graph.worksheet.data[graph.yData], function(d) { return d.value });
+				graph.n = graph.worksheet.data[graph.yData].length;
+			}
 		//	graph.setupData();
 			
 		//	graph.editedCategories[title] = true;
@@ -258,8 +270,6 @@ GraphCollection.prototype = {
 			
 			if (graph.xMin < graph.scaleMin)
 				graph.setXScale(graph.xMin, null)
-				
-			graph.setupStats();
 		});
 		
 		if (oldTitle != title)
@@ -274,13 +284,6 @@ GraphCollection.prototype = {
 			}
 		}
 		this.worksheet.edited[title] = true;
-		
-		//if (oldTitle != title){
-		//	this.categoryColors[title] = this.categoryColors[oldTitle];
-		//	delete this.categoryColors[oldTitle];
-		//	
-		//}
-		//this.scaleAllGraphsToFit();
 	},
 	
 	editSinglePoint: function(set, label, value){
@@ -289,18 +292,25 @@ GraphCollection.prototype = {
 			if (data.label == label){
 				data.value = value;
 				graphCol.graphs.forEach(function(graph){
-					graph.xMax = pv.max(graph.getData(), function(d) { return d.x });
-					graph.xMin = pv.min(graph.getData(), function(d) { return d.x });
-					graph.yMax = pv.max(graph.getData(), function(d) { return d.y });
-					graph.yMin = pv.min(graph.getData(), function(d) { return d.y });
-					//graph.editedCategories[set] = true;
-					graph.setupStats();
+					if (graph.xData != null && graph.yData != null){
+						graph.xMax = pv.max(graph.getData(), function(d) { return d.x });
+						graph.xMin = pv.min(graph.getData(), function(d) { return d.x });
+						graph.yMax = pv.max(graph.getData(), function(d) { return d.y });
+						graph.yMin = pv.min(graph.getData(), function(d) { return d.y });
+						graph.setupStats();
+					} else if ( graph.xData != null ){
+						graph.xMax = pv.max(graph.worksheet.data[graph.xData], function(d) { return d.value });
+						graph.xMin = pv.min(graph.worksheet.data[graph.xData], function(d) { return d.value });
+					} else if (graph.yData != null){
+						graph.yMax = pv.max(graph.worksheet.data[graph.yData], function(d) { return d.value });
+						graph.yMin = pv.min(graph.worksheet.data[graph.yData], function(d) { return d.value });
+					}
 				});
 				
 				graphCol.editedCategories[set] = true;
 				graphCol.worksheet.edited[set] = true;
 				
-				//graphCol.scaleAllGraphsToFit();
+				
 			}
 		});
 	},
