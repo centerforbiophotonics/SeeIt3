@@ -74,6 +74,7 @@ jQuery('#graphOptions').change(function(event) {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].lsEQ = $("#checkboxShowLeastSquaresEquation").is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].lsR = $("#checkboxShowLeastSquaresRValue").is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].twoDistView = $("#showBothDist").is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].labelPrompt = $("#promptForLabel").is(':checked');
 	
   constructVis();
   event.stopPropagation();
@@ -164,14 +165,36 @@ $('#textXMax').change(function(event) {
 	}
 });
 
+$('#applyToAll').click(function(event){
+	var selGraph = graphCollection.graphs[graphCollection.selectedGraphIndex];
+	
+	graphCollection.graphs.forEach(function(graph, index){
+		graph.fitScaleToData = selGraph.fitScaleToData;
+		graph.showData = selGraph.showData;
+		graph.udLine = selGraph.udLine;
+		graph.udEllipse = selGraph.udEllipse;
+		graph.twoDistView = selGraph.twoDistView;
+		graph.labelPromt = selGraph.labelPrompt;
+		
+		graph.mmLine = selGraph.mmLine;
+		graph.mmDots = selGraph.mmDots;
+		graph.mmDivs = selGraph.mmDivs;
+		graph.mmEQ = selGraph.mmEQ;
+		
+		graph.lsLine = selGraph.lsLine;
+		graph.lsSquares = selGraph.lsSquares;
+		graph.lsEQ = selGraph.lsEQ;
+		graph.lsR = selGraph.lsR;
+
+		graph.setXScale();
+	});
+	vis.render();
+});
+
 
 //Display Options
 $('#displayOptions').hide();
 
-//$('#displayOptions')
-//		.css('position', 'absolute')
-//		.css('top', "0px")
-//		.css('left', "0px")
 function positionDisplayMenu(){		
 	$('#displayOptions')
 			.css('position', 'absolute')
@@ -187,7 +210,6 @@ $('#displayOptClose').click(function(){
 $('#displayOptions').change(function(){
 	vis.render();
 })
-
 
 $('#checkboxBWView').change(function() { return constructVis(); });
 

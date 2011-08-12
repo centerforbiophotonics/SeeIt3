@@ -58,6 +58,7 @@ function GraphCollection(){
 		graphCollection.labelColors[label] = graphCollection.colorScale(index);
 	});
 	
+	this.defaultLabel = 0;
 	
 	//Display Options
 	this.buttonIcon = true;
@@ -156,6 +157,7 @@ GraphCollection.prototype = {
 		$("#checkboxShowLeastSquaresEquation").attr('checked',this.graphs[this.selectedGraphIndex].lsEQ);
 		$("#checkboxShowLeastSquaresRValue").attr('checked',this.graphs[this.selectedGraphIndex].lsR);
 		$("#showBothDist").attr('checked',this.graphs[this.selectedGraphIndex].twoDistView);
+		$("#promptForLabel").attr('checked',this.graphs[this.selectedGraphIndex].labelPrompt);
 		
 //		$('#radio'+this.graphs[this.selectedGraphIndex].groupingMode).attr('checked',true);
 //		$('#checkboxHistogram').attr('checked',this.graphs[this.selectedGraphIndex].histogram);
@@ -386,6 +388,8 @@ function Graph(worksheet, graphCollection){
 	this.lsSquares = false;
 	this.lsEQ = false;
 	this.lsR = false;
+	
+	this.labelPrompt = false;
 	
 	this.yAxisPanel = null;
 	this.xAxisPanel = null;

@@ -22,6 +22,8 @@ var graphCollection = {};
 var touch = new Touch();
 var fontString = "bold 14px arial";
 
+var dragging = false;
+
 function constructVis() {
 	console.log("constructVis");
 	jQuery('span').remove();
@@ -493,7 +495,8 @@ function constructGraphPanel(graph,index){
 		.height(function(){return graph.h})
 		.top(20)
 		.left(function(){return 60 + index * graph.w + index * 130})
-		.events("all");
+		.events("all")
+		
 	
 	/*Graph Title*/		  
 	graphPanel.add(pv.Label)
@@ -877,7 +880,76 @@ function constructEmptyGraph(graph,index, graphPanel){
 }
 
 function constructCorrGraph(graph, index, graphPanel){		
-	 /* Y-axis ticks */
+	graphPanel.event("click", function(){
+		if (!dragging){
+			if (graphCollection.editModeEnabled){
+				var mouseX = graphPanel.mouse().x;
+				var mouseY = graph.h - graphPanel.mouse().y;
+				
+				if (graph.labelPrompt){
+					var label = prompt("Enter a label for the data", "defaultLabel"+graphCollection.defaultLabel);
+					
+					var dupFlag = false;
+					graphCollection.worksheet.data[graph.xData].forEach(function(d){
+						if (d.label == label){
+							dupFlag = true;
+							alert("The label "+label+" is already used in "+graph.xData);
+						}
+					});
+					
+					graphCollection.worksheet.data[graph.yData].forEach(function(d){
+						if (d.label == label){
+							dupFlag = true;
+							alert("The label "+label+" is already used in "+graph.yData);
+						}
+					});
+					
+					if (!dupFlag){
+						graphCollection.worksheet.data[graph.xData].push(
+							{"label": label,
+							 "value": graph.x.invert(mouseX)}
+						);
+						graphCollection.editData(graph.xData,graph.xData,graphCollection.worksheet.data[graph.xData]);
+						
+						graphCollection.worksheet.data[graph.yData].push(
+							{"label": label,
+							 "value": graph.y.invert(mouseY)}
+						);
+						graphCollection.editData(graph.yData,graph.yData,graphCollection.worksheet.data[graph.yData]);
+						
+						if (!graphCollection.labelColors.hasOwnProperty(label))
+							graphCollection.labelColors[label] = graphCollection.colorScale(parseInt(Math.random()*20));
+						
+						if (label == "defaultLabel"+graphCollection.defaultLabel)
+							graphCollection.defaultLabel++;
+					}
+				} else {
+					graphCollection.worksheet.data[graph.xData].push(
+						{"label": "defaultLabel"+graphCollection.defaultLabel,
+						 "value": graph.x.invert(mouseX)}
+					);
+					graphCollection.editData(graph.xData,graph.xData,graphCollection.worksheet.data[graph.xData]);
+					
+					graphCollection.worksheet.data[graph.yData].push(
+						{"label": "defaultLabel"+graphCollection.defaultLabel,
+						 "value": graph.y.invert(mouseY)}
+					);
+					graphCollection.editData(graph.yData,graph.yData,graphCollection.worksheet.data[graph.yData]);
+					
+					if (!graphCollection.labelColors.hasOwnProperty("defaultLabel"+graphCollection.defaultLabel))
+							graphCollection.labelColors["defaultLabel"+graphCollection.defaultLabel] = graphCollection.colorScale(parseInt(Math.random()*20));
+					
+					graphCollection.defaultLabel++;
+				}
+				vis.render();
+			}
+		} else {
+			dragging = false;
+		}
+	});
+	
+	
+	/* Y-axis ticks */
   graphPanel.add(pv.Rule)
 		.data(function() { return graph.y.ticks(graphCollection.buckets) })
 		.bottom(graph.y)
@@ -1093,6 +1165,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			.cursor('move')
 			.event("mousedown", pv.Behavior.drag())
 			.event("drag", function() {
+				dragging = true;
 				var mouseX = graph.x.invert(graphPanel.mouse().x),
 					mouseY = graph.y.invert(graph.h - graphPanel.mouse().y);
 				
@@ -1111,6 +1184,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			.cursor('move')
 			.event("mousedown", pv.Behavior.drag())
 			.event("drag", function() {
+				dragging = true;
 				var mouseX = graph.x.invert(graphPanel.mouse().x),
 					mouseY = graph.y.invert(graph.h - graphPanel.mouse().y),
 					handle = getUserLineMidpoint(graph);
@@ -1162,6 +1236,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.strokeStyle("red")
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(){
+			dragging = true;
 			var mouseX = graphPanel.mouse().x,
 				mouseY = graph.h - graphPanel.mouse().y,
 				handleX = getEllipseManipCoords()[this.index][0],
@@ -1226,6 +1301,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.strokeStyle(pv.rgb(255,0,0,0.50))
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(){
+			dragging = true;
 			var mouseX = graphPanel.mouse().x,
 				mouseY = graph.h - graphPanel.mouse().y;
 
@@ -1255,7 +1331,8 @@ function constructCorrGraph(graph, index, graphPanel){
 		//.event("point", function() { return this.active(this.index).parent })
 		//.event("unpoint", function() { return this.active(-1).parent });
 		.event("mousedown", pv.Behavior.drag())
-		.event("drag", function(d){  
+		.event("drag", function(d){
+			dragging = true;  
 			if (graphCollection.editModeEnabled &&
 					graphPanel.mouse().x >= 0 &&
 					graphPanel.mouse().x <= graph.w &&
@@ -1342,7 +1419,54 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.height(function(){return (graph.h-80)/2})
 		.top(0)
 		.left(0)
-		.events("all");
+		.events("all")
+		.event("click", function(){
+			if (!dragging){
+				if (graphCollection.editModeEnabled){
+					var mouseX = topDist.mouse().x;
+					
+					if (graph.labelPrompt){
+						var label = prompt("Enter a label for the data", "defaultLabel"+graphCollection.defaultLabel);
+						
+						var dupFlag = false;
+						graphCollection.worksheet.data[graph.yData].forEach(function(d){
+							if (d.label == label){
+								dupFlag = true;
+								alert("The label "+label+" is already used in "+graph.yData);
+							}
+						});
+						
+						if (!dupFlag){
+							graphCollection.worksheet.data[graph.yData].push(
+								{"label": label,
+								 "value": graph.yHoriz.invert(mouseX)}
+							);
+							graphCollection.editData(graph.yData,graph.yData,graphCollection.worksheet.data[graph.yData]);
+							
+							if (!graphCollection.labelColors.hasOwnProperty(label))
+								graphCollection.labelColors[label] = graphCollection.colorScale(parseInt(Math.random()*20));
+							
+							if (label == "defaultLabel"+graphCollection.defaultLabel)
+								graphCollection.defaultLabel++;
+						}
+					} else {
+						graphCollection.worksheet.data[graph.yData].push(
+							{"label": "defaultLabel"+graphCollection.defaultLabel,
+							 "value": graph.yHoriz.invert(mouseX)}
+						);
+						graphCollection.editData(graph.yData,graph.yData,graphCollection.worksheet.data[graph.yData]);
+						
+						if (!graphCollection.labelColors.hasOwnProperty("defaultLabel"+graphCollection.defaultLabel))
+								graphCollection.labelColors["defaultLabel"+graphCollection.defaultLabel] = graphCollection.colorScale(parseInt(Math.random()*20));
+						
+						graphCollection.defaultLabel++;
+					}
+					vis.render();
+				}
+			} else {
+				dragging = false;
+			}
+		});
 	
 	/* Number of datapoints N */
 	topDist.add(pv.Label)
@@ -1557,21 +1681,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 			if (graphCollection.editModeEnabled){
 				var newYData = graphCollection.worksheet.data[graph.yData];
 				var remIndex = null;
-				//newXData.forEach(function(data, index){
-				//	if (data.label == d.label && 
-				//	(graphPanel.mouse().x < 0 ||
-				//	 graphPanel.mouse().x > graph.w ||
-				//	 graphPanel.mouse().y < 0 ||
-				//	 graphPanel.mouse().y > graph.h))
-				//	{
-				//		remIndex = index;
-				//	}
-				//});
-				//if (remIndex != null)
-				//	newXData.splice(remIndex,1);
-				//graphCollection.editData(graph.xData,graph.xData,newXData);
 				
-				//remIndex = null;
 				newYData.forEach(function(data, index){
 					if (data.label == d.label && 
 					(topDist.mouse().x < 0 ||
@@ -1613,7 +1723,54 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.height(function(){return (graph.h-80)/2})
 		.top(function(){return (graph.h-80)/2 + 80})
 		.left(0)
-		.events("all");
+		.events("all")
+		.event("click", function(){
+			if (!dragging){
+				if (graphCollection.editModeEnabled){
+					var mouseX = bottomDist.mouse().x;
+					
+					if (graph.labelPrompt){
+						var label = prompt("Enter a label for the data", "defaultLabel"+graphCollection.defaultLabel);
+						
+						var dupFlag = false;
+						graphCollection.worksheet.data[graph.xData].forEach(function(d){
+							if (d.label == label){
+								dupFlag = true;
+								alert("The label "+label+" is already used in "+graph.xData);
+							}
+						});
+						
+						if (!dupFlag){
+							graphCollection.worksheet.data[graph.xData].push(
+								{"label": label,
+								 "value": graph.x.invert(mouseX)}
+							);
+							graphCollection.editData(graph.xData,graph.xData,graphCollection.worksheet.data[graph.xData]);
+							
+							if (!graphCollection.labelColors.hasOwnProperty(label))
+								graphCollection.labelColors[label] = graphCollection.colorScale(parseInt(Math.random()*20));
+							
+							if (label == "defaultLabel"+graphCollection.defaultLabel)
+								graphCollection.defaultLabel++;
+						}
+					} else {
+						graphCollection.worksheet.data[graph.xData].push(
+							{"label": "defaultLabel"+graphCollection.defaultLabel,
+							 "value": graph.x.invert(mouseX)}
+						);
+						graphCollection.editData(graph.xData,graph.xData,graphCollection.worksheet.data[graph.xData]);
+						
+						if (!graphCollection.labelColors.hasOwnProperty("defaultLabel"+graphCollection.defaultLabel))
+								graphCollection.labelColors["defaultLabel"+graphCollection.defaultLabel] = graphCollection.colorScale(parseInt(Math.random()*20));
+						
+						graphCollection.defaultLabel++;
+					}
+					vis.render();
+				}
+			} else {
+				dragging = false;
+			}
+		});
 		
 	//Mouse position label for drag editing
 	var botDragLabel = bottomDist.add(pv.Label)
@@ -1717,7 +1874,55 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	vis.render();
 }
 
-function constructXDistGraph(graph, index, graphPanel){		  
+function constructXDistGraph(graph, index, graphPanel){		
+	graphPanel.event("click", function(){
+		if (!dragging){
+			if (graphCollection.editModeEnabled){
+				var mouseX = graphPanel.mouse().x;
+				
+				if (graph.labelPrompt){
+					var label = prompt("Enter a label for the data", "defaultLabel"+graphCollection.defaultLabel);
+					
+					var dupFlag = false;
+					graphCollection.worksheet.data[graph.xData].forEach(function(d){
+						if (d.label == label){
+							dupFlag = true;
+							alert("The label "+label+" is already used in "+graph.xData);
+						}
+					});
+					
+					if (!dupFlag){
+						graphCollection.worksheet.data[graph.xData].push(
+							{"label": label,
+							 "value": graph.x.invert(mouseX)}
+						);
+						graphCollection.editData(graph.xData,graph.xData,graphCollection.worksheet.data[graph.xData]);
+						
+						if (!graphCollection.labelColors.hasOwnProperty(label))
+							graphCollection.labelColors[label] = graphCollection.colorScale(parseInt(Math.random()*20));
+						
+						if (label == "defaultLabel"+graphCollection.defaultLabel)
+							graphCollection.defaultLabel++;
+					}
+				} else {
+					graphCollection.worksheet.data[graph.xData].push(
+						{"label": "defaultLabel"+graphCollection.defaultLabel,
+						 "value": graph.x.invert(mouseX)}
+					);
+					graphCollection.editData(graph.xData,graph.xData,graphCollection.worksheet.data[graph.xData]);
+					
+					if (!graphCollection.labelColors.hasOwnProperty("defaultLabel"+graphCollection.defaultLabel))
+							graphCollection.labelColors["defaultLabel"+graphCollection.defaultLabel] = graphCollection.colorScale(parseInt(Math.random()*20));
+					
+					graphCollection.defaultLabel++;
+				}
+				vis.render();
+			}
+		} else {
+			dragging = false;
+		}
+	});
+	
 	/* Number of datapoints N */
 	graphPanel.add(pv.Label)
 		.left(function(){return graph.w / 2})
@@ -1820,6 +2025,54 @@ function constructXDistGraph(graph, index, graphPanel){
 }
 	
 function constructYDistGraph(graph,index, graphPanel){
+	graphPanel.event("click", function(){
+		if (!dragging){
+			if (graphCollection.editModeEnabled){
+				var mouseY = graph.h - graphPanel.mouse().y;
+				
+				if (graph.labelPrompt){
+					var label = prompt("Enter a label for the data", "defaultLabel"+graphCollection.defaultLabel);
+					
+					var dupFlag = false;
+					graphCollection.worksheet.data[graph.yData].forEach(function(d){
+						if (d.label == label){
+							dupFlag = true;
+							alert("The label "+label+" is already used in "+graph.yData);
+						}
+					});
+					
+					if (!dupFlag){
+						graphCollection.worksheet.data[graph.yData].push(
+							{"label": label,
+							 "value": graph.y.invert(mouseY)}
+						);
+						graphCollection.editData(graph.yData,graph.yData,graphCollection.worksheet.data[graph.yData]);
+						
+						if (!graphCollection.labelColors.hasOwnProperty(label))
+							graphCollection.labelColors[label] = graphCollection.colorScale(parseInt(Math.random()*20));
+						
+						if (label == "defaultLabel"+graphCollection.defaultLabel)
+							graphCollection.defaultLabel++;
+					}
+				} else {
+					graphCollection.worksheet.data[graph.yData].push(
+						{"label": "defaultLabel"+graphCollection.defaultLabel,
+						 "value": graph.y.invert(mouseY)}
+					);
+					graphCollection.editData(graph.yData,graph.yData,graphCollection.worksheet.data[graph.yData]);
+					
+					if (!graphCollection.labelColors.hasOwnProperty("defaultLabel"+graphCollection.defaultLabel))
+							graphCollection.labelColors["defaultLabel"+graphCollection.defaultLabel] = graphCollection.colorScale(parseInt(Math.random()*20));
+					
+					graphCollection.defaultLabel++;
+				}
+				vis.render();
+			}
+		} else {
+			dragging = false;
+		}
+	});
+	
 	/* Number of datapoints N */
 	graphPanel.add(pv.Label)
 		.left(function(){return graph.w / 2})
