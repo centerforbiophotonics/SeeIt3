@@ -95,6 +95,22 @@ function getVertDistToLS (graph, i){
 	return Math.abs(dataY - getYOnLSByX(dataX, graph));
 }
 
+function getRSquares(graph){
+	var squares = [];
+	for (var i=0; i < graph.getData().length; i++){
+		var sqrBounds = getRSquareBounds(graph, i);   
+		
+		var left = Math.min(sqrBounds[0][0],sqrBounds[2][0]);
+		var bottom = Math.min(sqrBounds[0][1],sqrBounds[2][1]);
+		var size = Math.abs(sqrBounds[0][0] - sqrBounds[2][0]);
+		
+		squares.push({"left": left,
+									"bottom":bottom,
+									"size":size});
+  }
+  return squares;
+}
+
 function getRSquareBounds(graph, i){
 
 	var dataX = parseFloat(graph.getData()[i].x);
@@ -836,6 +852,27 @@ function divideDataInto3(data) {
 		groups[2] = data.slice(delta * 2 + 1);
   }
   return groups;
+}
+
+function getMedianRectangles(graph) {
+	var rects = [];
+	for (var i = 0; i < graph.groups.length; i++) {
+		var bounds = getBounds(graph.groups[i]);
+		var coords = getBoundingCoords(bounds);
+		var n = graph.groups[i].length;
+		
+		var left = graph.x(coords[0][0]);
+		var bottom = graph.y(coords[2][1]);
+		var width = graph.x(coords[1][0]) - graph.x(coords[0][0]);
+		var height = graph.y(coords[0][1]) - graph.y(coords[2][1]); 
+		
+		rects.push({"left":left,
+								"bottom":bottom,
+								"width":width,
+								"height":height,
+								"n":n});
+	}
+	return rects;
 }
 
 /* Get the minX, maxX, minY, maxY to surround a data group */

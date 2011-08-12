@@ -955,7 +955,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.bottom(graph.y)
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
-				return "#d00";
+				return pv.rgb(255,0,0,0.25);
 			else
 				return "#ddd";
 		})
@@ -970,12 +970,12 @@ function constructCorrGraph(graph, index, graphPanel){
 		.left(graph.x)
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
-				return "#d00";
+				return pv.rgb(255,0,0,0.25);
 			else
 				return "#ddd";
 		})
 		.anchor("bottom").add(pv.Label)
-			.bottom(-10)
+			//.bottom(-20)
 			.text(graph.x.tickFormat)
 			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
 			.visible(function(){return this.index % 2 == 0})
@@ -1021,51 +1021,70 @@ function constructCorrGraph(graph, index, graphPanel){
 		.text("0")
 		
 	/* median median crosses and squares */
-	for (var i = 0; i < graph.groups.length; i++) {
-		var bounds = getBounds(graph.groups[i]);
-		var coords = getBoundingCoords(bounds);
-		var n = graph.groups[i].length;
+//	for (var i = 0; i < graph.groups.length; i++) {
+//		var bounds = getBounds(graph.groups[i]);
+//		var coords = getBoundingCoords(bounds);
+//		var n = graph.groups[i].length;
+//		
+//		/* rectangle around median group */
+//		graphPanel.add(pv.Line)
+//			.visible(function() { return graph.mmDivs})
+//			.data(coords)
+//			.left(function(d) { return graph.x(d[0]) })
+//			.bottom(function(d) { return graph.y(d[1]) })
+//			.lineWidth(0.5)
+//			.strokeStyle("blue")
+//			.fillStyle(pv.rgb(0,0,255,0.05))
+//			.add(pv.Label)								
+//				.text(function(d) {
+//					if (this.index == 0) { return "N = "+ n;}
+//					else {return ""}
+//				})
+//				.textAlign("left")
+//				.textBaseline("top")
+//				.textStyle("blue")
+//				.textAngle(0)
+//				.font("bold 12px sans-serif");
+//	}
+	
+	/* rectangle around median group */
+	graphPanel.add(pv.Bar)
+		.data(function(){return getMedianRectangles(graph)})
+		.visible(function() { return graph.mmDivs})
+		.left(function(d){return d.left})
+		.bottom(function(d){return d.bottom})
+		.width(function(d){return d.width})
+		.height(function(d){return d.height})
+		.lineWidth(0.5)
+		.strokeStyle("blue")
+		.fillStyle(pv.rgb(0,0,255,0.05))
+		.add(pv.Label)								
+			.text(function(d) {return "N = "+ d.n;})
+			.textAlign("left")
+			.textBaseline("top")
+			.textStyle("blue")
+			.textAngle(0)
+			.font("bold 12px sans-serif");
 
-		/* rectangle around median group */
-		graphPanel.add(pv.Line)
-			.visible(function() { return graph.mmDivs})
-			.data(coords)
-			.left(function(d) { return graph.x(d[0]) })
-			.bottom(function(d) { return graph.y(d[1]) })
-			.lineWidth(0.5)
-			.strokeStyle("blue")
-			.fillStyle(pv.rgb(0,0,255,0.05))
-			.add(pv.Label)								
-				.text(function(d) {
-					if (this.index == 0) { return "N = "+ n;}
-					else {return ""}
-				})
-				.textAlign("left")
-				.textBaseline("top")
-				.textStyle("blue")
-				.textAngle(0)
-				.font("bold 12px sans-serif");
-
-		/* median cross */
+	/* median cross */
 		graphPanel.add(pv.Dot)
 			.visible(function() { return graph.mmDots})
-			.data([graph.medians[i]]) 
+			.data(function(){ return graph.medians }) 
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return graph.y(d[1]) })
 			.radius(10)
 			.angle(Math.PI / 4)
 			.shape('cross')
 			.strokeStyle(pv.rgb(0,0,255,0.90));
-	}
-
-
+			
   /* median-median line:
 	   Is middle median dot higher or lower than line through outer median dots? 
 	   That is, middle median dot's y value - y value at same x of original median line 
 	   divided by three */
 	graphPanel.add(pv.Line)
 		.visible(function() {return graph.mmLine })
-		.data([[graph.xMin, graph.mmFarLeftYVal], [graph.xMax, graph.mmFarRightYVal]])
+		.data(function(){return [[graph.xMin, graph.mmFarLeftYVal], 
+														 [graph.xMax, graph.mmFarRightYVal]]})
 		.left(function(d) { return graph.x(d[0]) })
 		.bottom(function(d) { return graph.y(d[1]) })
 		.title("Median-median line")
@@ -1074,8 +1093,9 @@ function constructCorrGraph(graph, index, graphPanel){
 		.add(pv.Label)
 			.visible(function () { return graph.mmEQ && graph.mmLine; })
 			.text(function(d) {
-				if (this.index == 0) { return "Y = "+graph.mmSlope.toFixed(3)+"X + "+graph.mmIntercept.toFixed(3);}
-				else{return "";}
+				if (this.index == 0) { return "Y = "+graph.mmSlope.toFixed(3)+
+																   "X + "+graph.mmIntercept.toFixed(3) }
+				else { return "" }
 			})
 			.textAlign("left")
 			.textBaseline("top")
@@ -1086,7 +1106,8 @@ function constructCorrGraph(graph, index, graphPanel){
 	/* Least Squares Regression Line */  
 	graphPanel.add(pv.Line)
 		.visible(function() { return graph.lsLine })
-		.data(function(){return [[graph.xMin, graph.lsFarLeftYVal], [graph.xMax, graph.lsFarRightYVal]]})
+		.data(function(){return [[graph.xMin, graph.lsFarLeftYVal], 
+														 [graph.xMax, graph.lsFarRightYVal]]})
 		.left(function(d) { return graph.x(d[0]) })
 		.bottom(function(d) { return graph.y(d[1]) })
 		.title("Least-Squares Regression Line")
@@ -1116,17 +1137,16 @@ function constructCorrGraph(graph, index, graphPanel){
 			.font("bold 12px sans-serif");
 		
   /*R Squares*/
-	for (var i=0; i < graph.getData().length; i++){
-		var sqrBounds = getRSquareBounds(graph, i);   
-		graphPanel.add(pv.Line)
-			.visible(function() { return graph.lsSquares && graph.lsLine })
-			.data(sqrBounds)
-			.left(function(d) { return d[0] })
-			.bottom(function(d) { return d[1] })
-			.lineWidth(0.5)
-			.strokeStyle("green")
-			.fillStyle(pv.rgb(0,225,0,0.05));
-  }
+  graphPanel.add(pv.Bar)
+		.data(function(){return getRSquares(graph)})
+		.visible(function() { return graph.lsSquares && graph.lsLine })
+		.left(function(d){return d.left})
+		.bottom(function(d){return d.bottom})
+		.width(function(d){return d.size})
+		.height(function(d){return d.size})
+		.lineWidth(0.5)
+		.strokeStyle("green")
+		.fillStyle(pv.rgb(0,225,0,0.05));
 	
 	/* user drawn line */
 	graphPanel.add(pv.Line)
@@ -1626,7 +1646,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.left(function(d) {return graph.yHoriz(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
-				return "#d00";
+				return pv.rgb(255,0,0,0.25);
 			else
 				return "#ddd";
 		})
@@ -1794,7 +1814,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.left(function(d) {return graph.x(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
-				return "#d00";
+				return pv.rgb(255,0,0,0.25);
 			else
 				return "#ddd";
 		})
@@ -1938,7 +1958,7 @@ function constructXDistGraph(graph, index, graphPanel){
 		.left(function(d) {return graph.x(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
-				return "#d00";
+				return pv.rgb(255,0,0,0.25);
 			else
 				return "#ddd";
 		})
@@ -2088,7 +2108,7 @@ function constructYDistGraph(graph,index, graphPanel){
 		.bottom(function(d) {return graph.y(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
-				return "#d00";
+				return pv.rgb(255,0,0,0.25);
 			else
 				return "#ddd";
 		})
