@@ -1194,10 +1194,25 @@ function constructCorrGraph(graph, index, graphPanel){
 			.event("drag", function() {
 				dragging = true;
 				var mouseX = graph.x.invert(graphPanel.mouse().x),
-					mouseY = graph.y.invert(graph.h - graphPanel.mouse().y);
-				
-				graph.userDrawnLinePoints[this.index].x = mouseX;
-				graph.userDrawnLinePoints[this.index].y = mouseY;
+					mouseY = graph.y.invert(graph.h - graphPanel.mouse().y),
+					panelX = graphPanel.mouse().x,
+					panelY = graphPanel.mouse().y;
+					
+				if (panelX > 0 && panelX < graph.w && panelY > 0 && panelY < graph.h){
+					graph.userDrawnLinePoints[this.index].x = mouseX;
+					graph.userDrawnLinePoints[this.index].y = mouseY;
+				} else {
+					graph.userDrawnLinePoints[this.index].x = mouseX;
+					graph.userDrawnLinePoints[this.index].y = mouseY;
+					if (panelX < 0)
+						graph.userDrawnLinePoints[this.index].x = graph.x.domain()[0];
+					if (panelX > graph.w)
+						graph.userDrawnLinePoints[this.index].x = graph.x.domain()[1];
+					if (panelY < 0)
+						graph.userDrawnLinePoints[this.index].y = graph.y.domain()[1];
+					if (panelY > graph.h)
+						graph.userDrawnLinePoints[this.index].y = graph.y.domain()[0];
+				}
 				
 				graphPanel.render();
 			})		
@@ -1214,13 +1229,42 @@ function constructCorrGraph(graph, index, graphPanel){
 				dragging = true;
 				var mouseX = graph.x.invert(graphPanel.mouse().x),
 					mouseY = graph.y.invert(graph.h - graphPanel.mouse().y),
-					handle = getUserLineMidpoint(graph);
+					handle = getUserLineMidpoint(graph),
+					panelX = graphPanel.mouse().x,
+					panelY = graphPanel.mouse().y;
 					
-				graph.userDrawnLinePoints[0].x += mouseX - handle[0].x;
-				graph.userDrawnLinePoints[1].x += mouseX - handle[0].x;
-				graph.userDrawnLinePoints[0].y += mouseY - handle[0].y;
-				graph.userDrawnLinePoints[1].y += mouseY - handle[0].y;
-							
+				if (panelX > 0 && panelX < graph.w && panelY > 0 && panelY < graph.h){					
+					graph.userDrawnLinePoints[0].x += mouseX - handle[0].x;
+					graph.userDrawnLinePoints[1].x += mouseX - handle[0].x;
+					graph.userDrawnLinePoints[0].y += mouseY - handle[0].y;
+					graph.userDrawnLinePoints[1].y += mouseY - handle[0].y;
+				}
+				
+				if (graph.userDrawnLinePoints[0].x > graph.x.domain()[1])
+					graph.userDrawnLinePoints[0].x = graph.x.domain()[1]
+					
+				if (graph.userDrawnLinePoints[0].x < graph.x.domain()[0])
+					graph.userDrawnLinePoints[0].x = graph.x.domain()[0]
+					
+				if (graph.userDrawnLinePoints[0].y > graph.y.domain()[1])
+					graph.userDrawnLinePoints[0].y = graph.y.domain()[1]
+					
+				if (graph.userDrawnLinePoints[0].y < graph.y.domain()[0])
+					graph.userDrawnLinePoints[0].y = graph.y.domain()[0]
+					
+				if (graph.userDrawnLinePoints[1].x > graph.x.domain()[1])
+					graph.userDrawnLinePoints[1].x = graph.x.domain()[1]
+					
+				if (graph.userDrawnLinePoints[1].x < graph.x.domain()[0])
+					graph.userDrawnLinePoints[1].x = graph.x.domain()[0]
+					
+				if (graph.userDrawnLinePoints[1].y > graph.y.domain()[1])
+					graph.userDrawnLinePoints[1].y = graph.y.domain()[1]
+					
+				if (graph.userDrawnLinePoints[1].y < graph.y.domain()[0])
+					graph.userDrawnLinePoints[1].y = graph.y.domain()[0]
+				
+				
 				graphPanel.render();
 			});
 			
@@ -1356,7 +1400,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	
 	/* dot plot */
 	graphPanel.add(pv.Dot)
-		.data(function(){return graph.getData()})
+		.data(function(){return graph.getClonedData()})
 		.visible(function() { return jQuery('#checkboxShowData').is(':checked') })
 		.event("point", function() { return this.active(this.index).parent })
 		.event("unpoint", function() { return this.active(-1).parent })

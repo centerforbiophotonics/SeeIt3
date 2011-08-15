@@ -387,7 +387,12 @@ function Graph(worksheet, graphCollection){
 	this.ellipseCX = this.w/2;
 	this.ellipseCY = this.h/2;
 	
+	this.userDrawnLinePoints = null;
+	this.pointsInEllipse = null;
+	
 	this.dataChanged = false;
+	
+	
 }
 
 Graph.prototype = {
@@ -462,6 +467,27 @@ Graph.prototype = {
 		return this.data;
 	},
 	
+	getClonedData: function(){
+		var graph = this;
+	
+		var data = [];
+		if (this.xData != null && this.yData != null)
+			this.worksheet.data[this.xData].forEach(function(dx){
+				var label = dx.label;
+				graph.worksheet.data[graph.yData].forEach(function(dy){
+					if(dy.label == label)
+						data.push({"label":label, "x":dx.value, "y":dy.value});
+				});
+				
+			});
+		this.graphCollection.updateMenuOptions();
+		//this.data = data;
+		//this.dataChanged = false;
+	
+		return data;
+		
+	},
+	
 	setupStats: function(){
 		var data = this.getData();
 		this.xMax = pv.max(data, function(d) { return d.x });
@@ -502,17 +528,20 @@ Graph.prototype = {
 		this.lsFarRightYVal = getYValue(this.xMax, this.lsSlope, this.lsIntercept);
 		
 		/* User Drawn Line*/
-		this.userDrawnLinePoints = [{ x:this.xMin, y:this.yMin + (this.yMax - this.yMin)/2 }, 
+		if (this.userDrawnLinePoints == null)
+			this.userDrawnLinePoints = [{ x:this.xMin, y:this.yMin + (this.yMax - this.yMin)/2 }, 
 								 { x:this.xMax, y:this.yMin + (this.yMax - this.yMin)/2 }];
 								 
 		/* User Ellipse */
-		this.angle = 0;
-		this.xRadius = this.w/4;
-		this.yRadius = this.h/4;
-		this.fullRot = pv.range(0, 2 * Math.PI, 0.01);
-		this.ellipseCX = this.w/2;
-		this.ellipseCY = this.h/2;
-		this.pointsInEllipse = numPointsInEllipse(this);
+		if (this.pointsInEllipse == null){
+			this.angle = 0;
+			this.xRadius = this.w/4;
+			this.yRadius = this.h/4;
+			this.fullRot = pv.range(0, 2 * Math.PI, 0.01);
+			this.ellipseCX = this.w/2;
+			this.ellipseCY = this.h/2;
+			this.pointsInEllipse = numPointsInEllipse(this);
+		}
 		
 		//this.graphCollection.updateMenuOptions();
 	},
