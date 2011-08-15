@@ -411,16 +411,15 @@ Graph.prototype = {
 	assignY: function(category){
 		this.yData = category;
 		this.dataChanged = true;
+		this.userDrawnLinePoints = null;
+		this.pointsInEllipse = null;
 		if (this.yData != null){
 			this.yMax = pv.max(this.worksheet.data[this.yData], function(d) { return d.value });
 			this.yMin = pv.min(this.worksheet.data[this.yData], function(d) { return d.value });
 			this.yScaleMin = 0;
 			this.yScaleMax = Math.ceil(this.yMax);
-			//this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
-			//this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
 			this.setYScale();
 			this.n = this.worksheet.data[this.yData].length;
-			//this.graphCollection.updateMenuOptions();
 		}
 		
 		if (this.yData != null && this.xData != null){
@@ -430,6 +429,8 @@ Graph.prototype = {
 	
 	assignX: function(category){
 		this.xData = category;
+		this.userDrawnLinePoints = null;
+		this.pointsInEllipse = null;
 		this.dataChanged = true;
 		if (this.xData != null){
 			this.xMax = pv.max(this.worksheet.data[this.xData], function(d) { return d.value });

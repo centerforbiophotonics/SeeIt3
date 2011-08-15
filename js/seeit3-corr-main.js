@@ -1410,9 +1410,6 @@ function constructCorrGraph(graph, index, graphPanel){
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
 		.title(function(d) { return d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1) })
-		//.def('active', -1)
-		//.event("point", function() { return this.active(this.index).parent })
-		//.event("unpoint", function() { return this.active(-1).parent });
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){
 			dragging = true;  
