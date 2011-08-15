@@ -7,7 +7,7 @@ var exampleSpreadsheets = [
 /* populate dataset drop down menu */
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
-  jQuery('#workSheetSelector').append(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
+  jQuery('#workSheetSelector').prepend(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
 	jQuery('p#loadingMsg').hide();	

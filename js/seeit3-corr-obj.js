@@ -201,13 +201,13 @@ GraphCollection.prototype = {
 	
 	addData: function(title, data){
 		this.worksheet.data[title] = data;
-		this.graphs.forEach(function(graph){
-			graph.data[title] = data;
-			graph.setupData();
-			graph.editedCategories[title] = true;
-			graph.nextDefaultLabel[title] = 0;
-			
-		});
+		//this.graphs.forEach(function(graph){
+		//	graph.data[title] = data;
+		//	graph.setupData();
+		//	graph.editedCategories[title] = true;
+		//	graph.nextDefaultLabel[title] = 0;
+		//	
+		//});
 		this.numberOfCategories++;
 		
 		this.setH(this.calcGraphHeight());
@@ -223,7 +223,7 @@ GraphCollection.prototype = {
 		}
 		this.worksheet.edited[title] = true;	
 		
-		this.numberOfAddedCategories++;
+		//this.numberOfAddedCategories++;
 		//this.categoryColors[title] = this.colorScale(this.numberOfAddedCategories);
 		//this.scaleAllGraphsToFit();
 	},
@@ -320,32 +320,17 @@ GraphCollection.prototype = {
 	deleteData: function(title){
 		delete this.worksheet.data[title];
 		this.graphs.forEach(function(graph){
-			delete graph.data[title];
-			if (graph.includedCategories.indexOf(title) != -1)
-				graph.includedCategories.splice(graph.includedCategories.indexOf(title), 1);
-			graph.xMax = pv.max(graph.dataVals(), function(d) { return d });
-			graph.xMin = pv.min(graph.dataVals(), function(d) { return d });
-			
-			if (graph.dataVals().length < 4)
-				graph.insufDataForFour = true;
-			else 
-				graph.insufDataForFour = false;
-			
-			if (graph.dataVals().length < 2)
-				graph.insufDataForTwo = true;
-			else 
-				graph.insufDataForTwo = false;
+			if (graph.xData == title)
+				graph.assignX(null);
 				
-			graph.n = (graph.dataVals()).length;
+			if (graph.yData == title)
+				graph.assignY(null);
+			
 		});
 		delete this.editedCategories[title];
-		delete this.categoryColors[title];
 		this.numberOfCategories--;
 		
 		this.setH(this.calcGraphHeight());
-		
-		this.scaleAllGraphsToFit();
-		
 	},
 }
 
