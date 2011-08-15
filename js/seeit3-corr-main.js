@@ -5,6 +5,7 @@ var exampleSpreadsheets = [
 ];
 
 /* populate dataset drop down menu */
+var lastSelectedWorksheet; 
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
   jQuery('#workSheetSelector').prepend(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);

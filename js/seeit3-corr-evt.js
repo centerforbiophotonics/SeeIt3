@@ -41,9 +41,20 @@ jQuery('#editInGoogleDocs').click(function(event) {
 });
 
 jQuery('#workSheetSelector').change(function(event) {
-  graphCollection = new GraphCollection();
-  constructVis();
+	if (jQuery('#workSheetSelector').val() == "New"){
+		hideMenus();
+		$('#worksheetCreate').slideDown();
+	} else {
+		graphCollection = new GraphCollection();
+		lastSelectedWorksheet = jQuery('#workSheetSelector').val();
+		constructVis();
+	}
 });
+
+//jQuery('#workSheetSelector').change(function(event) {
+//  graphCollection = new GraphCollection();
+//  constructVis();
+//});
 
 $('#about').click(function(){
 	$('#aboutPopup').slideToggle();
