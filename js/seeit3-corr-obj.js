@@ -241,7 +241,7 @@ GraphCollection.prototype = {
 		//	
 		//	var oldMax = graph.xMax;
 		//	var oldMin = graph.xMin;
-			
+			graph.dataChanged = true;
 			
 			if (graph.xData != null && graph.yData != null){
 				graph.xMax = pv.max(graph.getData(), function(d) { return d.x });
@@ -295,6 +295,7 @@ GraphCollection.prototype = {
 			if (data.label == label){
 				data.value = value;
 				graphCol.graphs.forEach(function(graph){
+					graph.dataChanged = true;
 					if (graph.xData != null && graph.yData != null){
 						graph.xMax = pv.max(graph.getData(), function(d) { return d.x });
 						graph.xMin = pv.min(graph.getData(), function(d) { return d.x });
@@ -385,6 +386,8 @@ function Graph(worksheet, graphCollection){
 	//Ellipse
 	this.ellipseCX = this.w/2;
 	this.ellipseCY = this.h/2;
+	
+	this.dataChanged = false;
 }
 
 Graph.prototype = {
@@ -402,7 +405,7 @@ Graph.prototype = {
 	
 	assignY: function(category){
 		this.yData = category;
-		
+		this.dataChanged = true;
 		if (this.yData != null){
 			this.yMax = pv.max(this.worksheet.data[this.yData], function(d) { return d.value });
 			this.yMin = pv.min(this.worksheet.data[this.yData], function(d) { return d.value });
@@ -422,7 +425,7 @@ Graph.prototype = {
 	
 	assignX: function(category){
 		this.xData = category;
-		
+		this.dataChanged = true;
 		if (this.xData != null){
 			this.xMax = pv.max(this.worksheet.data[this.xData], function(d) { return d.value });
 			this.xMin = pv.min(this.worksheet.data[this.xData], function(d) { return d.value });
@@ -441,20 +444,22 @@ Graph.prototype = {
 	
 	getData: function(){
 		var graph = this;
-		
-		var data = [];
-		if (this.xData != null && this.yData != null)
-			this.worksheet.data[this.xData].forEach(function(dx){
-				var label = dx.label;
-				graph.worksheet.data[graph.yData].forEach(function(dy){
-					if(dy.label == label)
-						data.push({"label":label, "x":dx.value, "y":dy.value});
+		if (this.dataChanged){
+			var data = [];
+			if (this.xData != null && this.yData != null)
+				this.worksheet.data[this.xData].forEach(function(dx){
+					var label = dx.label;
+					graph.worksheet.data[graph.yData].forEach(function(dy){
+						if(dy.label == label)
+							data.push({"label":label, "x":dx.value, "y":dy.value});
+					});
+					
 				});
-				
-			});
-		this.graphCollection.updateMenuOptions();
-		//this.data = data;
-		return data;
+			this.graphCollection.updateMenuOptions();
+			this.data = data;
+			this.dataChanged = false;
+		}
+		return this.data;
 	},
 	
 	setupStats: function(){

@@ -1156,8 +1156,8 @@ function constructCorrGraph(graph, index, graphPanel){
 		.fillStyle(pv.rgb(0,225,0,0.05));
 	
 	/* user drawn line */
-	graphPanel.add(pv.Line)
-		.data(graph.userDrawnLinePoints)
+	var udLine = graphPanel.add(pv.Line)
+		.data(function(){return graph.userDrawnLinePoints})
 		.left(function(d) { return graph.x(d.x) })
 		.bottom(function(d) { return graph.y(d.y) })
 		.visible(function() { return graph.udLine })
