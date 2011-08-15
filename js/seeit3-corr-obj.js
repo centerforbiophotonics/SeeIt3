@@ -143,6 +143,7 @@ GraphCollection.prototype = {
 	
 	updateMenuOptions: function(){
 		$("#checkboxShowUserLine").attr('checked',this.graphs[this.selectedGraphIndex].udLine);
+		$("#checkboxUDSquares").attr('checked',this.graphs[this.selectedGraphIndex].udSquares);
 		$("#checkboxShowEllipse").attr('checked',this.graphs[this.selectedGraphIndex].udEllipse);
 		$("#checkboxShowData").attr('checked',this.graphs[this.selectedGraphIndex].showData);
 		$("#fitScalesToData").attr('checked',this.graphs[this.selectedGraphIndex].fitScaleToData);
@@ -361,6 +362,7 @@ function Graph(worksheet, graphCollection){
 	//Graph Options
 	this.showData = true;
 	this.udLine = false;
+	this.udSquares = false;
 	this.udEllipse = false;
 	this.twoDistView = false;
 	

@@ -4,7 +4,8 @@
 $(window).resize(function() {
 	graphCollection.setW(calcGraphWidth());
 	graphCollection.setH(graphCollection.calcGraphHeight());
-	constructVis();
+	//constructVis();
+	vis.render();
 })
 
 
@@ -19,10 +20,11 @@ jQuery('#newSpreadsheetURL').keyup(function(event) {
 
 
 
-jQuery('#menu').change(function(event) {
-  constructVis();
-  event.stopPropagation();
-});
+//jQuery('#menu').change(function(event) {
+  //constructVis();
+//  vis.render();
+//  event.stopPropagation();
+//});
 
 $('#refreshWorksheet').click(function(event){
 	getWorksheet().fetchWorksheetData();
@@ -103,6 +105,7 @@ $('#graphOptClose').click(function(){
 
 jQuery('#graphOptions').change(function(event) {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].udLine = $("#checkboxShowUserLine").is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].udSquares = $("#checkboxUDSquares").is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].udEllipse = $("#checkboxShowEllipse").is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].showData = $("#checkboxShowData").is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = $("#fitScalesToData").is(':checked');

@@ -111,6 +111,54 @@ function getRSquares(graph){
   return squares;
 }
 
+function getUDSquares(graph){
+	var max = Math.max(graph.userDrawnLinePoints[1].x, graph.userDrawnLinePoints[0].x)
+	var right, left;
+	
+	if (max == graph.userDrawnLinePoints[1].x){
+		right = 1;
+		left = 0;
+	} else {
+		right = 0;
+		left = 1;
+	}
+	
+	var m = (graph.userDrawnLinePoints[right].y-graph.userDrawnLinePoints[left].y)/
+				  (graph.userDrawnLinePoints[right].x-graph.userDrawnLinePoints[left].x);
+				  
+	var b = graph.userDrawnLinePoints[1].y - m*(graph.userDrawnLinePoints[1].x);
+	
+	var squares = [];
+	(graph.getData()).forEach(function(d){
+		if (d.x >= graph.userDrawnLinePoints[left ? 1:0].x &&
+				d.x <= graph.userDrawnLinePoints[right ? 1:0].x){
+			var size = Math.abs(graph.y(d.y) - graph.y((m*d.x+b)));
+			var left, bottom;
+			if (d.y - (m*d.x+b) >= 0){
+				if (m >= 0){
+					left = graph.x(d.x) - size;
+					bottom = graph.y(d.y) - size;
+				} else{
+					left = graph.x(d.x);
+					bottom = graph.y(d.y) - size;
+				}
+			} else {
+				if (m >= 0){
+					left = graph.x(d.x);
+					bottom = graph.y(d.y);
+				} else{
+					left = graph.x(d.x) - size;
+					bottom = graph.y(d.y);
+				}
+			}
+			squares.push({"left": left,
+										"bottom":bottom,
+										"size":size});
+		}
+  });
+  return squares;
+}
+
 function getRSquareBounds(graph, i){
 
 	var dataX = parseFloat(graph.getData()[i].x);

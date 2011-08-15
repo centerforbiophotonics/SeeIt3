@@ -8,7 +8,13 @@ var exampleSpreadsheets = [
 var lastSelectedWorksheet; 
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
-  jQuery('#workSheetSelector').prepend(jQuery("<option value='" + event.worksheet.URL + "'>" + event.worksheet.title + "</option>")).val(event.worksheet.URL);
+	if ($('#workSheetSelector option[value='+event.worksheet.URL+']').length == 0)
+  jQuery('#workSheetSelector').prepend(jQuery("<option value='" + 
+																				event.worksheet.URL + "'>" + 
+																				event.worksheet.title + 
+																				" by " + 
+																				event.worksheet.labelType + 
+																				"</option>")).val(event.worksheet.URL);
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
 	jQuery('p#loadingMsg').hide();	
@@ -402,7 +408,7 @@ function constructSidePanel(){
 							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
 					{
 						g.assignX(category);
-						constructVis();
+						//constructVis();
 					}
 					
 					if (g.yAxisPanel.mouse().x > 0 &&
@@ -411,7 +417,7 @@ function constructSidePanel(){
 							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
 					{
 						g.assignY(category);
-						constructVis();
+						//constructVis();
 					}
 				});
 				
@@ -1216,7 +1222,19 @@ function constructCorrGraph(graph, index, graphPanel){
 				graph.userDrawnLinePoints[1].y += mouseY - handle[0].y;
 							
 				graphPanel.render();
-			});		
+			});
+			
+	// User defined least squares
+	graphPanel.add(pv.Bar)
+		.data(function(){return getUDSquares(graph)})
+		.visible(function() { return graph.udLine && graph.udSquares })
+		.left(function(d){return d.left})
+		.bottom(function(d){return d.bottom})
+		.width(function(d){return d.size})
+		.height(function(d){return d.size})
+		.lineWidth(0.5)
+		.strokeStyle("red")
+		.fillStyle(pv.rgb(225,0,0,0.05));
 	
 	/* user ellipse */
 	graphPanel.add(pv.Line)
@@ -1296,7 +1314,7 @@ function constructCorrGraph(graph, index, graphPanel){
 
 			graph.pointsInEllipse = numPointsInEllipse(graph);
 					
-			vis.render();
+			graphPanel.render();
 		})
 		.add(pv.Label)								
 			.text(function(d) {
@@ -1333,7 +1351,7 @@ function constructCorrGraph(graph, index, graphPanel){
 
 			graph.pointsInEllipse = numPointsInEllipse(graph);
 					
-			vis.render();
+			graphPanel.render();
 		});
 	
 	/* dot plot */
@@ -1620,6 +1638,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 				});
 			} else {
 				graph.assignY(null);
+				
 			}
 			
 			yAxisDragFeedbackPanel.visible(false);
