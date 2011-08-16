@@ -1398,6 +1398,7 @@ function constructGraphPanel(graph, index){
 			.event("touchstart", function(d, event){
 				touch.dragType = "data";
 				touch.dataObj = d;
+				touch.graphIndex = index;
 				touch.dragging = true;
 				touch.dragLabel = dragLabel;
 			})
