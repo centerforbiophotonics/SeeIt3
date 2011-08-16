@@ -1395,7 +1395,7 @@ function constructGraphPanel(graph, index){
 					vis.render();
 				}
 			})
-			.event("touchstart", function(d, event){
+			.event("touchstart", function(d){
 				touch.dragType = "data";
 				touch.dataObj = d;
 				touch.graphIndex = index;
