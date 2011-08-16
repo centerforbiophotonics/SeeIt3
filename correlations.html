@@ -25,26 +25,27 @@
 
 <div id="notGraph" class="notGraph">
 	<div id="menu" class="menu">
-		<table>
+		<table style="border-spacing: 30px 0px;">
 			<tr>
-				<td width="50%">
-					<div>
+				<td>
 						Select a dataset (worksheet): 
 						<select id="workSheetSelector">
 								<option value="New">*Add a new worksheet*</option>
 						</select>
-						<input type="button" value="Refresh" id="refreshWorksheet">
-						<input type="button" value="Worksheet Description" id="worksheetDescriptionButton">
-						<a href="#" id="editInGoogleDocs">Open in Google Docs</a>
-					</div>
+						<a href="#" id="refreshWorksheet">Refresh</a>
 				</td>
 				<td>
-					<label for="newSpreadsheetURL">Add a new spreadsheet by pasting its URL:</label>
+					<a href="#" id="worksheetDescriptionButton">Description</a>
 				</td>
 				<td>
+					<a href="#" id="editInGoogleDocs">View Data</a>
+				</td>
+				<td>
+					<label for="newSpreadsheetURL">New Worksheet URL:</label>
 					<input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
 				</td>
-				<td align='right'><input type="button" value="About" id="about"></td>
+				<td><a href="corrhelp.html" id="help">Help</a></td>
+				<td><a href="#" id="about">About</a></td>
 			</tr>
 		</table>
 	</div>
