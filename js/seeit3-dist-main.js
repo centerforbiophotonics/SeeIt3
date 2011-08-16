@@ -1392,7 +1392,7 @@ function constructGraphPanel(graph, index){
 				}
 			})
 			.event("touchstart", function(d, event){
-				console.log(d);
+				console.log(objectToString(d));
 				touch.dragType = "data";
 				touch.dataObj = d;
 				touch.dragging = true;
