@@ -358,6 +358,8 @@ function dataTouchMove(event){
 	var curY = event.targetTouches[0].pageY - 
 							$('span').offset().top - 
 							graphCollection.padTop;
+	touch.finalX = curX;
+	touch.finalY = curY;
 	var d = touch.dataObj;
 	var graph = graphCollection.graphs[touch.graphIndex];
 	
@@ -473,6 +475,8 @@ function dataTouchEnd(event){
 	if (graphCollection.editModeEnabled){
 		var d = touch.dataObj;
 		var graph = graphCollection.graphs[touch.graphIndex];
+		var curX = touch.finalX;
+		var curY = touch.finalY;
 		
 		var newData = graphCollection.worksheet.data[d.set];
 		var remIndex = null;
