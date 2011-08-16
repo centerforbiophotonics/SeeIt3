@@ -518,10 +518,10 @@ function constructCategoryPanel(){
 				//vis.render();
 			})
 			.event("touchstart", function(event){
+				touch.dragType = "sideCat"
 				touch.draggedObj = dragFeedbackPanels[this.row()];
 				touch.dragging = true;
 				touch.dragCat = this.category();
-				touch.dragGraphIndex = -1;
 			})
 			
 			
@@ -820,6 +820,10 @@ function constructGraphPanel(graph, index){
 					graph.udPartitions[graph.udPartitions.length-1] = vis.mouse();
 					graphPanel.render();
 				}) 
+				.event("touchstart", function(event){
+					touch.dragType = "partitionCreate";
+					touch.dragging = true;
+				})
 				
 		/* User Defined Partitions */
 		graphPanel.add(pv.Rule)
@@ -846,6 +850,11 @@ function constructGraphPanel(graph, index){
 					graphCollection.selectAUserDefPartition(index, this.index);
 				})
 				.event("drag", vis)
+				.event("touchstart", function(event){
+					touch.dragType = "partitionMove";
+					touch.partitionIndex = this.index;
+					touch.dragging = true;
+				})
 			
 		
 		graphPanel.add(pv.Rule)
@@ -1381,6 +1390,12 @@ function constructGraphPanel(graph, index){
 					
 					vis.render();
 				}
+			})
+			.event("touchstart", function(d, event){
+				console.log(d);
+				touch.dragType = "data";
+				touch.dataObj = d;
+				touch.dragging = true;
 			})
 			
 		

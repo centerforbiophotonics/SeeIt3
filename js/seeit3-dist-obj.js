@@ -1,21 +1,27 @@
 //All variables related to a touch event
 function Touch(){
-	this.draggedObj = undefined;
-	this.dragging = false;
-	this.dragCat = undefined;
-	this.dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
-	this.finalX = undefined;
-	this.finalY = undefined;
+	this.dragType = undefined;						//types are "sideCat","graphCat","data","partitionCreate","partitionMove"
+	this.draggedObj = undefined;					//sideCat, graphCat
+	this.dragging = false;								//all
+	this.dragCat = undefined;							//sideCat, graphCat
+	this.graphIndex = undefined;  				//graphCat
+	this.finalX = undefined;							//all
+	this.finalY = undefined;							//all
+	this.partitionIndex = undefined;			//partitionMove
+	this.dataObj = undefined;							//data
 }
 
 Touch.prototype = {
 	reset: function(){
-		this.draggedObj = undefined;
-		this.dragging = false;
-		this.dragCat = undefined;
-		this.dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
-		this.finalX = undefined;
-		this.finalY = undefined;
+		this.dragType = undefined;
+	this.draggedObj = undefined;
+	this.dragging = false;
+	this.dragCat = undefined;
+	this.graphIndex = undefined;  
+	this.finalX = undefined;
+	this.finalY = undefined;
+	this.partitionIndex = undefined;
+	this.dataObj = undefined;
 	},
 }
 
