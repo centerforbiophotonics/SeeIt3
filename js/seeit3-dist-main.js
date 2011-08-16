@@ -1392,7 +1392,6 @@ function constructGraphPanel(graph, index){
 				}
 			})
 			.event("touchstart", function(d, event){
-				console.log(objectToString(d));
 				touch.dragType = "data";
 				touch.dataObj = d;
 				touch.dragging = true;
@@ -1567,10 +1566,11 @@ function constructGraphPanel(graph, index){
 					dragFeedbackPanels[this.row()].render();
 				})
 				.event("touchstart", function(event){
+					touch.dragType="graphCat";
 					touch.draggedObj = dragFeedbackPanels[this.row()];
 					touch.dragging = true;
 					touch.dragCat = this.category();
-					touch.dragGraphIndex = graphCollection.graphs.indexOf(graph);
+					touch.graphIndex = graphCollection.graphs.indexOf(graph);
 				})
 				
 				
