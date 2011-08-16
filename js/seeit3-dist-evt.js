@@ -470,7 +470,34 @@ function touchEnd(event){
 }
 
 function dataTouchEnd(event){
+	if (graphCollection.editModeEnabled){
+		var d = touch.dataObject;
+		var graph = graphCollection.graphs[touch.graphIndex];
+		
+		var newData = graphCollection.worksheet.data[d.set];
+		var remIndex = null;
+		newData.forEach(function(data, index){
+			if (data.label == d.label && 
+			(curX < 0 ||
+			curX > graph.w - 5)){
+				remIndex = index;
+			}
+		});
+		if (remIndex != null)
+			newData.splice(remIndex,1);
+		graphCollection.editData(d.set,d.set,newData);
+		
 	
+		if (Math.abs(curX - d.x) <= graphCollection.bucketDotSize &&
+				Math.abs((graph.h - curY) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
+		{
+			dragging = true;
+		}
+		
+		touch.dragLabel.visible(false);
+		
+		vis.render();
+	}
 }
 
 function sideCatTouchEnd(event){
