@@ -9,19 +9,21 @@ function Touch(){
 	this.finalY = undefined;							//all
 	this.partitionIndex = undefined;			//partitionMove
 	this.dataObj = undefined;							//data
+	this.graphPanel = undefined;
 }
 
 Touch.prototype = {
 	reset: function(){
 		this.dragType = undefined;
-	this.draggedObj = undefined;
-	this.dragging = false;
-	this.dragCat = undefined;
-	this.graphIndex = undefined;  
-	this.finalX = undefined;
-	this.finalY = undefined;
-	this.partitionIndex = undefined;
-	this.dataObj = undefined;
+		this.draggedObj = undefined;
+		this.dragging = false;
+		this.dragCat = undefined;
+		this.graphIndex = undefined;  
+		this.finalX = undefined;
+		this.finalY = undefined;
+		this.partitionIndex = undefined;
+		this.dataObj = undefined;
+		this.graphPanel = undefined;
 	},
 }
 

@@ -269,108 +269,7 @@ function touchStart(event){
 		case "partitionMove":
 			partitionMoveTouchStart(event);
 			break;
-	} 
-//	var curX = event.targetTouches[0].pageX -
-//							$('span').offset().left -
-//							graphCollection.padLeft + 14;
-//							
-//	var curY = event.targetTouches[0].pageY - 
-//							$('span').offset().top - 
-//							graphCollection.padTop;
-//	touch.draggedObj.left(curX);
-//	touch.draggedObj.top(curY);
-//	touch.draggedObj.visible(true);
-//	touch.draggedObj.render();
-}
-
-document.addEventListener("touchmove", touchMove, false);
-
-function touchMove(event){
-  if (!touch.dragging) return;
-  
-  switch (touch.dragType){
-		case "data":
-			dataTouchMove(event);
-			break;
-		case "sideCat":
-			sideCatTouchMove(event);
-			break;
-		case "graphCat":
-			graphCatTouchMove(event);
-			break;
-		case "partitionCreate":
-			partitionCreateTouchMove(event);
-			break;
-		case "partitionMove":
-			partitionMoveTouchMove(event);
-			break;
 	}
-//	var curX = event.targetTouches[0].pageX -
-//							$('span').offset().left -
-//							graphCollection.padLeft + 14;
-//							
-//	var curY = event.targetTouches[0].pageY - 
-//							$('span').offset().top - 
-//							graphCollection.padTop;
-//	touch.draggedObj.left(curX);
-//	touch.draggedObj.top(curY);
-//	touch.finalX = curX;
-//	touch.finalY = curY;
-//	touch.draggedObj.render();
-}
-
-document.addEventListener("touchend", touchEnd, false);
-
-function touchEnd(event){ 
-  if (!touch.dragging) return;
-	
-	switch (touch.dragType){
-		case "data":
-			dataTouchEnd(event);
-			break;
-		case "sideCat":
-			sideCatTouchEnd(event);
-			break;
-		case "graphCat":
-			graphCatTouchEnd(event);
-			break;
-		case "partitionCreate":
-			partitionCreateTouchEnd(event);
-			break;
-		case "partitionMove":
-			partitionMoveTouchEnd(event);
-			break;
-	}
-//	var curX = touch.finalX;
-//	var curY = touch.finalY;
-//	
-//	touch.draggedObj.visible(false);
-//	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
-//		if (graphCollection.graphs.length > 4){
-//			var which = parseInt(curY/graphCollection.defaultGraphHeight);
-//			if (touch.dragGraphIndex == -1)
-//				graphCollection.graphs[which].addCategory(touch.dragCat);
-//			else {
-//				if (graphCollection.graphs[which].addCategory(touch.dragCat))
-//					graphCollection.graphs[touch.dragGraphIndex].removeCategory(touch.dragCat);
-//			}
-//			graphCollection.updateMenuOptions();
-//		} else {
-//			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-//			if (touch.dragGraphIndex == -1)
-//				graphCollection.graphs[which].addCategory(touch.dragCat);
-//			else {
-//				if (graphCollection.graphs[which].addCategory(touch.dragCat))
-//					graphCollection.graphs[touch.dragGraphIndex].removeCategory(touch.dragCat);
-//			}
-//			graphCollection.updateMenuOptions();
-//		}
-//	} else if (touch.dragGraphIndex != -1) {
-//		graphCollection.graphs[touch.dragGraphIndex].removeCategory(touch.dragCat);
-//	}
-//	
-//	touch.reset();
-//	constructVis();
 }
 
 function dataTouchStart(event){
@@ -406,11 +305,48 @@ function graphCatTouchStart(event){
 }
 
 function partitionCreateTouchStart(event){
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
 	
+	graphCollection.selectAUserDefPartition(touch.graphIndex,
+		graphCollection.graphs[touch.graphIndex].udPartitions
+			.push(pv.vector(curX,curY))-1
+	)
+	touch.graphPanel.render();
 }
 
 function partitionMoveTouchStart(event){
 	
+}
+
+
+document.addEventListener("touchmove", touchMove, false);
+
+function touchMove(event){
+  if (!touch.dragging) return;
+  
+  switch (touch.dragType){
+		case "data":
+			dataTouchMove(event);
+			break;
+		case "sideCat":
+			sideCatTouchMove(event);
+			break;
+		case "graphCat":
+			graphCatTouchMove(event);
+			break;
+		case "partitionCreate":
+			partitionCreateTouchMove(event);
+			break;
+		case "partitionMove":
+			partitionMoveTouchMove(event);
+			break;
+	}
 }
 
 function dataTouchMove(event){
@@ -448,11 +384,49 @@ function graphCatTouchMove(event){
 }
 
 function partitionCreateTouchMove(event){
+	var graph = graphCollection.graphs[touch.graphIndex];
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+	touch.finalX = curX;
+	touch.finalY = curY;
 	
+	graph.udPartitions[graph.udPartitions.length-1] = pv.vector(curX,curY);
+	
+	touch.graphPanel.render();
 }
 
 function partitionMoveTouchMove(event){
 	
+}
+
+
+document.addEventListener("touchend", touchEnd, false);
+
+function touchEnd(event){ 
+  if (!touch.dragging) return;
+	
+	switch (touch.dragType){
+		case "data":
+			dataTouchEnd(event);
+			break;
+		case "sideCat":
+			sideCatTouchEnd(event);
+			break;
+		case "graphCat":
+			graphCatTouchEnd(event);
+			break;
+		case "partitionCreate":
+			partitionCreateTouchEnd(event);
+			break;
+		case "partitionMove":
+			partitionMoveTouchEnd(event);
+			break;
+	}
 }
 
 function dataTouchEnd(event){
@@ -509,7 +483,13 @@ function graphCatTouchEnd(event){
 }
 
 function partitionCreateTouchEnd(event){
+	var graph = graphCollection.graphs[touch.graphIndex];
+	var curX = touch.finalX;
+	var curY = touch.finalY;
 	
+	graph.udPartitions[graph.udPartitions.length-1] = pv.vector(curX,curY);
+	
+	touch.graphPanel.render();
 }
 
 function partitionMoveTouchEnd(event){
