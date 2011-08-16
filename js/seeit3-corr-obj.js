@@ -569,8 +569,10 @@ Graph.prototype = {
 		
 		if (this.fitScaleToData) {
 			this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
+			this.yHoriz = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
 		}else{
 			this.y = pv.Scale.linear(newMin, newMax).range(0, this.h);
+			this.yHoriz = pv.Scale.linear(newMin,newMax).range(0, this.w);
 			this.yScaleMin = newMin;
 			this.yScaleMax = newMax;
 		}			

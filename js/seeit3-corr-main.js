@@ -958,7 +958,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	
 	/* Y-axis ticks */
   graphPanel.add(pv.Rule)
-		.data(function() { return graph.y.ticks(graphCollection.buckets) })
+		.data(function() { return getYBuckets(graph)})//return graph.y.ticks(graphCollection.buckets) })
 		.bottom(graph.y)
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
@@ -967,13 +967,13 @@ function constructCorrGraph(graph, index, graphPanel){
 				return "#ddd";
 		})
 		.anchor('left').add(pv.Label)
-			.text(graph.y.tickFormat)
+			.text(function(d) {return d.toFixed(1)})
 			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
 			.visible(function(){return this.index % 2 == 0})
 	
 	/* X-axis ticks */
   graphPanel.add(pv.Rule)
-		.data(function() { return graph.x.ticks(graphCollection.buckets) })
+		.data(function() { return getXBuckets(graph)})//return graph.x.ticks(graphCollection.buckets) })
 		.left(graph.x)
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
@@ -982,8 +982,7 @@ function constructCorrGraph(graph, index, graphPanel){
 				return "#ddd";
 		})
 		.anchor("bottom").add(pv.Label)
-			//.bottom(-20)
-			.text(graph.x.tickFormat)
+			.text(function(d) {return d.toFixed(1)})
 			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
 			.visible(function(){return this.index % 2 == 0})
 			

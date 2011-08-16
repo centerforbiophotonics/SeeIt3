@@ -1272,7 +1272,7 @@ function constructGraphPanel(graph, index){
 					else
 						return graph.showMMM || graph.showMode;
 				})
-				.size(20)
+				.size(40)
 				.event('click', function(){
 					graph.MMMLabelVis[this.index] = !(graph.MMMLabelVis[this.index]);
 					vis.render();
