@@ -365,7 +365,7 @@ function dataTouchMove(event){
 			curX >= 0 &&
 			curY <= graph.w - 5){
 		
-		graphCollection.editSinglePoint(d.set,d.label,graph.x.invert(vis.mouse().x));
+		graphCollection.editSinglePoint(d.set,d.label,graph.x.invert(curX));
 		graph.selectedCategory = d.set;
 		
 		touch.dragLabel.text(graph.x.invert(curX).toFixed(1));
