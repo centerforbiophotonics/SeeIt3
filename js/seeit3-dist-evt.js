@@ -471,7 +471,7 @@ function touchEnd(event){
 
 function dataTouchEnd(event){
 	if (graphCollection.editModeEnabled){
-		var d = touch.dataObject;
+		var d = touch.dataObj;
 		var graph = graphCollection.graphs[touch.graphIndex];
 		
 		var newData = graphCollection.worksheet.data[d.set];
@@ -495,7 +495,7 @@ function dataTouchEnd(event){
 		}
 		
 		touch.dragLabel.visible(false);
-		
+		touch.reset();
 		vis.render();
 	}
 }
