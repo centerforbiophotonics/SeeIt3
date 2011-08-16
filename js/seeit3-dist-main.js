@@ -855,6 +855,7 @@ function constructGraphPanel(graph, index){
 				.event("touchstart", function(event){
 					touch.dragType = "partitionMove";
 					touch.partitionIndex = this.index;
+					touch.graphPanel = graphPanel;
 					touch.graphIndex = index;
 					touch.dragging = true;
 				})

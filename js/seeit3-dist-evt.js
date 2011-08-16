@@ -321,7 +321,8 @@ function partitionCreateTouchStart(event){
 }
 
 function partitionMoveTouchStart(event){
-	
+	graphCollection.selectAUserDefPartition(touch.graphIndex, touch.partitionIndex);
+	touch.graphPanel.render();
 }
 
 
@@ -401,7 +402,20 @@ function partitionCreateTouchMove(event){
 }
 
 function partitionMoveTouchMove(event){
+	var graph = graphCollection.graphs[touch.graphIndex];
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+	touch.finalX = curX;
+	touch.finalY = curY;
 	
+	graph.udPartitions[touch.partitionIndex] = pv.vector(curX,curY);
+	
+	touch.graphPanel.render();
 }
 
 
@@ -489,11 +503,13 @@ function partitionCreateTouchEnd(event){
 	
 	graph.udPartitions[graph.udPartitions.length-1] = pv.vector(curX,curY);
 	
+	touch.reset();
 	touch.graphPanel.render();
 }
 
 function partitionMoveTouchEnd(event){
-	
+	touch.reset();
+	touch.graphPanel.render();
 }
 
 /* Add Data Set Menu */
