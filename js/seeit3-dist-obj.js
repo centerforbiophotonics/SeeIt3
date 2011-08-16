@@ -9,7 +9,8 @@ function Touch(){
 	this.finalY = undefined;							//all
 	this.partitionIndex = undefined;			//partitionMove
 	this.dataObj = undefined;							//data
-	this.graphPanel = undefined;
+	this.graphPanel = undefined;					//partitionMove, partitionCreate
+	this.dragLabel = undefined;
 }
 
 Touch.prototype = {
@@ -24,6 +25,7 @@ Touch.prototype = {
 		this.partitionIndex = undefined;
 		this.dataObj = undefined;
 		this.graphPanel = undefined;
+		this.dragLabel = undefined;
 	},
 }
 

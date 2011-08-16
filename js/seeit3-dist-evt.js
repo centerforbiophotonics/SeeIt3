@@ -273,7 +273,7 @@ function touchStart(event){
 }
 
 function dataTouchStart(event){
-	
+	return;
 }
 
 function sideCatTouchStart(event){
@@ -351,7 +351,33 @@ function touchMove(event){
 }
 
 function dataTouchMove(event){
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+	var d = touch.dataObj;
+	var graph = graphCollection.graphs[touch.graphIndex];
 	
+	if (graphCollection.editModeEnabled &&
+			curX >= 0 &&
+			curY <= graph.w - 5){
+		
+		graphCollection.editSinglePoint(d.set,d.label,graph.x.invert(vis.mouse().x));
+		graph.selectedCategory = d.set;
+		
+		touch.dragLabel.text(graph.x.invert(curX).toFixed(1));
+		touch.dragLabel.left(curX)
+		touch.dragLabel.top(curY - 10)
+		touch.dragLabel.visible(true)
+		
+		vis.render();
+	} else {
+		touch.dragLabel.text("Delete");
+		vis.render();
+	}
 }
 
 function sideCatTouchMove(event){
@@ -502,14 +528,13 @@ function partitionCreateTouchEnd(event){
 	var curY = touch.finalY;
 	
 	graph.udPartitions[graph.udPartitions.length-1] = pv.vector(curX,curY);
-	
-	touch.reset();
 	touch.graphPanel.render();
+	touch.reset();
 }
 
 function partitionMoveTouchEnd(event){
-	touch.reset();
 	touch.graphPanel.render();
+	touch.reset();
 }
 
 /* Add Data Set Menu */

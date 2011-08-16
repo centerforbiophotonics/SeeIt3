@@ -1399,6 +1399,7 @@ function constructGraphPanel(graph, index){
 				touch.dragType = "data";
 				touch.dataObj = d;
 				touch.dragging = true;
+				touch.dragLabel = dragLabel;
 			})
 			
 		
