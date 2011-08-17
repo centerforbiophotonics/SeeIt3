@@ -71,7 +71,7 @@ function sideCatTouchStart(event){
 }
 
 function graphXCatTouchStart(event){
-	
+	console.log("touchendNATIVE");
 }
 
 function graphYCatTouchStart(event){
