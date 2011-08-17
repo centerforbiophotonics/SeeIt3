@@ -1115,7 +1115,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			.textAlign("left")
 			.textBaseline("top")
 			.textStyle(pv.rgb(0,225,0,1))
-			.textAngle(getLSLineLabelAngle(graph))
+			.textAngle(function(){return getLSLineLabelAngle(graph)})
 			.font("bold 12px sans-serif")
 		.add(pv.Label)									//R Value
 			.visible(function () { return graph.lsR && graph.lsLine })
@@ -1126,7 +1126,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			.textAlign("left")
 			.textBaseline("bottom")
 			.textStyle(pv.rgb(0,225,0,1))
-			.textAngle(getLSLineLabelAngle(graph))
+			.textAngle(function(){return getLSLineLabelAngle(graph)})
 			.font("bold 12px sans-serif");
 		
   /*R Squares*/

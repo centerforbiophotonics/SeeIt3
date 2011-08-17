@@ -503,7 +503,7 @@ $('#applyToAll').click(function(event){
 
 		graph.setXScale();
 	});
-	vis.render();
+	constructVis();
 });
 
 
