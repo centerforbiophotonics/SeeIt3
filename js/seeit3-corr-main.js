@@ -1093,7 +1093,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			.textAlign("left")
 			.textBaseline("top")
 			.textStyle("blue")
-			.textAngle(getMMLineLabelAngle(graph))
+			.textAngle(function(){return getMMLineLabelAngle(graph)})
 			.font("bold 12px sans-serif");
 			
 	/* Least Squares Regression Line */  
