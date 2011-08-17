@@ -885,7 +885,7 @@ function divideDataInto3(data) {
   if (data.length < 3) {
 		alert("The data selected has less than three rows of data.  Please add more.")
 		//console.error('Data length must be greater than 3')
-		return;
+		return null;
   }
 
   if (modulo == 0) {
@@ -906,21 +906,23 @@ function divideDataInto3(data) {
 
 function getMedianRectangles(graph) {
 	var rects = [];
-	for (var i = 0; i < graph.groups.length; i++) {
-		var bounds = getBounds(graph.groups[i]);
-		var coords = getBoundingCoords(bounds);
-		var n = graph.groups[i].length;
-		
-		var left = graph.x(coords[0][0]);
-		var bottom = graph.y(coords[2][1]);
-		var width = graph.x(coords[1][0]) - graph.x(coords[0][0]);
-		var height = graph.y(coords[0][1]) - graph.y(coords[2][1]); 
-		
-		rects.push({"left":left,
-								"bottom":bottom,
-								"width":width,
-								"height":height,
-								"n":n});
+	if (graph.groups != null){
+		for (var i = 0; i < graph.groups.length; i++) {
+			var bounds = getBounds(graph.groups[i]);
+			var coords = getBoundingCoords(bounds);
+			var n = graph.groups[i].length;
+			
+			var left = graph.x(coords[0][0]);
+			var bottom = graph.y(coords[2][1]);
+			var width = graph.x(coords[1][0]) - graph.x(coords[0][0]);
+			var height = graph.y(coords[0][1]) - graph.y(coords[2][1]); 
+			
+			rects.push({"left":left,
+									"bottom":bottom,
+									"width":width,
+									"height":height,
+									"n":n});
+		}
 	}
 	return rects;
 }
@@ -982,11 +984,13 @@ function medianYValue(dataSet) {
 
 function getMedianValuesFrom(groups) {
   var results = [];
-  for (var i = 0; i < groups.length; i++) {
-	var medX = medianXValue(groups[i]);
-	var medY = medianYValue(groups[i]);
-	results.push([medX, medY]);
-  }
+  if (graphCollection.graphs[graphCollection.selectedGraphIndex].groups != null){
+		for (var i = 0; i < groups.length; i++) {
+			var medX = medianXValue(groups[i]);
+			var medY = medianYValue(groups[i]);
+			results.push([medX, medY]);
+		}
+	}
   return results;
 }
 

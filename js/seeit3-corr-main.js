@@ -259,7 +259,7 @@ function constructVis() {
 		.top(0)
 		.left(2)
 		.cursor("pointer")
-		.title("Add a new empty graph")
+		.title("Switch between One or Two Graph View")
 		.event("click", function(){
 			graphCollection.addGraph();
 			constructVis();
@@ -1043,7 +1043,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	/* rectangle around median group */
 	graphPanel.add(pv.Bar)
 		.data(function(){return getMedianRectangles(graph)})
-		.visible(function() { return graph.mmDivs})
+		.visible(function() { return graph.mmDivs && graph.groups != null})
 		.left(function(d){return d.left})
 		.bottom(function(d){return d.bottom})
 		.width(function(d){return d.width})
@@ -1061,7 +1061,7 @@ function constructCorrGraph(graph, index, graphPanel){
 
 	/* median cross */
 		graphPanel.add(pv.Dot)
-			.visible(function() { return graph.mmDots})
+			.visible(function() { return graph.mmDots && graph.groups != null})
 			.data(function(){ return graph.medians }) 
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return graph.y(d[1]) })
@@ -1075,7 +1075,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	   That is, middle median dot's y value - y value at same x of original median line 
 	   divided by three */
 	graphPanel.add(pv.Line)
-		.visible(function() {return graph.mmLine })
+		.visible(function() {return graph.mmLine && graph.groups != null})
 		.data(function(){return [[graph.xMin, graph.mmFarLeftYVal], 
 														 [graph.xMax, graph.mmFarRightYVal]]})
 		.left(function(d) { return graph.x(d[0]) })
