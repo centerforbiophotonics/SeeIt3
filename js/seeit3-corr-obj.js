@@ -1,21 +1,38 @@
 //All variables related to a touch event
+//Event types:
+//	"dataCorr","dataX","dataY","dataBothBottom","dataBothTop",
+//	"ellipseMove","ellipseAdjust",
+//	"udLineAdjust","udLineMove",
+//	"sideCat","graphXCat","graphYCat"
 function Touch(){
-	this.draggedObj = undefined;
-	this.dragging = false;
-	this.dragCat = undefined;
-	this.dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
-	this.finalX = undefined;
-	this.finalY = undefined;
+	this.dragType = undefined;					//all
+	this.draggedObj = undefined;				//sideCat, graphXCat, graphYCat
+	this.dragging = false;							//all
+	this.dragCat = undefined;						//sideCat
+	this.finalX = undefined;						//all
+	this.finalY = undefined;						//all
+	this.graphPanel = undefined;				//all
+	this.graphIndex = undefined;  			//graphXCat, graphYCat
+	this.dataObj = undefined;						//dataCorr, dataX, dataY, dataBothTop, dataBothBottom
+	this.dragLabel = undefined;					//dataCorr, dataX, dataY
+	this.udLineHandleIndex = undefined;	//udLineAdjust
+	this.ellipseHandleIndex = undefined;//ellipseAdjust
 }
 
 Touch.prototype = {
 	reset: function(){
+		this.dragType = undefined;
 		this.draggedObj = undefined;
 		this.dragging = false;
 		this.dragCat = undefined;
-		this.dragGraphIndex = undefined;  // -1 means side panel, all others are graph index
 		this.finalX = undefined;
 		this.finalY = undefined;
+		this.graphPanel = undefined;
+		this.graphIndex = undefined;
+		this.dataObj = undefined;
+		this.dragLabel = undefined;
+		this.udLineHandleIndex = undefined;	
+		this.ellipseHandleIndex = undefined;
 	},
 }
 

@@ -47,7 +47,7 @@ table#menuItems h3 {
 	background: #ffffff;
 	border:1px solid black;
 	padding: 5px;
-	max-height: 500px;
+	max-height: 50%;
   overflow:scroll;
   overflow-x: hidden;
   -ms-overflow-x: hidden;

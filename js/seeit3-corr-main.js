@@ -289,13 +289,11 @@ function constructVis() {
 					return false;
 			})
 		
-	
-	
-	constructSidePanel();
-	
 	graphCollection.graphs.forEach(function(graph, index){
 		constructGraphPanel(graph, index);
 	});
+	
+	constructSidePanel();
 	
 	vis.render();
 }
@@ -427,10 +425,10 @@ function constructSidePanel(){
 				//vis.render();
 			})
 			.event("touchstart", function(event){
+				touch.dragType = "sideCat";
 				touch.draggedObj = dragFeedbackPanels[this.row()];
 				touch.dragging = true;
 				touch.dragCat = this.category();
-				touch.dragGraphIndex = -1;
 			})
 			
 			
@@ -496,7 +494,6 @@ function constructSidePanel(){
 }
 
 function constructGraphPanel(graph,index){
-	//graph.setupData();
 	var graphPanel = vis.add(pv.Panel)
 		.width(function(){return graph.w})
 		.height(function(){return graph.h})
@@ -660,6 +657,15 @@ function constructGraphPanel(graph,index){
 			constructVis();
 			//vis.render();
 		})
+		.event("touchstart", function(event){
+			touch.dragType = "graphXCat";
+			touch.draggedObj = xAxisDragFeedbackPanel;
+			touch.dragging = true;
+			touch.graphIndex = index;
+		})
+		.event("touchend", function(event){
+			console.log("touchend");
+		})
 		
 	graph.xAxisPanel.add(pv.Label)
 		.text(function(){
@@ -797,6 +803,12 @@ function constructGraphPanel(graph,index){
 			constructVis();
 			//vis.render();
 		})
+		.event("touchstart", function(event){
+			touch.dragType = "graphYCat";
+			touch.draggedObj = yAxisDragFeedbackPanel;
+			touch.dragging = true;
+			touch.graphIndex = index;
+		})
 		
 		
 	graph.yAxisPanel.add(pv.Label)
@@ -875,6 +887,7 @@ function constructGraphPanel(graph,index){
 }
 
 function constructEmptyGraph(graph,index, graphPanel){
+	//graph.setupStats();
 	//Empty Graph Message
 	graphPanel.add(pv.Label)
 		.left(function(){return graph.w/2})
@@ -886,7 +899,7 @@ function constructEmptyGraph(graph,index, graphPanel){
 		
 }
 
-function constructCorrGraph(graph, index, graphPanel){		
+function constructCorrGraph(graph, index, graphPanel){	
 	graphPanel.event("click", function(){
 		if (!dragging){
 			if (graphCollection.editModeEnabled){
@@ -959,7 +972,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	/* Y-axis ticks */
   graphPanel.add(pv.Rule)
 		.data(function() { return getYBuckets(graph)})//return graph.y.ticks(graphCollection.buckets) })
-		.bottom(graph.y)
+		.bottom(function(d){return graph.y(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
 				return pv.rgb(255,0,0,0.25);
@@ -974,7 +987,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	/* X-axis ticks */
   graphPanel.add(pv.Rule)
 		.data(function() { return getXBuckets(graph)})//return graph.x.ticks(graphCollection.buckets) })
-		.left(graph.x)
+		.left(function(d) {return graph.x(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
 				return pv.rgb(255,0,0,0.25);
@@ -1027,32 +1040,6 @@ function constructCorrGraph(graph, index, graphPanel){
 		.text("0")
 		
 	/* median median crosses and squares */
-//	for (var i = 0; i < graph.groups.length; i++) {
-//		var bounds = getBounds(graph.groups[i]);
-//		var coords = getBoundingCoords(bounds);
-//		var n = graph.groups[i].length;
-//		
-//		/* rectangle around median group */
-//		graphPanel.add(pv.Line)
-//			.visible(function() { return graph.mmDivs})
-//			.data(coords)
-//			.left(function(d) { return graph.x(d[0]) })
-//			.bottom(function(d) { return graph.y(d[1]) })
-//			.lineWidth(0.5)
-//			.strokeStyle("blue")
-//			.fillStyle(pv.rgb(0,0,255,0.05))
-//			.add(pv.Label)								
-//				.text(function(d) {
-//					if (this.index == 0) { return "N = "+ n;}
-//					else {return ""}
-//				})
-//				.textAlign("left")
-//				.textBaseline("top")
-//				.textStyle("blue")
-//				.textAngle(0)
-//				.font("bold 12px sans-serif");
-//	}
-	
 	/* rectangle around median group */
 	graphPanel.add(pv.Bar)
 		.data(function(){return getMedianRectangles(graph)})
@@ -1154,6 +1141,18 @@ function constructCorrGraph(graph, index, graphPanel){
 		.strokeStyle("green")
 		.fillStyle(pv.rgb(0,225,0,0.05));
 	
+	// User defined least squares
+	graphPanel.add(pv.Bar)
+		.data(function(){return getUDSquares(graph)})
+		.visible(function() { return graph.udLine && graph.udSquares })
+		.left(function(d){return d.left})
+		.bottom(function(d){return d.bottom})
+		.width(function(d){return d.size})
+		.height(function(d){return d.size})
+		.lineWidth(0.5)
+		.strokeStyle("red")
+		.fillStyle(pv.rgb(225,0,0,0.05));
+	
 	/* user drawn line */
 	var udLine = graphPanel.add(pv.Line)
 		.data(function(){return graph.userDrawnLinePoints})
@@ -1214,7 +1213,14 @@ function constructCorrGraph(graph, index, graphPanel){
 				}
 				
 				graphPanel.render();
-			})		
+			})
+			.event("touchstart", function(d){
+				touch.dragType = "udLineAdjust";
+				touch.dragging = true;
+				touch.graphPanel = graphPanel;
+				touch.graphIndex = index;
+				touch.udLineHandleIndex = this.index;
+			})
 		.add(pv.Dot)									//Midpoint
 			.data(function() {return getUserLineMidpoint(graph)})
 			.left(function(d) { return graph.x(d.x) })
@@ -1265,20 +1271,14 @@ function constructCorrGraph(graph, index, graphPanel){
 				
 				
 				graphPanel.render();
-			});
+			})
+			.event("touchstart", function(d){
+				touch.dragType = "udLineMove";
+				touch.dragging = true;
+				touch.graphPanel = graphPanel;
+				touch.graphIndex = index;
+			})
 			
-	// User defined least squares
-	graphPanel.add(pv.Bar)
-		.data(function(){return getUDSquares(graph)})
-		.visible(function() { return graph.udLine && graph.udSquares })
-		.left(function(d){return d.left})
-		.bottom(function(d){return d.bottom})
-		.width(function(d){return d.size})
-		.height(function(d){return d.size})
-		.lineWidth(0.5)
-		.strokeStyle("red")
-		.fillStyle(pv.rgb(225,0,0,0.05));
-	
 	/* user ellipse */
 	graphPanel.add(pv.Line)
 		.visible(function() { return graph.udEllipse })//jQuery('#checkboxShowMMEllipse').is(':checked') })
@@ -1359,6 +1359,13 @@ function constructCorrGraph(graph, index, graphPanel){
 					
 			graphPanel.render();
 		})
+		.event("touchstart", function(d){
+			touch.dragType = "ellipseAdjust";
+			touch.dragging = true;
+			touch.graphPanel = graphPanel;
+			touch.graphIndex = index;
+			touch.ellipseHandleIndex = this.index;
+		})
 		.add(pv.Label)								
 			.text(function(d) {
 				if (this.index == 3) { return "# of Points Inside = "+ numPointsInEllipse(graph) }
@@ -1395,7 +1402,13 @@ function constructCorrGraph(graph, index, graphPanel){
 			graph.pointsInEllipse = numPointsInEllipse(graph);
 					
 			graphPanel.render();
-		});
+		})
+		.event("touchstart", function(d){
+			touch.dragType = "ellipseMove";
+			touch.dragging = true;
+			touch.graphPanel = graphPanel;
+			touch.graphIndex = index;
+		})
 	
 	/* dot plot */
 	graphPanel.add(pv.Dot)
@@ -1480,6 +1493,13 @@ function constructCorrGraph(graph, index, graphPanel){
 				
 				vis.render();
 			}
+		})
+		.event("touchstart", function(d){
+			touch.dragType = "dataCorr";
+			touch.dataObj = d;
+			touch.dragging = true;
+			touch.graphIndex = index;
+			touch.dragLabel = draglabel;
 		})
  
 }
@@ -1686,6 +1706,12 @@ function constructTwoDistGraph(graph,index, graphPanel){
 			constructVis();
 			//vis.render();
 		})
+		.event("touchstart", function(event){
+			touch.dragType = "graphYCat";
+			touch.draggedObj = yAxisDragFeedbackPanel;
+			touch.dragging = true;
+			touch.graphIndex = index;
+		})
 		
 	graph.yAxisPanel.add(pv.Label)
 		.text(function(){
@@ -1787,6 +1813,13 @@ function constructTwoDistGraph(graph,index, graphPanel){
 				
 				vis.render();
 			}
+		})
+		.event("touchstart", function(d){
+			touch.dragType = "dataBothTop";
+			touch.dataObj = d;
+			touch.dragging = true;
+			touch.graphIndex = index;
+			touch.dragLabel = topDraglabel;
 		})
 		
 	
@@ -1950,6 +1983,13 @@ function constructTwoDistGraph(graph,index, graphPanel){
 				vis.render();
 			}
 		})
+		.event("touchstart", function(d){
+			touch.dragType = "dataBothBottom";
+			touch.dataObj = d;
+			touch.dragging = true;
+			touch.graphIndex = index;
+			touch.dragLabel = botDraglabel;
+		})
 		
 	vis.render();
 }
@@ -2099,6 +2139,13 @@ function constructXDistGraph(graph, index, graphPanel){
 				
 				vis.render();
 			}
+		})
+		.event("touchstart", function(d){
+			touch.dragType = "dataX";
+			touch.dataObj = d;
+			touch.dragging = true;
+			touch.graphIndex = index;
+			touch.dragLabel = draglabel;
 		})
 		
 	vis.render();
@@ -2270,6 +2317,13 @@ function constructYDistGraph(graph,index, graphPanel){
 				
 				vis.render();
 			}
+		})
+		.event("touchstart", function(d){
+			touch.dragType = "dataY";
+			touch.dataObj = d;
+			touch.dragging = true;
+			touch.graphIndex = index;
+			touch.dragLabel = draglabel;
 		})
 		
 	vis.render();

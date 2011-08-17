@@ -10,7 +10,7 @@ function Touch(){
 	this.partitionIndex = undefined;			//partitionMove
 	this.dataObj = undefined;							//data
 	this.graphPanel = undefined;					//partitionMove, partitionCreate
-	this.dragLabel = undefined;
+	this.dragLabel = undefined;						//data
 }
 
 Touch.prototype = {

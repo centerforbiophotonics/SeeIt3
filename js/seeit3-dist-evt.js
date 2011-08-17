@@ -823,24 +823,6 @@ $('#pasteImport').click(function(){
 	
 });
 
-/*
-$('#addPasteText').keydown(function(e){
-  if (e.keyCode == ctrlKey) ctrlDown = true;
-}).keyup(function(e){
-	if (e.keyCode == ctrlKey) ctrlDown = false;
-	else if (e.keyCode == vKey && ctrlDown){
-		var rawText = $('#addPasteText').val();
-		var cells = [];
-		rawText.split('\n').forEach(function(line){
-			cells.push(line.split('\t'));
-		});
-	}
-	resetAddDataSetMenu();
-	if (!populateAddMenuFromPaste(cells))
-		$('#addPasteFormatWarning').show();
-});
-*/
-
 function populateAddMenuFromPaste(cells){
 	var noFormatError = true;
 	if ($('#pasteHeading').is(':checked')){

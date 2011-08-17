@@ -123,6 +123,8 @@ function getUDSquares(graph){
 		left = 1;
 	}
 	
+	//console.log(left+"..."+right);
+	
 	var m = (graph.userDrawnLinePoints[right].y-graph.userDrawnLinePoints[left].y)/
 				  (graph.userDrawnLinePoints[right].x-graph.userDrawnLinePoints[left].x);
 				  
@@ -130,8 +132,8 @@ function getUDSquares(graph){
 	
 	var squares = [];
 	(graph.getData()).forEach(function(d){
-		if (d.x >= graph.userDrawnLinePoints[left ? 1:0].x &&
-				d.x <= graph.userDrawnLinePoints[right ? 1:0].x){
+		if (d.x >= graph.userDrawnLinePoints[left ? 1 : 0].x &&
+				d.x <= graph.userDrawnLinePoints[right ? 1 : 0].x){
 			var size = Math.abs(graph.y(d.y) - graph.y((m*d.x+b)));
 			var left, bottom;
 			if (d.y - (m*d.x+b) >= 0){

@@ -1,5 +1,286 @@
 /* Events */	
 
+/* Touch Events */
+document.addEventListener("touchstart", touchStart, false);
+
+function touchStart(event){
+  if (!touch.dragging) return;
+	
+	switch (touch.dragType){
+		case "dataCorr":
+			dataCorrTouchStart(event);
+			break;
+		case "dataX":
+			dataXTouchStart(event);
+			break;
+		case "dataY":
+			dataYTouchStart(event);
+			break;
+		case "dataBothTop":
+			dataBothTopTouchStart(event);
+			break;
+		case "dataBothBottom":
+			dataBothBottomTouchStart(event);
+			break;
+		case "sideCat":
+			sideCatTouchStart(event);
+			break;
+		case "graphXCat":
+			graphXCatTouchStart(event);
+			break;
+		case "graphYCat":
+			graphYCatTouchStart(event);
+			break;
+		case "ellipseMove":
+			ellipseMoveTouchStart(event);
+			break;
+		case "ellipseAdjust":
+			ellipseAdjustTouchStart(event);
+			break;
+		case "udLineMove":
+			udLineMoveTouchStart(event);
+			break;
+		case "udLineAdjust":
+			udLineAdjustTouchStart(event);
+			break;
+	}
+}
+
+function 	dataCorrTouchStart(event){
+	
+}
+
+function dataXTouchStart(event){
+	
+}
+
+function dataYTouchStart(event){
+	
+}
+
+function dataBothTopTouchStart(event){
+	
+}
+
+function dataBothBottomTouchStart(event){
+	
+}
+
+function sideCatTouchStart(event){
+	
+}
+
+function graphXCatTouchStart(event){
+	
+}
+
+function graphYCatTouchStart(event){
+	
+}
+
+function ellipseMoveTouchStart(event){
+	
+}
+
+function ellipseAdjustTouchStart(event){
+	
+}
+
+function udLineMoveTouchStart(event){
+	
+}
+
+function udLineAdjustTouchStart(event){
+	
+}
+
+document.addEventListener("touchmove", touchMove, false);
+
+function touchMove(event){
+  if (!touch.dragging) return;
+	
+	switch (touch.dragType){
+		case "dataCorr":
+			dataCorrTouchMove(event);
+			break;
+		case "dataX":
+			dataXTouchMove(event);
+			break;
+		case "dataY":
+			dataYTouchMove(event);
+			break;
+		case "dataBothTop":
+			dataBothTopTouchMove(event);
+			break;
+		case "dataBothBottom":
+			dataBothBottomTouchMove(event);
+			break;
+		case "sideCat":
+			sideCatTouchMove(event);
+			break;
+		case "graphXCat":
+			graphXCatTouchMove(event);
+			break;
+		case "graphYCat":
+			graphYCatTouchMove(event);
+			break;
+		case "ellipseMove":
+			ellipseMoveTouchMove(event);
+			break;
+		case "ellipseAdjust":
+			ellipseAdjustTouchMove(event);
+			break;
+		case "udLineMove":
+			udLineMoveTouchMove(event);
+			break;
+		case "udLineAdjust":
+			udLineAdjustTouchMove(event);
+			break;
+	}
+}
+
+function 	dataCorrTouchMove(event){
+	
+}
+
+function dataXTouchMove(event){
+	
+}
+
+function dataYTouchMove(event){
+	
+}
+
+function dataBothTopTouchMove(event){
+	
+}
+
+function dataBothBottomTouchMove(event){
+	
+}
+
+function sideCatTouchMove(event){
+	
+}
+
+function graphXCatTouchMove(event){
+	
+}
+
+function graphYCatTouchMove(event){
+	
+}
+
+function ellipseMoveTouchMove(event){
+	
+}
+
+function ellipseAdjustTouchMove(event){
+	
+}
+
+function udLineMoveTouchMove(event){
+	
+}
+
+function udLineAdjustTouchMove(event){
+	
+}
+
+document.addEventListener("touchend", touchEnd, false);
+
+function touchEnd(event){
+  if (!touch.dragging) return;
+	
+	switch (touch.dragType){
+		case "dataCorr":
+			dataCorrTouchEnd(event);
+			break;
+		case "dataX":
+			dataXTouchEnd(event);
+			break;
+		case "dataY":
+			dataYTouchEnd(event);
+			break;
+		case "dataBothTop":
+			dataBothTopTouchEnd(event);
+			break;
+		case "dataBothBottom":
+			dataBothBottomTouchEnd(event);
+			break;
+		case "sideCat":
+			sideCatTouchEnd(event);
+			break;
+		case "graphXCat":
+			graphXCatTouchEnd(event);
+			break;
+		case "graphYCat":
+			graphYCatTouchEnd(event);
+			break;
+		case "ellipseMove":
+			ellipseMoveTouchEnd(event);
+			break;
+		case "ellipseAdjust":
+			ellipseAdjustTouchEnd(event);
+			break;
+		case "udLineMove":
+			udLineMoveTouchEnd(event);
+			break;
+		case "udLineAdjust":
+			udLineAdjustTouchEnd(event);
+			break;
+	}
+}
+
+function 	dataCorrTouchEnd(event){
+	
+}
+
+function dataXTouchEnd(event){
+	
+}
+
+function dataYTouchEnd(event){
+	
+}
+
+function dataBothTopTouchEnd(event){
+	
+}
+
+function dataBothBottomTouchEnd(event){
+	
+}
+
+function sideCatTouchEnd(event){
+	
+}
+
+function graphXCatTouchEnd(event){
+	
+}
+
+function graphYCatTouchEnd(event){
+	
+}
+
+function ellipseMoveTouchEnd(event){
+	
+}
+
+function ellipseAdjustTouchEnd(event){
+	
+}
+
+function udLineMoveTouchEnd(event){
+	
+}
+
+function udLineAdjustTouchEnd(event){
+	
+}
+
+
 /* Dynamic Graph Resizing */
 $(window).resize(function() {
 	graphCollection.setW(calcGraphWidth());
@@ -18,13 +299,6 @@ jQuery('#newSpreadsheetURL').keyup(function(event) {
   }
 });
 
-
-
-//jQuery('#menu').change(function(event) {
-  //constructVis();
-//  vis.render();
-//  event.stopPropagation();
-//});
 
 $('#refreshWorksheet').click(function(event){
 	getWorksheet().fetchWorksheetData();
@@ -53,10 +327,6 @@ jQuery('#workSheetSelector').change(function(event) {
 	}
 });
 
-//jQuery('#workSheetSelector').change(function(event) {
-//  graphCollection = new GraphCollection();
-//  constructVis();
-//});
 
 $('#about').click(function(){
 	$('#aboutPopup').slideToggle();
@@ -102,8 +372,12 @@ $('#graphOptClose').click(function(){
 	hideMenus();
 });
 
-
 jQuery('#graphOptions').change(function(event) {
+	var oldMMEQ = graphCollection.graphs[graphCollection.selectedGraphIndex].mmEQ;
+	var oldLSR = graphCollection.graphs[graphCollection.selectedGraphIndex].lsR;
+	var oldLSEQ = graphCollection.graphs[graphCollection.selectedGraphIndex].lsEQ;
+	var oldTwoDist = graphCollection.graphs[graphCollection.selectedGraphIndex].twoDistView;
+	
 	graphCollection.graphs[graphCollection.selectedGraphIndex].udLine = $("#checkboxShowUserLine").is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].udSquares = $("#checkboxUDSquares").is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].udEllipse = $("#checkboxShowEllipse").is(':checked');
@@ -122,36 +396,32 @@ jQuery('#graphOptions').change(function(event) {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].twoDistView = $("#showBothDist").is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].labelPrompt = $("#promptForLabel").is(':checked');
 	
-  constructVis();
-  event.stopPropagation();
+	if (oldMMEQ == false && oldMMEQ != graphCollection.graphs[graphCollection.selectedGraphIndex].mmEQ)
+		graphCollection.graphs[graphCollection.selectedGraphIndex].mmLine = true;
+		
+	if (oldLSR == false && oldLSR != graphCollection.graphs[graphCollection.selectedGraphIndex].lsR)
+		graphCollection.graphs[graphCollection.selectedGraphIndex].lsLine = true;
+		
+	if (oldLSEQ == false && oldLSEQ != graphCollection.graphs[graphCollection.selectedGraphIndex].lsEQ)
+		graphCollection.graphs[graphCollection.selectedGraphIndex].lsLine = true;
+	
+	if (oldTwoDist != graphCollection.graphs[graphCollection.selectedGraphIndex].twoDistView)
+		constructVis();
+	else
+		vis.render();
+
+  //event.stopPropagation();
 });
+
+
 
 $('#fitScalesToData').change(function() {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = jQuery('#fitScalesToData').is(':checked');
-	//graphCollection.graphs[graphCollection.selectedGraphIndex].customScale = !jQuery('#fitScaleToData').is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].setXScale();
 	graphCollection.graphs[graphCollection.selectedGraphIndex].setYScale();
 	graphCollection.updateMenuOptions();
-	constructVis();
+	vis.render();
 });
-
-//jQuery('#checkboxShowMMEqn').change(function(event) {
-//  if (jQuery('#checkboxShowMMEqn').is(':checked'))
-//	jQuery('#checkboxShowMMLine').attr('checked', true);
-//  constructVis();
-//});
-
-//jQuery('#checkboxShowLeastSquaresEquation').change(function(event) {
-//  if (jQuery('#checkboxShowLeastSquaresEquation').is(':checked'))
-//	jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
-//  constructVis();
-//});
-
-//jQuery('#checkboxShowLeastSquaresRValue').change(function(event) {
-//  if (jQuery('#checkboxShowLeastSquaresRValue').is(':checked'))
-//	jQuery('#checkboxShowLeastSquaresLine').attr('checked', true);
-//  constructVis();
-//});
 
 $('#textYMin').change(function(event) {
 	var textBoxVal = parseFloat($('#textYMin').val());
@@ -159,7 +429,6 @@ $('#textYMin').change(function(event) {
 	if (isNaN(textBoxVal) || textBoxVal >= curMax){
 		$('#textYMin').val(graphCollection.graphs[graphCollection.selectedGraphIndex].y.domain()[0]);
 	} else {
-		console.log("fit")
 		graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = false;
 		graphCollection.graphs[graphCollection.selectedGraphIndex].setYScale(textBoxVal, curMax);
 		graphCollection.graphs[graphCollection.selectedGraphIndex].customScale = true;
@@ -282,6 +551,22 @@ jQuery('#sliderDivisions').slider({
 		graphCollection.buckets = ui.value;
 		vis.render(); 
 	}
+});
+
+$("#buttonMode").change(function(){
+	var val = jQuery("#buttonMode option:selected").val();
+	
+	if (val == "both"){
+		graphCollection.buttonText = true;
+		graphCollection.buttonIcon = true;
+	} else if (val == "icon"){
+		graphCollection.buttonText = false;
+		graphCollection.buttonIcon = true;
+	} else if (val == "text"){
+		graphCollection.buttonText = true;
+		graphCollection.buttonIcon = false;
+	}
+	vis.render();
 });
 
 /* Add Data Set Menu */
@@ -538,24 +823,6 @@ $('#pasteImport').click(function(){
 	$('#dataSetAdd').slideDown();
 	
 });
-
-/*
-$('#addPasteText').keydown(function(e){
-  if (e.keyCode == ctrlKey) ctrlDown = true;
-}).keyup(function(e){
-	if (e.keyCode == ctrlKey) ctrlDown = false;
-	else if (e.keyCode == vKey && ctrlDown){
-		var rawText = $('#addPasteText').val();
-		var cells = [];
-		rawText.split('\n').forEach(function(line){
-			cells.push(line.split('\t'));
-		});
-	}
-	resetAddDataSetMenu();
-	if (!populateAddMenuFromPaste(cells))
-		$('#addPasteFormatWarning').show();
-});
-*/
 
 function populateAddMenuFromPaste(cells){
 	var noFormatError = true;
