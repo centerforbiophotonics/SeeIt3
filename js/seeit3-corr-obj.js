@@ -410,8 +410,6 @@ function Graph(worksheet, graphCollection){
 	this.pointsInEllipse = null;
 	
 	this.dataChanged = false;
-	
-	
 }
 
 Graph.prototype = {

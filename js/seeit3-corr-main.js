@@ -506,6 +506,8 @@ function constructGraphPanel(graph,index){
 			hideMenus();
 		})
 		
+	graph.graphPanel = graphPanel;
+		
 	
 	/*Graph Title*/		  
 	graphPanel.add(pv.Label)
@@ -736,7 +738,7 @@ function constructGraphPanel(graph,index){
 		})
 		.left(-85)
 		.visible(function(){return graph.twoDistView == false || graph.xData == null || graph.yData == null})
-		.bottom(function(){return graph.h/2 - this.height()/2})
+		.top(function(){return graph.h/2 - this.height()/2})
 		.lineWidth(1)
 		.cursor("move")
 		.events("all")
