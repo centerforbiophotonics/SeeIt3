@@ -666,6 +666,9 @@ function constructGraphPanel(graph,index){
 			touch.dragging = true;
 			touch.graphIndex = index;
 		})
+		.event("touchmove",function(){
+			console.log("touchmove");
+		}
 		.event("touchend", function(event){
 			console.log("touchend");
 		})
