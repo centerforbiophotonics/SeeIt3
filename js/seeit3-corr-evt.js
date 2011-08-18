@@ -321,6 +321,18 @@ function whichDropZone(x,y){
 				graphCollection.graphs[0].yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
 				graphCollection.graphs[0].yAxisPanel.render();
 			}
+			
+			if (gpX > graphCollection.graphs[0].xAxisPanel.left() && 
+					gpX < graphCollection.graphs[0].xAxisPanel.left() + graphCollection.graphs[0].xAxisPanel.width() &&
+					gpY > graphCollection.graphs[0].xAxisPanel.top() &&
+					gpY < graphCollection.graphs[0].xAxisPanel.top() + graphCollection.graphs[0].xAxisPanel.height())
+			{
+				graphCollection.graphs[0].xAxisPanel.strokeStyle("black");
+				graphCollection.graphs[0].xAxisPanel.render();
+			} else {
+				graphCollection.graphs[0].xAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
+				graphCollection.graphs[0].xAxisPanel.render();
+			}
 		} else {
 			
 			

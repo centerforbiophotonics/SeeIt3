@@ -593,7 +593,7 @@ function constructGraphPanel(graph,index){
 				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.xData) + 20;
 		})
 		.left(function(){return graph.w/2 - this.width()/2})
-		.bottom(-70)
+		.top(function(){return graph.h + 30})
 		.lineWidth(1)
 		.cursor("move")
 		.events("all")
