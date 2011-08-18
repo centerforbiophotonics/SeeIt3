@@ -338,7 +338,7 @@ function udLineAdjustTouchEnd(event){
 
 
 function whichDropZone(x,y){
-	if (graphCollection.graphs.length() == 1){
+	if (graphCollection.graphs.length == 1){
 		var gpX = x-graphCollection.graphs[0].graphPanel.left();
 		var gpY = y-graphCollection.graphs[0].graphPanel.top();
 		
@@ -363,7 +363,7 @@ function whichDropZone(x,y){
 		}
 		
 		return false;
-	} else if (graphCollection.graphs.length() > 1) {
+	} else if (graphCollection.graphs.length > 1) {
 		var gp0X = x-graphCollection.graphs[0].graphPanel.left();
 		var gp0Y = y-graphCollection.graphs[0].graphPanel.top();
 		
