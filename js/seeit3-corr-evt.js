@@ -302,7 +302,7 @@ function sideCatTouchEnd(event){
 	})
 	
 	if (which != false){
-		if (which.gInd == "y")
+		if (which.gAxis == "y")
 			graphCollection.graphs[which.gInd].assignY(touch.dragCat);
 		else
 			graphCollection.graphs[which.gInd].assignX(touch.dragCat);
