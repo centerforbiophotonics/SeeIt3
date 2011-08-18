@@ -44,6 +44,7 @@ function touchStart(event){
 			udLineAdjustTouchStart(event);
 			break;
 	}
+	touch.reset();
 }
 
 function 	dataCorrTouchStart(event){
@@ -147,6 +148,7 @@ function touchMove(event){
 			udLineAdjustTouchMove(event);
 			break;
 	}
+	touch.reset();
 }
 
 function 	dataCorrTouchMove(event){
@@ -266,6 +268,7 @@ function touchEnd(event){
 			udLineAdjustTouchEnd(event);
 			break;
 	}
+	touch.reset();
 }
 
 function 	dataCorrTouchEnd(event){
