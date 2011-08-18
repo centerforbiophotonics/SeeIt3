@@ -297,19 +297,18 @@ function sideCatTouchEnd(event){
 	
 	graphCollection.graphs.forEach(function(g){
 		g.yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
-		g.yAxisPanel.render();
 		g.xAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
-		g.xAxisPanel.render();
 	})
 	
 	if (which != false){
 		if (which.gInd == "y")
-		graphCollection.graphs[which.gInd].assignY(touch.dragCat);
+			graphCollection.graphs[which.gInd].assignY(touch.dragCat);
+		else
+			graphCollection.graphs[which.gInd].assignX(touch.dragCat);
 	}
 	
 	touch.draggedObj.visible(false);
-	touch.draggedObj.render();
-	touch.graphPanel.render();
+	vis.render();
 }
 
 function graphXCatTouchEnd(event){
