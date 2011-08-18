@@ -1008,13 +1008,11 @@ function medianYValue(dataSet) {
 }
 
 function getMedianValuesFrom(groups) {
-  var results = [];
-  if (graphCollection.graphs[graphCollection.selectedGraphIndex].groups != null){
-		for (var i = 0; i < groups.length; i++) {
-			var medX = medianXValue(groups[i]);
-			var medY = medianYValue(groups[i]);
-			results.push([medX, medY]);
-		}
+  var results = []; 
+	for (var i = 0; i < groups.length; i++) {
+		var medX = medianXValue(groups[i]);
+		var medY = medianYValue(groups[i]);
+		results.push([medX, medY]);
 	}
   return results;
 }

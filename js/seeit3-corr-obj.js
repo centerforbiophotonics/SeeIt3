@@ -523,7 +523,7 @@ Graph.prototype = {
 		/* Variables defined in normalized coordinates */
 		/* median median crosses and squares */
 		this.groups = divideDataInto3(data);
-		if (this.groups != null){
+		if (this.groups != null && this.groups != undefined){
 			this.medians = getMedianValuesFrom(this.groups);
 			
 			/* median-median line */ 

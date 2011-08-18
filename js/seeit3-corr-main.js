@@ -500,6 +500,9 @@ function constructGraphPanel(graph,index){
 		.top(20)
 		.left(function(){return 60 + index * graph.w + index * 130})
 		.events("all")
+		.event("click", function(){
+			hideMenus();
+		})
 		
 	
 	/*Graph Title*/		  
@@ -901,6 +904,7 @@ function constructEmptyGraph(graph,index, graphPanel){
 
 function constructCorrGraph(graph, index, graphPanel){	
 	graphPanel.event("click", function(){
+		hideMenus();
 		if (!dragging){
 			if (graphCollection.editModeEnabled){
 				var mouseX = graphPanel.mouse().x;
@@ -1512,6 +1516,10 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	graph.yMin = pv.min(graph.worksheet.data[graph.yData], function(d) { return d.value });
 	graph.setYScale();
 	
+	graphPanel.event("click", function(){
+		hideMenus();
+	});
+	
 	//Top subgraph is y-axis data
 	var topDist = graphPanel.add(pv.Panel)
 		.width(function(){return graph.w})
@@ -1520,6 +1528,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.left(0)
 		.events("all")
 		.event("click", function(){
+			hideMenus();
 			if (!dragging){
 				if (graphCollection.editModeEnabled){
 					var mouseX = topDist.mouse().x;
@@ -1838,6 +1847,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.left(0)
 		.events("all")
 		.event("click", function(){
+			hideMenus();
 			if (!dragging){
 				if (graphCollection.editModeEnabled){
 					var mouseX = bottomDist.mouse().x;
@@ -1996,6 +2006,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 
 function constructXDistGraph(graph, index, graphPanel){		
 	graphPanel.event("click", function(){
+		hideMenus();
 		if (!dragging){
 			if (graphCollection.editModeEnabled){
 				var mouseX = graphPanel.mouse().x;
@@ -2153,6 +2164,7 @@ function constructXDistGraph(graph, index, graphPanel){
 	
 function constructYDistGraph(graph,index, graphPanel){
 	graphPanel.event("click", function(){
+		hideMenus();
 		if (!dragging){
 			if (graphCollection.editModeEnabled){
 				var mouseY = graph.h - graphPanel.mouse().y;
