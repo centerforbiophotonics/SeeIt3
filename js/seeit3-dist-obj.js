@@ -397,7 +397,6 @@ Graph.prototype = {
 			newMin = min;
 		
 		if (this.fitScaleToData) {
-			console.log("fit")
 			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
 		} else {
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);

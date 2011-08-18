@@ -219,7 +219,6 @@ function calcGraphWidth(){
 
 function countDataInPartitions(graph, partitions){
 	var counts = [];
-	//console.log(partitions.length);
 	var partLength = partitions.length;
 	for (var index=0; index< partLength-1; index++){
 		var count = 0;
@@ -240,7 +239,8 @@ function countDataInUserDefPartitions(graph){
 
 function getSortedUDPartitionXVals(graph){
 	var udPartXVals = [graph.x.domain()[0]];
-	udPartXVals = udPartXVals.concat(graph.udPartitions.map(function(d){return graph.x.invert(d.x)}).sort(function(a,b){return a - b}));
+	udPartXVals = udPartXVals.concat(graph.udPartitions.map(function(d){
+		return graph.x.invert(d.x)}).sort(function(a,b){return a - b}));
 	udPartXVals = udPartXVals.concat(graph.x.domain()[1]);
 	return udPartXVals;
 }

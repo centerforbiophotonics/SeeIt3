@@ -19,19 +19,18 @@ $(window).resize(function() {
 
 /* Top Bar Menu Items */
 jQuery('#newSpreadsheetURL').keyup(function(event) {
-  if (event.keyCode == '13') {
-	var key = parseSpreadsheetKeyFromURL($(this).val());
-	$(this).val('');
-	exampleSpreadsheets.push(new Spreadsheet(key));
-  }
+	if (event.keyCode == '13') {
+		var key = parseSpreadsheetKeyFromURL($(this).val());
+		$(this).val('');
+		exampleSpreadsheets.push(new Spreadsheet(key));
+	}
 });
 
 jQuery('#editInGoogleDocs').click(function(event) {
-  var URL = jQuery('#workSheetSelector').val();
-  console.log(URL);
-  var matches = /feeds\/cells\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
-  window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
-  event.preventDefault();
+	var URL = jQuery('#workSheetSelector').val();
+	var matches = /feeds\/cells\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+	window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
+	event.preventDefault();
 });
 
 jQuery('#workSheetSelector').change(function(event) {

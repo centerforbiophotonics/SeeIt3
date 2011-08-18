@@ -1120,7 +1120,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.add(pv.Label)									//R Value
 			.visible(function () { return graph.lsR && graph.lsLine })
 			.text(function(d) {
-				if (this.index == 0) { return "R = "+ getR(graph.getData()).toFixed(2);}
+				if (this.index == 0) { return "R = "+ getR(graph.getData()).toFixed(2)+ " -- Sum of Squares = "+ getSumOfLeastSquares(graph).toFixed(1);}
 				else {return ""}
 			})
 			.textAlign("left")
@@ -1135,8 +1135,8 @@ function constructCorrGraph(graph, index, graphPanel){
 		.visible(function() { return graph.lsSquares && graph.lsLine })
 		.left(function(d){return d.left})
 		.bottom(function(d){return d.bottom})
-		.width(function(d){return d.size})
-		.height(function(d){return d.size})
+		.width(function(d){return d.width})
+		.height(function(d){return d.height})
 		.lineWidth(0.5)
 		.strokeStyle("green")
 		.fillStyle(pv.rgb(0,225,0,0.05));
@@ -1147,8 +1147,8 @@ function constructCorrGraph(graph, index, graphPanel){
 		.visible(function() { return graph.udLine && graph.udSquares })
 		.left(function(d){return d.left})
 		.bottom(function(d){return d.bottom})
-		.width(function(d){return d.size})
-		.height(function(d){return d.size})
+		.width(function(d){return d.width})
+		.height(function(d){return d.height})
 		.lineWidth(0.5)
 		.strokeStyle("red")
 		.fillStyle(pv.rgb(225,0,0,0.05));
@@ -1173,7 +1173,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			.textStyle("red")
 			.textAngle(function() { return getUserLineLabelAngle(graph)})
 			.font("bold 12px sans-serif")
-		.add(pv.Label)									//R Squared Value
+		.add(pv.Label)									//Sum of Squares
 			.visible(function () { return graph.udLine })
 			.text(function(d) {
 				if (this.index == 0) { return "Sum of Squares = "+ getUserLineR(graph).toFixed(2);}

@@ -104,11 +104,31 @@ function getRSquares(graph){
 		var bottom = Math.min(sqrBounds[0][1],sqrBounds[2][1]);
 		var size = Math.abs(sqrBounds[0][0] - sqrBounds[2][0]);
 		
+		var width = height = size;
+		if (left < 0){
+			left = 0;
+			width = graph.x(graph.getData()[i].x);
+		}
+		if (left + size > graph.w)
+			width = graph.w - left;
+		
 		squares.push({"left": left,
 									"bottom":bottom,
-									"size":size});
+									"width":width,
+									"height":height});
   }
   return squares;
+}
+
+function getSumOfLeastSquares(graph){
+	var sos = 0;
+	for (var i=0; i < graph.getData().length; i++){
+		var sqrBounds = getRSquareBounds(graph, i);   
+		var size = Math.abs(graph.x(sqrBounds[0][0]) - graph.x(sqrBounds[2][0]));
+		sos += Math.pow(size,2);
+		
+  }
+  return sos;
 }
 
 function getUDSquares(graph){
@@ -123,8 +143,6 @@ function getUDSquares(graph){
 		left = 1;
 	}
 	
-	//console.log(left+"..."+right);
-	
 	var m = (graph.userDrawnLinePoints[right].y-graph.userDrawnLinePoints[left].y)/
 				  (graph.userDrawnLinePoints[right].x-graph.userDrawnLinePoints[left].x);
 				  
@@ -135,6 +153,7 @@ function getUDSquares(graph){
 		if (d.x >= graph.userDrawnLinePoints[left ? 1 : 0].x &&
 				d.x <= graph.userDrawnLinePoints[right ? 1 : 0].x){
 			var size = Math.abs(graph.y(d.y) - graph.y((m*d.x+b)));
+			var width = height = size;
 			var left, bottom;
 			if (d.y - (m*d.x+b) >= 0){
 				if (m >= 0){
@@ -153,9 +172,15 @@ function getUDSquares(graph){
 					bottom = graph.y(d.y);
 				}
 			}
+			if (left < 0)
+				left = 0;
+			if (left + size > graph.w)
+				width = graph.w - left;
+				
 			squares.push({"left": left,
 										"bottom":bottom,
-										"size":size});
+										"width":width,
+										"height":height});
 		}
   });
   return squares;
