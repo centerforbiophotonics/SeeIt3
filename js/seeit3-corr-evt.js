@@ -170,7 +170,18 @@ function dataBothBottomTouchMove(event){
 }
 
 function sideCatTouchMove(event){
-	
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+	touch.draggedObj.left(curX);
+	touch.draggedObj.top(curY);
+	touch.finalX = curX;
+	touch.finalY = curY;
+	touch.draggedObj.render();
 }
 
 function graphXCatTouchMove(event){
