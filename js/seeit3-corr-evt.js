@@ -309,7 +309,7 @@ function whichDropZone(x,y){
 	if(graphCollection.graphs.length == 1){
 		var gpX = x-graphCollection.graphs[0].graphPanel.left();
 		var gpY = y-graphCollection.graphs[0].graphPanel.top();
-		if (graphCollection.graphs[0].twoDistView == false){
+		//if (graphCollection.graphs[0].twoDistView == false){
 			if (gpX > graphCollection.graphs[0].yAxisPanel.left() && 
 					gpX < graphCollection.graphs[0].yAxisPanel.left() + graphCollection.graphs[0].yAxisPanel.width() &&
 					gpY > graphCollection.graphs[0].yAxisPanel.top() &&
@@ -333,10 +333,10 @@ function whichDropZone(x,y){
 				graphCollection.graphs[0].xAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
 				graphCollection.graphs[0].xAxisPanel.render();
 			}
-		} else {
+		//} else {
 			
 			
-		}
+		//}
 	} else {
 		console.log("miss");
 	}

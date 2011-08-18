@@ -1631,7 +1631,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	
 	
 	//Y-axis drag drop zone
-	graph.yAxisPanel = topDist.add(pv.Panel)
+	graph.yAxisPanel = graphPanel.add(pv.Panel)
 		.data([{"x":0,"y":0}])
 		.height(function(){
 			if (graph.yData == null)
@@ -1646,7 +1646,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
 		})
 		.left(function(){return graph.w/2 - this.width()/2})
-		.bottom(-50)
+		.top(function(){return (graph.h-80)/2 + 18})
 		.lineWidth(1)
 		.cursor("move")
 		.events("all")
