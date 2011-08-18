@@ -267,6 +267,7 @@ function touchEnd(event){
 			break;
 	}
 	touch.reset();
+	constructVis();
 }
 
 function 	dataCorrTouchEnd(event){
@@ -299,17 +300,16 @@ function sideCatTouchEnd(event){
 	graphCollection.graphs.forEach(function(g){
 		g.yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
 		g.xAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
-	})
+	});
 	
 	if (which != false){
 		if (which.gAxis == "y")
 			graphCollection.graphs[which.gInd].assignY(touch.dragCat);
-		else
+		else if (which.gAxis == "x")
 			graphCollection.graphs[which.gInd].assignX(touch.dragCat);
 	}
 	
 	touch.draggedObj.visible(false);
-	constructVis();
 }
 
 function graphXCatTouchEnd(event){
