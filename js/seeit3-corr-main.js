@@ -42,6 +42,8 @@ function constructVis() {
 		.left(function(){return graphCollection.padLeft})
 		.right(function(){return graphCollection.padRight})
 		.top(function(){return graphCollection.padTop})
+		//.events("all")
+		//.event("click",function(){console.log(vis.mouse())})
 	
 	/* Divider Between Graphs and Data Sets */
 	vis.add(pv.Rule)
@@ -665,51 +667,8 @@ function constructGraphPanel(graph,index){
 			touch.draggedObj = xAxisDragFeedbackPanel;
 			touch.dragging = true;
 			touch.graphIndex = index;
-			touch.loc = vis.mouse();
 		})
-		.event("touchmove",function(){
-			console.log("touchmove");
-			touch.loc = vis.mouse();
-		})
-		.event("touchend", function(event){
-			var mouseY = vis.mouse().y;
-			var mouseX = vis.mouse().x;
-			console.log(mouseY+"..."+mouseX);
-			xAxisDragFeedbackPanel.left(mouseX);
-			xAxisDragFeedbackPanel.top(mouseY);
-			xAxisDragFeedbackPanel.render();
-			
-			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
-				graphCollection.graphs.forEach(function(g,i){
-					if (g.xAxisPanel.mouse().x > 0 &&
-							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
-							g.xAxisPanel.mouse().y > 0 &&
-							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
-					{
-						if (i != thisGraphIndex){
-							g.assignX(category);
-							graph.assignX(null);
-						}
-					}
-					
-					if (g.yAxisPanel.mouse().x > 0 &&
-							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
-							g.yAxisPanel.mouse().y > 0 &&
-							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
-					{
-						if (i == thisGraphIndex){
-							g.assignX(g.yData);
-							g.assignY(category);
-						} else {
-							g.assignY(category);
-							graph.assignX(null);
-						}
-					}
-				});
-			} else {
-				graph.assignX(null);
-			}
-		})
+		
 		
 	graph.xAxisPanel.add(pv.Label)
 		.text(function(){

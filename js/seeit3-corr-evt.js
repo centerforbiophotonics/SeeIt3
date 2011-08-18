@@ -67,7 +67,17 @@ function dataBothBottomTouchStart(event){
 }
 
 function sideCatTouchStart(event){
-	
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+	touch.draggedObj.left(curX);
+	touch.draggedObj.top(curY);
+	touch.draggedObj.visible(true);
+	touch.draggedObj.render();
 }
 
 function graphXCatTouchStart(event){
