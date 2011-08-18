@@ -668,7 +668,7 @@ function constructGraphPanel(graph,index){
 		})
 		.event("touchmove",function(){
 			console.log("touchmove");
-		}
+		})
 		.event("touchend", function(event){
 			console.log("touchend");
 		})
