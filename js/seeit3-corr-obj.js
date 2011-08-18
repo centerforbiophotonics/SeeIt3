@@ -17,6 +17,7 @@ function Touch(){
 	this.dragLabel = undefined;					//dataCorr, dataX, dataY
 	this.udLineHandleIndex = undefined;	//udLineAdjust
 	this.ellipseHandleIndex = undefined;//ellipseAdjust
+	this.loc = undefined;
 }
 
 Touch.prototype = {
@@ -33,6 +34,7 @@ Touch.prototype = {
 		this.dragLabel = undefined;
 		this.udLineHandleIndex = undefined;	
 		this.ellipseHandleIndex = undefined;
+		this.loc = undefined;
 	},
 }
 
