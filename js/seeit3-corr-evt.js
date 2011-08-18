@@ -289,7 +289,27 @@ function dataBothBottomTouchEnd(event){
 }
 
 function sideCatTouchEnd(event){
+	var curX = touch.finalX;
+							
+	var curY = touch.finalY;
+							
+	var which = whichDropZone(curX,curY);
 	
+	graphCollection.graphs.forEach(function(g){
+		g.yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
+		g.yAxisPanel.render();
+		g.xAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
+		g.xAxisPanel.render();
+	})
+	
+	if (which != false){
+		if (which.gInd == "y")
+		graphCollection.graphs[which.gInd].assignY(touch.dragCat);
+	}
+	
+	touch.draggedObj.visible(false);
+	touch.draggedObj.render();
+	touch.graphPanel.render();
 }
 
 function graphXCatTouchEnd(event){
