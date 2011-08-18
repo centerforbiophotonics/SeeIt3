@@ -309,11 +309,22 @@ function whichDropZone(x,y){
 	if(graphCollection.graphs.length == 1){
 		var gpX = x-graphCollection.graphs[0].graphPanel.left();
 		var gpY = y-graphCollection.graphs[0].graphPanel.top();
-		if (gpX > graphCollection.graphs[0].yAxisPanel.left() && 
-				gpX < graphCollection.graphs[0].yAxisPanel.left() + graphCollection.graphs[0].yAxisPanel.width() &&
-				gpY > graphCollection.graphs[0].yAxisPanel.top() &&
-				gpY < graphCollection.graphs[0].yAxisPanel.top() + graphCollection.graphs[0].yAxisPanel.height())
-			console.log("graph0 y not 2dist view");
+		if (graphCollection.graphs[0].twoDistView == false){
+			if (gpX > graphCollection.graphs[0].yAxisPanel.left() && 
+					gpX < graphCollection.graphs[0].yAxisPanel.left() + graphCollection.graphs[0].yAxisPanel.width() &&
+					gpY > graphCollection.graphs[0].yAxisPanel.top() &&
+					gpY < graphCollection.graphs[0].yAxisPanel.top() + graphCollection.graphs[0].yAxisPanel.height())
+			{
+				graphCollection.graphs[0].yAxisPanel.strokeStyle("black");
+				graphCollection.graphs[0].yAxisPanel.render();
+			} else {
+				graphCollection.graphs[0].yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
+				graphCollection.graphs[0].yAxisPanel.render();
+			}
+		} else {
+			
+			
+		}
 	} else {
 		console.log("miss");
 	}
