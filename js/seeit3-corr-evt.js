@@ -308,7 +308,7 @@ function sideCatTouchEnd(event){
 	}
 	
 	touch.draggedObj.visible(false);
-	vis.render();
+	constructVis();
 }
 
 function graphXCatTouchEnd(event){
