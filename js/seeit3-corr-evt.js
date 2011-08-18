@@ -295,7 +295,8 @@ function sideCatTouchEnd(event){
 							
 	var curY = touch.finalY;
 							
-	var which = whichDropZone(curX,curY);
+	//var which = whichDropZone(curX,curY);
+	var which = false;
 	
 	graphCollection.graphs.forEach(function(g){
 		g.yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
