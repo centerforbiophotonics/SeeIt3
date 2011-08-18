@@ -178,7 +178,19 @@ function sideCatTouchMove(event){
 							$('span').offset().top - 
 							graphCollection.padTop;
 							
-	whichDropZone(curX,curY);
+	var which = whichDropZone(curX,curY);
+	
+	graphCollection.graphs.forEach(function(g){
+		g.yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
+		g.yAxisPanel.render();
+		g.xAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
+		g.xAxisPanel.render();
+	})
+	
+	if (which != false){
+		which.gPan.strokeStyle("black");
+		which.gPan.render();
+	}
 	
 	touch.draggedObj.left(curX);
 	touch.draggedObj.top(curY);
@@ -309,36 +321,76 @@ function whichDropZone(x,y){
 	if(graphCollection.graphs.length == 1){
 		var gpX = x-graphCollection.graphs[0].graphPanel.left();
 		var gpY = y-graphCollection.graphs[0].graphPanel.top();
-		//if (graphCollection.graphs[0].twoDistView == false){
-			if (gpX > graphCollection.graphs[0].yAxisPanel.left() && 
-					gpX < graphCollection.graphs[0].yAxisPanel.left() + graphCollection.graphs[0].yAxisPanel.width() &&
-					gpY > graphCollection.graphs[0].yAxisPanel.top() &&
-					gpY < graphCollection.graphs[0].yAxisPanel.top() + graphCollection.graphs[0].yAxisPanel.height())
-			{
-				graphCollection.graphs[0].yAxisPanel.strokeStyle("black");
-				graphCollection.graphs[0].yAxisPanel.render();
-			} else {
-				graphCollection.graphs[0].yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
-				graphCollection.graphs[0].yAxisPanel.render();
-			}
-			
-			if (gpX > graphCollection.graphs[0].xAxisPanel.left() && 
-					gpX < graphCollection.graphs[0].xAxisPanel.left() + graphCollection.graphs[0].xAxisPanel.width() &&
-					gpY > graphCollection.graphs[0].xAxisPanel.top() &&
-					gpY < graphCollection.graphs[0].xAxisPanel.top() + graphCollection.graphs[0].xAxisPanel.height())
-			{
-				graphCollection.graphs[0].xAxisPanel.strokeStyle("black");
-				graphCollection.graphs[0].xAxisPanel.render();
-			} else {
-				graphCollection.graphs[0].xAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
-				graphCollection.graphs[0].xAxisPanel.render();
-			}
-		//} else {
-			
-			
-		//}
+		
+		if (gpX > graphCollection.graphs[0].yAxisPanel.left() && 
+				gpX < graphCollection.graphs[0].yAxisPanel.left() + graphCollection.graphs[0].yAxisPanel.width() &&
+				gpY > graphCollection.graphs[0].yAxisPanel.top() &&
+				gpY < graphCollection.graphs[0].yAxisPanel.top() + graphCollection.graphs[0].yAxisPanel.height())
+		{
+			return {"gInd":0,
+							"gAxis":"y",
+							"gPan":graphCollection.graphs[0].yAxisPanel};
+		}
+		
+		if (gpX > graphCollection.graphs[0].xAxisPanel.left() && 
+				gpX < graphCollection.graphs[0].xAxisPanel.left() + graphCollection.graphs[0].xAxisPanel.width() &&
+				gpY > graphCollection.graphs[0].xAxisPanel.top() &&
+				gpY < graphCollection.graphs[0].xAxisPanel.top() + graphCollection.graphs[0].xAxisPanel.height())
+		{
+			return {"gInd":0,
+							"gAxis":"x",
+							"gPan":graphCollection.graphs[0].xAxisPanel};
+		}
+		
+		return false;
 	} else {
-		console.log("miss");
+		var gp0X = x-graphCollection.graphs[0].graphPanel.left();
+		var gp0Y = y-graphCollection.graphs[0].graphPanel.top();
+		
+		if (gp0X > graphCollection.graphs[0].yAxisPanel.left() && 
+				gp0X < graphCollection.graphs[0].yAxisPanel.left() + graphCollection.graphs[0].yAxisPanel.width() &&
+				gp0Y > graphCollection.graphs[0].yAxisPanel.top() &&
+				gp0Y < graphCollection.graphs[0].yAxisPanel.top() + graphCollection.graphs[0].yAxisPanel.height())
+		{
+			return {"gInd":0,
+							"gAxis":"y",
+							"gPan":graphCollection.graphs[0].yAxisPanel};
+		}
+		
+		if (gp0X > graphCollection.graphs[0].xAxisPanel.left() && 
+				gp0X < graphCollection.graphs[0].xAxisPanel.left() + graphCollection.graphs[0].xAxisPanel.width() &&
+				gp0Y > graphCollection.graphs[0].xAxisPanel.top() &&
+				gp0Y < graphCollection.graphs[0].xAxisPanel.top() + graphCollection.graphs[0].xAxisPanel.height())
+		{
+			return {"gInd":0,
+							"gAxis":"x",
+							"gPan":graphCollection.graphs[0].xAxisPanel};
+		}
+		
+		var gp1X = x-graphCollection.graphs[1].graphPanel.left();
+		var gp1Y = y-graphCollection.graphs[1].graphPanel.top();
+		
+		if (gp1X > graphCollection.graphs[1].yAxisPanel.left() && 
+				gp1X < graphCollection.graphs[1].yAxisPanel.left() + graphCollection.graphs[1].yAxisPanel.width() &&
+				gp1Y > graphCollection.graphs[1].yAxisPanel.top() &&
+				gp1Y < graphCollection.graphs[1].yAxisPanel.top() + graphCollection.graphs[1].yAxisPanel.height())
+		{
+			return {"gInd":1,
+							"gAxis":"y",
+							"gPan":graphCollection.graphs[1].yAxisPanel};
+		}
+		
+		if (gp1X > graphCollection.graphs[1].xAxisPanel.left() && 
+				gp1X < graphCollection.graphs[1].xAxisPanel.left() + graphCollection.graphs[1].xAxisPanel.width() &&
+				gp1Y > graphCollection.graphs[1].xAxisPanel.top() &&
+				gp1Y < graphCollection.graphs[1].xAxisPanel.top() + graphCollection.graphs[1].xAxisPanel.height())
+		{
+			return {"gInd":1,
+							"gAxis":"x",
+							"gPan":graphCollection.graphs[1].xAxisPanel};
+		}
+		
+		return false;
 	}
 	
 }
