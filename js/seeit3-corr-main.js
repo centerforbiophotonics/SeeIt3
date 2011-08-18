@@ -674,6 +674,7 @@ function constructGraphPanel(graph,index){
 		.event("touchend", function(event){
 			var mouseY = vis.mouse().y;
 			var mouseX = vis.mouse().x;
+			console.log(mouseY+"..."+mouseX);
 			xAxisDragFeedbackPanel.left(mouseX);
 			xAxisDragFeedbackPanel.top(mouseY);
 			xAxisDragFeedbackPanel.render();
