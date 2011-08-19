@@ -124,7 +124,7 @@ GraphCollection.prototype = {
 		var graphCollection = this;
 		graphCollection.graphs.forEach(function(g){
 			var oldGH = g.h;
-			g.h = graphCollection.h - 40;
+			g.h = graphCollection.h - 60;
 			g.setYScale();
 			g.ellipseCY *= g.h/oldGH;
 		});

@@ -14,7 +14,8 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 																				event.worksheet.title + 
 																				" by " + 
 																				event.worksheet.labelType + 
-																				"</option>")).val(event.worksheet.URL);
+																				"</option>"))
+															.val(event.worksheet.URL);
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
 	jQuery('p#loadingMsg').hide();	
@@ -504,7 +505,7 @@ function constructGraphPanel(graph,index){
 	var graphPanel = vis.add(pv.Panel)
 		.width(function(){return graph.w})
 		.height(function(){return graph.h})
-		.top(20)
+		.top(40)
 		.left(function(){return 60 + index * graph.w + index * 130})
 		.events("all")
 		.event("click", function(){
@@ -517,7 +518,7 @@ function constructGraphPanel(graph,index){
 	/*Graph Title*/		  
 	graphPanel.add(pv.Label)
 		.left(function(){return graph.w / 2})
-		.top(-20)
+		.top(-15)
 		.textAlign("center")
 		.textAngle(0)
 		.text(graph.worksheet.title)//+ " (Dropped onto Y-axis)")
@@ -526,7 +527,7 @@ function constructGraphPanel(graph,index){
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
 		.right(0)
-		.top(-40)
+		.top(-60)
 		.width(20)
 		.height(20)
 		.strokeStyle("black")
@@ -843,7 +844,7 @@ function constructGraphPanel(graph,index){
 		.url("http://centerforbiophotonics.github.com/SeeIt3/img/wrench.png")  //fix this
 		.width(30)
 		.height(30)
-		.top(-45)
+		.top(-65)
 		.left(-80)
 		.cursor("pointer")
 		.title("Show graph option menu")
@@ -860,7 +861,7 @@ function constructGraphPanel(graph,index){
 		.url("http://centerforbiophotonics.github.com/SeeIt3/img/clipboard.png")  //fix this
 		.width(30)
 		.height(30)
-		.top(-45)
+		.top(-65)
 		.left(-20)
 		.cursor("pointer")
 		.title("Copy data to clipboard.")
@@ -1008,7 +1009,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	/* Number of datapoints N */
   graphPanel.add(pv.Label)
 		.right(function(){return graph.w/2})
-		.top(-5)
+		.top(0)
 		.textAlign("center")
 		.textAngle(0)
 		.text(function(){return "N = " + graph.getData().length})
@@ -1581,7 +1582,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	/* Number of datapoints N */
 	topDist.add(pv.Label)
 		.left(function(){return graph.w / 2})
-		.top(-5)
+		.top(0)
 		.textAlign("center")
 		.textAngle(0)
 		.text(function(){return "N = " + graph.worksheet.data[graph.yData].length})
@@ -2059,7 +2060,7 @@ function constructXDistGraph(graph, index, graphPanel){
 	/* Number of datapoints N */
 	graphPanel.add(pv.Label)
 		.left(function(){return graph.w / 2})
-		.top(-5)
+		.top(0)
 		.textAlign("center")
 		.textAngle(0)
 		.text(function(){return "N = " + graph.worksheet.data[graph.xData].length})
@@ -2217,7 +2218,7 @@ function constructYDistGraph(graph,index, graphPanel){
 	/* Number of datapoints N */
 	graphPanel.add(pv.Label)
 		.left(function(){return graph.w / 2})
-		.top(-5)
+		.top(0)
 		.textAlign("center")
 		.textAngle(0)
 		.text(function(){return "N = " + graph.worksheet.data[graph.yData].length})
