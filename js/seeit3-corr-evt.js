@@ -267,7 +267,7 @@ function touchEnd(event){
 			break;
 	}
 	//touch.reset();
-	constructVis();
+	//constructVis();
 }
 
 function 	dataCorrTouchEnd(event){
