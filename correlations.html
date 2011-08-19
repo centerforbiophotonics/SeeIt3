@@ -20,8 +20,17 @@
 			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 		})();
 	</script>
+	
+	<script>
+		function BlockMove(event) {
+			// Tell Safari not to move the window.
+			event.preventDefault();
+		};
+	</script>
+ 
+
 </head>
-<body>
+<body ontouchmove="BlockMove(event);">
 
 <div id="notGraph" class="notGraph">
 	<div id="menu" class="menu">
