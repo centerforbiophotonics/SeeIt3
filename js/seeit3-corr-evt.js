@@ -178,8 +178,8 @@ function sideCatTouchMove(event){
 							$('span').offset().top - 
 							graphCollection.padTop;
 							
-	//var which = whichDropZone(curX,curY);
-	var which = false;
+	var which = whichDropZone(curX,curY);
+	//var which = false;
 	
 	graphCollection.graphs.forEach(function(g){
 		g.yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
@@ -295,8 +295,8 @@ function sideCatTouchEnd(event){
 							
 	var curY = touch.finalY;
 							
-	//var which = whichDropZone(curX,curY);
-	var which = false;
+	var which = whichDropZone(curX,curY);
+	//var which = false;
 	
 	graphCollection.graphs.forEach(function(g){
 		g.yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
@@ -311,6 +311,8 @@ function sideCatTouchEnd(event){
 	}
 	
 	touch.draggedObj.visible(false);
+	//touch.reset;
+	constructVis();
 }
 
 function graphXCatTouchEnd(event){
