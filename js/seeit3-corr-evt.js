@@ -311,7 +311,7 @@ function sideCatTouchEnd(event){
 	}
 	
 	touch.draggedObj.visible(false);
-	//touch.reset;
+	touch.reset();
 	//constructVis();
 	vis.render();
 }
