@@ -178,25 +178,25 @@ function sideCatTouchMove(event){
 							$('span').offset().top - 
 							graphCollection.padTop;
 							
-	var which = whichDropZone(curX,curY);
+	//var which = whichDropZone(curX,curY);
+	var which = false;
 	
 	graphCollection.graphs.forEach(function(g){
 		g.yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
-		g.yAxisPanel.render();
 		g.xAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
-		g.xAxisPanel.render();
 	})
 	
 	if (which != false){
 		which.gPan.strokeStyle("black");
-		which.gPan.render();
+		//which.gPan.render();
 	}
 	
 	touch.draggedObj.left(curX);
 	touch.draggedObj.top(curY);
 	touch.finalX = curX;
 	touch.finalY = curY;
-	touch.draggedObj.render();
+	//touch.draggedObj.render();
+	vis.render();
 }
 
 function graphXCatTouchMove(event){
