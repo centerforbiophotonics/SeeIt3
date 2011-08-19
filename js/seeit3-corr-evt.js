@@ -266,8 +266,8 @@ function touchEnd(event){
 			udLineAdjustTouchEnd(event);
 			break;
 	}
-	touch.reset();
-	constructVis();
+	//touch.reset();
+	//constructVis();
 }
 
 function 	dataCorrTouchEnd(event){
