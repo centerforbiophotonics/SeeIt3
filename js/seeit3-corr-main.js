@@ -434,6 +434,9 @@ function constructSidePanel(){
 				touch.dragging = true;
 				touch.dragCat = this.category();
 			})
+			.event('touchend', function(event){
+				setTimeout("constructVis()",500); 
+			})
 			
 			
 			
