@@ -314,6 +314,7 @@ function sideCatTouchEnd(event){
 	touch.reset();
 	//constructVis();
 	vis.render();
+	constructVis();
 }
 
 function graphXCatTouchEnd(event){
