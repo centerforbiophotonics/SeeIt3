@@ -559,8 +559,6 @@ function constructGraphPanel(graph,index){
 			else
 				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.xData) + 20;
 		})
-		.left(function(){return graph.w/2 - this.width()/2})
-		.bottom(-70)
 		.lineWidth(1)
 		.strokeStyle("black")
 		.visible(false)
@@ -701,9 +699,6 @@ function constructGraphPanel(graph,index){
 			else
 				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
 		})
-		.left(-85)
-		//.visible(function(){return graph.twoDistView == false})
-		.bottom(function(){return graph.h/2 - this.height()/2})
 		.lineWidth(1)
 		.strokeStyle("black")
 		.visible(false)
