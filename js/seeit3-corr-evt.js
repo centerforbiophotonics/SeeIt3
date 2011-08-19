@@ -312,7 +312,8 @@ function sideCatTouchEnd(event){
 	
 	touch.draggedObj.visible(false);
 	//touch.reset;
-	constructVis();
+	//constructVis();
+	vis.render();
 }
 
 function graphXCatTouchEnd(event){
