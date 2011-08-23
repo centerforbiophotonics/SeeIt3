@@ -349,10 +349,10 @@
 	
 	$('#datasets').draggable().bind("touchmove",test);
 	function test(event){
-		console.log(objectToString(event));
+		//console.log(objectToString(event));
 		$('#datasets').css('position', 'absolute')
-										 .css('top', event.targetTouches[0].pageY+"px")
-										 .css('left',event.targetTouches[0].pageX+"px");
+										 .css('top', event.originalEvent.targetTouches[0].pageY+"px")
+										 .css('left',event.originalEvent.targetTouches[0].pageX+"px");
 	}
 </script>
 
