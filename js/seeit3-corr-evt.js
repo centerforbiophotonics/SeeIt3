@@ -301,6 +301,8 @@ function udLineAdjustTouchMove(event){
 	var graph = graphCollection.graphs[touch.graphIndex];
 	var index = touch.udLineHandleIndex;
 	
+	console.log("NATudLineAdj");
+	
 	var panelX = event.targetTouches[0].pageX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14 - 

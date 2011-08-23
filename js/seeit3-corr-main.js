@@ -1174,6 +1174,7 @@ function constructCorrGraph(graph, index, graphPanel){
 				graphPanel.render();
 			})
 			.event("touchstart", function(d){
+				console.log("udLineAdj");
 				touch.dragType = "udLineAdjust";
 				touch.dragging = true;
 				touch.graphPanel = graphPanel;
