@@ -298,7 +298,39 @@ function udLineMoveTouchMove(event){
 }
 
 function udLineAdjustTouchMove(event){
+	var graph = graphCollection.graphs[touch.graphIndex];
+	var index = touch.udLineHandleIndex;
 	
+	var panelX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14 - 
+							touch.graphPanel.left();
+							
+	var panelY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop - 
+							touch.graphPanel.top();
+							
+	var mouseX = graph.x(panelX);
+	var	mouseY = graph.y(panelY);
+		
+	if (panelX > 0 && panelX < graph.w && panelY > 0 && panelY < graph.h){
+		graph.userDrawnLinePoints[index].x = mouseX;
+		graph.userDrawnLinePoints[index].y = mouseY;
+	} else {
+		graph.userDrawnLinePoints[index].x = mouseX;
+		graph.userDrawnLinePoints[index].y = mouseY;
+		if (panelX < 0)
+			graph.userDrawnLinePoints[index].x = graph.x.domain()[0];
+		if (panelX > graph.w)
+			graph.userDrawnLinePoints[index].x = graph.x.domain()[1];
+		if (panelY < 0)
+			graph.userDrawnLinePoints[index].y = graph.y.domain()[1];
+		if (panelY > graph.h)
+			graph.userDrawnLinePoints[index].y = graph.y.domain()[0];
+	}
+	
+	touch.graphPanel.render();
 }
 
 document.addEventListener("touchend", touchEnd, false);
@@ -470,7 +502,7 @@ function udLineMoveTouchEnd(event){
 }
 
 function udLineAdjustTouchEnd(event){
-	
+	touch.reset();
 }
 
 
