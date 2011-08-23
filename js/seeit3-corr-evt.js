@@ -288,6 +288,8 @@ function graphYCatTouchMove(event){
 }
 
 function ellipseMoveTouchMove(event){
+	var graph = graphCollection.graphs[touch.graphIndex];
+	
 	var mouseX = event.targetTouches[0].pageX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14 - 
