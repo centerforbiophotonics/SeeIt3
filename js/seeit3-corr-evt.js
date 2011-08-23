@@ -323,6 +323,8 @@ function ellipseAdjustTouchMove(event){
 							$('span').offset().top - 
 							graphCollection.padTop - 
 							touch.graphPanel.top();
+							
+	mouseY = graph.h - mouseY;
 	
 	
 		handleX = getEllipseManipCoords(graph)[index][0],
