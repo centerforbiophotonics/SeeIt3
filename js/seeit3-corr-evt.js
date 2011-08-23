@@ -288,7 +288,24 @@ function graphYCatTouchMove(event){
 }
 
 function ellipseMoveTouchMove(event){
-	
+	var mouseX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14 - 
+							touch.graphPanel.left();
+							
+	var mouseY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop - 
+							touch.graphPanel.top();
+
+	if (mouseX > 0 && mouseX < graph.w && mouseY > 0 && mouseY < graph.h){
+		graph.ellipseCX = mouseX;
+		graph.ellipseCY = mouseY;
+	}
+
+	graph.pointsInEllipse = numPointsInEllipse(graph);
+			
+	graphPanel.render();
 }
 
 function ellipseAdjustTouchMove(event){
@@ -542,15 +559,15 @@ function graphYCatTouchEnd(event){
 }
 
 function ellipseMoveTouchEnd(event){
-	
+	touch.reset();
 }
 
 function ellipseAdjustTouchEnd(event){
-	
+	touch.reset();
 }
 
 function udLineMoveTouchEnd(event){
-	
+	touch.reset();
 }
 
 function udLineAdjustTouchEnd(event){
