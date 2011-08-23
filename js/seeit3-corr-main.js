@@ -436,7 +436,7 @@ function constructSidePanel(){
 				touch.dragCat = this.category();
 			})
 			.event('touchend', function(event){
-				setTimeout("constructVis()",100); 
+				setTimeout("constructVis()",1); 
 			})
 			
 			
@@ -1121,32 +1121,12 @@ function constructCorrGraph(graph, index, graphPanel){
 		.fillStyle("red")
 		.strokeStyle("red")
 		.lineWidth(2)
-		.add(pv.Label)									//Line Equation
-			.visible(function () { return graph.udLine })
-			.text(function(d) {
-				if (this.index == 0) { return "Y = "+getUserLineSlope(graph).toFixed(3)+"X + "+getUserLineIntercept(graph).toFixed(3);}
-				else {return ""}
-			})
-			.textAlign("left")
-			.textBaseline("top")
-			.textStyle("red")
-			.textAngle(function() { return getUserLineLabelAngle(graph)})
-			.font("bold 12px sans-serif")
-		.add(pv.Label)									//Sum of Squares
-			.visible(function () { return graph.udLine })
-			.text(function(d) {
-				if (this.index == 0) { return "Sum of Squares = "+ getUserLineR(graph).toFixed(2);}
-				else {return ""}
-			})
-			.textAlign("left")
-			.textBaseline("bottom")
-			.textStyle("red")
-			.textAngle(function() {return getUserLineLabelAngle(graph)})
-			.font("bold 12px sans-serif")
+		
 		.add(pv.Dot)									//Endpoints
 			.fillStyle("red")
 			.shape('square')
 			.cursor('move')
+			.size(80)
 			.event("mousedown", pv.Behavior.drag())
 			.event("drag", function() {
 				dragging = true;
@@ -1181,6 +1161,34 @@ function constructCorrGraph(graph, index, graphPanel){
 				touch.graphIndex = index;
 				touch.udLineHandleIndex = this.index;
 			})
+		.add(pv.Label)									//Line Equation
+			.data(function() {return getUserLineMidpoint(graph)})
+			.left(function(d) { return graph.x(d.x) })
+			.bottom(function(d) { return graph.y(d.y) })
+			.visible(function () { return graph.udLine })
+			.text(function(d) {
+				if (this.index == 0) { return "Y = "+getUserLineSlope(graph).toFixed(3)+"X + "+getUserLineIntercept(graph).toFixed(3)}
+				else {return ""}
+			})
+			.textAlign("right")
+			.textBaseline("top")
+			.textStyle("red")
+			.textAngle(function() { return getUserLineLabelAngle(graph)})
+			.font("bold 12px sans-serif")
+		.add(pv.Label)									//Sum of Squares
+			.data(function() {return getUserLineMidpoint(graph)})
+			.left(function(d) { return graph.x(d.x) })
+			.bottom(function(d) { return graph.y(d.y) })
+			.visible(function () { return graph.udLine })
+			.text(function(d) {
+				if (this.index == 0) { return "Sum of Squares = "+ getUserLineR(graph).toFixed(2) }
+				else {return ""}
+			})
+			.textAlign("right")
+			.textBaseline("bottom")
+			.textStyle("red")
+			.textAngle(function() {return getUserLineLabelAngle(graph)})
+			.font("bold 12px sans-serif")
 		.add(pv.Dot)									//Midpoint
 			.data(function() {return getUserLineMidpoint(graph)})
 			.left(function(d) { return graph.x(d.x) })
@@ -1193,7 +1201,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			.event("drag", function() {
 				dragging = true;
 				var mouseX = graph.x.invert(graphPanel.mouse().x),
-					mouseY = graph.y.invert(graph.h - graphPanel.mouse().y),
+					mouseY = graph.y.invert(graphPanel.mouse().y),
 					handle = getUserLineMidpoint(graph),
 					panelX = graphPanel.mouse().x,
 					panelY = graphPanel.mouse().y;
