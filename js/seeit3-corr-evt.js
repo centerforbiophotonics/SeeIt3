@@ -81,11 +81,31 @@ function sideCatTouchStart(event){
 }
 
 function graphXCatTouchStart(event){
-	
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+	touch.draggedObj.left(curX);
+	touch.draggedObj.top(curY);
+	touch.draggedObj.visible(true);
+	touch.draggedObj.render();
 }
 
 function graphYCatTouchStart(event){
-	
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+	touch.draggedObj.left(curX);
+	touch.draggedObj.top(curY);
+	touch.draggedObj.visible(true);
+	touch.draggedObj.render();
 }
 
 function ellipseMoveTouchStart(event){
@@ -179,32 +199,90 @@ function sideCatTouchMove(event){
 							graphCollection.padTop;
 							
 	var which = whichDropZone(curX,curY);
-	//var which = false;
 	
 	graphCollection.graphs.forEach(function(g){
-		g.yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
-		g.xAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
+		g.yAxisPanel.fillStyle(pv.rgb(0,0,0,0));
+		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
 	})
 	
 	if (which != false){
-		which.gPan.strokeStyle("black");
-		//which.gPan.render();
+		which.gPan.fillStyle(pv.rgb(50,50,50,0.25));
 	}
+	
+	graphCollection.graphs.forEach(function(g){
+		g.yAxisPanel.render();
+		g.xAxisPanel.render();
+	})
 	
 	touch.draggedObj.left(curX);
 	touch.draggedObj.top(curY);
+	touch.draggedObj.render();
 	touch.finalX = curX;
 	touch.finalY = curY;
-	//touch.draggedObj.render();
-	vis.render();
 }
 
 function graphXCatTouchMove(event){
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+							
+	var which = whichDropZone(curX,curY);
 	
+	graphCollection.graphs.forEach(function(g){
+		g.yAxisPanel.fillStyle(pv.rgb(0,0,0,0));
+		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
+	})
+	
+	if (which != false){
+		which.gPan.fillStyle(pv.rgb(50,50,50,0.25));
+	}
+	
+	graphCollection.graphs.forEach(function(g){
+		g.yAxisPanel.render();
+		g.xAxisPanel.render();
+	})
+	
+	touch.draggedObj.left(curX);
+	touch.draggedObj.top(curY);
+	touch.draggedObj.render();
+	touch.finalX = curX;
+	touch.finalY = curY;
 }
 
 function graphYCatTouchMove(event){
+	var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+							
+	var which = whichDropZone(curX,curY);
 	
+	graphCollection.graphs.forEach(function(g){
+		g.yAxisPanel.fillStyle(pv.rgb(0,0,0,0));
+		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
+	})
+	
+	if (which != false){
+		which.gPan.fillStyle(pv.rgb(50,50,50,0.25));
+	}
+	
+	graphCollection.graphs.forEach(function(g){
+		g.yAxisPanel.render();
+		g.xAxisPanel.render();
+	})
+	
+	touch.draggedObj.left(curX);
+	touch.draggedObj.top(curY);
+	touch.draggedObj.render();
+	touch.finalX = curX;
+	touch.finalY = curY;
 }
 
 function ellipseMoveTouchMove(event){
@@ -266,8 +344,6 @@ function touchEnd(event){
 			udLineAdjustTouchEnd(event);
 			break;
 	}
-	//touch.reset();
-	//constructVis();
 }
 
 function 	dataCorrTouchEnd(event){
@@ -296,11 +372,10 @@ function sideCatTouchEnd(event){
 	var curY = touch.finalY;
 							
 	var which = whichDropZone(curX,curY);
-	//var which = false;
 	
 	graphCollection.graphs.forEach(function(g){
-		g.yAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
-		g.xAxisPanel.strokeStyle(pv.rgb(0,0,0,0));
+		g.yAxisPanel.fillStyle(pv.rgb(0,0,0,0));
+		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
 	});
 	
 	if (which != false){
@@ -312,17 +387,85 @@ function sideCatTouchEnd(event){
 	
 	touch.draggedObj.visible(false);
 	touch.reset();
-	//constructVis();
-	vis.render();
-	//constructVis();
 }
 
 function graphXCatTouchEnd(event){
-	console.log("touchendNATIVE");
+	var curX = touch.finalX;
+							
+	var curY = touch.finalY;
+							
+	var which = whichDropZone(curX,curY);
+	
+	graphCollection.graphs.forEach(function(g){
+		g.yAxisPanel.fillStyle(pv.rgb(0,0,0,0));
+		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
+	});
+	
+	if (curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
+		if (which != false){
+			if (which.gAxis == "y"){
+				if (which.gInd == touch.graphIndex){
+					var xCat = graphCollection.graphs[which.gInd].xData;
+					graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[which.gInd].yData);
+					graphCollection.graphs[which.gInd].assignY(xCat);
+				} else {
+					graphCollection.graphs[which.gInd].assignY(graphCollection.graphs[touch.graphIndex].xData);
+					graphCollection.graphs[touch.graphIndex].assignX(null);
+				}
+			} else if (which.gAxis == "x" && which.gInd != touch.graphIndex){
+				graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[which.gInd].xData);
+				graphCollection.graphs[touch.graphIndex].assignX(null);
+			}
+		}
+	} else {
+		graphCollection.graphs[touch.graphIndex].assignX(null);
+	}
+	
+	touch.draggedObj.visible(false);
+	touch.reset();
 }
 
 function graphYCatTouchEnd(event){
+	var curX = touch.finalX;
+							
+	var curY = touch.finalY;
+							
+	var which = whichDropZone(curX,curY);
 	
+	graphCollection.graphs.forEach(function(g){
+		g.yAxisPanel.fillStyle(pv.rgb(0,0,0,0));
+		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
+	});
+	
+	if (which != false){
+		if (which.gAxis == "y")
+			graphCollection.graphs[which.gInd].assignY(touch.dragCat);
+		else if (which.gAxis == "x")
+			graphCollection.graphs[which.gInd].assignX(touch.dragCat);
+	}
+	
+	if (curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
+		if (which != false){
+			if (which.gAxis == "x"){
+				if (which.gInd == touch.graphIndex){
+					var xCat = graphCollection.graphs[which.gInd].xData;
+					graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[which.gInd].yData);
+					graphCollection.graphs[which.gInd].assignY(xCat);
+				} else {
+					graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[touch.graphIndex].yData);
+					graphCollection.graphs[touch.graphIndex].assignY(null);
+				}
+			} else if (which.gAxis == "y" && which.gInd != touch.graphIndex){
+				graphCollection.graphs[which.gInd].assignY(graphCollection.graphs[which.gInd].yData);
+				graphCollection.graphs[touch.graphIndex].assignY(null);
+			}
+		}
+	} else {
+		graphCollection.graphs[touch.graphIndex].assignY(null);
+	}
+	
+	touch.draggedObj.visible(false);
+	touch.reset();
 }
 
 function ellipseMoveTouchEnd(event){

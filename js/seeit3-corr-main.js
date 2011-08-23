@@ -550,63 +550,37 @@ function constructGraphPanel(graph,index){
 			.strokeStyle("black")
 	
 	//X-axis drag feedback
-	var xAxisDragFeedbackPanel = vis.add(pv.Panel)
-		.height(function(){
-			if (graph.xData == null)
-				return 30;
-			else
-				return getPixelHeightOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.xData);
-		})
-		.width(function(){
-			if (graph.xData == null)
-				return graph.w;
-			else
-				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.xData) + 20;
-		})
-		.lineWidth(1)
-		.strokeStyle("black")
-		.visible(false)
-		
-	xAxisDragFeedbackPanel.add(pv.Label)
+	var xAxisDragFeedbackPanel = vis.add(pv.Label)
 		.text(function(){
 			if (graph.xData == null)
 				return "Drag here to assign a dataset to the x-axis."
 			else
 				return graph.xData;
 		})
-		.left(function(){return graph.xAxisPanel.width()/2})
-		.top(function(){return graph.xAxisPanel.height()/2})
+		.left(function(){return xAxisDragFeedbackPanel.width()/2})
+		.top(function(){return xAxisDragFeedbackPanel.height()/2})
 		.textAlign("center")
 		.textBaseline("middle")
 		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
+		.visible(false)
 		
 		
 	//X-axis drag drop zone
 	graph.xAxisPanel = graphPanel.add(pv.Panel)
 		.data([{"x":0,"y":0}])
-		.height(function(){
-			if (graph.xData == null)
-				return 30;
-			else
-				return getPixelHeightOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.xData);
-		})
-		.width(function(){
-			if (graph.xData == null)
-				return graph.w;
-			else
-				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.xData) + 20;
-		})
-		.left(function(){return graph.w/2 - this.width()/2})
-		.top(function(){return graph.h + 30})
+		.height(80)
+		.width(function(){return graph.w})
+		.left(0)
+		.top(function(){return graph.h})
 		.lineWidth(1)
 		.cursor("move")
 		.events("all")
 		.event("mouseover", function(d){
-			this.strokeStyle("black");
+			this.fillStyle(pv.rgb(50,50,50,0.25));
 			this.render();
 		})
 		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.fillStyle(pv.rgb(0,0,0,0));
 			this.render();
 		})
 		.event("mousedown", pv.Behavior.drag())
@@ -674,6 +648,9 @@ function constructGraphPanel(graph,index){
 			touch.dragging = true;
 			touch.graphIndex = index;
 		})
+		.event('touchend', function(event){
+			setTimeout("constructVis()",250); 
+		})
 		
 		
 	graph.xAxisPanel.add(pv.Label)
@@ -690,25 +667,7 @@ function constructGraphPanel(graph,index){
 		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
 		
 	//Y-axis drag feedback panel
-	var yAxisDragFeedbackPanel = vis.add(pv.Panel)
-		.width(function(){
-			if (graph.yData == null)
-				return 30;
-			else
-				return getPixelHeightOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData);
-		})
-		.height(function(){
-			if (graph.yData == null)
-				return graph.h;
-			else
-				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
-		})
-		.lineWidth(1)
-		.strokeStyle("black")
-		.visible(false)
-		
-		
-	yAxisDragFeedbackPanel.add(pv.Label)
+	var yAxisDragFeedbackPanel = vis.add(pv.Label)
 		.text(function(){
 			if (graph.yData == null)
 				return "Drag here to assign a dataset to the y-axis."
@@ -717,38 +676,28 @@ function constructGraphPanel(graph,index){
 		})
 		.left(function(){return graph.yAxisPanel.width()/2})
 		.top(function(){return graph.yAxisPanel.height()/2})
-		.textAngle(-Math.PI/2)
 		.textAlign("center")
 		.textBaseline("middle")
 		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
+		.visible(false)
 		
 	//Y-axis drag drop zone
 	graph.yAxisPanel = graphPanel.add(pv.Panel)
 		.data([{"x":0,"y":0}])
-		.width(function(){
-			if (graph.yData == null)
-				return 30;
-			else
-				return getPixelHeightOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData);
-		})
-		.height(function(){
-			if (graph.yData == null)
-				return graph.h;
-			else
-				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
-		})
-		.left(-85)
+		.width(95)
+		.height(function(){return graph.h})
+		.left(-95)
 		.visible(function(){return graph.twoDistView == false || graph.xData == null || graph.yData == null})
-		.top(function(){return graph.h/2 - this.height()/2})
+		.top(0)
 		.lineWidth(1)
 		.cursor("move")
 		.events("all")
 		.event("mouseover", function(d){
-			this.strokeStyle("black");
+			this.fillStyle(pv.rgb(50,50,50,0.25));
 			this.render();
 		})
 		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.fillStyle(pv.rgb(0,0,0,0));
 			this.render();
 		})
 		.event("mousedown", pv.Behavior.drag())
@@ -815,6 +764,9 @@ function constructGraphPanel(graph,index){
 			touch.dragging = true;
 			touch.graphIndex = index;
 		})
+		.event('touchend', function(event){
+			setTimeout("constructVis()",250); 
+		})
 		
 		
 	graph.yAxisPanel.add(pv.Label)
@@ -824,7 +776,7 @@ function constructGraphPanel(graph,index){
 			else
 				return graph.yData;
 		})
-		.left(function(){return graph.yAxisPanel.width()/2})
+		.left(30)
 		.top(function(){return graph.yAxisPanel.height()/2})
 		.textAngle(-Math.PI/2)
 		.textAlign("center")
@@ -835,7 +787,7 @@ function constructGraphPanel(graph,index){
 	//Divider between graphs
 	graphPanel.add(pv.Rule)
 		.left(-95)
-		.top(-50)
+		.top(-70)
 		.bottom(-80)
 		.visible(function(){ return index == 1 })
 			
@@ -1597,27 +1549,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	
 	
 	//Y-axis drag feedback panel
-	var yAxisDragFeedbackPanel = vis.add(pv.Panel)
-		.height(function(){
-			if (graph.yData == null)
-				return 30;
-			else
-				return getPixelHeightOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData);
-		})
-		.width(function(){
-			if (graph.yData == null)
-				return graph.w;
-			else
-				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
-		})
-		.left(function(){return graph.w/2 - this.width()/2})
-		.bottom(-50)
-		.lineWidth(1)
-		.strokeStyle("black")
-		.visible(false)
-		
-		
-	yAxisDragFeedbackPanel.add(pv.Label)
+	var yAxisDragFeedbackPanel = vis.add(pv.Label)
 		.text(function(){
 			if (graph.yData == null)
 				return "Drag here to assign a dataset to the y-axis."
@@ -1629,34 +1561,24 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.textAlign("center")
 		.textBaseline("middle")
 		.font("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData)
-	
+		.visible(false)
 	
 	//Y-axis drag drop zone
 	graph.yAxisPanel = graphPanel.add(pv.Panel)
 		.data([{"x":0,"y":0}])
-		.height(function(){
-			if (graph.yData == null)
-				return 30;
-			else
-				return getPixelHeightOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData);
-		})
-		.width(function(){
-			if (graph.yData == null)
-				return graph.w;
-			else
-				return getPixelWidthOfText("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData) + 20;
-		})
-		.left(function(){return graph.w/2 - this.width()/2})
-		.top(function(){return (graph.h-80)/2 + 18})
+		.height(52)
+		.width(function(){graph.w})
+		.left(function(){return 0})
+		.top(function(){return (graph.h-80)/2})
 		.lineWidth(1)
 		.cursor("move")
 		.events("all")
 		.event("mouseover", function(d){
-			this.strokeStyle("black");
+			this.fillStyle(pv.rgb(50,50,50,0.25));
 			this.render();
 		})
 		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.fillStyle(pv.rgb(0,0,0,0));
 			this.render();
 		})
 		.event("mousedown", pv.Behavior.drag())
@@ -1724,6 +1646,9 @@ function constructTwoDistGraph(graph,index, graphPanel){
 			touch.dragging = true;
 			touch.graphIndex = index;
 		})
+		.event('touchend', function(event){
+			setTimeout("constructVis()",250); 
+		})
 		
 	graph.yAxisPanel.add(pv.Label)
 		.text(function(){
@@ -1733,10 +1658,10 @@ function constructTwoDistGraph(graph,index, graphPanel){
 				return graph.yData;
 		})
 		.left(function(){return graph.yAxisPanel.width()/2})
-		.top(function(){return graph.yAxisPanel.height()/2})
+		.top(function(){return graph.yAxisPanel.height()/2 + 10})
 		.textAlign("center")
 		.textBaseline("middle")
-		.font("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData)
+		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
 		
 	/* X-axis ticks */
 	topDist.add(pv.Rule)

@@ -124,7 +124,7 @@ function getSumOfLeastSquares(graph){
 	var sos = 0;
 	for (var i=0; i < graph.getData().length; i++){
 		var sqrBounds = getRSquareBounds(graph, i);   
-		var size = Math.abs(graph.x(sqrBounds[0][0]) - graph.x(sqrBounds[2][0]));
+		var size = Math.abs(graph.y.invert(sqrBounds[0][1]) - graph.y.invert(sqrBounds[2][1]));
 		sos += Math.pow(size,2);
 		
   }
