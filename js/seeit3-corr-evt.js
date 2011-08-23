@@ -296,14 +296,62 @@ function ellipseAdjustTouchMove(event){
 }
 
 function udLineMoveTouchMove(event){
+	var graph = graphCollection.graphs[touch.graphIndex];
 	
+	
+	var	handle = getUserLineMidpoint(graph);
+		
+	var panelX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14 - 
+							touch.graphPanel.left();
+							
+	var panelY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop - 
+							touch.graphPanel.top();
+							
+	var mouseX = graph.x.invert(panelX);
+	var	mouseY = graph.y.invert(panelY);
+		
+	if (panelX > 0 && panelX < graph.w && panelY > 0 && panelY < graph.h){					
+		graph.userDrawnLinePoints[0].x += mouseX - handle[0].x;
+		graph.userDrawnLinePoints[1].x += mouseX - handle[0].x;
+		graph.userDrawnLinePoints[0].y += mouseY - handle[0].y;
+		graph.userDrawnLinePoints[1].y += mouseY - handle[0].y;
+	}
+	
+	if (graph.userDrawnLinePoints[0].x > graph.x.domain()[1])
+		graph.userDrawnLinePoints[0].x = graph.x.domain()[1]
+		
+	if (graph.userDrawnLinePoints[0].x < graph.x.domain()[0])
+		graph.userDrawnLinePoints[0].x = graph.x.domain()[0]
+		
+	if (graph.userDrawnLinePoints[0].y > graph.y.domain()[1])
+		graph.userDrawnLinePoints[0].y = graph.y.domain()[1]
+		
+	if (graph.userDrawnLinePoints[0].y < graph.y.domain()[0])
+		graph.userDrawnLinePoints[0].y = graph.y.domain()[0]
+		
+	if (graph.userDrawnLinePoints[1].x > graph.x.domain()[1])
+		graph.userDrawnLinePoints[1].x = graph.x.domain()[1]
+		
+	if (graph.userDrawnLinePoints[1].x < graph.x.domain()[0])
+		graph.userDrawnLinePoints[1].x = graph.x.domain()[0]
+		
+	if (graph.userDrawnLinePoints[1].y > graph.y.domain()[1])
+		graph.userDrawnLinePoints[1].y = graph.y.domain()[1]
+		
+	if (graph.userDrawnLinePoints[1].y < graph.y.domain()[0])
+		graph.userDrawnLinePoints[1].y = graph.y.domain()[0]
+	
+	
+	touch.graphPanel.render();
 }
 
 function udLineAdjustTouchMove(event){
 	var graph = graphCollection.graphs[touch.graphIndex];
 	var index = touch.udLineHandleIndex;
-	
-	console.log("NATudLineAdj");
 	
 	var panelX = event.targetTouches[0].pageX -
 							$('span').offset().left -
