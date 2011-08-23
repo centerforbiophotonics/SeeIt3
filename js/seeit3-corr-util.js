@@ -287,9 +287,9 @@ function getUserLineLabelAngle(graph) {
 					);
 					
 	if (getUserLineSlope(graph) <= 0){
-		return -angle;
-	} else {
 		return angle;
+	} else {
+		return -angle;
 	}	
 }
 
@@ -850,8 +850,8 @@ function getYOnUserLineByX(x, graph){
 }
 
 function getVertDistToUserLine(graph, i){
-	var dataX = parseFloat(graph.getData()[i].x);
-	var dataY = parseFloat(graph.getData()[i].y);
+	var dataX = graph.getData()[i].x;
+	var dataY = graph.getData()[i].y;
 	return Math.abs(dataY - getYOnUserLineByX(dataX, graph));
 }
 
@@ -1022,13 +1022,13 @@ function getMedianValuesFrom(groups) {
 function getUserLineSlope(graph){
 	return findSlope(graph.userDrawnLinePoints[0].x
 			 ,graph.userDrawnLinePoints[1].x
-			 ,graph.userDrawnLinePoints[0].y
-			 ,graph.userDrawnLinePoints[1].y);
+			 ,graph.y.invert(graph.h - graph.y(graph.userDrawnLinePoints[0].y))
+			 ,graph.y.invert(graph.h - graph.y(graph.userDrawnLinePoints[1].y)));
 }
 
 function getUserLineIntercept(graph){
 	return findIntercept(graph.userDrawnLinePoints[0].x
-						,graph.userDrawnLinePoints[0].y
+						,graph.y.invert(graph.h - graph.y(graph.userDrawnLinePoints[0].y))
 						,getUserLineSlope(graph));
 }
 
