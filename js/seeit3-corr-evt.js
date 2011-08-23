@@ -401,21 +401,19 @@ function graphXCatTouchEnd(event){
 		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
 	});
 	
-	if (curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
-		if (which != false){
-			if (which.gAxis == "y"){
-				if (which.gInd == touch.graphIndex){
-					var xCat = graphCollection.graphs[which.gInd].xData;
-					graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[which.gInd].yData);
-					graphCollection.graphs[which.gInd].assignY(xCat);
-				} else {
-					graphCollection.graphs[which.gInd].assignY(graphCollection.graphs[touch.graphIndex].xData);
-					graphCollection.graphs[touch.graphIndex].assignX(null);
-				}
-			} else if (which.gAxis == "x" && which.gInd != touch.graphIndex){
-				graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[touch.graphIndex].xData);
+	if ((curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h) || which != false){
+		if (which.gAxis == "y"){
+			if (which.gInd == touch.graphIndex){
+				var xCat = graphCollection.graphs[which.gInd].xData;
+				graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[which.gInd].yData);
+				graphCollection.graphs[which.gInd].assignY(xCat);
+			} else {
+				graphCollection.graphs[which.gInd].assignY(graphCollection.graphs[touch.graphIndex].xData);
 				graphCollection.graphs[touch.graphIndex].assignX(null);
 			}
+		} else if (which.gAxis == "x" && which.gInd != touch.graphIndex){
+			graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[touch.graphIndex].xData);
+			graphCollection.graphs[touch.graphIndex].assignX(null);
 		}
 	} else if (which == false){
 		graphCollection.graphs[touch.graphIndex].assignX(null);
@@ -437,21 +435,19 @@ function graphYCatTouchEnd(event){
 		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
 	});
 	
-	if (curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
-		if (which != false){
-			if (which.gAxis == "x"){
-				if (which.gInd == touch.graphIndex){
-					var xCat = graphCollection.graphs[which.gInd].xData;
-					graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[which.gInd].yData);
-					graphCollection.graphs[which.gInd].assignY(xCat);
-				} else {
-					graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[touch.graphIndex].yData);
-					graphCollection.graphs[touch.graphIndex].assignY(null);
-				}
-			} else if (which.gAxis == "y" && which.gInd != touch.graphIndex){
-				graphCollection.graphs[which.gInd].assignY(graphCollection.graphs[touch.graphIndex].yData);
+	if ((curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h) || which != false){
+		if (which.gAxis == "x"){
+			if (which.gInd == touch.graphIndex){
+				var xCat = graphCollection.graphs[which.gInd].xData;
+				graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[which.gInd].yData);
+				graphCollection.graphs[which.gInd].assignY(xCat);
+			} else {
+				graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[touch.graphIndex].yData);
 				graphCollection.graphs[touch.graphIndex].assignY(null);
 			}
+		} else if (which.gAxis == "y" && which.gInd != touch.graphIndex){
+			graphCollection.graphs[which.gInd].assignY(graphCollection.graphs[touch.graphIndex].yData);
+			graphCollection.graphs[touch.graphIndex].assignY(null);
 		}
 	} else if (which == false){
 		graphCollection.graphs[touch.graphIndex].assignY(null);
