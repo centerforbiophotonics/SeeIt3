@@ -437,13 +437,6 @@ function graphYCatTouchEnd(event){
 		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
 	});
 	
-	if (which != false){
-		if (which.gAxis == "y")
-			graphCollection.graphs[which.gInd].assignY(touch.dragCat);
-		else if (which.gAxis == "x")
-			graphCollection.graphs[which.gInd].assignX(touch.dragCat);
-	}
-	
 	if (curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		if (which != false){
 			if (which.gAxis == "x"){
