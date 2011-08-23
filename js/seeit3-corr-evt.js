@@ -249,7 +249,42 @@ function 	dataCorrTouchMove(event){
 }
 
 function dataXTouchMove(event){
+	var graph = graphCollection.graphs[touch.graphIndex];
 	
+	var mouseX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14 - 
+							touch.graphPanel.left();
+							
+	var mouseY = graph.h - (event.targetTouches[0].pageY - 
+													$('span').offset().top - 
+													graphCollection.padTop - 
+													touch.graphPanel.top());
+													
+	touch.finalX = mouseX;
+	touch.finalY = mouseY;
+							
+	var d = touch.dataObj;
+	var dragLabel = touch.dragLabel;
+	
+	if (graphCollection.editModeEnabled &&
+			mouseX >= 0 &&
+			mouseX <= graph.w &&
+			mouseY >= 0 &&
+			mouseY <= graph.h){
+		
+		graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(mouseX));
+		
+		dragLabel.text(graph.x.invert(mouseX).toFixed(1));
+		dragLabel.left(mouseX)
+		dragLabel.bottom(mouseY)
+		dragLabel.visible(true)
+		
+		vis.render();
+	} else {
+		dragLabel.text("Delete");
+		vis.render();
+	}
 }
 
 function dataYTouchMove(event){
@@ -575,7 +610,6 @@ function touchEnd(event){
 }
 
 function	dataCorrTouchEnd(event){
-	console.log("end");
 	if (graphCollection.editModeEnabled){
 		var graph = graphCollection.graphs[touch.graphIndex];
 		var graphPanel = touch.graphPanel;
@@ -618,13 +652,6 @@ function	dataCorrTouchEnd(event){
 			newYData.splice(remIndex,1);
 		graphCollection.editData(graph.yData,graph.yData,newYData);
 		
-	
-		//if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
-		//		Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
-		//{
-		//	dragging = true;
-		//}
-		
 		dragLabel.visible(false);
 		touch.reset();
 		vis.render();
@@ -632,7 +659,36 @@ function	dataCorrTouchEnd(event){
 }
 
 function dataXTouchEnd(event){
+	if (graphCollection.editModeEnabled){
+		var graph = graphCollection.graphs[touch.graphIndex];
+		var graphPanel = touch.graphPanel;
 	
+		var mouseX = touch.finalX;
+		var mouseY = touch.finalY;
+								
+		var d = touch.dataObj;
+		var dragLabel = touch.dragLabel;
+		
+		var newXData = graphCollection.worksheet.data[graph.xData];
+		var remIndex = null;
+		newXData.forEach(function(data, index){
+			if (data.label == d.label && 
+			(mouseX < 0 ||
+			 mouseX > graph.w ||
+			 mouseY < 0 ||
+			 mouseY > graph.h))
+			{
+				remIndex = index;
+			}
+		});
+		if (remIndex != null)
+			newXData.splice(remIndex,1);
+		graphCollection.editData(graph.xData,graph.xData,newXData);
+				
+		dragLabel.visible(false);
+		touch.reset();
+		vis.render();
+	}
 }
 
 function dataYTouchEnd(event){

@@ -2089,11 +2089,13 @@ function constructXDistGraph(graph, index, graphPanel){
 			}
 		})
 		.event("touchstart", function(d){
-			touch.dragType = "dataX";
-			touch.dataObj = d;
-			touch.dragging = true;
-			touch.graphIndex = index;
-			touch.dragLabel = draglabel;
+			if (graphCollection.editModeEnabled){
+				touch.dragType = "dataX";
+				touch.dataObj = d;
+				touch.dragging = true;
+				touch.graphIndex = index;
+				touch.dragLabel = draglabel;
+			}
 		})
 		
 	vis.render();
