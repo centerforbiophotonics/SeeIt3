@@ -307,7 +307,7 @@ function ellipseMoveTouchMove(event){
 
 	graph.pointsInEllipse = numPointsInEllipse(graph);
 			
-	graphPanel.render();
+	touch.graphPanel.render();
 }
 
 function ellipseAdjustTouchMove(event){

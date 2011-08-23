@@ -1351,7 +1351,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.left(function(d) { return d[0] })
 		.bottom(function(d) { return d[1] })
 		.cursor('move')
-		.shape('cross')
+		.shape('square')
 		.radius(8)
 		.fillStyle(pv.rgb(255,0,0,0.20))
 		.strokeStyle(pv.rgb(255,0,0,0.50))
