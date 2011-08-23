@@ -311,7 +311,57 @@ function ellipseMoveTouchMove(event){
 }
 
 function ellipseAdjustTouchMove(event){
+	var graph = graphCollection.graphs[touch.graphIndex];
+	var index = touch.ellipseHandleIndex;
 	
+	var mouseX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14 - 
+							touch.graphPanel.left();
+							
+	var mouseY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop - 
+							touch.graphPanel.top();
+	
+	
+		handleX = getEllipseManipCoords()[index][0],
+		handleY = getEllipseManipCoords()[index][1],
+		
+		mouseVec = pv.vector(graph.ellipseCX - mouseX
+							,graph.ellipseCY - mouseY),
+		
+		handleVec = pv.vector(graph.ellipseCX - handleX
+							,graph.ellipseCY - handleY).norm();
+
+	var detHndlMs = determinantBtwnVec(handleVec, mouseVec);
+	var rotDist = angleBtwnVec(mouseVec, handleVec);			
+
+	if (mouseX > (0 - graphCollection.padLeft) 
+		&& mouseX < (graph.w + graphCollection.padRight) 
+		&& mouseY > (0 - graphCollection.padBot) 
+		&& mouseY < (graph.h + graphCollection.padTop)){
+		
+		//Rotation
+		if (!isNaN(rotDist)){
+			if (detHndlMs > 0){
+				graph.angle = (graph.angle + rotDist) % (2*Math.PI);
+			}else{
+				graph.angle = (graph.angle - rotDist) % (2*Math.PI);
+			}
+		}
+		 
+		//Radius Inc/Dec
+		if (this.index % 2 == 0){
+			graph.xRadius = mouseVec.length();
+		}else{
+			graph.yRadius = mouseVec.length();
+		}
+	}
+
+	graph.pointsInEllipse = numPointsInEllipse(graph);
+			
+	touch.graphPanel.render();
 }
 
 function udLineMoveTouchMove(event){
