@@ -1460,12 +1460,14 @@ function constructCorrGraph(graph, index, graphPanel){
 			}
 		})
 		.event("touchstart", function(d){
-			touch.dragType = "dataCorr";
-			touch.dataObj = d;
-			touch.dragging = true;
-			touch.graphIndex = index;
-			touch.graphPanel = graphPanel;
-			touch.dragLabel = dragLabel;
+			if (graphCollection.editModeEnabled){
+				touch.dragType = "dataCorr";
+				touch.dataObj = d;
+				touch.dragging = true;
+				touch.graphIndex = index;
+				touch.graphPanel = graphPanel;
+				touch.dragLabel = dragLabel;
+			}
 		})
  
 }
