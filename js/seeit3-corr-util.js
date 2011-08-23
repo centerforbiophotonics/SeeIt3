@@ -152,24 +152,26 @@ function getUDSquares(graph){
 	(graph.getData()).forEach(function(d){
 		if (d.x >= graph.userDrawnLinePoints[left ? 1 : 0].x &&
 				d.x <= graph.userDrawnLinePoints[right ? 1 : 0].x){
-			var size = Math.abs(graph.y(d.y) - graph.y((m*d.x+b)));
+			var datY = graph.y.invert(graph.h-graph.y(d.y));
+			var size = Math.abs(graph.y(datY) - graph.y((m*d.x+b)));
 			var width = height = size;
-			var left, bottom;
-			if (d.y - (m*d.x+b) >= 0){
+			var left, top;
+			
+			if (datY - (m*d.x+b) >= 0){
 				if (m >= 0){
 					left = graph.x(d.x) - size;
-					bottom = graph.y(d.y) - size;
+					top = graph.y(datY) - size;
 				} else{
 					left = graph.x(d.x);
-					bottom = graph.y(d.y) - size;
+					top = graph.y(datY) - size;
 				}
 			} else {
 				if (m >= 0){
 					left = graph.x(d.x);
-					bottom = graph.y(d.y);
+					top = graph.y(datY);
 				} else{
 					left = graph.x(d.x) - size;
-					bottom = graph.y(d.y);
+					top = graph.y(datY);
 				}
 			}
 			if (left < 0)
@@ -178,7 +180,7 @@ function getUDSquares(graph){
 				width = graph.w - left;
 				
 			squares.push({"left": left,
-										"bottom":bottom,
+										"top":top,
 										"width":width,
 										"height":height});
 		}
@@ -285,9 +287,9 @@ function getUserLineLabelAngle(graph) {
 					);
 					
 	if (getUserLineSlope(graph) <= 0){
-		return angle;
-	} else {
 		return -angle;
+	} else {
+		return angle;
 	}	
 }
 

@@ -1105,7 +1105,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.data(function(){return getUDSquares(graph)})
 		.visible(function() { return graph.udLine && graph.udSquares })
 		.left(function(d){return d.left})
-		.bottom(function(d){return d.bottom})
+		.top(function(d){return d.top})
 		.width(function(d){return d.width})
 		.height(function(d){return d.height})
 		.lineWidth(0.5)
@@ -1151,7 +1151,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			.event("drag", function() {
 				dragging = true;
 				var mouseX = graph.x.invert(graphPanel.mouse().x),
-					mouseY = graph.y.invert(graph.h - graphPanel.mouse().y),
+					mouseY = graph.y.invert(graphPanel.mouse().y),
 					panelX = graphPanel.mouse().x,
 					panelY = graphPanel.mouse().y;
 					
@@ -1166,9 +1166,9 @@ function constructCorrGraph(graph, index, graphPanel){
 					if (panelX > graph.w)
 						graph.userDrawnLinePoints[this.index].x = graph.x.domain()[1];
 					if (panelY < 0)
-						graph.userDrawnLinePoints[this.index].y = graph.y.domain()[1];
-					if (panelY > graph.h)
 						graph.userDrawnLinePoints[this.index].y = graph.y.domain()[0];
+					if (panelY > graph.h)
+						graph.userDrawnLinePoints[this.index].y = graph.y.domain()[1];
 				}
 				
 				graphPanel.render();
@@ -1459,7 +1459,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			touch.dataObj = d;
 			touch.dragging = true;
 			touch.graphIndex = index;
-			touch.dragLabel = draglabel;
+			touch.dragLabel = dragLabel;
 		})
  
 }

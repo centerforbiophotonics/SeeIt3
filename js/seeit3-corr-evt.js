@@ -327,9 +327,9 @@ function udLineAdjustTouchMove(event){
 		if (panelX > graph.w)
 			graph.userDrawnLinePoints[index].x = graph.x.domain()[1];
 		if (panelY < 0)
-			graph.userDrawnLinePoints[index].y = graph.y.domain()[1];
-		if (panelY > graph.h)
 			graph.userDrawnLinePoints[index].y = graph.y.domain()[0];
+		if (panelY > graph.h)
+			graph.userDrawnLinePoints[index].y = graph.y.domain()[1];
 	}
 	
 	touch.graphPanel.render();
