@@ -436,7 +436,7 @@ function constructSidePanel(){
 				touch.dragCat = this.category();
 			})
 			.event('touchend', function(event){
-				setTimeout("constructVis()",250); 
+				setTimeout("constructVis()",100); 
 			})
 			
 			
@@ -649,7 +649,7 @@ function constructGraphPanel(graph,index){
 			touch.graphIndex = index;
 		})
 		.event('touchend', function(event){
-			setTimeout("constructVis()",250); 
+			setTimeout("constructVis()",100); 
 		})
 		
 		
@@ -765,7 +765,7 @@ function constructGraphPanel(graph,index){
 			touch.graphIndex = index;
 		})
 		.event('touchend', function(event){
-			setTimeout("constructVis()",250); 
+			setTimeout("constructVis()",100); 
 		})
 		
 		
@@ -1647,7 +1647,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 			touch.graphIndex = index;
 		})
 		.event('touchend', function(event){
-			setTimeout("constructVis()",250); 
+			setTimeout("constructVis()",100); 
 		})
 		
 	graph.yAxisPanel.add(pv.Label)
