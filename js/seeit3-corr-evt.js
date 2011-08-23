@@ -417,7 +417,7 @@ function graphXCatTouchEnd(event){
 				graphCollection.graphs[touch.graphIndex].assignX(null);
 			}
 		}
-	} else {
+	} else if (which == false){
 		graphCollection.graphs[touch.graphIndex].assignX(null);
 	}
 	
@@ -453,7 +453,7 @@ function graphYCatTouchEnd(event){
 				graphCollection.graphs[touch.graphIndex].assignY(null);
 			}
 		}
-	} else {
+	} else if (which == false){
 		graphCollection.graphs[touch.graphIndex].assignY(null);
 	}
 	
