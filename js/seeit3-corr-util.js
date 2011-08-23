@@ -131,6 +131,24 @@ function getSumOfLeastSquares(graph){
   return sos;
 }
 
+function getEllipseManipCoords(graph){
+	var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
+	var ellipseXRadius = graph.xRadius;
+	var ellipseYRadius = graph.yRadius;
+	
+	var coords = [];
+	for (i = 0; i < cardinalAngs.length; i++) {
+		coords.push([ ellipseXRadius * Math.cos(cardinalAngs[i]),
+					ellipseYRadius * Math.sin(cardinalAngs[i]) ]);
+	}
+	
+	for (var i = 0; i < coords.length; i++) {
+		coords[i] = ([ coords[i][0] * Math.cos(graph.angle) - coords[i][1] * Math.sin(graph.angle) + graph.ellipseCX,
+					 coords[i][0] * Math.sin(graph.angle) + coords[i][1] * Math.cos(graph.angle) + graph.ellipseCY ]);
+	}
+	return coords;
+}
+
 function getUDSquares(graph){
 	var max = Math.max(graph.userDrawnLinePoints[1].x, graph.userDrawnLinePoints[0].x)
 	var right, left;

@@ -325,8 +325,8 @@ function ellipseAdjustTouchMove(event){
 							touch.graphPanel.top();
 	
 	
-		handleX = getEllipseManipCoords()[index][0],
-		handleY = getEllipseManipCoords()[index][1],
+		handleX = getEllipseManipCoords(graph)[index][0],
+		handleY = getEllipseManipCoords(graph)[index][1],
 		
 		mouseVec = pv.vector(graph.ellipseCX - mouseX
 							,graph.ellipseCY - mouseY),

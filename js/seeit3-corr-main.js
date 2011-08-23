@@ -44,8 +44,6 @@ function constructVis() {
 		.left(function(){return graphCollection.padLeft})
 		.right(function(){return graphCollection.padRight})
 		.top(function(){return graphCollection.padTop})
-		//.events("all")
-		//.event("click",function(){console.log(vis.mouse())})
 	
 	/* Divider Between Graphs and Data Sets */
 	vis.add(pv.Rule)
@@ -1254,28 +1252,28 @@ function constructCorrGraph(graph, index, graphPanel){
 		.bottom(function(d) { return d[1] })
 		.strokeStyle("red");
 
-	function getEllipseManipCoords(){
-		var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
-		var ellipseXRadius = graph.xRadius;
-		var ellipseYRadius = graph.yRadius;
-		
-		var coords = [];
-		for (i = 0; i < cardinalAngs.length; i++) {
-			coords.push([ ellipseXRadius * Math.cos(cardinalAngs[i]),
-						ellipseYRadius * Math.sin(cardinalAngs[i]) ]);
-		}
-		
-		for (var i = 0; i < coords.length; i++) {
-			coords[i] = ([ coords[i][0] * Math.cos(graph.angle) - coords[i][1] * Math.sin(graph.angle) + graph.ellipseCX,
-						 coords[i][0] * Math.sin(graph.angle) + coords[i][1] * Math.cos(graph.angle) + graph.ellipseCY ]);
-		}
-		return coords;
-	}
+//	function getEllipseManipCoords(graph){
+//		var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
+//		var ellipseXRadius = graph.xRadius;
+//		var ellipseYRadius = graph.yRadius;
+//		
+//		var coords = [];
+//		for (i = 0; i < cardinalAngs.length; i++) {
+//			coords.push([ ellipseXRadius * Math.cos(cardinalAngs[i]),
+//						ellipseYRadius * Math.sin(cardinalAngs[i]) ]);
+//		}
+//		
+//		for (var i = 0; i < coords.length; i++) {
+//			coords[i] = ([ coords[i][0] * Math.cos(graph.angle) - coords[i][1] * Math.sin(graph.angle) + graph.ellipseCX,
+//						 coords[i][0] * Math.sin(graph.angle) + coords[i][1] * Math.cos(graph.angle) + graph.ellipseCY ]);
+//		}
+//		return coords;
+//	}
   
  
 	graphPanel.add(pv.Dot)
 		.visible(function() { return graph.udEllipse })//jQuery('#checkboxShowMMEllipse').is(':checked') })
-		.data(getEllipseManipCoords)
+		.data(function(){return getEllipseManipCoords(graph)})
 		.left(function(d) { return d[0] })
 		.bottom(function(d) { return d[1] })
 		.cursor('move')
@@ -1288,8 +1286,8 @@ function constructCorrGraph(graph, index, graphPanel){
 			dragging = true;
 			var mouseX = graphPanel.mouse().x,
 				mouseY = graph.h - graphPanel.mouse().y,
-				handleX = getEllipseManipCoords()[this.index][0],
-				handleY = getEllipseManipCoords()[this.index][1],
+				handleX = getEllipseManipCoords(graph)[this.index][0],
+				handleY = getEllipseManipCoords(graph)[this.index][1],
 				
 				mouseVec = pv.vector(graph.ellipseCX - mouseX
 									,graph.ellipseCY - mouseY),
