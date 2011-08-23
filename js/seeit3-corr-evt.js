@@ -218,6 +218,9 @@ function 	dataCorrTouchMove(event){
 													$('span').offset().top - 
 													graphCollection.padTop - 
 													touch.graphPanel.top());
+													
+	touch.finalX = mouseX;
+	touch.finalY = mouseY;
 							
 	var d = touch.dataObj;
 	var dragLabel = touch.dragLabel;
@@ -572,19 +575,13 @@ function touchEnd(event){
 }
 
 function	dataCorrTouchEnd(event){
+	console.log("end");
 	if (graphCollection.editModeEnabled){
 		var graph = graphCollection.graphs[touch.graphIndex];
 		var graphPanel = touch.graphPanel;
 	
-		var mouseX = event.targetTouches[0].pageX -
-								$('span').offset().left -
-								graphCollection.padLeft + 14 - 
-								touch.graphPanel.left();
-								
-		var mouseY = graph.h - (event.targetTouches[0].pageY - 
-														$('span').offset().top - 
-														graphCollection.padTop - 
-														touch.graphPanel.top());
+		var mouseX = touch.finalX;
+		var mouseY = touch.finalY;
 								
 		var d = touch.dataObj;
 		var dragLabel = touch.dragLabel;
