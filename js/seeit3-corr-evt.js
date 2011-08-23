@@ -302,7 +302,7 @@ function ellipseMoveTouchMove(event){
 
 	if (mouseX > 0 && mouseX < graph.w && mouseY > 0 && mouseY < graph.h){
 		graph.ellipseCX = mouseX;
-		graph.ellipseCY = mouseY;
+		graph.ellipseCY = graph.h - mouseY;
 	}
 
 	graph.pointsInEllipse = numPointsInEllipse(graph);
