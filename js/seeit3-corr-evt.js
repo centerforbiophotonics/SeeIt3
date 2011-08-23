@@ -571,7 +571,7 @@ function touchEnd(event){
 	}
 }
 
-function 	dataCorrTouchEnd(event){
+function	dataCorrTouchEnd(event){
 	if (graphCollection.editModeEnabled){
 		var graph = graphCollection.graphs[touch.graphIndex];
 		var graphPanel = touch.graphPanel;
@@ -629,10 +629,9 @@ function 	dataCorrTouchEnd(event){
 		//}
 		
 		dragLabel.visible(false);
-		
+		touch.reset();
 		vis.render();
 	}
-	touch.reset();
 }
 
 function dataXTouchEnd(event){
