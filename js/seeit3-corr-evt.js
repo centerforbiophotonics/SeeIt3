@@ -4,6 +4,8 @@
 document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
+	
+	
   if (!touch.dragging) return;
 	
 	switch (touch.dragType){

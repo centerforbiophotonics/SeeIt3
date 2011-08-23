@@ -336,7 +336,13 @@
 </div>
 
 <script>
-	$('#datasets').draggable();
+	
+	$('#datasets').draggable().bind("touchmove",test);
+	function test(event){
+		$('#datasets').css('position', 'absolute')
+										 .css('top', event.targetTouches[0].pageY+"px")
+										 .css('left',event.targetTouches[0].pageX+"px");
+	}
 </script>
 
 <p id="loadingMsg">Loading...</p>
