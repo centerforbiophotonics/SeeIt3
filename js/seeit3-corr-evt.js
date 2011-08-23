@@ -413,7 +413,7 @@ function graphXCatTouchEnd(event){
 					graphCollection.graphs[touch.graphIndex].assignX(null);
 				}
 			} else if (which.gAxis == "x" && which.gInd != touch.graphIndex){
-				graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[which.gInd].xData);
+				graphCollection.graphs[which.gInd].assignX(graphCollection.graphs[touch.graphIndex].xData);
 				graphCollection.graphs[touch.graphIndex].assignX(null);
 			}
 		}
@@ -456,7 +456,7 @@ function graphYCatTouchEnd(event){
 					graphCollection.graphs[touch.graphIndex].assignY(null);
 				}
 			} else if (which.gAxis == "y" && which.gInd != touch.graphIndex){
-				graphCollection.graphs[which.gInd].assignY(graphCollection.graphs[which.gInd].yData);
+				graphCollection.graphs[which.gInd].assignY(graphCollection.graphs[touch.graphIndex].yData);
 				graphCollection.graphs[touch.graphIndex].assignY(null);
 			}
 		}
