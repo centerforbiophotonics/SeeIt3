@@ -207,7 +207,42 @@ function touchMove(event){
 }
 
 function 	dataCorrTouchMove(event){
+	var graph = graphCollection.graphs[touch.graphIndex];
 	
+	var mouseX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14 - 
+							touch.graphPanel.left();
+							
+	var mouseY = graph.h - (event.targetTouches[0].pageY - 
+													$('span').offset().top - 
+													graphCollection.padTop - 
+													touch.graphPanel.top());
+							
+	var d = touch.dataObj;
+	var dragLabel = touch.dragLabel;
+	
+	if (graphCollection.editModeEnabled &&
+			mouseX >= 0 &&
+			mouseX <= graph.w &&
+			mouseY >= 0 &&
+			mouseY <= graph.h){
+		
+		graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(mouseX));
+		graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(mouseY));
+		
+		dragLabel.text(graph.x.invert(mouseX).toFixed(1) +
+										", " +
+									graph.y.invert(mouseY).toFixed(1));
+		dragLabel.left(mouseX)
+		dragLabel.bottom(mouseY)
+		dragLabel.visible(true)
+		
+		vis.render();
+	} else {
+		dragLabel.text("Delete");
+		vis.render();
+	}
 }
 
 function dataXTouchMove(event){
@@ -537,7 +572,67 @@ function touchEnd(event){
 }
 
 function 	dataCorrTouchEnd(event){
+	if (graphCollection.editModeEnabled){
+		var graph = graphCollection.graphs[touch.graphIndex];
+		var graphPanel = touch.graphPanel;
 	
+		var mouseX = event.targetTouches[0].pageX -
+								$('span').offset().left -
+								graphCollection.padLeft + 14 - 
+								touch.graphPanel.left();
+								
+		var mouseY = graph.h - (event.targetTouches[0].pageY - 
+														$('span').offset().top - 
+														graphCollection.padTop - 
+														touch.graphPanel.top());
+								
+		var d = touch.dataObj;
+		var dragLabel = touch.dragLabel;
+		
+		var newXData = graphCollection.worksheet.data[graph.xData];
+		var newYData = graphCollection.worksheet.data[graph.yData];
+		var remIndex = null;
+		newXData.forEach(function(data, index){
+			if (data.label == d.label && 
+			(mouseX < 0 ||
+			 mouseX > graph.w ||
+			 mouseY < 0 ||
+			 mouseY > graph.h))
+			{
+				remIndex = index;
+			}
+		});
+		if (remIndex != null)
+			newXData.splice(remIndex,1);
+		graphCollection.editData(graph.xData,graph.xData,newXData);
+		
+		remIndex = null;
+		newYData.forEach(function(data, index){
+			if (data.label == d.label && 
+			(mouseX < 0 ||
+			 mouseX > graph.w ||
+			 mouseY < 0 ||
+			 mouseY > graph.h))
+			{
+				remIndex = index;
+			}
+		});
+		if (remIndex != null)
+			newYData.splice(remIndex,1);
+		graphCollection.editData(graph.yData,graph.yData,newYData);
+		
+	
+		//if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
+		//		Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
+		//{
+		//	dragging = true;
+		//}
+		
+		dragLabel.visible(false);
+		
+		vis.render();
+	}
+	touch.reset();
 }
 
 function dataXTouchEnd(event){
