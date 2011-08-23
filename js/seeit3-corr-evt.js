@@ -354,7 +354,7 @@ function ellipseAdjustTouchMove(event){
 		}
 		 
 		//Radius Inc/Dec
-		if (this.index % 2 == 0){
+		if (index % 2 == 0){
 			graph.xRadius = mouseVec.length();
 		}else{
 			graph.yRadius = mouseVec.length();

@@ -1278,7 +1278,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.bottom(function(d) { return d[1] })
 		.cursor('move')
 		.shape('square')
-		.radius(5)
+		.radius(10)
 		.fillStyle("red")
 		.strokeStyle("red")
 		.event("mousedown", pv.Behavior.drag())
