@@ -423,6 +423,33 @@ Graph.prototype = {
 		this.setYScale();
 	},
 	
+	toString: function(){
+		var colHead = '"Label","X Value","Y Value",';
+		var data = {};
+		//var fullData = this.getData();
+		
+		if (this.xData != null) {
+			this.worksheet.data[this.xData].forEach(function(d){
+				data[d.label] = '"'+d.label+'","'+d.value.toFixed(1)+'",';
+			});
+		}
+		
+		if (this.yData != null){
+			this.worksheet.data[this.yData].forEach(function(d){
+				if (data.hasOwnProperty(d.label)) 
+					data[d.label] += '"'+d.value.toFixed(1)+'",';
+				else
+					data[d.label] = '"'+d.label+'",,"'+d.value.toFixed(1)+'",';
+			});
+		}
+		
+		var string = colHead+'\n';
+		for (var key in data){
+			string += data[key] + '\n';
+		}
+		return string;
+	},
+	
 	assignY: function(category){
 		this.yData = category;
 		this.dataChanged = true;
