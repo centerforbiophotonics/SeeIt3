@@ -313,8 +313,8 @@ function udLineAdjustTouchMove(event){
 							graphCollection.padTop - 
 							touch.graphPanel.top();
 							
-	var mouseX = graph.x(panelX);
-	var	mouseY = graph.y(panelY);
+	var mouseX = graph.x.invert(panelX);
+	var	mouseY = graph.y.invert(panelY);
 		
 	if (panelX > 0 && panelX < graph.w && panelY > 0 && panelY < graph.h){
 		graph.userDrawnLinePoints[index].x = mouseX;
