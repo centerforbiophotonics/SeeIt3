@@ -49,7 +49,42 @@ function touchStart(event){
 }
 
 function 	dataCorrTouchStart(event){
+	var graph = graphCollection.graphs[touch.graphIndex];
 	
+	var mouseX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14 - 
+							touch.graphPanel.left();
+							
+	var mouseY = graph.h - (event.targetTouches[0].pageY - 
+													$('span').offset().top - 
+													graphCollection.padTop - 
+													touch.graphPanel.top());
+							
+	var d = touch.dataObj;
+	var dragLabel = touch.dragLabel;
+	
+	if (graphCollection.editModeEnabled &&
+			mouseX >= 0 &&
+			mouseX <= graph.w &&
+			mouseY >= 0 &&
+			mouseY <= graph.h){
+		
+		graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(mouseX));
+		graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(mouseY));
+		
+		dragLabel.text(graph.x.invert(mouseX).toFixed(1) +
+										", " +
+									graph.y.invert(mouseY).toFixed(1));
+		dragLabel.left(mouseX)
+		dragLabel.bottom(mouseY)
+		dragLabel.visible(true)
+		
+		vis.render();
+	} else {
+		dragLabel.text("Delete");
+		vis.render();
+	}
 }
 
 function dataXTouchStart(event){

@@ -1464,6 +1464,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			touch.dataObj = d;
 			touch.dragging = true;
 			touch.graphIndex = index;
+			touch.graphPanel = graphPanel;
 			touch.dragLabel = dragLabel;
 		})
  
