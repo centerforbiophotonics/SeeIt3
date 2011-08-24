@@ -33,7 +33,6 @@ var fontString = "bold 14px arial";
 var dragging = false;
 
 function constructVis() {
-	console.log("constructVis");
 	jQuery('span').remove();
 	touch = new Touch();
 	
