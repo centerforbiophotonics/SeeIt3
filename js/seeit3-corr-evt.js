@@ -378,7 +378,7 @@ function dataBothBottomTouchMove(event){
 	var mouseY = graph.h - (event.targetTouches[0].pageY - 
 													$('span').offset().top - 
 													graphCollection.padTop - 
-													touch.graphPanel.top()
+													touch.graphPanel.top() -
 													touch.bottomSubgraph.top());
 													
 	touch.finalX = mouseX;
