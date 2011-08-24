@@ -2,19 +2,21 @@
 
 /* Dynamic Graph Resizing */
 $(window).resize(function() {
-	graphCollection.setW(calcGraphWidth());
-	graphCollection.setH(graphCollection.calcGraphHeight());
-	
-	vis.render();
-	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-	positionDatasetAddMenu();
-	positionDatasetEditMenu();
-	positionDisplayMenu();
-	positionCreateWorksheetMenu();
-	positionClipboardPrompt();
-	positionAboutPopup();
-	positionWorksheetDescriptionPopup();
-	positionDatasetPaste();
+	if (graphCollection.hasOwnProperty("worksheet")){
+		graphCollection.setW(calcGraphWidth());
+		graphCollection.setH(graphCollection.calcGraphHeight());
+		
+		vis.render();
+		positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+		positionDatasetAddMenu();
+		positionDatasetEditMenu();
+		positionDisplayMenu();
+		positionCreateWorksheetMenu();
+		positionClipboardPrompt();
+		positionAboutPopup();
+		positionWorksheetDescriptionPopup();
+		positionDatasetPaste();
+	}
 });
 
 /* Top Bar Menu Items */
