@@ -1086,10 +1086,12 @@ function whichDropZone(x,y){
 
 /* Dynamic Graph Resizing */
 $(window).resize(function() {
-	graphCollection.setW(calcGraphWidth());
-	graphCollection.setH(graphCollection.calcGraphHeight());
-	//constructVis();
-	vis.render();
+	if (graphCollection.hasOwnProperty("worksheet")){
+		graphCollection.setW(calcGraphWidth());
+		graphCollection.setH(graphCollection.calcGraphHeight());
+		//constructVis();
+		vis.render();
+	}
 })
 
 
