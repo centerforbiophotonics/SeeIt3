@@ -338,6 +338,9 @@ function dataBothTopTouchMove(event){
 													touch.graphPanel.top() -
 													touch.topSubgraph.top());
 													
+	var height = touch.topSubgraph.height();
+	console.log(height);
+													
 	touch.finalX = mouseX;
 	touch.finalY = mouseY;
 							
@@ -348,7 +351,7 @@ function dataBothTopTouchMove(event){
 			mouseX >= 0 &&
 			mouseX <= graph.w &&
 			mouseY >= 0 &&
-			mouseY <= touch.topSubgraph.height()){
+			mouseY <= height){
 		console.log("insideTop");
 		
 		
