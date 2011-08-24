@@ -1441,8 +1441,8 @@ function constructCorrGraph(graph, index, graphPanel){
 				//}
 				
 				dragLabel.visible(false);
-				
-				vis.render();
+				constructVis();
+				//vis.render();
 			}
 		})
 		.event("touchstart", function(d){
