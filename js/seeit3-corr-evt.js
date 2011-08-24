@@ -4,8 +4,6 @@
 document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
-	
-	
   if (!touch.dragging) return;
 	
 	switch (touch.dragType){
@@ -345,12 +343,14 @@ function dataBothTopTouchMove(event){
 							
 	var d = touch.dataObj;
 	var dragLabel = touch.dragLabel;
-	
+	console.log(mouseX+"..."mouseY);
 	if (graphCollection.editModeEnabled &&
 			mouseX >= 0 &&
 			mouseX <= graph.w &&
 			mouseY >= 0 &&
 			mouseY <= touch.topSubgraph.height()){
+		console.log("insideTop");
+		
 		
 		graphCollection.editSinglePoint(graph.yData, d.label, graph.yHoriz.invert(mouseX));
 		

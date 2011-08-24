@@ -5,20 +5,20 @@
 //	"udLineAdjust","udLineMove",
 //	"sideCat","graphXCat","graphYCat"
 function Touch(){
-	this.dragType = undefined;					//all
-	this.draggedObj = undefined;				//sideCat, graphXCat, graphYCat
-	this.dragging = false;							//all
-	this.dragCat = undefined;						//sideCat
-	this.finalX = undefined;						//all
-	this.finalY = undefined;						//all
-	this.graphPanel = undefined;				//all
-	this.graphIndex = undefined;  			//graphXCat, graphYCat
-	this.dataObj = undefined;						//dataCorr, dataX, dataY, dataBothTop, dataBothBottom
-	this.dragLabel = undefined;					//dataCorr, dataX, dataY
-	this.udLineHandleIndex = undefined;	//udLineAdjust
-	this.ellipseHandleIndex = undefined;//ellipseAdjust
-	this.topSubgraph = undefined;				//dataBothTop
-	this.bottomSubgraph = undefined;		//dataBothBottom
+	this.dragType = undefined;						//all
+	this.draggedObj = undefined;					//sideCat, graphXCat, graphYCat
+	this.dragging = false;								//all
+	this.dragCat = undefined;							//sideCat
+	this.finalX = undefined;							//all
+	this.finalY = undefined;							//all
+	this.graphPanel = undefined;					//all
+	this.graphIndex = undefined;  				//graphXCat, graphYCat
+	this.dataObj = undefined;							//dataCorr, dataX, dataY, dataBothTop, dataBothBottom
+	this.dragLabel = undefined;						//dataCorr, dataX, dataY
+	this.udLineHandleIndex = undefined;		//udLineAdjust
+	this.ellipseHandleIndex = undefined;	//ellipseAdjust
+	this.topSubgraph = undefined;					//dataBothTop
+	this.bottomSubgraph = undefined;			//dataBothBottom
 }
 
 Touch.prototype = {
@@ -33,8 +33,10 @@ Touch.prototype = {
 		this.graphIndex = undefined;
 		this.dataObj = undefined;
 		this.dragLabel = undefined;
-		this.udLineHandleIndex = undefined;	
+		this.udLineHandleIndex = undefined;
 		this.ellipseHandleIndex = undefined;
+		this.topSubgraph = undefined;
+		this.bottomSubgraph = undefined;
 	},
 }
 
