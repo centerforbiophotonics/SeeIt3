@@ -290,11 +290,11 @@ function constructVis() {
 					return false;
 			})
 		
-	constructSidePanel();
+	
 	graphCollection.graphs.forEach(function(graph, index){
 		constructGraphPanel(graph, index);
 	});
-	
+	constructSidePanel();
 	
 	
 	vis.render();

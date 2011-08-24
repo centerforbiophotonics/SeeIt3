@@ -77,6 +77,8 @@ function GraphCollection(){
 	this.buttonIcon = true;
 	this.buttonText = true;
 	
+	this.selectedLabel = null;
+	
 	this.addGraph();
 	this.updateMenuOptions();
 }

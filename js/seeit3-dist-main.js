@@ -609,6 +609,7 @@ function constructGraphPanel(graph, index){
 					graphCollection.selectAUserDefPartition();
 				}
 				graphCollection.selectedGraphIndex = index;
+				graphCollection.selectedLabel = null;
 				graphCollection.updateMenuOptions();
 				
 				positionGroupingMenuOverGraph(index, graphCollection);
@@ -1345,8 +1346,20 @@ function constructGraphPanel(graph, index){
 			})
 			.radius(function() {return graphCollection.bucketDotSize})
 			.fillStyle(function(d) {return pointFillStyle(d.set)})
-			.strokeStyle(function(d) {return pointStrokeStyle(d.set)})
+			.strokeStyle(function(d) {
+				if (d.label == graphCollection.selectedLabel)
+					return jQuery('#checkboxBWView').is(':checked') ? "grey": "red";
+				else
+					return pointStrokeStyle(d.set);
+			})
+			.lineWidth(function(d){if (d.label == graphCollection.selectedLabel) return 4;
+														 else return 2;
+			})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
+			.event("click", function(d){
+				graphCollection.selectedLabel = d.label;
+				vis.render();
+			})
 			.event("mousedown", pv.Behavior.drag())
 			.event("drag", function(d){  
 				if (graphCollection.editModeEnabled &&
