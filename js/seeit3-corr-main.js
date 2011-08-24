@@ -2094,7 +2094,8 @@ function constructXDistGraph(graph, index, graphPanel){
 				touch.dataObj = d;
 				touch.dragging = true;
 				touch.graphIndex = index;
-				touch.dragLabel = draglabel;
+				touch.graphPanel = graphPanel;
+				touch.dragLabel = dragLabel;
 			}
 		})
 		
