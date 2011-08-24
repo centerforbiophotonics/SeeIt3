@@ -192,8 +192,10 @@ function getUDSquares(graph){
 					top = graph.y(datY);
 				}
 			}
-			if (left < 0)
+			if (left < 0){
 				left = 0;
+				width = graph.x(d.x);
+			}
 			if (left + size > graph.w)
 				width = graph.w - left;
 				

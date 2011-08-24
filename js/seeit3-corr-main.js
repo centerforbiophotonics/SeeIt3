@@ -1119,7 +1119,6 @@ function constructCorrGraph(graph, index, graphPanel){
 		.fillStyle("red")
 		.strokeStyle("red")
 		.lineWidth(2)
-		
 		.add(pv.Dot)									//Endpoints
 			.fillStyle("red")
 			.shape('square')
@@ -1159,7 +1158,11 @@ function constructCorrGraph(graph, index, graphPanel){
 				touch.udLineHandleIndex = this.index;
 			})
 		.add(pv.Label)									//Line Equation
-			.data(function() {return getUserLineMidpoint(graph)})
+			.data(function() {
+				var mp = getUserLineMidpoint(graph)[0],
+				lp = graph.userDrawnLinePoints[0]
+				return [{"x":(mp.x+lp.x)/2,"y":(mp.y+lp.y)/2}];
+			})
 			.left(function(d) { return graph.x(d.x) })
 			.bottom(function(d) { return graph.y(d.y) })
 			.visible(function () { return graph.udLine })
@@ -1167,13 +1170,17 @@ function constructCorrGraph(graph, index, graphPanel){
 				if (this.index == 0) { return "Y = "+getUserLineSlope(graph).toFixed(3)+"X + "+getUserLineIntercept(graph).toFixed(3)}
 				else {return ""}
 			})
-			.textAlign("right")
+			.textAlign("left")
 			.textBaseline("top")
 			.textStyle("red")
 			.textAngle(function() { return getUserLineLabelAngle(graph)})
 			.font("bold 12px sans-serif")
 		.add(pv.Label)									//Sum of Squares
-			.data(function() {return getUserLineMidpoint(graph)})
+			.data(function() {
+				var mp = getUserLineMidpoint(graph)[0],
+				lp = graph.userDrawnLinePoints[0]
+				return [{"x":(mp.x+lp.x)/2,"y":(mp.y+lp.y)/2}];
+			})
 			.left(function(d) { return graph.x(d.x) })
 			.bottom(function(d) { return graph.y(d.y) })
 			.visible(function () { return graph.udLine })
@@ -1181,7 +1188,7 @@ function constructCorrGraph(graph, index, graphPanel){
 				if (this.index == 0) { return "Sum of Squares = "+ getUserLineR(graph).toFixed(2) }
 				else {return ""}
 			})
-			.textAlign("right")
+			.textAlign("left")
 			.textBaseline("bottom")
 			.textStyle("red")
 			.textAngle(function() {return getUserLineLabelAngle(graph)})
@@ -1251,25 +1258,6 @@ function constructCorrGraph(graph, index, graphPanel){
 		.left(function(d) { return d[0] })
 		.bottom(function(d) { return d[1] })
 		.strokeStyle("red");
-
-//	function getEllipseManipCoords(graph){
-//		var cardinalAngs = pv.range(0, 2 * Math.PI, Math.PI/2)
-//		var ellipseXRadius = graph.xRadius;
-//		var ellipseYRadius = graph.yRadius;
-//		
-//		var coords = [];
-//		for (i = 0; i < cardinalAngs.length; i++) {
-//			coords.push([ ellipseXRadius * Math.cos(cardinalAngs[i]),
-//						ellipseYRadius * Math.sin(cardinalAngs[i]) ]);
-//		}
-//		
-//		for (var i = 0; i < coords.length; i++) {
-//			coords[i] = ([ coords[i][0] * Math.cos(graph.angle) - coords[i][1] * Math.sin(graph.angle) + graph.ellipseCX,
-//						 coords[i][0] * Math.sin(graph.angle) + coords[i][1] * Math.cos(graph.angle) + graph.ellipseCY ]);
-//		}
-//		return coords;
-//	}
-  
  
 	graphPanel.add(pv.Dot)
 		.visible(function() { return graph.udEllipse })//jQuery('#checkboxShowMMEllipse').is(':checked') })
@@ -1398,7 +1386,6 @@ function constructCorrGraph(graph, index, graphPanel){
 				
 				graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
 				graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
-				//graph.selectedCategory = d.set;
 				
 				dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1) +
 												", " +
@@ -1765,7 +1752,9 @@ function constructTwoDistGraph(graph,index, graphPanel){
 			touch.dataObj = d;
 			touch.dragging = true;
 			touch.graphIndex = index;
-			touch.dragLabel = topDraglabel;
+			touch.graphPanel = graphPanel;
+			touch.dragLabel = topDragLabel;
+			touch.topSubgraph = topDist;
 		})
 		
 	
@@ -1935,7 +1924,8 @@ function constructTwoDistGraph(graph,index, graphPanel){
 			touch.dataObj = d;
 			touch.dragging = true;
 			touch.graphIndex = index;
-			touch.dragLabel = botDraglabel;
+			touch.dragLabel = botDragLabel;
+			touch.bottomSubgraph = bottomDist;
 		})
 		
 	vis.render();
@@ -2275,7 +2265,7 @@ function constructYDistGraph(graph,index, graphPanel){
 			touch.dataObj = d;
 			touch.dragging = true;
 			touch.graphIndex = index;
-			touch.dragLabel = draglabel;
+			touch.dragLabel = dragLabel;
 		})
 		
 	vis.render();
