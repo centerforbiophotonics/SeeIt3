@@ -28,6 +28,7 @@
 </head>
 <body>
 
+<!--
 <div id="notGraph" class="notGraph">
 	<div id="menu" class="menu">
 		<table width="100%">
@@ -49,8 +50,31 @@
 			</tr>
 		</table>
 	</div>
-</div>
+</div> -->
 
+<div id="notGraph" class="notGraph">
+	<div id="menu" class="menu">
+		<table style="border-spacing: 20px 0px;">
+			<tr>
+				<td>
+						Select a worksheet: 
+						<select id="workSheetSelector">
+								<option value="New">*Add a new worksheet*</option>
+						</select>
+				</td>
+				<td><a href="#" id="refreshWorksheet">Refresh</a></td>
+				<td><a href="#" id="worksheetDescriptionButton">Description</a></td>
+				<td><a href="#" id="editInGoogleDocs">View Data</a></td>
+				<td>
+					<label for="newSpreadsheetURL">New Worksheet URL:</label>
+					<input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
+				</td>
+				<td><a href="corrhelp.html" target="_blank" id="help">Help</a></td>
+				<td><a href="#" id="about">About</a></td>
+			</tr>
+		</table>
+	</div>
+</div>
 
 <div id="groupingOptions">
 	<input type='image' src='img/close.png' id='groupOptClose' width='20' height='20' align='right'>
