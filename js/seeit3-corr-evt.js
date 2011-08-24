@@ -332,11 +332,11 @@ function dataBothTopTouchMove(event){
 							touch.graphPanel.left() -
 							touch.topSubgraph.left();
 							
-	var mouseY = graph.h - (event.targetTouches[0].pageY - 
+	var mouseY = touch.topSubgraph.height() - 
+												 (event.targetTouches[0].pageY - 
 													$('span').offset().top - 
 													graphCollection.padTop - 
-													touch.graphPanel.top() -
-													touch.topSubgraph.top());
+													touch.graphPanel.top());
 													
 	var height = touch.topSubgraph.height();
 	console.log(height);
@@ -378,7 +378,8 @@ function dataBothBottomTouchMove(event){
 							touch.graphPanel.left() - 
 							touch.bottomSubgraph.left();
 							
-	var mouseY = graph.h - (event.targetTouches[0].pageY - 
+	var mouseY = touch.bottomSubgraph.height() - 
+												 (event.targetTouches[0].pageY - 
 													$('span').offset().top - 
 													graphCollection.padTop - 
 													touch.graphPanel.top() -
