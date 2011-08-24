@@ -343,7 +343,7 @@ function dataBothTopTouchMove(event){
 							
 	var d = touch.dataObj;
 	var dragLabel = touch.dragLabel;
-	console.log(mouseX+"..."mouseY);
+	console.log(mouseX+"..."+mouseY);
 	if (graphCollection.editModeEnabled &&
 			mouseX >= 0 &&
 			mouseX <= graph.w &&
