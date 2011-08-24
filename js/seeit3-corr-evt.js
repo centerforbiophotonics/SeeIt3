@@ -339,22 +339,17 @@ function dataBothTopTouchMove(event){
 													touch.graphPanel.top());
 													
 	var height = touch.topSubgraph.height();
-	console.log(height);
-													
+												
 	touch.finalX = mouseX;
 	touch.finalY = mouseY;
 							
 	var d = touch.dataObj;
 	var dragLabel = touch.dragLabel;
-	console.log(mouseX+"..."+mouseY);
 	if (graphCollection.editModeEnabled &&
 			mouseX >= 0 &&
 			mouseX <= graph.w &&
 			mouseY >= 0 &&
 			mouseY <= height){
-		console.log("insideTop");
-		
-		
 		graphCollection.editSinglePoint(graph.yData, d.label, graph.yHoriz.invert(mouseX));
 		
 		dragLabel.text(graph.yHoriz.invert(mouseX).toFixed(1));
