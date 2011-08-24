@@ -277,7 +277,7 @@ function dataXTouchMove(event){
 		
 		dragLabel.text(graph.x.invert(mouseX).toFixed(1));
 		dragLabel.left(mouseX)
-		dragLabel.bottom(mouseY)
+		dragLabel.bottom(mouseY + 20)
 		dragLabel.visible(true)
 		
 		vis.render();
