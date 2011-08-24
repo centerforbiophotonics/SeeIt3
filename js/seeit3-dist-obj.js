@@ -717,8 +717,10 @@ Worksheet.prototype = {
 		feedData.feed.entry.filter(function(e) { return parseInt(e.title.$t.replace(/[A-Z]/g,"")) == 1 })
 			.slice(1)
 			.forEach(function(e) { 
-				columnToCategory[e.title.$t.replace(/[0-9]/g,"")] = e.content.$t;
-				data[e.content.$t] = []
+				var re = new RegExp("dependent variable:","i");
+				var cat = trim(e.content.$t.replace(re,""));
+				columnToCategory[e.title.$t.replace(/[0-9]/g,"")] = cat;
+				data[cat] = []
 			});
 												
 		var rowToLabelVal = {};

@@ -15,6 +15,10 @@ function pointFillStyle(set){
 	}
 }
 
+function trim(stringToTrim) {
+	return stringToTrim.replace(/^\s+|\s+$/g,"");
+}
+
 function pointStrokeStyle(set){
 	if (jQuery('#checkboxFillDots').is(':checked')){
 		return "black";
