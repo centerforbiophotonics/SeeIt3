@@ -17,6 +17,8 @@ function Touch(){
 	this.dragLabel = undefined;					//dataCorr, dataX, dataY
 	this.udLineHandleIndex = undefined;	//udLineAdjust
 	this.ellipseHandleIndex = undefined;//ellipseAdjust
+	this.topSubgraph = undefined;				//dataBothTop
+	this.bottomSubgraph = undefined;		//dataBothBottom
 }
 
 Touch.prototype = {
