@@ -1359,6 +1359,10 @@ jQuery('#sliderDivisions').slider({
 	}
 });
 
+jQuery('#sliderDivisions').bind("touchmove", function(event){
+	console.log("touch");
+})
+
 $("#buttonMode").change(function(){
 	var val = jQuery("#buttonMode option:selected").val();
 	
