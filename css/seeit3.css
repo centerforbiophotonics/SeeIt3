@@ -47,7 +47,7 @@ table#menuItems h3 {
 	background: #ffffff;
 	border:1px solid black;
 	padding: 5px;
-	max-height: 50%;
+	max-height: 75%;
   overflow:scroll;
   overflow-x: hidden;
   -ms-overflow-x: hidden;
@@ -60,7 +60,7 @@ table#menuItems h3 {
 	background: #ffffff;
 	border:1px solid black;
 	padding: 5px;
-	max-height: 400px;
+	max-height: 75%;
   overflow:scroll;
   overflow-x: hidden;
   -ms-overflow-x: hidden;
@@ -91,7 +91,7 @@ table#menuItems h3 {
 	border:1px solid black;
 	padding: 5px;
 	width: 250px;
-	max-height: 400px;
+	max-height: 75%;
   overflow:scroll;
   overflow-x: hidden;
   -ms-overflow-x: hidden;
