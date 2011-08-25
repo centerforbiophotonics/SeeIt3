@@ -1334,40 +1334,50 @@ $('#displayOptions').change(function(){
 
 $('#checkboxBWView').change(function() { return constructVis(); });
 
-jQuery('#sliderTextSize').slider({ 
-	orientation:'vertical', min:12, max:20, value:12, step:1,
-	slide:function(event, ui) { 
-		graphCollection.labelTextSize = (ui.value + 4).toString();
-		graphCollection.tickTextSize = ui.value.toString();
-		vis.render(); 
-	}
-});
+$("#divisionsInc").click(function(){
+	if (graphCollection.buckets < 40)
+		graphCollection.buckets++;
+	$("#divisionsValue").html(graphCollection.buckets);
+	vis.render();
+})
 
-jQuery('#sliderDotSize').slider({ 
-	orientation:'vertical', min:1, max:10, value:5, step:1,
-	slide:function(event, ui) {
-		graphCollection.dotSize = ui.value; 
-		vis.render(); 
-	}
-});
-  
-jQuery('#sliderDivisions').slider({ 
-	orientation:'vertical', min:2, max:40, value:30, step:1,
-	slide:function(event, ui) { 
-		graphCollection.buckets = ui.value;
-		vis.render(); 
-	}
-});
+$("#divisionsDec").click(function(){
+	if (graphCollection.buckets > 2)
+		graphCollection.buckets--;
+	$("#divisionsValue").html(graphCollection.buckets);
+	vis.render();
+})
 
-jQuery('#sliderDivisions').bind("touchmove", function(event){
-	//console.log("PAGE: "+event.originalEvent.targetTouches[0].pageY);
-	//console.log("Slider Loc: "+jQuery('#sliderDivisions').offset());
-	var sliderTop = jQuery('#sliderDivisions').position().top;
-	var sliderBottom = sliderTop+200;
-	var touchTop = event.originalEvent.targetTouches[0].pageY;
-	var scale = pv.Scale.linear(sliderTop,sliderBottom).range(2, 40);	
-	
-	jQuery('#sliderDivisions').slider("value",scale(touchTop));
+$("#dotSizeInc").click(function(){
+	if (graphCollection.dotSize < 12)
+		graphCollection.dotSize++;
+	$("#dotSizeValue").html(graphCollection.dotSize);
+	vis.render();
+})
+
+$("#dotSizeDec").click(function(){
+	if (graphCollection.dotSize > 2)
+		graphCollection.dotSize--;
+	$("#dotSizeValue").html(graphCollection.dotSize);
+	vis.render();
+})
+
+$("#textSizeInc").click(function(){
+	if (parseInt(graphCollection.tickTextSize) < 20){
+		graphCollection.tickTextSize = (parseInt(graphCollection.tickTextSize)+1)+"";
+		graphCollection.labelTextSize = (parseInt(graphCollection.labelTextSize)+1)+"";
+		$("#textSizeValue").html(graphCollection.tickTextSize);
+		vis.render();
+	}
+})
+
+$("#textSizeDec").click(function(){
+	if (parseInt(graphCollection.tickTextSize) > 12){
+		graphCollection.tickTextSize = (parseInt(graphCollection.tickTextSize)-1)+"";
+		graphCollection.labelTextSize = (parseInt(graphCollection.labelTextSize)-1)+"";
+		$("#textSizeValue").html(graphCollection.tickTextSize);
+		vis.render();
+	}
 })
 
 $("#buttonMode").change(function(){
