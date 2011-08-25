@@ -1217,6 +1217,30 @@ function constructGraphPanel(graph, index){
 																	 !graph.insufDataForFour; 
 			})
 			
+		//Box Plot Mean
+		graphPanel.add(pv.Dot)
+			.data(function(){return [graph.getMeanMedianMode()[0]]})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.40 + graph.baseLine})
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+			.shape("cross")
+			.strokeStyle("darkgreen")
+		
+		graphPanel.add(pv.Dot)
+			.data(function(){return [graph.getMeanMedianMode()[0]]})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.40 + graph.baseLine})
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+			.shape("cross")
+			.angle(Math.PI/4)
+			.strokeStyle("darkgreen")
+			
 		/*Mean Median Mode Lines */
 		graphPanel.add(pv.Rule)
 			.data(function(){
