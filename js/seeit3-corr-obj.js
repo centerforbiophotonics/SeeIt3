@@ -106,7 +106,7 @@ GraphCollection.prototype = {
 			this.numGraphs++;
 			this.graphs.push(new Graph(this.worksheet, this));
 			if (this.graphs.length == 2){
-				jQuery('#sliderDivisions').slider("value",8);
+				jQuery('#divisionsValue').html(8);
 				this.buckets = 8;
 				this.graphs.forEach(function(g){
 					g.xRadius = g.xRadius/2;
@@ -130,7 +130,7 @@ GraphCollection.prototype = {
 		if (this.graphs.length == 0) this.addGraph();
 		
 		if (this.graphs.length == 1){
-			jQuery('#sliderDivisions').slider("value",30);
+			jQuery('#divisionsValue').html(30);
 			this.buckets = 30;
 		}
 		
