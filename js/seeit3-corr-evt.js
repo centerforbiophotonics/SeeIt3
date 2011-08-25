@@ -1361,7 +1361,7 @@ jQuery('#sliderDivisions').slider({
 
 jQuery('#sliderDivisions').bind("touchmove", function(event){
 	console.log("PAGE: "+event.originalEvent.targetTouches[0].pageY);
-	console.log("Slider Loc: "+event.target.offset().top);
+	console.log("Slider Loc: "+event.target.style.top);
 	
 })
 
