@@ -200,6 +200,7 @@ $('#displayOptions').hide();
 
 $('#checkboxBWView').change(function() { vis.render() });
 
+/*
 jQuery('#sliderTextSize').slider({ 
 	orientation:'vertical', min:12, max:20, value:12, step:1,
 	slide:function(event, ui) { 
@@ -224,6 +225,56 @@ jQuery('#sliderDivisions').slider({
 		vis.render();
 	}
 });
+*/
+
+$("#divisionsInc").click(function(){
+	if (graphCollection.buckets < 40)
+		graphCollection.buckets++;
+	$("#divisionsValue").html(graphCollection.buckets);
+	vis.render();
+})
+
+$("#divisionsDec").click(function(){
+	if (graphCollection.buckets > 2)
+		graphCollection.buckets--;
+	$("#divisionsValue").html(graphCollection.buckets);
+	vis.render();
+})
+
+$("#dotSizeInc").click(function(){
+	if (graphCollection.bucketDotSize < 12)
+		graphCollection.bucketDotSize++;
+	$("#dotSizeValue").html(graphCollection.bucketDotSize);
+	vis.render();
+})
+
+$("#dotSizeDec").click(function(){
+	if (graphCollection.bucketDotSize > 2)
+		graphCollection.bucketDotSize--;
+	$("#dotSizeValue").html(graphCollection.bucketDotSize);
+	vis.render();
+})
+
+$("#textSizeInc").click(function(){
+	if (parseInt(graphCollection.tickTextSize) < 20){
+		graphCollection.tickTextSize = (parseInt(graphCollection.tickTextSize)+1)+"";
+		graphCollection.labelTextSize = (parseInt(graphCollection.labelTextSize)+1)+"";
+		$("#textSizeValue").html(graphCollection.tickTextSize);
+		vis.render();
+	}
+})
+
+$("#textSizeDec").click(function(){
+	if (parseInt(graphCollection.tickTextSize) > 12){
+		graphCollection.tickTextSize = (parseInt(graphCollection.tickTextSize)-1)+"";
+		graphCollection.labelTextSize = (parseInt(graphCollection.labelTextSize)-1)+"";
+		$("#textSizeValue").html(graphCollection.tickTextSize);
+		vis.render();
+	}
+})
+
+
+
 
 $('#checkboxHideData').change(function() { vis.render();});
 

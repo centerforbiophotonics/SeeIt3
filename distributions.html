@@ -129,38 +129,42 @@
 	<input type='image' src='img/close.png' id='dispOptClose' onclick='hideMenus()' width='20' height='20' align='right'><br>
 	<table cellspacing="10">
 		<tr>
-			<td>
-				<input type="checkbox" id="checkboxHideData" name="hideData">
-				<label for="checkboxHideData">Hide Data</label><br>
-				
-				
-				<b>Point Stack Mode</b></br>
-				<select id="drawMode">
-					<option value="floating">Floating</option>
-					<option value="center">Center</option>
-					<option value="gravity" selected>Gravity</option>
-				</select><br> 
+			<td valign="top">
+				<h3 style="margin-bottom:10px">Divisions</h3>
+				<center>
+					<input type="button" value="+" id="divisionsInc" style="width:30px; height:30px"><br>
+					<p id="divisionsValue">30</p>
+					<input type="button" value="-" id="divisionsDec" style="width:30px; height:30px"><br>
+				</center>
 			</td>
 			<td valign="top">
-				<h3 style="margin-bottom:10px; margin-top:0px">Divisions</h3>
-				<center><div id="sliderDivisions"></div></center>
+				<h3 style="margin-bottom:10px">Dot Size</h3>
+				<center>
+					<input type="button" value="+" id="dotSizeInc" style="width:30px; height:30px"><br>
+					<p id="dotSizeValue">5</p>
+					<input type="button" value="-" id="dotSizeDec" style="width:30px; height:30px"><br>
+				</center>
 			</td>
 			<td valign="top">
-				<h3 style="margin-bottom:10px; margin-top:0px">Dot Size</h3>
-				<center><div id="sliderDotSize"></div></center>
-			</td>
-			<td valign="top">
-				<h3 style="margin-bottom:10px; margin-top:0px">Text Size</h3>
-				<center><div id="sliderTextSize"></div></center>
+				<h3 style="margin-bottom:10px">Text Size</h3>
+				<center>
+					<input type="button" value="+" id="textSizeInc" style="width:30px; height:30px"><br>
+					<p id="textSizeValue">12</p>
+					<input type="button" value="-" id="textSizeDec" style="width:30px; height:30px"><br>
+				</center>
 			</td>					
 			<td valign="top">
-				<h3 style="margin-bottom:10px; margin-top:0px">Data Points</h3>
+				<h3>Data Points</h3>
 				<input type="checkbox" id="checkboxBWView" name="color">
 				<label for="checkboxBWView">Black</label><br>
 				<input type="checkbox" id="checkboxFillDots" name="color" checked>
 				<label for="checkboxFillDots">Fill</label><br>
+				<input type="checkbox" id="checkboxHideData">
+				<label for="checkboxHideData">Hide</label><br>
 			</td>
 		</tr>
+	</table>
+	<table cellspacing="10">
 		<tr>
 			<td>
 				<b>Button Appearance</b><br>
@@ -168,6 +172,14 @@
 					<option value="both" selected>Text and Icons</option>
 					<option value="icon">Icons Only</option>
 					<option value="text">Text Only</option>
+				</select>
+			</td>
+			<td>
+				<b>Point Stack Mode</b></br>
+				<select id="drawMode">
+					<option value="floating">Floating</option>
+					<option value="center">Center</option>
+					<option value="gravity" selected>Gravity</option>
 				</select>
 			</td>
 		</tr>
