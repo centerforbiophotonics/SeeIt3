@@ -550,7 +550,7 @@ function constructGraphPanel(graph,index){
 	var xAxisDragFeedbackPanel = vis.add(pv.Label)
 		.text(function(){
 			if (graph.xData == null)
-				return "Drag here to assign a dataset to the x-axis."
+				return "No Data"
 			else
 				return graph.xData;
 		})
@@ -653,7 +653,7 @@ function constructGraphPanel(graph,index){
 	graph.xAxisPanel.add(pv.Label)
 		.text(function(){
 			if (graph.xData == null)
-				return "Drag here to assign a dataset to the x-axis."
+				return "Drag data to x-axis"
 			else
 				return graph.xData;
 		})
@@ -667,7 +667,7 @@ function constructGraphPanel(graph,index){
 	var yAxisDragFeedbackPanel = vis.add(pv.Label)
 		.text(function(){
 			if (graph.yData == null)
-				return "Drag here to assign a dataset to the y-axis."
+				return "No Data"
 			else
 				return graph.yData;
 		})
@@ -769,7 +769,7 @@ function constructGraphPanel(graph,index){
 	graph.yAxisPanel.add(pv.Label)
 		.text(function(){
 			if (graph.yData == null)
-				return "Drag here to assign a dataset to the y-axis."
+				return "Drag data to y-axis"
 			else
 				return graph.yData;
 		})
@@ -1547,7 +1547,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	var yAxisDragFeedbackPanel = vis.add(pv.Label)
 		.text(function(){
 			if (graph.yData == null)
-				return "Drag here to assign a dataset to the y-axis."
+				return "Drag data to y-axis"
 			else
 				return graph.yData;
 		})

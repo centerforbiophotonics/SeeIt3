@@ -105,6 +105,10 @@ GraphCollection.prototype = {
 		if(this.graphs.length < 2) {
 			this.numGraphs++;
 			this.graphs.push(new Graph(this.worksheet, this));
+			if (this.graphs.length == 2){
+				jQuery('#sliderDivisions').slider("value",8);
+				this.buckets = 8;
+			}
 			this.setChildGraphWidths();
 			this.setH(this.calcGraphHeight());
 		}
@@ -120,6 +124,11 @@ GraphCollection.prototype = {
 		this.selectedGraphIndex = 0;
 			
 		if (this.graphs.length == 0) this.addGraph();
+		
+		if (this.graphs.length == 2){
+			jQuery('#sliderDivisions').slider("value",30);
+			this.buckets = 30;
+		}
 		
 		this.setChildGraphWidths();
 	},

@@ -407,8 +407,8 @@ function constructCategoryPanel(){
 	
 	var dragFeedbackPanels = [];
 	for (var key in graphCollection.worksheet.data){
-		var abbrevKey = key.slice(0,15);
-		if (key.length > 15)
+		var abbrevKey = key.slice(0,14);
+		if (key.length > 14)
 			abbrevKey += "...";
 		
 		//Copy of category panel which follows mouse as it is dragged

@@ -761,7 +761,8 @@ function	dataCorrTouchEnd(event){
 		
 		dragLabel.visible(false);
 		touch.reset();
-		vis.render();
+		//vis.render();
+		constructVis();
 	}
 }
 
