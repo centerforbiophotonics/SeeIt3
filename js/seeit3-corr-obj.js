@@ -108,6 +108,10 @@ GraphCollection.prototype = {
 			if (this.graphs.length == 2){
 				jQuery('#sliderDivisions').slider("value",8);
 				this.buckets = 8;
+				this.graphs.forEach(function(g){
+					g.xRadius = g.xRadius/2;
+					g.yRadius = g.yRadius/2; 
+				})
 			}
 			this.setChildGraphWidths();
 			this.setH(this.calcGraphHeight());
@@ -150,7 +154,7 @@ GraphCollection.prototype = {
 				var oldGW = g.w;
 				g.w = (graphCollection.w-200)/2;
 				g.setXScale();
-				g.ellipseCX *= g.w/oldGW; 
+				g.ellipseCX *= g.w/oldGW;
 			});
 		else
 			graphCollection.graphs.forEach(function(g){
