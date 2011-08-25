@@ -1360,9 +1360,14 @@ jQuery('#sliderDivisions').slider({
 });
 
 jQuery('#sliderDivisions').bind("touchmove", function(event){
-	console.log("PAGE: "+event.originalEvent.targetTouches[0].pageY);
-	console.log("Slider Loc: "+jQuery('#sliderDivisions').position());
+	//console.log("PAGE: "+event.originalEvent.targetTouches[0].pageY);
+	//console.log("Slider Loc: "+jQuery('#sliderDivisions').offset());
+	var sliderTop = jQuery('#sliderDivisions').position().top;
+	var sliderBottom = sliderTop+100;
+	var touchTop = event.originalEvent.targetTouches[0].pageY;
+	var scale = pv.Scale.linear(sliderTop,sliderBottom).range(2, 40);	
 	
+	jQuery('#sliderDivisions').slider("value",scale(touchTop));
 })
 
 $("#buttonMode").change(function(){
