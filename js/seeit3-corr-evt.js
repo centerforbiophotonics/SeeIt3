@@ -209,7 +209,7 @@ function 	dataCorrTouchMove(event){
 	
 	var mouseX = event.targetTouches[0].pageX -
 							$('span').offset().left -
-							graphCollection.padLeft + 14 - 
+							graphCollection.padLeft - 
 							touch.graphPanel.left();
 							
 	var mouseY = graph.h - (event.targetTouches[0].pageY - 
