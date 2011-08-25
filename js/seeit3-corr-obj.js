@@ -125,7 +125,7 @@ GraphCollection.prototype = {
 			
 		if (this.graphs.length == 0) this.addGraph();
 		
-		if (this.graphs.length == 2){
+		if (this.graphs.length == 1){
 			jQuery('#sliderDivisions').slider("value",30);
 			this.buckets = 30;
 		}
