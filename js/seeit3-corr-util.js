@@ -1116,8 +1116,8 @@ function objectToString(o){
 					if(typeof t == "string"){
 						a[a.length] = [ p+ ": \"" + t.toString() + "\"" ];
 					}
-					else{
-						a[a.length] = [ p+ ": " + t == null ? "null" : t.toString()];
+					else if (t != null){
+						a[a.length] = [ p+ ": " + t.toString()];
 					}           
 				}
 			}
