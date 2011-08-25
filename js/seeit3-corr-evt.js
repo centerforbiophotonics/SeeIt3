@@ -1360,7 +1360,7 @@ jQuery('#sliderDivisions').slider({
 });
 
 jQuery('#sliderDivisions').bind("touchmove", function(event){
-	console.log(objectToString(event));
+	alert(event);
 })
 
 $("#buttonMode").change(function(){
