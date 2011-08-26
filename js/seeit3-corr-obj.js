@@ -556,6 +556,9 @@ Graph.prototype = {
 		var newMin = min || this.xScaleMin;
 		var newMax = max || this.xScaleMax;
 		
+		if (min == 0)
+			newMin = min;
+		
 		if (this.fitScaleToData) {
 			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);
 			this.yHoriz = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
@@ -570,6 +573,9 @@ Graph.prototype = {
 	setYScale: function(min, max){
 		var newMin = min || this.yScaleMin;
 		var newMax = max || this.yScaleMax;
+		
+		if (min == 0)
+			newMin = min;
 		
 		if (this.fitScaleToData) {
 			this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	

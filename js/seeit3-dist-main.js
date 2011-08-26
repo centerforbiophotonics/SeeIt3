@@ -1358,7 +1358,9 @@ function constructGraphPanel(graph, index){
 			.data(function() {return graph.getDataDrawObjects()})
 			.visible(function(d) {
 				return $('#checkboxHideData').attr('checked') == false  && 
-					(d.y+graph.baseLine) < graph.h;
+					(d.y+graph.baseLine) < graph.h &&
+					d.x >= 0 &&
+					d.x <= graph.w;
 			})
 			.left(function(d) { return d.x })
 			.bottom(function(d) { return d.y + graph.baseLine })
@@ -1444,7 +1446,7 @@ function constructGraphPanel(graph, index){
 		
 		//Graph Overflow Warning Message
 		graphPanel.add(pv.Label)
-			.text("Warning! Data points exceed graph height.")
+			.text("Warning! Data points lie outside graph boundaries.")
 			.textStyle("red")
 			.font(fontString)
 			.top(35)
@@ -1453,7 +1455,9 @@ function constructGraphPanel(graph, index){
 			.visible(function(){
 				var retVal = false;
 				graph.getDataDrawObjects().forEach(function(d){
-					if ((d.y+graph.baseLine) > graph.h)
+					if ((d.y+graph.baseLine) > graph.h ||
+							d.x < 0 ||
+							d.x > graph.w)
 						retVal = true;
 				});
 				return retVal;

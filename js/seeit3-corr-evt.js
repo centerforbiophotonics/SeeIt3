@@ -915,7 +915,10 @@ function sideCatTouchEnd(event){
 			graphCollection.graphs[which.gInd].assignY(touch.dragCat);
 		else if (which.gAxis == "x")
 			graphCollection.graphs[which.gInd].assignX(touch.dragCat);
+			
+		graphCollection.updateMenuOptions();
 	}
+	
 	
 	touch.draggedObj.visible(false);
 	touch.reset();
@@ -951,6 +954,8 @@ function graphXCatTouchEnd(event){
 		graphCollection.graphs[touch.graphIndex].assignX(null);
 	}
 	
+	graphCollection.updateMenuOptions();
+	
 	touch.draggedObj.visible(false);
 	touch.reset();
 }
@@ -984,6 +989,8 @@ function graphYCatTouchEnd(event){
 	} else if (which == false){
 		graphCollection.graphs[touch.graphIndex].assignY(null);
 	}
+	
+	graphCollection.updateMenuOptions();
 	
 	touch.draggedObj.visible(false);
 	touch.reset();

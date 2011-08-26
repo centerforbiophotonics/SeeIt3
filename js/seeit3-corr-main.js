@@ -421,6 +421,8 @@ function constructSidePanel(){
 					}
 				});
 				
+				graphCollection.updateMenuOptions();
+				
 				dragFeedbackPanels[this.row()].visible(false);
 				document.body.style.cursor="default";
 				constructVis();
@@ -634,6 +636,8 @@ function constructGraphPanel(graph,index){
 				graph.assignX(null);
 			}
 			
+			graphCollection.updateMenuOptions();
+			
 			xAxisDragFeedbackPanel.visible(false);
 			document.body.style.cursor="default";
 			constructVis();
@@ -749,6 +753,8 @@ function constructGraphPanel(graph,index){
 			} else {
 				graph.assignY(null);
 			}
+			
+			graphCollection.updateMenuOptions();
 			
 			yAxisDragFeedbackPanel.visible(false);
 			document.body.style.cursor="default";
@@ -1364,7 +1370,6 @@ function constructCorrGraph(graph, index, graphPanel){
 	/* dot plot */
 	graphPanel.add(pv.Dot)
 		.data(function(){return graph.getClonedData()})
-		.visible(function() { return jQuery('#checkboxShowData').is(':checked') })
 		.event("point", function() { return this.active(this.index).parent })
 		.event("unpoint", function() { return this.active(-1).parent })
 		.left(function(d) { return graph.x(d.x) })
@@ -1378,6 +1383,15 @@ function constructCorrGraph(graph, index, graphPanel){
 				return "move";
 			else
 				return "default";
+		})
+		.visible(function(d) {
+			var y = graph.y(d.y);
+			var x = graph.x(d.x);
+			return graph.showData  && 
+				y <= graph.h &&
+				y >= 0 &&
+				x <= graph.w &&
+				x >= 0;
 		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){
@@ -1452,6 +1466,28 @@ function constructCorrGraph(graph, index, graphPanel){
 				touch.graphPanel = graphPanel;
 				touch.dragLabel = dragLabel;
 			}
+		})
+		
+	//Graph Overflow Warning Message
+	graphPanel.add(pv.Label)
+		.text("Warning! Data points lie outside graph boundaries.")
+		.textStyle("red")
+		.font(fontString)
+		.top(35)
+		.left(function(){return graph.w/2})
+		.textAlign("center")
+		.visible(function(){
+			var retVal = false;
+			graph.getClonedData().forEach(function(d){
+				var y = graph.y(d.y);
+				var x = graph.x(d.x);
+				if (y > graph.h ||
+						y < 0 ||
+						x > graph.w ||
+						x < 0)
+					retVal = true;
+			});
+			return retVal;
 		})
  
 }
@@ -1625,8 +1661,9 @@ function constructTwoDistGraph(graph,index, graphPanel){
 				});
 			} else {
 				graph.assignY(null);
-				
 			}
+			
+			graphCollection.updateMenuOptions();
 			
 			yAxisDragFeedbackPanel.visible(false);
 			document.body.style.cursor="default";
@@ -1698,7 +1735,9 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		})
 		.visible(function(d) {
 			return graph.showData  && 
-				(d.y) < topDist.height();
+				d.y <= topDist.height() &&
+				d.x >= 0 &&
+				d.x <= topDist.width();
 		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){  
@@ -1757,7 +1796,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		
 	//Graph Overflow Warning Message
 	topDist.add(pv.Label)
-		.text("Warning! Data points exceed graph height.")
+		.text("Warning! Data points lie outside graph boundaries.")
 		.textStyle("red")
 		.font(fontString)
 		.top(35)
@@ -1766,7 +1805,9 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.visible(function(){
 			var retVal = false;
 			 xDistributionPoints(graph, graph.worksheet.data[graph.yData], graph.yHoriz).forEach(function(d){
-				if (d.y > topDist.height())
+				if (d.y > topDist.height() ||
+						d.x > topDist.width() ||
+						d.x < 0)
 					retVal = true;
 			});
 			return retVal;
@@ -1896,7 +1937,9 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		})
 		.visible(function(d) {
 			return graph.showData  && 
-				(d.y) < bottomDist.height();
+				d.y <= bottomDist.height() &&
+				d.x <= bottomDist.width() &&
+				d.x >= 0;
 		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){  
@@ -1954,7 +1997,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		
 	//Graph Overflow Warning Message
 	bottomDist.add(pv.Label)
-		.text("Warning! Data points exceed graph height.")
+		.text("Warning! Data points lie outside graph boundaries.")
 		.textStyle("red")
 		.font(fontString)
 		.top(35)
@@ -1963,7 +2006,9 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.visible(function(){
 			var retVal = false;
 			 xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x).forEach(function(d){
-				if (d.y > bottomDist.height())
+				if (d.y > bottomDist.height() ||
+						d.x > bottomDist.width() ||
+						d.x < 0)
 					retVal = true;
 			});
 			return retVal;
@@ -2081,7 +2126,9 @@ function constructXDistGraph(graph, index, graphPanel){
 		})
 		.visible(function(d) {
 			return graph.showData  && 
-				(d.y) < graph.h;
+				(d.y) < graph.h &&
+				d.x >= 0 &&
+				d.x <= graph.w;
 		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){  
@@ -2140,7 +2187,7 @@ function constructXDistGraph(graph, index, graphPanel){
 		
 	//Graph Overflow Warning Message
 	graphPanel.add(pv.Label)
-		.text("Warning! Data points exceed graph height.")
+		.text("Warning! Data points lie outside graph boundaries.")
 		.textStyle("red")
 		.font(fontString)
 		.top(35)
@@ -2149,7 +2196,9 @@ function constructXDistGraph(graph, index, graphPanel){
 		.visible(function(){
 			var retVal = false;
 			 xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x).forEach(function(d){
-				if (d.y > graph.h)
+				if (d.y > graph.h ||
+						d.x < 0 ||
+						d.x > graph.w)
 					retVal = true;
 			});
 			return retVal;
@@ -2266,7 +2315,9 @@ function constructYDistGraph(graph,index, graphPanel){
 		})
 		.visible(function(d) {
 			return graph.showData  && 
-				(d.x) < graph.w;
+				d.x <= graph.w &&
+				d.y <= graph.h &&
+				d.y >= 0;
 		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){  
@@ -2323,7 +2374,7 @@ function constructYDistGraph(graph,index, graphPanel){
 		
 	//Graph Overflow Warning Message
 	graphPanel.add(pv.Label)
-		.text("Warning! Data points exceed graph height.")
+		.text("Warning! Data points lie outside graph boundaries.")
 		.textStyle("red")
 		.font(fontString)
 		.top(35)
@@ -2332,7 +2383,9 @@ function constructYDistGraph(graph,index, graphPanel){
 		.visible(function(){
 			var retVal = false;
 			yDistributionPoints(graph).forEach(function(d){
-				if (d.x > graph.w)
+				if (d.x > graph.w ||
+						d.y < 0 ||
+						d.y > graph.h)
 					retVal = true;
 			});
 			return retVal;
