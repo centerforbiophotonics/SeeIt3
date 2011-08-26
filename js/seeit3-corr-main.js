@@ -518,7 +518,7 @@ function constructGraphPanel(graph,index){
 		.top(-15)
 		.textAlign("center")
 		.textAngle(0)
-		.text(graph.worksheet.title)//+ " (Dropped onto Y-axis)")
+		.text(graph.worksheet.title)
 		.font("bold 20px sans-serif");
 	
 	//Remove Graph Button
@@ -842,7 +842,6 @@ function constructGraphPanel(graph,index){
 }
 
 function constructEmptyGraph(graph,index, graphPanel){
-	//graph.setupStats();
 	//Empty Graph Message
 	graphPanel.add(pv.Label)
 		.left(function(){return graph.w/2})
@@ -927,7 +926,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	
 	/* Y-axis ticks */
   graphPanel.add(pv.Rule)
-		.data(function() { return getYBuckets(graph)})//return graph.y.ticks(graphCollection.buckets) })
+		.data(function() { return getYBuckets(graph)})
 		.bottom(function(d){return graph.y(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
@@ -942,7 +941,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	
 	/* X-axis ticks */
   graphPanel.add(pv.Rule)
-		.data(function() { return getXBuckets(graph)})//return graph.x.ticks(graphCollection.buckets) })
+		.data(function() { return getXBuckets(graph)})
 		.left(function(d) {return graph.x(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
@@ -1252,14 +1251,14 @@ function constructCorrGraph(graph, index, graphPanel){
 			
 	/* user ellipse */
 	graphPanel.add(pv.Line)
-		.visible(function() { return graph.udEllipse })//jQuery('#checkboxShowMMEllipse').is(':checked') })
+		.visible(function() { return graph.udEllipse })
 		.data(function() { return getRotatedEllipseCoords(graph) })
 		.left(function(d) { return d[0] })
 		.bottom(function(d) { return d[1] })
 		.strokeStyle("red");
  
 	graphPanel.add(pv.Dot)
-		.visible(function() { return graph.udEllipse })//jQuery('#checkboxShowMMEllipse').is(':checked') })
+		.visible(function() { return graph.udEllipse })
 		.data(function(){return getEllipseManipCoords(graph)})
 		.left(function(d) { return d[0] })
 		.bottom(function(d) { return d[1] })
@@ -1331,7 +1330,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			.font("bold 12px sans-serif");
 		 
 	graphPanel.add(pv.Dot)
-		.visible(function() { return graph.udEllipse })//jQuery('#checkboxShowMMEllipse').is(':checked') })
+		.visible(function() { return graph.udEllipse })
 		.data(function() {return [[graph.ellipseCX, graph.ellipseCY]]})
 		.left(function(d) { return d[0] })
 		.bottom(function(d) { return d[1] })
@@ -1374,6 +1373,12 @@ function constructCorrGraph(graph, index, graphPanel){
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
 		.title(function(d) { return d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1) })
+		.cursor(function(){
+			if (graphCollection.editModeEnabled)
+				return "move";
+			else
+				return "default";
+		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){
 			dragging = true;  
@@ -1432,13 +1437,6 @@ function constructCorrGraph(graph, index, graphPanel){
 				if (remIndex != null)
 					newYData.splice(remIndex,1);
 				graphCollection.editData(graph.yData,graph.yData,newYData);
-				
-			
-				//if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
-				//		Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
-				//{
-				//	dragging = true;
-				//}
 				
 				dragLabel.visible(false);
 				constructVis();
@@ -1692,6 +1690,16 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
 		.title(function(d) { return d.label + ", " + graph.yHoriz.invert(d.x).toFixed(1) })
+		.cursor(function(){
+			if (graphCollection.editModeEnabled)
+				return "move";
+			else
+				return "default";
+		})
+		.visible(function(d) {
+			return graph.showData  && 
+				(d.y) < topDist.height();
+		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){  
 			if (graphCollection.editModeEnabled &&
@@ -1700,9 +1708,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 					topDist.mouse().y >= 0 &&
 					topDist.mouse().y <= graph.h){
 				
-				//graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
 				graphCollection.editSinglePoint(graph.yData, d.label, graph.yHoriz.invert(topDist.mouse().x));
-				//graph.selectedCategory = d.set;
 				
 				topDragLabel.text(graph.yHoriz.invert(topDist.mouse().x).toFixed(1))
 				topDragLabel.left(topDist.mouse().x)
@@ -1734,13 +1740,6 @@ function constructTwoDistGraph(graph,index, graphPanel){
 					newYData.splice(remIndex,1);
 				graphCollection.editData(graph.yData,graph.yData,newYData);
 				
-			
-				//if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
-				//		Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
-				//{
-				//	dragging = true;
-				//}
-				
 				topDragLabel.visible(false);
 				
 				vis.render();
@@ -1754,6 +1753,23 @@ function constructTwoDistGraph(graph,index, graphPanel){
 			touch.graphPanel = graphPanel;
 			touch.dragLabel = topDragLabel;
 			touch.topSubgraph = topDist;
+		})
+		
+	//Graph Overflow Warning Message
+	topDist.add(pv.Label)
+		.text("Warning! Data points exceed graph height.")
+		.textStyle("red")
+		.font(fontString)
+		.top(35)
+		.left(function(){return graph.w/2})
+		.textAlign("center")
+		.visible(function(){
+			var retVal = false;
+			 xDistributionPoints(graph, graph.worksheet.data[graph.yData], graph.yHoriz).forEach(function(d){
+				if (d.y > topDist.height())
+					retVal = true;
+			});
+			return retVal;
 		})
 		
 	
@@ -1872,6 +1888,16 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
 		.title(function(d) { return d.label + ", " + graph.x.invert(d.x).toFixed(1)})
+		.cursor(function(){
+			if (graphCollection.editModeEnabled)
+				return "move";
+			else
+				return "default";
+		})
+		.visible(function(d) {
+			return graph.showData  && 
+				(d.y) < bottomDist.height();
+		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){  
 			if (graphCollection.editModeEnabled &&
@@ -1881,9 +1907,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 					bottomDist.mouse().y <= graph.h){
 				
 				graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(bottomDist.mouse().x));
-				//graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
-				//graph.selectedCategory = d.set;
-				
+
 				botDragLabel.text(graph.x.invert(bottomDist.mouse().x).toFixed(1))
 				botDragLabel.left(bottomDist.mouse().x)
 				botDragLabel.top(bottomDist.mouse().y - 10)
@@ -1926,6 +1950,23 @@ function constructTwoDistGraph(graph,index, graphPanel){
 			touch.graphPanel = graphPanel;
 			touch.dragLabel = botDragLabel;
 			touch.bottomSubgraph = bottomDist;
+		})
+		
+	//Graph Overflow Warning Message
+	bottomDist.add(pv.Label)
+		.text("Warning! Data points exceed graph height.")
+		.textStyle("red")
+		.font(fontString)
+		.top(35)
+		.left(function(){return graph.w/2})
+		.textAlign("center")
+		.visible(function(){
+			var retVal = false;
+			 xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x).forEach(function(d){
+				if (d.y > bottomDist.height())
+					retVal = true;
+			});
+			return retVal;
 		})
 		
 	vis.render();
@@ -2032,6 +2073,16 @@ function constructXDistGraph(graph, index, graphPanel){
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
 		.title(function(d) { return d.label + ", " + graph.x.invert(d.x).toFixed(1)})
+		.cursor(function(){
+			if (graphCollection.editModeEnabled)
+				return "move";
+			else
+				return "default";
+		})
+		.visible(function(d) {
+			return graph.showData  && 
+				(d.y) < graph.h;
+		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){  
 			if (graphCollection.editModeEnabled &&
@@ -2041,8 +2092,6 @@ function constructXDistGraph(graph, index, graphPanel){
 					graphPanel.mouse().y <= graph.h){
 				
 				graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
-				//graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
-				//graph.selectedCategory = d.set;
 				
 				dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1))
 				dragLabel.left(graphPanel.mouse().x)
@@ -2087,6 +2136,23 @@ function constructXDistGraph(graph, index, graphPanel){
 				touch.graphPanel = graphPanel;
 				touch.dragLabel = dragLabel;
 			}
+		})
+		
+	//Graph Overflow Warning Message
+	graphPanel.add(pv.Label)
+		.text("Warning! Data points exceed graph height.")
+		.textStyle("red")
+		.font(fontString)
+		.top(35)
+		.left(function(){return graph.w/2})
+		.textAlign("center")
+		.visible(function(){
+			var retVal = false;
+			 xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x).forEach(function(d){
+				if (d.y > graph.h)
+					retVal = true;
+			});
+			return retVal;
 		})
 		
 	vis.render();
@@ -2192,6 +2258,16 @@ function constructYDistGraph(graph,index, graphPanel){
 		.fillStyle(function(d) {return pointFillStyle(d.label)})
 		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
 		.title(function(d) { return d.label + ", " + graph.y.invert(d.y).toFixed(1) })
+		.cursor(function(){
+			if (graphCollection.editModeEnabled)
+				return "move";
+			else
+				return "default";
+		})
+		.visible(function(d) {
+			return graph.showData  && 
+				(d.x) < graph.w;
+		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){  
 			if (graphCollection.editModeEnabled &&
@@ -2200,9 +2276,7 @@ function constructYDistGraph(graph,index, graphPanel){
 					graphPanel.mouse().y >= 0 &&
 					graphPanel.mouse().y <= graph.h){
 				
-				//graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
 				graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
-				//graph.selectedCategory = d.set;
 				
 				dragLabel.text(graph.y.invert(graph.h - graphPanel.mouse().y).toFixed(1));
 				dragLabel.left(graphPanel.mouse().x)
@@ -2219,21 +2293,6 @@ function constructYDistGraph(graph,index, graphPanel){
 			if (graphCollection.editModeEnabled){
 				var newYData = graphCollection.worksheet.data[graph.yData];
 				var remIndex = null;
-				//newXData.forEach(function(data, index){
-				//	if (data.label == d.label && 
-				//	(graphPanel.mouse().x < 0 ||
-				//	 graphPanel.mouse().x > graph.w ||
-				//	 graphPanel.mouse().y < 0 ||
-				//	 graphPanel.mouse().y > graph.h))
-				//	{
-				//		remIndex = index;
-				//	}
-				//});
-				//if (remIndex != null)
-				//	newXData.splice(remIndex,1);
-				//graphCollection.editData(graph.xData,graph.xData,newXData);
-				
-				//remIndex = null;
 				newYData.forEach(function(data, index){
 					if (data.label == d.label && 
 					(graphPanel.mouse().x < 0 ||
@@ -2248,13 +2307,6 @@ function constructYDistGraph(graph,index, graphPanel){
 					newYData.splice(remIndex,1);
 				graphCollection.editData(graph.yData,graph.yData,newYData);
 				
-			
-				//if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
-				//		Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
-				//{
-				//	dragging = true;
-				//}
-				
 				dragLabel.visible(false);
 				
 				vis.render();
@@ -2267,6 +2319,23 @@ function constructYDistGraph(graph,index, graphPanel){
 			touch.graphIndex = index;
 			touch.graphPanel = graphPanel;
 			touch.dragLabel = dragLabel;
+		})
+		
+	//Graph Overflow Warning Message
+	graphPanel.add(pv.Label)
+		.text("Warning! Data points exceed graph height.")
+		.textStyle("red")
+		.font(fontString)
+		.top(35)
+		.left(function(){return graph.w/2})
+		.textAlign("center")
+		.visible(function(){
+			var retVal = false;
+			yDistributionPoints(graph).forEach(function(d){
+				if (d.x > graph.w)
+					retVal = true;
+			});
+			return retVal;
 		})
 		
 	vis.render();

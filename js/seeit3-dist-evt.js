@@ -200,33 +200,6 @@ $('#displayOptions').hide();
 
 $('#checkboxBWView').change(function() { vis.render() });
 
-/*
-jQuery('#sliderTextSize').slider({ 
-	orientation:'vertical', min:12, max:20, value:12, step:1,
-	slide:function(event, ui) { 
-		graphCollection.labelTextSize = (ui.value + 4).toString();
-		graphCollection.tickTextSize = ui.value.toString();
-		vis.render(); 
-	}
-});
-	
-jQuery('#sliderDotSize').slider({ 
-	orientation:'vertical', min:1, max:20, value:5, step:1,
-	slide:function(event, ui) {
-		graphCollection.bucketDotSize = ui.value; 
-		vis.render();
-	}
-});
-
-jQuery('#sliderDivisions').slider({ 
-	orientation:'vertical', min:2, max:40, value:30, step:1,
-	slide:function(event, ui) { 
-		graphCollection.buckets = ui.value;
-		vis.render();
-	}
-});
-*/
-
 $("#divisionsInc").click(function(){
 	if (graphCollection.buckets < 40)
 		graphCollection.buckets++;

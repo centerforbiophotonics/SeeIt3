@@ -1244,7 +1244,6 @@ function constructGraphPanel(graph, index){
 		/*Mean Median Mode Lines */
 		graphPanel.add(pv.Rule)
 			.data(function(){
-				//graph.MMMLabelVis = [];
 				graph.getMeanMedianMode().forEach(function(m,i){
 					if (i > graph.MMMLabelVis.length-1)
 						graph.MMMLabelVis[i] = false;
@@ -1382,6 +1381,7 @@ function constructGraphPanel(graph, index){
 			})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
 			.event("click", function(d){
+				if (graphCollection.editModeEnabled == false)
 				graphCollection.selectedLabel = d.label;
 				vis.render();
 			})
@@ -1448,7 +1448,7 @@ function constructGraphPanel(graph, index){
 			.textStyle("red")
 			.font(fontString)
 			.top(35)
-			.left(graph.w/2)
+			.left(function(){return graph.w/2})
 			.textAlign("center")
 			.visible(function(){
 				var retVal = false;

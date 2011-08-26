@@ -194,12 +194,6 @@ GraphCollection.prototype = {
 		$("#showBothDist").attr('checked',this.graphs[this.selectedGraphIndex].twoDistView);
 		$("#promptForLabel").attr('checked',this.graphs[this.selectedGraphIndex].labelPrompt);
 		
-//		$('#radio'+this.graphs[this.selectedGraphIndex].groupingMode).attr('checked',true);
-//		$('#checkboxHistogram').attr('checked',this.graphs[this.selectedGraphIndex].histogram);
-//		$('#checkboxBoxPlot').attr('checked',this.graphs[this.selectedGraphIndex].boxPlot);
-//		$('#fixedIntervalWidth').val(this.graphs[this.selectedGraphIndex].partitionIntervalWidth);
-//		$('#fixedGroupSize').val(this.graphs[this.selectedGraphIndex].partitionGroupSize);
-//		
 		if (this.graphs[this.selectedGraphIndex].xData != null){
 			$('#textXMin').val(this.graphs[this.selectedGraphIndex].x.domain()[0]);
 			$('#textXMax').val(this.graphs[this.selectedGraphIndex].x.domain()[1]);
@@ -215,34 +209,11 @@ GraphCollection.prototype = {
 			$('#textYMin').val("NA");
 			$('#textYMax').val("NA");
 		}
-//		
-//		$('#fitScaleToData').attr('checked', this.graphs[this.selectedGraphIndex].fitScaleToData);
-//		
-//		$('#checkboxMMM').attr('checked', this.graphs[this.selectedGraphIndex].showMMM);
-	},
-	
-	scaleAllGraphsToFit: function(){
-//		var max = -Infinity, 
-//				min = Infinity;
-//		this.graphs.forEach(function(graph){
-//			if (graph.xMax > max) max = graph.xMax
-//			if (graph.xMin < min) min = graph.xMin
-//		});
-//		this.graphs.forEach(function(graph){
-//			if (!graph.customScale || graph.xMin < graph.scaleMin || graph.xMax > graph.scaleMax)
-//				graph.setXScale(min, Math.ceil(max)+0.1);
-//		});
 	},
 	
 	addData: function(title, data){
 		this.worksheet.data[title] = data;
-		//this.graphs.forEach(function(graph){
-		//	graph.data[title] = data;
-		//	graph.setupData();
-		//	graph.editedCategories[title] = true;
-		//	graph.nextDefaultLabel[title] = 0;
-		//	
-		//});
+		
 		this.numberOfCategories++;
 		
 		this.setH(this.calcGraphHeight());
@@ -258,9 +229,6 @@ GraphCollection.prototype = {
 		}
 		this.worksheet.edited[title] = true;	
 		
-		//this.numberOfAddedCategories++;
-		//this.categoryColors[title] = this.colorScale(this.numberOfAddedCategories);
-		//this.scaleAllGraphsToFit();
 	},
 	
 	editData: function(oldTitle, title, data){
@@ -269,12 +237,6 @@ GraphCollection.prototype = {
 			delete this.worksheet.data[oldTitle];
 		this.worksheet.data[title] = data;
 		this.graphs.forEach(function(graph){
-		//	if (oldTitle != title)
-		//		delete graph.data[oldTitle];
-		//	graph.data[title] = data;
-		//	
-		//	var oldMax = graph.xMax;
-		//	var oldMin = graph.xMin;
 			graph.dataChanged = true;
 			
 			if (graph.xData != null && graph.yData != null){
@@ -293,14 +255,6 @@ GraphCollection.prototype = {
 				graph.yMin = pv.min(graph.worksheet.data[graph.yData], function(d) { return d.value });
 				graph.n = graph.worksheet.data[graph.yData].length;
 			}
-		//	graph.setupData();
-			
-		//	graph.editedCategories[title] = true;
-			//graph.n = (graph.dataVals()).length;
-			
-			//if (graph.includedCategories.indexOf(oldTitle) != -1)
-			//	graph.includedCategories[graph.includedCategories.indexOf(oldTitle)] = title;
-				
 				
 			if (graph.xMax > graph.scaleMax)
 				graph.setXScale(null, graph.xMax)
@@ -443,7 +397,6 @@ Graph.prototype = {
 	toString: function(){
 		var colHead = '"Label","X Value","Y Value",';
 		var data = {};
-		//var fullData = this.getData();
 		
 		if (this.xData != null) {
 			this.worksheet.data[this.xData].forEach(function(d){
@@ -496,10 +449,8 @@ Graph.prototype = {
 			this.xMin = pv.min(this.worksheet.data[this.xData], function(d) { return d.value });
 			this.xScaleMin = 0;
 			this.xScaleMax = Math.ceil(this.xMax);
-			//this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
 			this.setXScale();
 			this.n = this.worksheet.data[this.xData].length;
-			//this.graphCollection.updateMenuOptions();
 		}
 		
 		if (this.yData != null && this.xData != null){
@@ -541,8 +492,6 @@ Graph.prototype = {
 				
 			});
 		this.graphCollection.updateMenuOptions();
-		//this.data = data;
-		//this.dataChanged = false;
 	
 		return data;
 		
@@ -556,9 +505,6 @@ Graph.prototype = {
 		this.yMin = pv.min(data, function(d) { return d.y });
 		this.setXScale();
 		this.setYScale();
-		//this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
-		//this.y = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.h);
-		//this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
 		this.n = data.length;
 		
 			
@@ -604,8 +550,6 @@ Graph.prototype = {
 			this.ellipseCY = this.h/2;
 			this.pointsInEllipse = numPointsInEllipse(this);
 		}
-		
-		//this.graphCollection.updateMenuOptions();
 	},
 	
 	setXScale: function(min, max){
@@ -621,7 +565,6 @@ Graph.prototype = {
 			this.xScaleMin = newMin;
 			this.xScaleMax = newMax;
 		}
-		//this.graphCollection.updateMenuOptions();
 	},
 	
 	setYScale: function(min, max){
@@ -637,7 +580,6 @@ Graph.prototype = {
 			this.yScaleMin = newMin;
 			this.yScaleMax = newMax;
 		}			
-		//this.graphCollection.updateMenuOptions();
 	},
 }
 
