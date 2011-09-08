@@ -1221,7 +1221,7 @@ function constructGraphPanel(graph, index){
 		graphPanel.add(pv.Dot)
 			.data(function(){return [graph.getMeanMedianMode()[0]]})
 			.left(function(d){return graph.x(d)})
-			.bottom(function(){return (graph.h-graph.baseLine) * 0.40 + graph.baseLine})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
 																	 graph.boxPlot &&
 																	 !graph.insufDataForFour; 
@@ -1232,7 +1232,7 @@ function constructGraphPanel(graph, index){
 		graphPanel.add(pv.Dot)
 			.data(function(){return [graph.getMeanMedianMode()[0]]})
 			.left(function(d){return graph.x(d)})
-			.bottom(function(){return (graph.h-graph.baseLine) * 0.40 + graph.baseLine})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
 																	 graph.boxPlot &&
 																	 !graph.insufDataForFour; 
@@ -1240,6 +1240,53 @@ function constructGraphPanel(graph, index){
 			.shape("cross")
 			.angle(Math.PI/4)
 			.strokeStyle("darkgreen")
+			
+		//Box Plot SD Line
+		graphPanel.add(pv.Line)
+			.data(function(){return getSDLinePoints(graph)})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot &&
+																	 graph.sdLine &&
+																	 !graph.insufDataForFour; 
+			})
+			.lineWidth(1)
+			.strokeStyle("orange")
+			
+		graphPanel.add(pv.Line)
+			.data(function(){return [getSDLinePoints(graph)[0], getSDLinePoints(graph)[0]]})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){ 
+				if (this.index==0)
+					return (graph.h-graph.baseLine) * 0.43 + graph.baseLine;
+				else
+					return (graph.h-graph.baseLine) * 0.41 + graph.baseLine;
+			})
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot &&
+																	 graph.sdLine &&
+																	 !graph.insufDataForFour; 
+			})
+			.lineWidth(1)
+			.strokeStyle("orange")
+			
+		graphPanel.add(pv.Line)
+			.data(function(){return [getSDLinePoints(graph)[1], getSDLinePoints(graph)[1]]})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){ 
+				if (this.index==0)
+					return (graph.h-graph.baseLine) * 0.43 + graph.baseLine;
+				else
+					return (graph.h-graph.baseLine) * 0.41 + graph.baseLine;
+			})
+			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
+																	 graph.boxPlot &&
+																	 graph.sdLine &&
+																	 !graph.insufDataForFour; 
+			})
+			.lineWidth(1)
+			.strokeStyle("orange")
 			
 		/*Mean Median Mode Lines */
 		graphPanel.add(pv.Rule)

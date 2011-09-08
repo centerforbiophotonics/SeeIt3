@@ -146,6 +146,7 @@ GraphCollection.prototype = {
 		$('#radio'+this.graphs[this.selectedGraphIndex].groupingMode).attr('checked',true);
 		$('#checkboxHistogram').attr('checked',this.graphs[this.selectedGraphIndex].histogram);
 		$('#checkboxBoxPlot').attr('checked',this.graphs[this.selectedGraphIndex].boxPlot);
+		$('#checkboxSDLine').attr('checked',this.graphs[this.selectedGraphIndex].sdLine);
 		$('#fixedIntervalWidth').val(this.graphs[this.selectedGraphIndex].partitionIntervalWidth);
 		$('#fixedGroupSize').val(this.graphs[this.selectedGraphIndex].partitionGroupSize);
 		
@@ -365,6 +366,7 @@ function Graph(worksheet, graphCollection){
 	
 	this.histogram = false;
 	this.boxPlot = false;
+	this.sdLine = false;
 	
 	
 	this.selectedUDPart = null;

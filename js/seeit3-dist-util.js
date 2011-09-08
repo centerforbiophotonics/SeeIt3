@@ -287,6 +287,41 @@ function removeOutliers(graph){
 	
 }
 
+function getMean(data){
+	var sum = 0;
+	for (var i = 0; i < data.length; i++){
+		sum += parseFloat(data[i]);
+	}
+	return sum/data.length;
+}
+
+
+function getSD(data){
+	var mean = getMean(data);
+	var deviations = [];
+	for (var i = 0; i < data.length; i++){
+		deviations.push(parseFloat(data[i]) - mean);
+	}
+	var sqrDeviations = [];
+	for (var i = 0; i < deviations.length; i++){
+		sqrDeviations.push(Math.pow(deviations[i],2));
+	}
+	var sum = 0;
+	for (var i = 0; i < sqrDeviations.length; i++){
+		sum += sqrDeviations[i];
+	}
+	
+	return Math.sqrt(sum/(data.length - 1));
+}
+
+function getSDLinePoints(graph){
+	var sd = getSD(graph.dataVals());
+	var mean = getMean(graph.dataVals());
+	
+	return [mean-sd,mean+sd];
+	
+}
+
 
 function objectToString(o){
 	var parse = function(_o){

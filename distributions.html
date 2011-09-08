@@ -28,30 +28,6 @@
 </head>
 <body>
 
-<!--
-<div id="notGraph" class="notGraph">
-	<div id="menu" class="menu">
-		<table width="100%">
-			<tr>
-				<td>Select a worksheet: 
-					<select id="workSheetSelector">
-						<option value="New">*Add a new worksheet*</option>
-					</select>
-					<input type="button" value="Refresh" id="refreshWorksheet">
-					<input type="button" value="Worksheet Description" id="worksheetDescriptionButton">
-					<a href="#" id="editInGoogleDocs">View Data</a>
-				</td>
-				<td>
-					<label for="newSpreadsheetURL">New Worksheet URL:</label>
-					<input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
-				</td>
-				<td><a href="disthelp.html" id="help">Help</a></td>
-				<td width="10%" align='right'><input type="button" value="About" id="about"></td>
-			</tr>
-		</table>
-	</div>
-</div> -->
-
 <div id="notGraph" class="notGraph">
 	<div id="menu" class="menu">
 		<table style="border-spacing: 20px 0px;">
@@ -101,7 +77,9 @@
 	<input type="radio" id="radioFourEqualGroups" name="mode" style="margin-left:10px;">
 	<label for="radioFourEqualGroups">Four Equal</label>
 	<input type="checkbox" id="checkboxBoxPlot" name="boxPlot" style="margin-left:15px;">
-	<label for="checkboxBoxPlot">Box Plot</label><br>
+	<label for="checkboxBoxPlot">Box Plot</label>
+	<input type="checkbox" id="checkboxSDLine" style="margin-left:10px;">
+	<label for="checkboxSDLine">SD</label><br>
 	
 	<b>Mean Median Mode:</b><br>
 	<input type="checkbox" id="checkboxMMM" style="margin-left:5px;">
@@ -125,11 +103,11 @@
 	<input type="button" value="Apply to All" id="applyOptionsToAll">
 </div>
 
-<div id="displayOptions" style="padding-bottom:20px">
+<div id="displayOptions">
 	<input type='image' src='img/close.png' id='dispOptClose' onclick='hideMenus()' width='20' height='20' align='right'><br>
 	<table cellspacing="10">
 		<tr>
-			<td valign="top">
+			<td valign="top" nowrap>
 				<h3 style="margin-bottom:10px">Divisions</h3>
 				<center>
 					<input type="button" value="+" id="divisionsInc" style="width:30px; height:30px"><br>
@@ -137,7 +115,7 @@
 					<input type="button" value="-" id="divisionsDec" style="width:30px; height:30px"><br>
 				</center>
 			</td>
-			<td valign="top">
+			<td valign="top" nowrap>
 				<h3 style="margin-bottom:10px">Dot Size</h3>
 				<center>
 					<input type="button" value="+" id="dotSizeInc" style="width:30px; height:30px"><br>
@@ -145,7 +123,7 @@
 					<input type="button" value="-" id="dotSizeDec" style="width:30px; height:30px"><br>
 				</center>
 			</td>
-			<td valign="top">
+			<td valign="top" nowrap>
 				<h3 style="margin-bottom:10px">Text Size</h3>
 				<center>
 					<input type="button" value="+" id="textSizeInc" style="width:30px; height:30px"><br>
@@ -153,7 +131,7 @@
 					<input type="button" value="-" id="textSizeDec" style="width:30px; height:30px"><br>
 				</center>
 			</td>					
-			<td valign="top">
+			<td valign="top" nowrap>
 				<h3>Data Points</h3>
 				<input type="checkbox" id="checkboxBWView" name="color">
 				<label for="checkboxBWView">Black</label><br>
@@ -167,19 +145,19 @@
 	<table cellspacing="10">
 		<tr>
 			<td>
-				<b>Button Appearance</b><br>
-				<select id="buttonMode">
-					<option value="both" selected>Text and Icons</option>
-					<option value="icon">Icons Only</option>
-					<option value="text">Text Only</option>
-				</select>
-			</td>
-			<td>
 				<b>Point Stack Mode</b></br>
 				<select id="drawMode">
 					<option value="floating">Floating</option>
 					<option value="center">Center</option>
 					<option value="gravity" selected>Gravity</option>
+				</select>
+			</td>
+			<td>
+				<b>Button Appearance</b><br>
+				<select id="buttonMode">
+					<option value="both" selected>Text and Icons</option>
+					<option value="icon">Icons Only</option>
+					<option value="text">Text Only</option>
 				</select>
 			</td>
 		</tr>

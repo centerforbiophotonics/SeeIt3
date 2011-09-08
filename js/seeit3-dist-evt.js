@@ -73,6 +73,7 @@ jQuery('#groupingOptions').change(function(event) {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].groupingMode = $('input:radio[name=mode]:checked').attr('id').slice(5);
 	graphCollection.graphs[graphCollection.selectedGraphIndex].histogram = $('#checkboxHistogram').is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].boxPlot = $('#checkboxBoxPlot').is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].sdLine = $('#checkboxSDLine').is(':checked');
 		
 	graphCollection.graphs[graphCollection.selectedGraphIndex].showMMM = $('#checkboxMMM').is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].showMean = $('#checkboxMean').is(':checked');
@@ -176,6 +177,7 @@ $('#applyOptionsToAll').click(function(event){
 		graph.showMean = selGraph.showMean;
 		graph.showMedian = selGraph.showMedian;
 		graph.showMode = selGraph.showMode;
+		graph.sdLine = selGraph.sdLine;
 		
 		//Old way which caused udpartitions to share a reference.  Make this an option?
 		//graph.udPartitions = selGraph.udPartitions;
