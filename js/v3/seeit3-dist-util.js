@@ -218,7 +218,7 @@ function parseSpreadsheetKeyFromURL(URL) {
 }
 
 function calcGraphWidth(){
-	return window.innerWidth - 290;
+	return window.innerWidth - 90;
 }
 
 function countDataInPartitions(graph, partitions){

@@ -48,10 +48,10 @@ function constructVis(){
 		.top(function(){return graphCollection.padTop})
 	
 	/* Divider Between Graphs and Data Sets */
-	vis.add(pv.Rule)
-		.left(-35)
-		.bottom(0)
-		.top(graphCollection.padTop * -1)
+	//vis.add(pv.Rule)
+	//	.left(-35)
+	//	.bottom(0)
+	//	.top(graphCollection.padTop * -1)
 		
 	/*Divider Between Top Graph and Title*/
 	vis.add(pv.Rule)
@@ -72,13 +72,80 @@ function constructVis(){
 		})
 	
 	/*Graph Title*/		  
-	vis.add(pv.Label)
-		.left(function(){return graphCollection.w / 2})
-		.top(-5)
-		.textAlign("center")
-		.textAngle(0)
-		.text(graphCollection.worksheet.title + " by " +graphCollection.worksheet.labelType)
-		.font("bold 20px sans-serif");
+	//vis.add(pv.Label)
+	//	.left(function(){return graphCollection.w / 2})
+	//	.top(-5)
+	//	.textAlign("center")
+	//	.textAngle(0)
+	//	.text(graphCollection.worksheet.title + " by " +graphCollection.worksheet.labelType)
+	//	.font("bold 20px sans-serif");
+	
+	//Datasets
+	var dataSetsPanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Show Datasets")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 100;
+			}else if (!graphCollection.buttonIcon){
+				return 70;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(-34)
+		.top(-60)
+		.lineWidth(1)
+		.event("click", function(){
+			hideMenus();
+			$('#displayOptions').slideDown();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+	
+	dataSetsPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/dataset.png")  //fix this
+		.width(30)
+		.height(30)
+		.top(0)
+		.left(2)
+		.cursor("pointer")
+		.title("Show Datasets")
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.event("click", function(){
+			hideMenus();
+			$('#displayOptions').slideDown();
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon){
+					console.log("test")
+					return 2;
+				}else
+					return 32;
+			})
+			.text("Datasets")
+			.font(fontString)
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
+	
 	
 	/* Display Options Menu Button */
 	var dispOptPanel = vis.add(pv.Panel)
@@ -95,7 +162,15 @@ function constructVis(){
 				return 34;
 			}
 		})
-		.left(-34)
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 70;
+			}else if (!graphCollection.buttonIcon){
+				return 35;
+			}else if (!graphCollection.buttonText){
+				return 4;
+			}
+		})
 		.top(-60)
 		.lineWidth(1)
 		.event("click", function(){
@@ -162,11 +237,11 @@ function constructVis(){
 		})
 		.left(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 120;
+				return 225;
 			}else if (!graphCollection.buttonIcon){
-				return 90;
+				return 155;
 			}else if (!graphCollection.buttonText){
-				return 4;
+				return 45;
 			}
 		})
 		.top(-60)
@@ -236,11 +311,11 @@ function constructVis(){
 		})
 		.left(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 240;
+				return 345;
 			}else if (!graphCollection.buttonIcon){
-				return 180;
+				return 245;
 			}else if (!graphCollection.buttonText){
-				return 40;
+				return 85;
 			}
 		})
 		.top(-60)
@@ -320,11 +395,11 @@ function constructVis(){
 		})
 		.left(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 355;
+				return 460;
 			}else if (!graphCollection.buttonIcon){
-				return 265;
+				return 330;
 			}else if (!graphCollection.buttonText){
-				return 77;
+				return 120;
 			}
 		})
 		.top(-60)
@@ -387,7 +462,7 @@ function constructVis(){
 					return false;
 			})
 	
-	constructCategoryPanel();
+	//constructCategoryPanel();
 	
 	graphCollection.graphs.forEach(function(graph,index,graphs){
 		constructGraphPanel(graph, index);

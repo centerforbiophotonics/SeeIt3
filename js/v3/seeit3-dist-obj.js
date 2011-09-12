@@ -40,7 +40,7 @@ function GraphCollection(){
 	this.w = calcGraphWidth();
 	this.padBot = 0;
 	this.padTop = 60;
-	this.padLeft = 235;
+	this.padLeft = 35;
 	this.padRight = 25;
 	this.defaultGraphHeight = 300;
 	this.labelTextSize = "16";
