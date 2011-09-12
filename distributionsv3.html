@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SeeIt3 Distributions</title>
+  <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.7.custom.css"/>
+  <link rel="stylesheet" type="text/css" href="css/seeit3.css"/>
+  <script src="lib/protovis-3.2/protovis-d3.2.js"></script>
+  <script src="lib/jquery-1.4.4.js"></script>
+  <script src="lib/jquery-ui-1.8.7.custom.min.js"></script>
+  <script src="lib/jquery.jsonp-2.1.4.min.js"></script>
+  <script type="text/javascript" src="lib/jscolor/jscolor.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1184912-6']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+  
+</head>
+<body>
+
+<div id="notGraph" class="notGraph">
+	<div id="menu" class="menu">
+		<table style="border-spacing: 20px 0px;">
+			<tr>
+				<td>
+						Select a worksheet: 
+						<select id="workSheetSelector">
+								<option value="New">*Add a new worksheet*</option>
+						</select>
+				</td>
+				<td><a href="#" id="refreshWorksheet">Refresh</a></td>
+				<td><a href="#" id="worksheetDescriptionButton">Description</a></td>
+				<td><a href="#" id="editInGoogleDocs">View Data</a></td>
+				<td>
+					<label for="newSpreadsheetURL">New Worksheet URL:</label>
+					<input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
+				</td>
+				<td><a href="corrhelp.html" target="_blank" id="help">Help</a></td>
+				<td><a href="#" id="about">About</a></td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div id="groupingOptions">
+	<input type='image' src='img/close.png' id='groupOptClose' width='20' height='20' align='right'>
+	<b>Groups:</b><br>
+	<input type="radio" id="radioNoGroups" name="mode" style="margin-left:10px;" checked>
+	<label for="radioNoGroups">None</label><br>
+	
+	<input type="radio" id="radioUserDefGroups" name="mode" style="margin-left:10px;">
+	<label for="radioUserDefGroups">Make Your Own Groups</label><br>
+	
+	<input type="radio" id="radioFixedSizeGroups" name="mode" style="margin-left:10px;">
+	<label for="radioFixedSizeGroups">Fixed Size:</label>
+	<input type="text" id="fixedGroupSize"  style="width:50px" value="4"><br>
+	
+	<input type="radio" id="radioFixedIntervalGroups" name="mode" style="margin-left:10px;">
+	<label for="radioFixedIntervalGroups">Fixed Interval Width:</label>
+	<input type="text" id="fixedIntervalWidth"  style="width:50px" value="10"><br>
+	<input type="checkbox" id="checkboxHistogram" name="histogram" style="margin-left:25px;">
+	<label for="checkboxHistogram">Histogram</label><br>
+	
+	<input type="radio" id="radioTwoEqualGroups" name="mode" style="margin-left:10px;">
+	<label for="radioTwoEqualGroups">Two Equal</label><br>
+	
+	<input type="radio" id="radioFourEqualGroups" name="mode" style="margin-left:10px;">
+	<label for="radioFourEqualGroups">Four Equal</label>
+	<input type="checkbox" id="checkboxBoxPlot" name="boxPlot" style="margin-left:15px;">
+	<label for="checkboxBoxPlot">Box Plot</label>
+	<input type="checkbox" id="checkboxSDLine" style="margin-left:10px;">
+	<label for="checkboxSDLine">SD</label><br>
+	
+	<b>Mean Median Mode:</b><br>
+	<input type="checkbox" id="checkboxMMM" style="margin-left:5px;">
+	<label for="checkboxMMM">All</label>
+	<input type="checkbox" id="checkboxMean" style="margin-left:5px;">
+	<label for="checkboxMean"><font color="red">Mean</font></label>
+	<input type="checkbox" id="checkboxMedian" style="margin-left:5px;">
+	<label for="checkboxMedian"><font color="blue">Median</font></label>
+	<input type="checkbox" id="checkboxMode" style="margin-left:5px;">
+	<label for="checkboxMode"><font color="#00FF00">Mode</font></label><br>
+	
+	<b>Graph Scale:</b><br>
+	<label for="textXMin" style="margin-left:10px;">Min: </label>
+	<input type="text" id="textXMin" style="width:50px;"><br>
+	<label for="textXMax" style="margin-left:10px;">Max:</label>
+	<input type="text" id="textXMax" style="width:50px;"><br>
+	
+	<input type="checkbox" id="fitScaleToData" style="margin-left:10px;">
+	<label for="fitScaleToData">Fit Scale Individually</label><br>
+	
+	<input type="button" value="Apply to All" id="applyOptionsToAll">
+</div>
+
+<div id="displayOptions">
+	<input type='image' src='img/close.png' id='dispOptClose' onclick='hideMenus()' width='20' height='20' align='right'><br>
+	<table cellspacing="10">
+		<tr>
+			<td valign="top" nowrap>
+				<h3 style="margin-bottom:10px">Divisions</h3>
+				<center>
+					<input type="button" value="+" id="divisionsInc" style="width:30px; height:30px"><br>
+					<p id="divisionsValue">30</p>
+					<input type="button" value="-" id="divisionsDec" style="width:30px; height:30px"><br>
+				</center>
+			</td>
+			<td valign="top" nowrap>
+				<h3 style="margin-bottom:10px">Dot Size</h3>
+				<center>
+					<input type="button" value="+" id="dotSizeInc" style="width:30px; height:30px"><br>
+					<p id="dotSizeValue">5</p>
+					<input type="button" value="-" id="dotSizeDec" style="width:30px; height:30px"><br>
+				</center>
+			</td>
+			<td valign="top" nowrap>
+				<h3 style="margin-bottom:10px">Text Size</h3>
+				<center>
+					<input type="button" value="+" id="textSizeInc" style="width:30px; height:30px"><br>
+					<p id="textSizeValue">12</p>
+					<input type="button" value="-" id="textSizeDec" style="width:30px; height:30px"><br>
+				</center>
+			</td>					
+			<td valign="top" nowrap>
+				<h3>Data Points</h3>
+				<input type="checkbox" id="checkboxBWView" name="color">
+				<label for="checkboxBWView">Black</label><br>
+				<input type="checkbox" id="checkboxFillDots" name="color" checked>
+				<label for="checkboxFillDots">Fill</label><br>
+				<input type="checkbox" id="checkboxHideData">
+				<label for="checkboxHideData">Hide</label><br>
+			</td>
+		</tr>
+	</table>
+	<table cellspacing="10">
+		<tr>
+			<td>
+				<b>Point Stack Mode</b></br>
+				<select id="drawMode">
+					<option value="floating">Floating</option>
+					<option value="center">Center</option>
+					<option value="gravity" selected>Gravity</option>
+				</select>
+			</td>
+			<td>
+				<b>Button Appearance</b><br>
+				<select id="buttonMode">
+					<option value="both" selected>Text and Icons</option>
+					<option value="icon">Icons Only</option>
+					<option value="text">Text Only</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="dataSetAdd">
+	<table>
+		<tr>
+			<td> 
+				<input type="button" value="Add" id="addFormAdd">
+				<input type="button" value="Reset" id="addFormReset">
+				<input type="button" value="Paste" id="addFormPaste">
+				<input type='image' src='img/close.png' id='addFormClose' width='20' height='20' align='right'>
+				<h2>New Dataset</h2>
+				
+				<center><p id="addNonNumWarning" style="color:red;">Value must be a number!</p></center>
+				<center><p id="addNoTitleWarning" style="color:red;">Dataset must have a title!</p></center>
+				<center><p id="addNoLabelWarning" style="color:red;">All values must have labels!</p></center>
+				<center><p id="addNoValueWarning" style="color:red;">All labels must have values!</p></center>
+				<center><p id="addNoDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
+				<center><p id="addDupTitleWarning" style="color:red;">Another dataset with that title already exists!</p></center>
+				<center><p id="addPasteFormatWarning" style="color:red;">The data you pasted is formatted incorrectly<br>and may not have been imported correctly.</p></center>
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+				<div style="width:400px; overflow:auto;height:200px;">
+					<label for="addDataSetTitle"><b>Title:</b></label>
+					<input type="text" id="addDataSetTitle" style="width:200px;"><br>
+					
+					<b>Data:</b>
+					<table id="addDatasetEntry">
+						<tr>
+							<th>Label</th><th>Value</th>
+						</tr>
+						<tr>
+							<td><input type="text" id="addLabLast"></td>
+							<td><input type="text" id="addValLast"></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="dataSetPaste">
+	<input type="button" value="Import" id="pasteImport">
+	<input type='image' src='img/close.png' id='pasteClose' width='20' height='20' align='right'>
+	<h2>Paste Dataset</h2>
+	<label for="pasteHeading">With heading</label>
+	<input type="checkbox" id="pasteHeading" checked><br>
+	<textarea id="addPasteText" rows="10" cols="50"></textarea><br>
+</div>
+
+<div id="dataSetEdit">
+	<table>
+		<tr>
+			<td>
+				<input type="button" value="Apply" id="editFormApply">
+				<input type="button" value="Reset" id="editFormReset">
+				<input type="button" value="Delete" id="editFormDelete"> 
+				<input type='image' src='img/close.png' id='editFormClose' width='20' height='20' align='right'>
+				<h2 id="datasetTitle">Title</h2>
+				<center><p id="editNonNumWarning" style="color:red;">Value must be a number!</p></center>
+				<center><p id="editNoTitleWarning" style="color:red;">Dataset must have a title!</p></center>
+				<center><p id="editNoLabelWarning" style="color:red;">All values must have labels!</p></center>
+				<center><p id="editNoValueWarning" style="color:red;">All labels must have values!</p></center>
+				<center><p id="editNoDataWarning" style="color:red;">Dataset must have some valid data!</p></center>
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+				<div style="width:400px; overflow:auto;height:150px;">
+					<label for="editDataSetTitle"><b>Title:</b></label>
+					<input type="text" id="editDataSetTitle" style="width:275px;"><br>
+					
+					<label for="editDataSetColor"><b>Color:</b></label>
+					<input class="color" id="editDataSetColor"><br>
+					
+					<b>Data:</b>
+					<table id="editDatasetEntry">
+						<tr>
+							<th>Label</th><th>Value</th>
+						</tr>
+						<tr>
+							<td><input type="text" id="editLabLast"></td><td><input type="text" id="editValLast"></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="worksheetCreate">
+	<table>
+		<tr>
+			<td>
+				<input type="button" value="Add" id="wcAdd">
+				<input type="button" value="Reset" id="wcReset">
+				<input type='image' src='img/close.png' id='wcClose' width='20' height='20' align='right'>
+				<h2>New Worksheet</h2>
+				<center><p id="wcDupTitleWarning" style="color:red;">A worksheet with that title already exists!</p></center>
+				<center><p id="wcNoTitleWarning" style="color:red;">Worksheet must have a title!</p></center>
+				<center><p id="wcNoLabelTypeWarning" style="color:red;">Worksheet must have a label type!</p></center>
+				<center><p id="wcDupLabelWarning" style="color:red;">Two or more labels are identical!</p></center>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div style="width:250px; overflow:auto;height:150px;">
+					<label for="wcTitle"><b>Title:</b></label><br>
+					<input type="text" id="wcTitle" style="width:200px;"><br>
+					<label for="wcLabelType"><b>Label Type:</b></label><br>
+					<input type="text" id="wcLabelType" style="width:200px;"><br>
+					<table id="wcLabelEntry">
+						<tr>
+							<b>Labels (Optional):</b>
+						</tr>
+						<tr>
+							<td><input type="text" id="wcLabLast"></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="clipboardPrompt">
+	<input type='image' src='img/close.png' id='cbClose' onclick='hideMenus()' width='20' height='20' align='right'>
+	<h2>Press Ctrl-C then Enter to Copy</h2>
+	<textarea id="cbText" cols="50" rows="10"></textarea><br>
+	<input type="button" value="Close" id="cbClose">
+</div>
+
+<div id="aboutPopup">
+	<input type='image' src='img/close.png' id='aboutClose' onclick='hideMenus()' width='20' height='20' align='right'>
+	<h2>SeeIt3: Distributions</h2>
+	<p>
+		SeeIt statistics visualization and interpretation program. <br>
+		Made at University of California - Davis, Copyright UC Regents 2011. <br>
+		Funded by NIH-SEPA grant# 1R25RR026008. <br>
+		Project Director: Marco Molinaro (mmolinaro@ucdavis.edu). <br>
+		Written by Matthew Steinwachs and Andrew Lague.
+	</p>
+</div>
+
+<div id="worksheetDescriptionPopup">
+	<input type='image' src='img/close.png' id='wdpClose' onclick='hideMenus()' width='20' height='20' align='right'>
+	<h2 id="worksheetDescriptionTitle"></h2>
+	<p id="worksheetDescriptionParagraph"></p>
+</div>
+
+<p id="loadingMsg">Loading...</p>
+
+<script type="text/javascript" src="js/v3/seeit3-dist-util.js"></script>
+<script type="text/javascript" src="js/v3/seeit3-dist-obj.js"></script>
+<script type="text/javascript" src="js/v3/seeit3-dist-main.js"></script>
+<script type="text/javascript" src="js/v3/seeit3-dist-evt.js"></script>
+<script type="text/javascript" src="js/v3/seeit3-dist-local.js"></script>
+
+<div id="copyright" style="position:fixed; bottom:10px; left:20px;">
+  Copyright &copy; UC Regents, Davis campus. All rights reserved.
+</div>
+
+</body>
+</html>
