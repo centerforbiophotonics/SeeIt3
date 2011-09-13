@@ -11,13 +11,13 @@ var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
 	if ($('#workSheetSelector option[value='+event.worksheet.URL+']').length == 0)
 		jQuery('#workSheetSelector').prepend(jQuery("<option value='" + 
-																					event.worksheet.URL + 
-																					"'>" + 
-																					event.worksheet.title + 
-																					" by " + 
-																					event.worksheet.labelType + 
-																					"</option>"))
-																.val(event.worksheet.URL);
+												event.worksheet.URL + 
+												"'>" + 
+												event.worksheet.title + 
+												" by " + 
+												event.worksheet.labelType + 
+												"</option>"))
+									.val(event.worksheet.URL);
   lastSelectedWorksheet = event.worksheet.URL;
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
@@ -100,7 +100,7 @@ function constructVis(){
 		.lineWidth(1)
 		.event("click", function(){
 			hideMenus();
-			$('#displayOptions').slideDown();
+			$('#datasets').slideDown();
 		})
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
@@ -127,7 +127,7 @@ function constructVis(){
 		})
 		.event("click", function(){
 			hideMenus();
-			$('#displayOptions').slideDown();
+			$('#datasets').slideDown();
 		})
 		.anchor("left").add(pv.Label)
 			.left(function(){
@@ -137,6 +137,7 @@ function constructVis(){
 				}else
 					return 32;
 			})
+			.top(15)
 			.text("Datasets")
 			.font(fontString)
 			.visible(function() {
@@ -211,6 +212,7 @@ function constructVis(){
 				else
 				 return 32;
 			})
+			.top(15)
 			.text("Display Options")
 			.font(fontString)
 			.visible(function() {
@@ -285,6 +287,7 @@ function constructVis(){
 				else
 				 return 32;
 			})
+			.top(15)
 			.text("New Graph")
 			.font(fontString)
 			.visible(function() {
@@ -363,6 +366,7 @@ function constructVis(){
 				else
 				 return 32;
 			})
+			.top(15)
 			.text("Edit Mode")
 			.font(fontString)
 			.textStyle(function(){
@@ -452,6 +456,7 @@ function constructVis(){
 				else
 				 return 32;
 			})
+			.top(15)
 			.text("Fit Scales")
 			.font(fontString)
 			.textStyle(function(){return "black"})
@@ -463,12 +468,18 @@ function constructVis(){
 			})
 	
 	//constructCategoryPanel();
+	constructDatasetPanel();
+	
 	
 	graphCollection.graphs.forEach(function(graph,index,graphs){
 		constructGraphPanel(graph, index);
 	});
 	vis.render();
 	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+}
+
+function constructDatasetPanel(){
+	
 }
 		  
 function constructCategoryPanel(){

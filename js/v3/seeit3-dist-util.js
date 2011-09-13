@@ -151,6 +151,7 @@ function hideMenus(){
 	$('#aboutPopup').slideUp();
 	$('#worksheetDescriptionPopup').slideUp();
 	$('#dataSetPaste').slideUp();
+	$('#datasets').slideUp();
 }
 
 function positionGroupingMenuOverGraph(index, graphCollection){

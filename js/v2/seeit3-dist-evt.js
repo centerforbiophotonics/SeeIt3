@@ -189,8 +189,9 @@ $('#applyOptionsToAll').click(function(event){
 				graph.udPartitions.push(pv.vector(selGraph.udPartitions[i].x, selGraph.udPartitions[i].y))
 			}
 		}
-
-		graph.setXScale();
+		
+		if (selGraph.customScale)
+			graph.setXScale(selGraph.scaleMin, selGraph.scaleMax);
 	});
 	vis.render();
 });

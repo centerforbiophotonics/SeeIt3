@@ -2,6 +2,10 @@ svg {
   border:1px solid;
 }
 
+body {
+	font: bold 14px arial;
+}
+
 #ellipseSliders {
   float:right;
   display:none;
@@ -23,6 +27,14 @@ table#menuItems h3 {
 }
 
 #groupingOptions {
+	background: #ffffff;
+	border:1px solid black;
+	padding: 10px;
+	display: hidden;
+}
+
+#datasets {
+	position: absolute;
 	background: #ffffff;
 	border:1px solid black;
 	padding: 10px;
