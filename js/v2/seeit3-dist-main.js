@@ -1057,7 +1057,6 @@ function constructGraphPanel(graph, index){
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return graph.h * 0.75})
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																 graph.boxPlot == false &&
 																 !graph.insufDataForFour;
 			})
 			.strokeStyle("green")
@@ -1068,7 +1067,6 @@ function constructGraphPanel(graph, index){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot == false &&
 																	 !graph.insufDataForFour; 
 				})
 				.size(4);
@@ -1087,7 +1085,6 @@ function constructGraphPanel(graph, index){
 			.visible(function(){
 				return this.index != partitionDataInFour(graph).length-1 &&
 							graph.groupingMode == "FourEqualGroups" &&
-							graph.boxPlot == false &&
 							!graph.insufDataForFour;
 			})
 			.text(function(d){
@@ -1095,8 +1092,119 @@ function constructGraphPanel(graph, index){
 					return d;
 				} else return 0;
 			})
+		
+		//Simple Box Plot Lines
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[0], graph.baseLine],
+						 [partitionDataInFour(graph)[0], graph.h * 0.80]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																	 !graph.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[4], graph.baseLine],
+						 [partitionDataInFour(graph)[4], graph.h * 0.80]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																	 !graph.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																	 !graph.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+		})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																	 !graph.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																	 !graph.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})						
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																	 !graph.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																	 !graph.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																	 !graph.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [partitionDataInFour(graph)[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																	 !graph.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+		
+		
 			
-		/* Box Plot Lines */
+		/* Advanced Box Plot Lines */
 		graphPanel.add(pv.Line)
 			.data(function(){
 				var min = removeOutliers(graph)[0];
@@ -1107,8 +1215,8 @@ function constructGraphPanel(graph, index){
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																		graph.advBoxPlot && 
 																	 !graph.insufDataForFour; 
 			})
 																	 
@@ -1122,8 +1230,8 @@ function constructGraphPanel(graph, index){
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																		graph.advBoxPlot &&
 																	 !graph.insufDataForFour; 
 			})
 																	 
@@ -1134,8 +1242,8 @@ function constructGraphPanel(graph, index){
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																		graph.advBoxPlot &&
 																	 !graph.insufDataForFour; 
 		})
 																	 
@@ -1146,8 +1254,8 @@ function constructGraphPanel(graph, index){
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																		graph.advBoxPlot &&
 																	 !graph.insufDataForFour; 
 			})
 																	 
@@ -1158,8 +1266,8 @@ function constructGraphPanel(graph, index){
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																		graph.advBoxPlot &&
 																	 !graph.insufDataForFour; 
 			})						
 																	 						
@@ -1173,8 +1281,8 @@ function constructGraphPanel(graph, index){
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																		graph.advBoxPlot &&
 																	 !graph.insufDataForFour; 
 			})
 			
@@ -1185,8 +1293,8 @@ function constructGraphPanel(graph, index){
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																		graph.advBoxPlot &&
 																	 !graph.insufDataForFour; 
 			})
 			
@@ -1197,8 +1305,8 @@ function constructGraphPanel(graph, index){
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																		graph.advBoxPlot &&
 																	 !graph.insufDataForFour; 
 			})
 			
@@ -1212,8 +1320,8 @@ function constructGraphPanel(graph, index){
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																		graph.advBoxPlot &&
 																	 !graph.insufDataForFour; 
 			})
 			
@@ -1222,8 +1330,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return [graph.getMeanMedianMode()[0]]})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.insufDataForFour; 
 			})
 			.shape("cross")
@@ -1233,8 +1340,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return [graph.getMeanMedianMode()[0]]})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.insufDataForFour; 
 			})
 			.shape("cross")
@@ -1246,8 +1352,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return getSDLinePoints(graph)})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 graph.sdLine &&
 																	 !graph.insufDataForFour; 
 			})
@@ -1263,8 +1368,7 @@ function constructGraphPanel(graph, index){
 				else
 					return (graph.h-graph.baseLine) * 0.41 + graph.baseLine;
 			})
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 graph.sdLine &&
 																	 !graph.insufDataForFour; 
 			})
@@ -1280,8 +1384,7 @@ function constructGraphPanel(graph, index){
 				else
 					return (graph.h-graph.baseLine) * 0.41 + graph.baseLine;
 			})
-			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 graph.boxPlot &&
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 graph.sdLine &&
 																	 !graph.insufDataForFour; 
 			})
@@ -1489,6 +1592,24 @@ function constructGraphPanel(graph, index){
 				touch.dragging = true;
 				touch.dragLabel = dragLabel;
 			})
+			
+		//Advanced Box Plot Outlier Marks
+		graphPanel.add(pv.Dot)
+			.data(function(){console.log(getOutlierDrawPositions(graph));
+				return getOutlierDrawPositions(graph)})
+			.visible(function(d){return graph.groupingMode == "BoxPlot" &&
+																		graph.advBoxPlot && 
+																	 !graph.insufDataForFour &&
+																	 (d.y+graph.baseLine) < graph.h &&
+																		d.x >= 0 &&
+																		d.x <= graph.w;
+			})
+			.left(function(d) { return d.x })
+			.bottom(function(d) { return d.y + graph.baseLine })
+			.shape("cross")
+			.strokeStyle("darkgreen")
+			.size(60)
+			.angle(Math.PI/4)
 			
 		
 		//Graph Overflow Warning Message

@@ -72,8 +72,8 @@ $('#groupingOptions').hide();
 jQuery('#groupingOptions').change(function(event) {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].groupingMode = $('input:radio[name=mode]:checked').attr('id').slice(5);
 	graphCollection.graphs[graphCollection.selectedGraphIndex].histogram = $('#checkboxHistogram').is(':checked');
-	graphCollection.graphs[graphCollection.selectedGraphIndex].boxPlot = $('#checkboxBoxPlot').is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].sdLine = $('#checkboxSDLine').is(':checked');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].advBoxPlot = $('#checkboxAdvBP').is(':checked');
 		
 	graphCollection.graphs[graphCollection.selectedGraphIndex].showMMM = $('#checkboxMMM').is(':checked');
 	graphCollection.graphs[graphCollection.selectedGraphIndex].showMean = $('#checkboxMean').is(':checked');
@@ -168,7 +168,6 @@ $('#applyOptionsToAll').click(function(event){
 	
 	graphCollection.graphs.forEach(function(graph, index){
 		graph.histogram = selGraph.histogram;
-		graph.boxPlot = selGraph.boxPlot;
 		graph.fitScaleToData = selGraph.fitScaleToData;
 		graph.groupingMode = selGraph.groupingMode;
 		graph.partitionGroupSize = selGraph.partitionGroupSize;
@@ -178,6 +177,7 @@ $('#applyOptionsToAll').click(function(event){
 		graph.showMedian = selGraph.showMedian;
 		graph.showMode = selGraph.showMode;
 		graph.sdLine = selGraph.sdLine;
+		graph.advBoxPlot = selGraph.advBoxPlot;
 		
 		//Old way which caused udpartitions to share a reference.  Make this an option?
 		//graph.udPartitions = selGraph.udPartitions;

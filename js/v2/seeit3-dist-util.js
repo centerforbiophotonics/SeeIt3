@@ -283,8 +283,19 @@ function removeOutliers(graph){
 	});
 	
 	return retVal;
+}
+
+function getOutlierDrawPositions(graph){
+	var min = graph.x(removeOutliers(graph)[0]);
+	var max = graph.x(removeOutliers(graph)[removeOutliers(graph).length-1]);
+	var outliers = [];
 	
+	graph.getDataDrawObjects().forEach(function(d){
+		if (d.x < min || d.x > max)
+			outliers.push(d);
+	});
 	
+	return outliers;
 }
 
 function getMean(data){
