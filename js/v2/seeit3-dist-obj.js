@@ -480,7 +480,6 @@ Graph.prototype = {
 	
 	toString: function(){
 		var heading = "";
-		var colHead = "";
 		var data = [];
 		var fullData = this.data;
 		
@@ -490,17 +489,19 @@ Graph.prototype = {
 			});
 		});
 		
+		heading += this.worksheet.labelType;
+		
 		this.includedCategories.forEach(function(cat){
-			heading += '"'+cat+'",,';
-			colHead += '"Label","value",';
+			heading += '\t'+cat;
+			
 			
 			fullData[cat].forEach(function(d, i){
-				data[i] += '"'+d.label+'","'+d.value.toFixed(1)+'",';
+				data[i] += d.label+'\t'+d.value.toFixed(1)+'\t';
 			});
 		});
 		
-		var string = heading+'\n'+colHead+'\n';
-		data.forEach(function(d){string += d + '\n';});
+		var string = heading+'\n';
+		data.forEach(function(d){string += trim(d) + '\n';});
 		return string;
 	},
 	 
