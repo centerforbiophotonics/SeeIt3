@@ -1359,6 +1359,19 @@ function constructGraphPanel(graph, index){
 			.lineWidth(1)
 			.strokeStyle("orange")
 			
+		graphPanel.add(pv.Label)
+			.data(function(){return [graph.getMeanMedianMode()[0]]})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine +20})
+			.text(function(){return "SD = "+getSD(graph.dataVals()).toFixed(1)})
+			.visible(function(){return graph.groupingMode == "BoxPlot" &&
+																	 graph.sdLine &&
+																	 !graph.insufDataForFour; 
+			})
+			.textAlign("center")
+			.textStyle("orange")
+			
+			
 		graphPanel.add(pv.Line)
 			.data(function(){return [getSDLinePoints(graph)[0], getSDLinePoints(graph)[0]]})
 			.left(function(d){return graph.x(d)})
@@ -1605,7 +1618,7 @@ function constructGraphPanel(graph, index){
 																		d.x <= graph.w;
 			})
 			.left(function(d) { return d.x })
-			.bottom(function(d) { return d.y + graph.baseLine })
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
 			.shape("cross")
 			.strokeStyle("darkgreen")
 			.size(60)
