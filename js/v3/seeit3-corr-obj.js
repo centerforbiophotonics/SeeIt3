@@ -395,30 +395,35 @@ Graph.prototype = {
 	},
 	
 	toString: function(){
-		var colHead = '"Label","X Value","Y Value",';
+		var colHead = 'Label\tX Value\tY Value\t';
+		var subHead = this.worksheet.labelType + '\t' +
+									this.xData + '\t' +
+									this.yData;
 		var data = {};
 		
 		if (this.xData != null) {
 			this.worksheet.data[this.xData].forEach(function(d){
-				data[d.label] = '"'+d.label+'","'+d.value.toFixed(1)+'",';
+				data[d.label] = d.label+'\t'+d.value.toFixed(1)+'\t';
 			});
 		}
 		
 		if (this.yData != null){
 			this.worksheet.data[this.yData].forEach(function(d){
 				if (data.hasOwnProperty(d.label)) 
-					data[d.label] += '"'+d.value.toFixed(1)+'",';
+					data[d.label] += d.value.toFixed(1)+'\t';
 				else
-					data[d.label] = '"'+d.label+'",,"'+d.value.toFixed(1)+'",';
+					data[d.label] = d.label+'\t\t'+d.value.toFixed(1)+'\t';
 			});
 		}
 		
 		var string = colHead+'\n';
+		string += subHead + '\n';
 		for (var key in data){
-			string += data[key] + '\n';
+			string += trim(data[key]) + '\n';
 		}
 		return string;
 	},
+
 	
 	assignY: function(category){
 		this.yData = category;

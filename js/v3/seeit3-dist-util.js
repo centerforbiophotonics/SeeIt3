@@ -151,7 +151,10 @@ function hideMenus(){
 	$('#aboutPopup').slideUp();
 	$('#worksheetDescriptionPopup').slideUp();
 	$('#dataSetPaste').slideUp();
-	$('#datasets').slideUp();
+	//$('#datasets').slideUp();
+	//graphCollection.datasetsMenuShowing = false;
+	//graphCollection.setW(calcGraphWidth());
+	//vis.render();
 }
 
 function positionGroupingMenuOverGraph(index, graphCollection){
@@ -161,7 +164,7 @@ function positionGroupingMenuOverGraph(index, graphCollection){
 							index*graphCollection.graphs[0].h;
 	
 	var xPos = $('span').offset().left +
-							graphCollection.padLeft - 34;
+							graphCollection.padLeft - 35;
 					
 	if (yPos + $('#groupingOptions').height() > graphCollection.h){
 		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 20 ;
@@ -178,7 +181,7 @@ function positionDisplayMenu(){
 	$('#displayOptions').css('position', 'absolute')
 										 .css('top', $('span').offset().top +"px")
 										 .css('left',$('span').offset().left +
-													graphCollection.padLeft - 34 +"px");
+													graphCollection.padLeft - 35 +"px");
 }
 
 
@@ -219,7 +222,10 @@ function parseSpreadsheetKeyFromURL(URL) {
 }
 
 function calcGraphWidth(){
-	return window.innerWidth - 90;
+	if (graphCollection.datasetsMenuShowing)
+		return window.innerWidth - $('#datasets').width() - 120;
+	else
+		return window.innerWidth - 90;
 }
 
 function countDataInPartitions(graph, partitions){
@@ -284,8 +290,19 @@ function removeOutliers(graph){
 	});
 	
 	return retVal;
+}
+
+function getOutlierDrawPositions(graph){
+	var min = graph.x(removeOutliers(graph)[0]);
+	var max = graph.x(removeOutliers(graph)[removeOutliers(graph).length-1]);
+	var outliers = [];
 	
+	graph.getDataDrawObjects().forEach(function(d){
+		if (d.x < min || d.x > max)
+			outliers.push(d);
+	});
 	
+	return outliers;
 }
 
 function getMean(data){

@@ -39,7 +39,7 @@ function GraphCollection(){
 	//Drawing Variables
 	this.w = calcGraphWidth();
 	this.padBot = 0;
-	this.padTop = 60;
+	this.padTop = 32;
 	this.padLeft = 35;
 	this.padRight = 25;
 	this.defaultGraphHeight = 300;
@@ -49,11 +49,12 @@ function GraphCollection(){
 	this.bucketDotSize = 5;
 	this.numberOfCategories = 0;
 	
+	this.datasetsMenuShowing = false;
+	
 	for (var key in this.worksheet.data){
 		this.numberOfCategories++;
 	}
 	this.h = this.calcGraphHeight();
-
 	
 	this.nextDefaultCategory = 0;
 	
@@ -145,7 +146,7 @@ GraphCollection.prototype = {
 	updateMenuOptions: function(){
 		$('#radio'+this.graphs[this.selectedGraphIndex].groupingMode).attr('checked',true);
 		$('#checkboxHistogram').attr('checked',this.graphs[this.selectedGraphIndex].histogram);
-		$('#checkboxBoxPlot').attr('checked',this.graphs[this.selectedGraphIndex].boxPlot);
+		$('#checkboxAdvBP').attr('checked',this.graphs[this.selectedGraphIndex].advBoxPlot);
 		$('#checkboxSDLine').attr('checked',this.graphs[this.selectedGraphIndex].sdLine);
 		$('#fixedIntervalWidth').val(this.graphs[this.selectedGraphIndex].partitionIntervalWidth);
 		$('#fixedGroupSize').val(this.graphs[this.selectedGraphIndex].partitionGroupSize);
@@ -365,7 +366,8 @@ function Graph(worksheet, graphCollection){
 	this.partitionIntervalWidth = 10;
 	
 	this.histogram = false;
-	this.boxPlot = false;
+	//this.boxPlot = false;
+	this.advBoxPlot = false;
 	this.sdLine = false;
 	
 	
@@ -480,7 +482,6 @@ Graph.prototype = {
 	
 	toString: function(){
 		var heading = "";
-		var colHead = "";
 		var data = [];
 		var fullData = this.data;
 		
@@ -490,17 +491,19 @@ Graph.prototype = {
 			});
 		});
 		
+		heading += this.worksheet.labelType;
+		
 		this.includedCategories.forEach(function(cat){
-			heading += '"'+cat+'",,';
-			colHead += '"Label","value",';
+			heading += '\t'+cat;
+			
 			
 			fullData[cat].forEach(function(d, i){
-				data[i] += '"'+d.label+'","'+d.value.toFixed(1)+'",';
+				data[i] += d.label+'\t'+d.value.toFixed(1)+'\t';
 			});
 		});
 		
-		var string = heading+'\n'+colHead+'\n';
-		data.forEach(function(d){string += d + '\n';});
+		var string = heading+'\n';
+		data.forEach(function(d){string += trim(d) + '\n';});
 		return string;
 	},
 	 
