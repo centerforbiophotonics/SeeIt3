@@ -2,8 +2,8 @@
 
 /* Dynamic Graph Resizing */
 $(window).resize(function() {
-	if (graphCollection.hasOwnProperty("worksheet")){
-		graphCollection.setW(calcGraphWidth());
+	if (graphCollection.hasOwnProperty("data")){
+		graphCollection.setW(graphCollection.calcGraphWidth());
 		graphCollection.setH(graphCollection.calcGraphHeight());
 		
 		vis.render();
@@ -509,7 +509,7 @@ function dataTouchEnd(event){
 		var curX = touch.finalX;
 		var curY = touch.finalY;
 		
-		var newData = graphCollection.worksheet.data[d.set];
+		var newData = graphCollection.data[d.set];
 		var remIndex = null;
 		newData.forEach(function(data, index){
 			if (data.label == d.label && 
@@ -684,7 +684,7 @@ $("#addFormAdd").click(function(){
 		datasetTitle = $('#addDataSetTitle').val()
 	}
 	
-	for (var key in graphCollection.worksheet.data){
+	for (var key in graphCollection.data){
 		if (datasetTitle == key){
 			dupTitle = true;
 			$('#addDupTitleWarning').show();
@@ -919,6 +919,14 @@ function positionDatasetEditMenu(){
 }
 positionDatasetEditMenu();
 
+function openEditDataMenu(category){
+	hideMenus();
+	resetEditDataSetMenu();
+	populateEditMenuFromExisting(category);
+	$('#dataSetEdit').slideDown();
+	$('#dataSetEdit').scrollTop(0);
+}
+
 $('#dataSetEdit').hide();
 
 $('#editNonNumWarning').hide();
@@ -1100,7 +1108,7 @@ function populateEditMenuFromExisting(dataset){
 	var color = graphCollection.categoryColors[dataset];
 	document.getElementById('editDataSetColor').color.fromRGB(color.r/255, color.g/255, color.b/255);
 	
-	graphCollection.worksheet.data[dataset].forEach(function(data){
+	graphCollection.data[dataset].forEach(function(data){
 		$('#editDatasetEntry tr:last').before(
 			"<tr id='editRow" +editNextRow +
 			"'><td><input type='text' id='editLab"+editNextRow +

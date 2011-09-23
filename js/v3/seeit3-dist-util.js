@@ -15,6 +15,27 @@ function pointFillStyle(set){
 	}
 }
 
+function toggleDataSubtree(id,i){
+	$('#'+id).slideToggle(null,resizeVis);
+	if ($('#subtreeToggle'+i).attr("src") == "img/downTriangle.png")
+		$('#subtreeToggle'+i).attr("src","img/rightTriangle.png");
+	else
+		$('#subtreeToggle'+i).attr("src","img/downTriangle.png");
+	
+	//setTimeout("resizeVis()",1000); 
+	
+}
+
+function resizeVis(){
+	graphCollection.setW(graphCollection.calcGraphWidth());
+	vis.render();
+	$('span').css('position', 'absolute')
+					 .css('left',$('#datasets').width()+29)
+					 .css('z-index', -1);
+	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+	positionDisplayMenu();
+}
+
 function trim(stringToTrim) {
 	return stringToTrim.replace(/^\s+|\s+$/g,"");
 }
@@ -221,12 +242,12 @@ function parseSpreadsheetKeyFromURL(URL) {
 	return matches[1];
 }
 
-function calcGraphWidth(){
-	if (graphCollection.datasetsMenuShowing)
-		return window.innerWidth - $('#datasets').width() - 120;
-	else
-		return window.innerWidth - 90;
-}
+//function calcGraphWidth(){
+//	if (graphCollection.datasetsMenuShowing)
+//		return window.innerWidth - $('#datasets').width() - 111;
+//	else
+//		return window.innerWidth - 90;
+//}
 
 function countDataInPartitions(graph, partitions){
 	var counts = [];

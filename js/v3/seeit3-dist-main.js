@@ -1,4 +1,10 @@
 //Entry Point
+var graphCollection = new GraphCollection();
+var vis = {};
+var touch = new Touch();
+var fontString = "bold 14px arial";
+var dragging = false;
+
 var exampleSpreadsheets = [
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
 	new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'),
@@ -9,7 +15,7 @@ var exampleSpreadsheets = [
 var lastSelectedWorksheet; 
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
-	if ($('#workSheetSelector option[value='+event.worksheet.URL+']').length == 0)
+	if ($('#workSheetSelector option[value='+event.worksheet.URL+']').length == 0){
 		jQuery('#workSheetSelector').prepend(jQuery("<option value='" + 
 																					event.worksheet.URL + 
 																					"'>" + 
@@ -18,23 +24,18 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 																					event.worksheet.labelType + 
 																					"</option>"))
 																.val(event.worksheet.URL);
+		graphCollection.addWorksheet(event.worksheet);
+	}
   lastSelectedWorksheet = event.worksheet.URL;
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
-		jQuery('p#loadingMsg').hide();	
-		graphCollection = new GraphCollection();
+		jQuery('p#loadingMsg').hide();
 		constructVis();
 		positionGroupingMenuOverGraph(0,graphCollection);
 		positionDisplayMenu();
   }
 });
 
-var graphCollection = {};
-var vis = {};
-var touch = new Touch();
-var fontString = "bold 14px arial";
-
-var dragging = false;
 
 function constructVis(){
 	jQuery('span').remove();
@@ -102,7 +103,7 @@ function constructVis(){
 			if (!graphCollection.datasetsMenuShowing){
 				$('#datasets').show();
 				graphCollection.datasetsMenuShowing = true;
-				graphCollection.setW(calcGraphWidth());
+				graphCollection.setW(graphCollection.calcGraphWidth());
 				vis.render();
 				$('span').css('position', 'absolute')
 								 .css('left',$('#datasets').width()+29)
@@ -112,7 +113,7 @@ function constructVis(){
 			} else {
 				$('#datasets').hide();
 				graphCollection.datasetsMenuShowing = false;
-				graphCollection.setW(calcGraphWidth());
+				graphCollection.setW(graphCollection.calcGraphWidth());
 				vis.render();
 				$('span').css('position', 'absolute')
 								 .css('left',8)
@@ -132,9 +133,9 @@ function constructVis(){
 	
 	dataSetsPanel.add(pv.Image)
 		.url("http://centerforbiophotonics.github.com/SeeIt3/img/dataset.png")  //fix this
-		.width(30)
-		.height(30)
-		.top(0)
+		.width(25)
+		.height(25)
+		.top(2)
 		.left(2)
 		.cursor("pointer")
 		.title("Show Datasets")
@@ -145,13 +146,31 @@ function constructVis(){
 				return false;
 		})
 		.event("click", function(){
-			hideMenus();
-			$('#datasets').slideDown();
+			if (!graphCollection.datasetsMenuShowing){
+				$('#datasets').show();
+				graphCollection.datasetsMenuShowing = true;
+				graphCollection.setW(graphCollection.calcGraphWidth());
+				vis.render();
+				$('span').css('position', 'absolute')
+								 .css('left',$('#datasets').width()+29)
+								 .css('z-index', -1);
+				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+				positionDisplayMenu();
+			} else {
+				$('#datasets').hide();
+				graphCollection.datasetsMenuShowing = false;
+				graphCollection.setW(graphCollection.calcGraphWidth());
+				vis.render();
+				$('span').css('position', 'absolute')
+								 .css('left',8)
+								 .css('z-index', -1);
+				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+				positionDisplayMenu();
+			}
 		})
 		.anchor("left").add(pv.Label)
 			.left(function(){
 				if (graphCollection.buttonText && !graphCollection.buttonIcon){
-					console.log("test")
 					return 2;
 				}else
 					return 32;
@@ -494,11 +513,43 @@ function constructVis(){
 		constructGraphPanel(graph, index);
 	});
 	vis.render();
-	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+	if (graphCollection.datasetsMenuShowing) resizeVis();
+	//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 }
 
 function constructDatasetPanel(){
-	
+	var html = "";
+	var i = 0;
+	exampleSpreadsheets.forEach(function(s){
+		s.worksheets.forEach(function(w){
+			html += "<table><tr>"+
+							"<td><input type='image' id='subtreeToggle"+i+"' src='img/downTriangle.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='15' height='15'></td>"+
+							"<td><div id='treeTitle"+i+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")'>"+w.title+"</div></td>"+
+							"<td><input type='image' src='img/refresh.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='25' height='25'></td>"+
+							"<td><input type='image' src='img/question.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='30' height='30'></td>"+
+							"<td><input type='image' src='img/document.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='25' height='25'></td>"+
+							"</table></tr>";
+			html += "<div id='subtree"+i+"'>";
+			for (key in w.data){
+				var color = graphCollection.categoryColors[key];
+				html+="<table style='margin-left:10px;'><tr><td><input type='image' src='img/edit.png' onclick='openEditDataMenu(\""+key+
+							"\");' width='25' height='25'></td><div><td>"+
+							"<div style='background-color:rgb("+color.r+","+color.g+","+color.b+
+							"); border:2px solid black; width:20px; height:20px;'></div>"+
+							"</td><td>"+key+"</td></div></tr></table>";
+			}
+			html+="<table style='margin-left:10px;'><tr><td><input type='image' src='img/plus.png' onclick='openEditDataMenu(\""+key+
+							"\");' width='25' height='25'></td><div><td>"+
+							"</td><td>Add a Dataset</td></div></tr></table>";
+							
+			html += "</div>";
+			i++;
+		})
+	})
+	html+="<table><tr><td><input type='image' src='img/plus.png' onclick='openEditDataMenu(\""+key+
+							"\");' width='25' height='25'></td><div><td>"+
+							"</td><td>Add a Worksheet</td></div></tr></table>";
+	$('#dataTree').html(html);
 }
 
 		  
@@ -565,6 +616,8 @@ function constructCategoryPanel(){
 			$('#dataSetEdit').slideDown();
 			$('#dataSetEdit').scrollTop(0)
 		})
+		
+		
 		
 		
 		//Panel representing a data category/set
@@ -1714,8 +1767,7 @@ function constructGraphPanel(graph, index){
 			
 		//Advanced Box Plot Outlier Marks
 		graphPanel.add(pv.Dot)
-			.data(function(){console.log(getOutlierDrawPositions(graph));
-				return getOutlierDrawPositions(graph)})
+			.data(function(){return getOutlierDrawPositions(graph)})
 			.visible(function(d){return graph.groupingMode == "BoxPlot" &&
 																		graph.advBoxPlot && 
 																	 !graph.insufDataForFour &&

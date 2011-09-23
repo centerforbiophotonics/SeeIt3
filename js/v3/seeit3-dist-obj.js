@@ -31,13 +31,16 @@ Touch.prototype = {
 
 // Represents the collection of graphs and the area where all graphs are drawn
 function GraphCollection(){
-	this.worksheet = getWorksheet();
+	this.data = {};
+	this.worksheets = {};
 	
 	this.graphs = [];
 	this.selectedGraphIndex = 0;
+	this.datasetsMenuShowing = false;
 	
 	//Drawing Variables
-	this.w = calcGraphWidth();
+	this.w = this.calcGraphWidth();
+	this.h = this.calcGraphHeight();
 	this.padBot = 0;
 	this.padTop = 32;
 	this.padLeft = 35;
@@ -49,29 +52,29 @@ function GraphCollection(){
 	this.bucketDotSize = 5;
 	this.numberOfCategories = 0;
 	
-	this.datasetsMenuShowing = false;
 	
-	for (var key in this.worksheet.data){
-		this.numberOfCategories++;
-	}
-	this.h = this.calcGraphHeight();
+	
+	//for (var key in this.worksheet.data){
+	//	this.numberOfCategories++;
+	//}
 	
 	this.nextDefaultCategory = 0;
 	
 	//Colors
 	this.categoryColors = {};
 	this.colorScale = pv.Colors.category20(0,20);
-	var counter = 0;
-	for (var key in this.worksheet.data){
-		this.categoryColors[key] = this.colorScale(counter);
-		counter++;
-	}
+	
+	//var counter = 0;
+	//for (var key in this.worksheet.data){
+	//	this.categoryColors[key] = this.colorScale(counter);
+	//	counter++;
+	//}
 	this.numberOfAddedCategories = this.numberOfCategories;
 	
 	this.editedCategories = {};
-	for (var key in this.worksheet.data){
-		this.editedCategories[key] = this.worksheet.edited[key];
-	}
+	//for (var key in this.worksheet.data){
+	//	this.editedCategories[key] = this.worksheet.edited[key];
+	//}
 	
 	this.editModeEnabled = false;
 	
@@ -85,16 +88,31 @@ function GraphCollection(){
 }
 
 GraphCollection.prototype = {
+	
+	addWorksheet: function(worksheet){
+		for (key in worksheet.data){
+			this.data[key] = worksheet.data[key];
+			this.worksheets[worksheet.title] = worksheet;
+			this.categoryColors[key] = this.colorScale(this.numberOfCategories);
+			this.numberOfCategories++;
+			this.editedCategories[key] = worksheet.edited[key];
+		}
+	},
+	
+	calcGraphWidth: function(){
+		if (this.datasetsMenuShowing)
+			return window.innerWidth - $('#datasets').width() - 111;
+		else
+			return window.innerWidth - 90;
+	},
+	
 	calcGraphHeight: function (){
 		if (this.graphs.length > 4)
 			return Math.max(this.defaultGraphHeight*this.graphs.length,
-											this.numberOfCategories*40,
-											(window.innerHeight - jQuery('div#notGraph').height()) - 105
+											(window.innerHeight - jQuery('div#notGraph').height()) - 80
 										 );
 		else
-			return Math.max(this.numberOfCategories*40,
-											(window.innerHeight - jQuery('div#notGraph').height()) - 105
-										 );
+			return (window.innerHeight - jQuery('div#notGraph').height()) - 80;
 	},
 	
 	addGraph: function() {
@@ -337,8 +355,8 @@ GraphCollection.prototype = {
 
 function Graph(worksheet, graphCollection){
 	this.graphCollection = graphCollection;
-	this.worksheet = worksheet;
-	this.data = worksheet.data;
+	//this.worksheet = worksheet;
+	this.data = graphCollection.data;
 	this.includedCategories = [];
 	this.selectedCategory = null;
 	this.editedCategories = this.graphCollection.editedCategories;
@@ -348,7 +366,7 @@ function Graph(worksheet, graphCollection){
 		this.nextDefaultLabel[key] = 0;
 	}
 	
-	this.w = calcGraphWidth();
+	this.w = graphCollection.calcGraphWidth();
 	this.h = 200;
 	this.xMax = pv.max(this.dataVals(), function(d) { return d });
 	this.xMin = pv.min(this.dataVals(), function(d) { return d });
