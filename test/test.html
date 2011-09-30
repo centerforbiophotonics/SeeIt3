@@ -15,6 +15,8 @@
 			@import "DataTables-1.8.2/media/css/demo_table.css";
 	</style>
 	<script type="text/javascript" charset="utf-8">
+		
+		var numRows = 31; 
 		var rows = [
 					[ "Alabama", 23, 45, 15, 9],
 					[ "Arkansas", 23, 45, 15, 9],
@@ -48,6 +50,7 @@
 					[ "Oregon", 23, 45, 15, 9],
 					[ "Oregon", 23, 45, 15, 9],
 				]
+		var numCols = 5;
 				
 		var cols = [
 					{ "sTitle": "State" },
@@ -124,11 +127,22 @@
 			$('#newCol').click(function(){
 				//console.log("newCol");
 				oTable.dataTable().fnDestroy();
-				cols.push({"sTitle":"DefaultTitle"});
+				cols.push({"sTitle":"DefaultTitle"+numCols++});
 				rows.forEach(function(r){
 					r.push("");
 				});
 				createTable();
+				$('body').scrollLeft(100000);
+			});
+			
+			$('#newRow').click(function(){
+				var newRow = ["DefaultLabel"+numRows++];
+				for (var i=1; i<numCols; i++)
+					newRow.push("");
+				rows.push(newRow);
+				oTable.dataTable().fnDestroy();
+				createTable();
+				$('body').scrollTop(100000);
 			});
 		});
 		
@@ -143,7 +157,7 @@
 			<td valign="top"><br><input id="newCol" type="button" value="Add Column"></td>
 		</tr>
 		<tr>
-			<td><input type="button" value="Add Row"></td>
+			<td><input id="newRow" type="button" value="Add Row"></td>
 		</tr>
 	</table>
 	
