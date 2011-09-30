@@ -61,14 +61,14 @@
 		var oTable;
 		
 		function createTable(){
-			$('#demo').html( '<table cellpadding="0" cellspacing="0" border="0" width ="100%" class="display" id="example"></table>' );
+			$('#demo').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>' );
 			oTable = $('#example').dataTable( {
 				"bPaginate": false,
         //"bLengthChange": false,
         //"bFilter": true,
         "bSort": false,
         "bInfo": false,
-        //"bAutoWidth": false
+        "bAutoWidth": false,
 				
 				"aaData": rows,
 				"aoColumns": cols,
@@ -114,6 +114,8 @@
 					},
 					"height": "14px",
 			});
+			
+			$('#example th').attr('nowrap', 'nowrap');
 		}
 		
 		$(document).ready(function() {
