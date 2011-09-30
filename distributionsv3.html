@@ -66,15 +66,19 @@
 	<input type="radio" id="radioUserDefGroups" name="mode" style="margin-left:10px;">
 	<label for="radioUserDefGroups">Make Your Own Groups</label><br>
 	
+	<div id="fixedSizeOptions">
 	<input type="radio" id="radioFixedSizeGroups" name="mode" style="margin-left:10px;">
 	<label for="radioFixedSizeGroups">Fixed Size:</label>
-	<input type="text" id="fixedGroupSize"  style="width:50px" value="4"><br>
+	<input type="text" id="fixedGroupSize"  style="width:50px" value="4">
+	</div>
 	
+	<div id="fixedIntervalOptions">
 	<input type="radio" id="radioFixedIntervalGroups" name="mode" style="margin-left:10px;">
 	<label for="radioFixedIntervalGroups">Fixed Interval Width:</label>
 	<input type="text" id="fixedIntervalWidth"  style="width:50px" value="10"><br>
 	<input type="checkbox" id="checkboxHistogram" name="histogram" style="margin-left:25px;">
-	<label for="checkboxHistogram">Histogram</label><br>
+	<label for="checkboxHistogram">Histogram</label>
+	</div>
 	
 	<input type="radio" id="radioTwoEqualGroups" name="mode" style="margin-left:10px;">
 	<label for="radioTwoEqualGroups">Two Equal</label><br>
@@ -82,12 +86,14 @@
 	<input type="radio" id="radioFourEqualGroups" name="mode" style="margin-left:10px;">
 	<label for="radioFourEqualGroups">Four Equal</label><br>
 	
+	<div id="boxPlotOptions">
 	<input type="radio" id="radioBoxPlot" name="mode" style="margin-left:10px;">
 	<label for="radioBoxPlot">Box Plot</label>
 	<input type="checkbox" id="checkboxAdvBP" style="margin-left:10px;">
 	<label for="checkboxAdvBP">Advanced</label>
 	<input type="checkbox" id="checkboxSDLine" style="margin-left:10px;">
-	<label for="checkboxSDLine">SD</label><br>
+	<label for="checkboxSDLine">SD</label>
+	</div>
 	
 	<b>Mean Median Mode:</b><br>
 	<input type="checkbox" id="checkboxMMM" style="margin-left:5px;">
@@ -99,14 +105,15 @@
 	<input type="checkbox" id="checkboxMode" style="margin-left:5px;">
 	<label for="checkboxMode"><font color="#00FF00">Mode</font></label><br>
 	
-	<b>Graph Scale:</b><br>
+	<div id="scaleOptions"><b>Graph Scale:</b>
 	<label for="textXMin" style="margin-left:10px;">Min: </label>
-	<input type="text" id="textXMin" style="width:50px;"><br>
+	<input type="text" id="textXMin" style="width:50px;">
 	<label for="textXMax" style="margin-left:10px;">Max:</label>
 	<input type="text" id="textXMax" style="width:50px;"><br>
 	
 	<input type="checkbox" id="fitScaleToData" style="margin-left:10px;">
-	<label for="fitScaleToData">Fit Scale Individually</label><br>
+	<label for="fitScaleToData">Fit Scale Individually</label>
+	</div>
 	
 	<input type="button" value="Apply to All" id="applyOptionsToAll">
 </div>
@@ -115,7 +122,7 @@
 	<input type='image' src='img/close.png' id='dispOptClose' onclick='hideMenus()' width='20' height='20' align='right'><br>
 	<table cellspacing="10">
 		<tr>
-			<td valign="top" nowrap>
+			<td id="divisionsCell" valign="top" nowrap>
 				<h3 style="margin-bottom:10px">Divisions</h3>
 				<center>
 					<input type="button" value="+" id="divisionsInc" style="width:30px; height:30px"><br>
@@ -150,7 +157,7 @@
 			</td>
 		</tr>
 	</table>
-	<table cellspacing="10">
+	<table id="stackAndButtonTable" cellspacing="10">
 		<tr>
 			<td>
 				<b>Point Stack Mode</b></br>

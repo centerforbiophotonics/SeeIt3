@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Test</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta name="generator" content="Geany 0.20" />
+	
+	<script type="text/javascript" language="javascript" src="DataTables-1.8.2/media/js/jquery.js"></script>
+	<script type="text/javascript" language="javascript" src="DataTables-1.8.2/examples/examples_support/jquery.jeditable.js"></script>
+	<script type="text/javascript" language="javascript" src="DataTables-1.8.2/media/js/jquery.dataTables.js"></script>
+	<style type="text/css" title="currentStyle">
+			@import "DataTables-1.8.2/media/css/demo_page.css";
+			@import "DataTables-1.8.2/media/css/demo_table.css";
+	</style>
+	<script type="text/javascript" charset="utf-8">
+		$(document).ready(function() {
+			$('#demo').html( '<table cellpadding="0" cellspacing="0" border="0" width ="100%" class="display" id="example"></table>' );
+			var oTable = $('#example').dataTable( {
+				"bPaginate": false,
+        //"bLengthChange": false,
+        //"bFilter": true,
+        "bSort": false,
+        "bInfo": false,
+        //"bAutoWidth": false
+				
+				"aaData": [
+					/* Reduced data set */
+					//[ "State", "White Male Lung Cancer", "White Female Lung Cancer", "Black Male Lung Cancer", "Black Female Lung Cancer" ],
+					[ "Alabama", 23, 45, 15, 9, " " ],
+					[ "Arkansas", 23, 45, 15, 9, " " ],
+					[ "California", 23, 45, 15, 9, " " ],
+					[ "Florida", 23, 45, 15, 9, " " ],
+					[ "Colorado", 23, 45, 15, 9, " " ],
+					[ "New York", 23, 45, 15, 9, " " ],
+					[ "Montana", 23, 45, 15, 9, " " ],
+					[ "Utah", 23, 45, 15, 9, " " ],
+					[ "Nevada", 23, 45, 15, 9, " " ],
+					[ "Idaho", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					[ "Oregon", 23, 45, 15, 9, " " ],
+					
+				],
+				"aoColumns": [
+					{ "sTitle": "State" },
+					{ "sTitle": "White Male Lung Cancer" },
+					{ "sTitle": "White Female Lung Cancer" },
+					{ "sTitle": "Black Male Lung Cancer" },
+					{ "sTitle": "Black Male Lung Cancer" },
+					{ "sTitle": "*New Column*" }
+				],
+				
+			} );
+			
+
+			/* Apply the jEditable handlers to the table */
+			$('td', oTable.fnGetNodes()).editable( function(value, settings) { 
+					 //console.log(this);
+					 console.log(value);
+					 //console.log(settings);
+					 return(value);
+			}, {
+					"callback": function( sValue, y ) {
+							var aPos = oTable.fnGetPosition( this );
+							oTable.fnUpdate( sValue, aPos[0], aPos[1] );
+					},
+					"submitdata": function ( value, settings ) {
+							return {
+									"row_id": this.parentNode.getAttribute('id'),
+									"column": oTable.fnGetPosition( this )[2]
+							};
+					},
+					"height": "14px",
+			} );
+			
+			$('th').editable( function(value, settings) { 
+					 //console.log(this);
+					 console.log(value);
+					 //console.log(settings);
+					 return(value);
+			}, {
+					"callback": function( sValue, y ) {
+							//var aPos = oTable.fnGetPosition( this );
+							//oTable.fnUpdate( sValue, aPos[0], aPos[1] );
+					},
+					"submitdata": function ( value, settings ) {
+							return {
+									//"row_id": this.parentNode.getAttribute('id'),
+									//"column": oTable.fnGetPosition( this )[2]
+							};
+					},
+					"height": "14px",
+			} );
+		} );
+	</script>
+</head>
+
+<body>
+	<div id="demo"></div>
+</body>
+
+</html>

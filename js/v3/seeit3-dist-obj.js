@@ -77,6 +77,7 @@ function GraphCollection(){
 	//}
 	
 	this.editModeEnabled = false;
+	this.advancedUser = true;
 	
 	this.buttonIcon = true;
 	this.buttonText = true;
