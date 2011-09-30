@@ -15,9 +15,54 @@
 			@import "DataTables-1.8.2/media/css/demo_table.css";
 	</style>
 	<script type="text/javascript" charset="utf-8">
-		$(document).ready(function() {
+		var rows = [
+					[ "Alabama", 23, 45, 15, 9],
+					[ "Arkansas", 23, 45, 15, 9],
+					[ "California", 23, 45, 15, 9],
+					[ "Florida", 23, 45, 15, 9],
+					[ "Colorado", 23, 45, 15, 9],
+					[ "New York", 23, 45, 15, 9],
+					[ "Montana", 23, 45, 15, 9],
+					[ "Utah", 23, 45, 15, 9],
+					[ "Nevada", 23, 45, 15, 9],
+					[ "Idaho", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+					[ "Oregon", 23, 45, 15, 9],
+				]
+				
+		var cols = [
+					{ "sTitle": "State" },
+					{ "sTitle": "White Male Lung Cancer" },
+					{ "sTitle": "White Female Lung Cancer" },
+					{ "sTitle": "Black Male Lung Cancer" },
+					{ "sTitle": "Black Male Lung Cancer" },
+					//{ "sTitle": "*New Column*" }
+				]
+				
+		var oTable;
+		
+		function createTable(){
 			$('#demo').html( '<table cellpadding="0" cellspacing="0" border="0" width ="100%" class="display" id="example"></table>' );
-			var oTable = $('#example').dataTable( {
+			oTable = $('#example').dataTable( {
 				"bPaginate": false,
         //"bLengthChange": false,
         //"bFilter": true,
@@ -25,54 +70,10 @@
         "bInfo": false,
         //"bAutoWidth": false
 				
-				"aaData": [
-					/* Reduced data set */
-					//[ "State", "White Male Lung Cancer", "White Female Lung Cancer", "Black Male Lung Cancer", "Black Female Lung Cancer" ],
-					[ "Alabama", 23, 45, 15, 9, " " ],
-					[ "Arkansas", 23, 45, 15, 9, " " ],
-					[ "California", 23, 45, 15, 9, " " ],
-					[ "Florida", 23, 45, 15, 9, " " ],
-					[ "Colorado", 23, 45, 15, 9, " " ],
-					[ "New York", 23, 45, 15, 9, " " ],
-					[ "Montana", 23, 45, 15, 9, " " ],
-					[ "Utah", 23, 45, 15, 9, " " ],
-					[ "Nevada", 23, 45, 15, 9, " " ],
-					[ "Idaho", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					[ "Oregon", 23, 45, 15, 9, " " ],
-					
-				],
-				"aoColumns": [
-					{ "sTitle": "State" },
-					{ "sTitle": "White Male Lung Cancer" },
-					{ "sTitle": "White Female Lung Cancer" },
-					{ "sTitle": "Black Male Lung Cancer" },
-					{ "sTitle": "Black Male Lung Cancer" },
-					{ "sTitle": "*New Column*" }
-				],
-				
-			} );
+				"aaData": rows,
+				"aoColumns": cols,
+			});
 			
-
 			/* Apply the jEditable handlers to the table */
 			$('td', oTable.fnGetNodes()).editable( function(value, settings) { 
 					 //console.log(this);
@@ -83,6 +84,8 @@
 					"callback": function( sValue, y ) {
 							var aPos = oTable.fnGetPosition( this );
 							oTable.fnUpdate( sValue, aPos[0], aPos[1] );
+							rows[aPos[0]][aPos[1]] = sValue;
+							console.log(aPos[0]+" . . . "+aPos[1])
 					},
 					"submitdata": function ( value, settings ) {
 							return {
@@ -91,7 +94,7 @@
 							};
 					},
 					"height": "14px",
-			} );
+			});
 			
 			$('th').editable( function(value, settings) { 
 					 //console.log(this);
@@ -110,13 +113,38 @@
 							};
 					},
 					"height": "14px",
-			} );
-		} );
+			});
+		}
+		
+		$(document).ready(function() {
+			createTable();
+			
+			$('#newCol').click(function(){
+				//console.log("newCol");
+				oTable.dataTable().fnDestroy();
+				cols.push({"sTitle":"DefaultTitle"});
+				rows.forEach(function(r){
+					r.push("");
+				});
+				createTable();
+			});
+		});
+		
+		
 	</script>
 </head>
 
 <body>
-	<div id="demo"></div>
+	<table>
+		<tr>
+			<td><div id="demo"></div></td>
+			<td valign="top"><br><input id="newCol" type="button" value="Add Column"></td>
+		</tr>
+		<tr>
+			<td><input type="button" value="Add Row"></td>
+		</tr>
+	</table>
+	
 </body>
 
 </html>
