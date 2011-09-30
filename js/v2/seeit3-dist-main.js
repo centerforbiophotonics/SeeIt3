@@ -218,6 +218,121 @@ function constructVis(){
 				else
 					return false;
 			})
+	
+	/*Toggle Basic/Advanced User Mode*/
+	var togUserModePanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Toggle basic/advanced mode")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				if (graphCollection.advancedUser)
+					return 150;
+				else
+					return 142;
+			}else if (!graphCollection.buttonIcon){
+				if (graphCollection.advancedUser)
+					return 122;
+				else
+					return 115;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 240;
+			}else if (!graphCollection.buttonIcon){
+				return 180;
+			}else if (!graphCollection.buttonText){
+				return 40;
+			}
+		})
+		.top(-60)
+		.lineWidth(1)
+		.event("click", function(){
+			graphCollection.advancedUser = !(graphCollection.advancedUser);
+			if (graphCollection.advancedUser){
+				$('#fixedSizeOptions').show();
+				$('#fixedIntervalOptions').show();
+				$('#boxPlotOptions').show();
+				$('#scaleOptions').show();
+				$('#divisionsCell').show();
+				$('#stackAndButtonTable').show();
+			} else {
+				$('#fixedSizeOptions').hide();
+				$('#fixedIntervalOptions').hide();
+				$('#boxPlotOptions').hide();
+				$('#scaleOptions').hide();
+				$('#divisionsCell').hide();
+				$('#stackAndButtonTable').hide();
+				
+				graphCollection.graphs.forEach(function(g){
+					g.groupingMode = "NoGroups";
+				});
+				graphCollection.updateMenuOptions();
+			}
+			vis.render();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+		
+	togUserModePanel.add(pv.Image)
+		.url(function(){
+			if (graphCollection.advancedUser)
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/advUser.png"
+			else
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/user.png"
+		})
+		.width(30)
+		.height(26)
+		.top(2)
+		.left(0)
+		.cursor("pointer")
+		.title("Toggle basic/advanced mode")
+		.event("click", function(){
+			graphCollection.advancedUser = !(graphCollection.advancedUser);
+			vis.render();
+		})
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text(function(){
+				if (graphCollection.advancedUser)
+					return "Advanced Mode"
+				else
+					return "Beginner Mode"
+			})
+			.font(fontString)
+			.textStyle(function(){
+				if (graphCollection.editModeEnabled)
+					return "red"
+				else
+					return "black"
+			})
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
 		
 	/* Toggle Edit Mode Button */
 	var togEditPanel = vis.add(pv.Panel)
@@ -236,15 +351,21 @@ function constructVis(){
 		})
 		.left(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 240;
+				return 390;
 			}else if (!graphCollection.buttonIcon){
-				return 180;
+				return 302;
 			}else if (!graphCollection.buttonText){
-				return 40;
+				return 74;
 			}
 		})
 		.top(-60)
 		.lineWidth(1)
+		.visible(function() {
+			if (graphCollection.advancedUser)
+				return true;
+			else
+				return false;
+		})
 		.event("click", function(){
 			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
 			vis.render();
@@ -320,15 +441,21 @@ function constructVis(){
 		})
 		.left(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 355;
+				return 505;
 			}else if (!graphCollection.buttonIcon){
-				return 265;
+				return 387;
 			}else if (!graphCollection.buttonText){
-				return 77;
+				return 111;
 			}
 		})
 		.top(-60)
 		.lineWidth(1)
+		.visible(function() {
+			if (graphCollection.advancedUser)
+				return true;
+			else
+				return false;
+		})
 		.event("click", function(){
 			graphCollection.graphs.forEach(function(graph){
 				graph.customScale = false;
@@ -1608,8 +1735,7 @@ function constructGraphPanel(graph, index){
 			
 		//Advanced Box Plot Outlier Marks
 		graphPanel.add(pv.Dot)
-			.data(function(){console.log(getOutlierDrawPositions(graph));
-				return getOutlierDrawPositions(graph)})
+			.data(function(){return getOutlierDrawPositions(graph)})
 			.visible(function(d){return graph.groupingMode == "BoxPlot" &&
 																		graph.advBoxPlot && 
 																	 !graph.insufDataForFour &&

@@ -40,9 +40,8 @@ table#menuItems h3 {
 	padding: 10px;
 	display: hidden;
 	max-height: 85%;
-	overflow:scroll;
-	overflow-x: hidden;
-  -ms-overflow-x: hidden;
+	max-width: 30%;
+	overflow:auto;
 }
 
 #displayOptions {
