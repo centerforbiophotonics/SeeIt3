@@ -18,37 +18,37 @@
 		
 		var numRows = 31; 
 		var rows = [
-					[ "Alabama", 23, 45, 15, 9],
-					[ "Arkansas", 23, 45, 15, 9],
-					[ "California", 23, 45, 15, 9],
-					[ "Florida", 23, 45, 15, 9],
-					[ "Colorado", 23, 45, 15, 9],
-					[ "New York", 23, 45, 15, 9],
-					[ "Montana", 23, 45, 15, 9],
-					[ "Utah", 23, 45, 15, 9],
-					[ "Nevada", 23, 45, 15, 9],
-					[ "Idaho", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
-					[ "Oregon", 23, 45, 15, 9],
+					["Alabama", 23, 45, 15, 9],
+					["Arkansas", 23, 45, 15, 9],
+					["California", 23, 45, 15, 9],
+					["Florida", 23, 45, 15, 9],
+					["Colorado", 23, 45, 15, 9],
+					["New York", 23, 45, 15, 9],
+					["Montana", 23, 45, 15, 9],
+					["Utah", 23, 45, 15, 9],
+					["Nevada", 23, 45, 15, 9],
+					["Idaho", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
+					["Oregon", 23, 45, 15, 9],
 				]
 		var numCols = 5;
 				
@@ -99,7 +99,7 @@
 					"height": "14px",
 			});
 			
-			$('th').editable( function(value, settings) { 
+			$('#example th').editable( function(value, settings) { 
 					 //console.log(this);
 					 console.log(value);
 					 //console.log(settings);
@@ -119,6 +119,25 @@
 			});
 			
 			$('#example th').attr('nowrap', 'nowrap');
+			$('#example td').attr('nowrap', 'nowrap');
+			
+			$('#example thead tr').append("<th></th>")
+			$('#example tbody tr').append("<td><input type='image' src='../img/garbage.png' id='groupOptClose' width='15' height='15'></td>");
+		}
+		
+		function fnGetSelected( oTableLocal )
+		{
+			var aReturn = new Array();
+			var aTrs = oTableLocal.fnGetNodes();
+			 
+			for ( var i=0 ; i<aTrs.length ; i++ )
+			{
+					if ( $(aTrs[i]).hasClass('row_selected') )
+					{
+							aReturn.push( aTrs[i] );
+					}
+			}
+			return aReturn;
 		}
 		
 		$(document).ready(function() {
