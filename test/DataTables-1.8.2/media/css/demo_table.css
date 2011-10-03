@@ -160,6 +160,11 @@ table.display td.center {
 	text-align: center;
 }
 
+table.display td.del {
+	border: 1px solid #fff;
+	background-color: #ffffff;
+}
+
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

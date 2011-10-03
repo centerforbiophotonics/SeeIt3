@@ -123,7 +123,7 @@
 			$('#example th').attr('nowrap', 'nowrap');
 			$('#example td').attr('nowrap', 'nowrap');
 			
-			$('#example thead tr').append("<th></th>");
+			//$('#example thead tr').append("<th></th>");
 			var delColRowString = "<tr>";
 			delColRowString += "<th class='del'></th>"
 			for (var i=1; i<numCols; i++)
@@ -131,7 +131,7 @@
 			delColRowString += "<th class='del'></th></tr>";
 			console.log(delColRowString);
 			$('#example thead').prepend(delColRowString)
-			$('#example tbody tr').append("<td><input type='checkbox'></td>");
+			$('#example tbody tr').append("<td class='del'><input type='checkbox'></td>");
 			//$('#example tbody td').prepend("<input type='checkbox'>");
 		}
 		
