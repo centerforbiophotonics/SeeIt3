@@ -102,6 +102,8 @@
 			$('#example th').editable( function(value, settings) { 
 					 //console.log(this);
 					 console.log(value);
+					 if (value == "")
+						console.log("delete")
 					 //console.log(settings);
 					 return(value);
 			}, {
@@ -121,8 +123,16 @@
 			$('#example th').attr('nowrap', 'nowrap');
 			$('#example td').attr('nowrap', 'nowrap');
 			
-			$('#example thead tr').append("<th></th>")
-			$('#example tbody tr').append("<td><input type='image' src='../img/garbage.png' id='groupOptClose' width='15' height='15'></td>");
+			$('#example thead tr').append("<th></th>");
+			var delColRowString = "<tr>";
+			delColRowString += "<th class='del'></th>"
+			for (var i=1; i<numCols; i++)
+				delColRowString += "<th class='del'><center><input type='checkbox'></center></th>"
+			delColRowString += "<th class='del'></th></tr>";
+			console.log(delColRowString);
+			$('#example thead').prepend(delColRowString)
+			$('#example tbody tr').append("<td><input type='checkbox'></td>");
+			//$('#example tbody td').prepend("<input type='checkbox'>");
 		}
 		
 		function fnGetSelected( oTableLocal )
