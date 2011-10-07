@@ -742,7 +742,10 @@ Worksheet.prototype = {
 			.slice(1)
 			.forEach(function(e) { 
 				var re = new RegExp("dependent variable:","i");
-				var cat = trim(e.content.$t.replace(re,""));
+				var cat = trim(e.content.$t.replace(re,""))
+										.replace(new RegExp("\\n", "g" ),"")
+										.replace(new RegExp("\'", "g"),"")
+										.replace(new RegExp("\"", "g"),"");
 				columnToCategory[e.title.$t.replace(/[0-9]/g,"")] = cat;
 				data[cat] = []
 			});

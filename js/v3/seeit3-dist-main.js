@@ -657,6 +657,7 @@ function constructDatasetPanel(){
 							"</table></tr>";
 			html += "<div id='subtree"+i+"'>";
 			for (key in w.data){
+				
 				var color = graphCollection.categoryColors[key];
 				html+="<table style='margin-left:15px;'><tr><td>"+
 							"<input class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key.trim()+"', this.color)\" style='width:20px; height:20px'></td>"+
