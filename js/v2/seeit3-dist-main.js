@@ -223,19 +223,13 @@ function constructVis(){
 	var togUserModePanel = vis.add(pv.Panel)
 		.events("all")
 		.cursor("pointer")
-		.title("Toggle basic/advanced mode")
+		.title("Toggle advanced mode")
 		.height(30)
 		.width(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				if (graphCollection.advancedUser)
-					return 150;
-				else
-					return 142;
+				return 150;
 			}else if (!graphCollection.buttonIcon){
-				if (graphCollection.advancedUser)
-					return 122;
-				else
-					return 115;
+				return 122;
 			}else if (!graphCollection.buttonText){
 				return 34;
 			}
@@ -267,6 +261,13 @@ function constructVis(){
 				$('#scaleOptions').hide();
 				$('#divisionsCell').hide();
 				$('#stackAndButtonTable').hide();
+				graphCollection.editModeEnabled = false;
+				hideMenus();
+				graphCollection.buttonIcon = true;
+				graphCollection.buttonText = true;
+				$("#drawMode option[value='gravity']").attr('selected', 'selected');
+				graphCollection.buckets = 30;
+				$("#divisionsValue").html(graphCollection.buckets);
 				
 				graphCollection.graphs.forEach(function(g){
 					g.groupingMode = "NoGroups";
@@ -287,9 +288,9 @@ function constructVis(){
 	togUserModePanel.add(pv.Image)
 		.url(function(){
 			if (graphCollection.advancedUser)
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/advUser.png"
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeON.png"
 			else
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/user.png"
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeOFF.png"
 		})
 		.width(30)
 		.height(26)
@@ -299,6 +300,33 @@ function constructVis(){
 		.title("Toggle basic/advanced mode")
 		.event("click", function(){
 			graphCollection.advancedUser = !(graphCollection.advancedUser);
+			if (graphCollection.advancedUser){
+				$('#fixedSizeOptions').show();
+				$('#fixedIntervalOptions').show();
+				$('#boxPlotOptions').show();
+				$('#scaleOptions').show();
+				$('#divisionsCell').show();
+				$('#stackAndButtonTable').show();
+			} else {
+				$('#fixedSizeOptions').hide();
+				$('#fixedIntervalOptions').hide();
+				$('#boxPlotOptions').hide();
+				$('#scaleOptions').hide();
+				$('#divisionsCell').hide();
+				$('#stackAndButtonTable').hide();
+				graphCollection.editModeEnabled = false;
+				hideMenus();
+				graphCollection.buttonIcon = true;
+				graphCollection.buttonText = true;
+				$("#drawMode option[value='gravity']").attr('selected', 'selected');
+				graphCollection.buckets = 30;
+				$("#divisionsValue").html(graphCollection.buckets);
+				
+				graphCollection.graphs.forEach(function(g){
+					g.groupingMode = "NoGroups";
+				});
+				graphCollection.updateMenuOptions();
+			}
 			vis.render();
 		})
 		.visible(function() {
@@ -314,19 +342,14 @@ function constructVis(){
 				else
 				 return 32;
 			})
-			.text(function(){
-				if (graphCollection.advancedUser)
-					return "Advanced Mode"
-				else
-					return "Beginner Mode"
-			})
-			.font(fontString)
+			.text(function(){return "Advanced Mode"})
 			.textStyle(function(){
-				if (graphCollection.editModeEnabled)
+				if (graphCollection.advancedUser)
 					return "red"
 				else
-					return "black"
+					return "grey"
 			})
+			.font(fontString)
 			.visible(function() {
 				if (graphCollection.buttonText)
 					return true;
@@ -579,6 +602,9 @@ function constructCategoryPanel(){
 		.top(40*row - 35)
 		.cursor("pointer")
 		.title("Edit dataset")
+		.visible(function(){
+			return graphCollection.advancedUser;
+		})
 		.event("click", function(){
 			hideMenus();
 			resetEditDataSetMenu();
@@ -599,7 +625,10 @@ function constructCategoryPanel(){
 			.lineWidth(1)
 			.height(30)
 			.width(160)
-			.left(-198)
+			.left(function(){
+				if (graphCollection.advancedUser) return -198;
+				else return -232;
+			})
 			.top(40*row - 35)
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
