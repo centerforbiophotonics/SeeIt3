@@ -160,6 +160,7 @@ GraphCollection.prototype = {
 	setH: function(height){
 		this.h = height;
 		this.setChildGraphHeights();
+		$("#datasets").css("max-height", height+12+"px");
 	},
 	
 	updateMenuOptions: function(){

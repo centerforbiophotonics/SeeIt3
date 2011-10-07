@@ -44,6 +44,24 @@ table#menuItems h3 {
 	overflow:auto;
 }
 
+.menuItemDef {
+	position: relative;
+	padding: 2px;
+	border: 2px #ffffff solid;
+	cursor: hand;
+	margin-left:10px; 
+	margin-bottom:1px;
+}
+
+.menuItemOver {
+	position: relative;
+	padding: 2px;
+	border: 2px #000000 solid;
+	cursor: hand;
+	margin-left:10px; 
+	margin-bottom:1px;
+}
+
 #displayOptions {
 	background: #ffffff;
 	border:1px solid black;

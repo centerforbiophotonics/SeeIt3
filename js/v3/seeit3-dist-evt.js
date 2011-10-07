@@ -6,6 +6,15 @@ $(window).resize(function() {
 		graphCollection.setW(graphCollection.calcGraphWidth());
 		graphCollection.setH(graphCollection.calcGraphHeight());
 		
+		if (graphCollection.datasetsMenuShowing)
+			$('span').css('position', 'absolute')
+								 .css('left',$('#datasets').width()+29)
+								 .css('z-index', -1);
+		else
+			$('span').css('position', 'absolute')
+								 .css('left',8)
+								 .css('z-index', -1);
+		
 		vis.render();
 		positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 		positionDatasetAddMenu();

@@ -15,6 +15,14 @@ function pointFillStyle(set){
 	}
 }
 
+function updateColor(category, color){
+	var r = parseInt(color.rgb[0]*255);
+	var g = parseInt(color.rgb[1]*255);
+	var b = parseInt(color.rgb[2]*255);
+	graphCollection.categoryColors[category]= new pv.Color.Rgb(r,g,b,1);
+	vis.render();
+}
+
 function toggleDataSubtree(id,i){
 	$('#'+id).slideToggle(null,resizeVis);
 	if ($('#subtreeToggle'+i).attr("src") == "img/downTriangle.png")
@@ -39,6 +47,20 @@ function resizeVis(){
 function trim(stringToTrim) {
 	return stringToTrim.replace(/^\s+|\s+$/g,"");
 }
+
+function colorToHex(color) {
+    if (color.substr(0, 1) === '#') {
+        return color;
+    }
+    var digits = /(.*?)rgb\((\d+),(\d+),(\d+)\)/.exec(color);
+    
+    var red = parseInt(digits[2]);
+    var green = parseInt(digits[3]);
+    var blue = parseInt(digits[4]);
+    
+    var rgb = blue | (green << 8) | (red << 16);
+    return digits[1] + '#' + rgb.toString(16);
+};
 
 function pointStrokeStyle(set){
 	if (jQuery('#checkboxFillDots').is(':checked')){

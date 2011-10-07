@@ -649,7 +649,8 @@ function constructDatasetPanel(){
 		s.worksheets.forEach(function(w){
 			html += "<table><tr>"+
 							"<td><input type='image' id='subtreeToggle"+i+"' src='img/downTriangle.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='15' height='15'></td>"+
-							"<td><div id='treeTitle"+i+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")'>"+w.title+"</div></td>"+
+							"<td nowrap><div id='treeTitle"+i+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")'>"+w.title+"</div></td>"+
+							"<td><input type='image' src='img/edit.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='25' height='25'></td>"+
 							"<td><input type='image' src='img/refresh.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='25' height='25'></td>"+
 							"<td><input type='image' src='img/question.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='30' height='30'></td>"+
 							"<td><input type='image' src='img/document.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='25' height='25'></td>"+
@@ -657,15 +658,10 @@ function constructDatasetPanel(){
 			html += "<div id='subtree"+i+"'>";
 			for (key in w.data){
 				var color = graphCollection.categoryColors[key];
-				html+="<table style='margin-left:10px;'><tr><td><input type='image' src='img/edit.png' onclick='openEditDataMenu(\""+key+
-							"\");' width='25' height='25'></td><div><td>"+
-							"<div style='background-color:rgb("+color.r+","+color.g+","+color.b+
-							"); border:2px solid black; width:20px; height:20px;'></div>"+
-							"</td><td>"+key+"</td></div></tr></table>";
+				html+="<div class='menuItemDef' onmouseover=\"this.className='menuItemOver'\" onmouseout=\"this.className='menuItemDef'\">"+
+							"<input class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key.trim()+"', this.color)\" style='width:20px; height:20px'>"+
+							key+"</div>";
 			}
-			html+="<table style='margin-left:10px;'><tr><td><input type='image' src='img/plus.png' onclick='openEditDataMenu(\""+key+
-							"\");' width='25' height='25'></td><div><td>"+
-							"</td><td>Add a Dataset</td></div></tr></table>";
 							
 			html += "</div>";
 			i++;
@@ -675,6 +671,7 @@ function constructDatasetPanel(){
 							"\");' width='25' height='25'></td><div><td>"+
 							"</td><td>Add a Worksheet</td></div></tr></table>";
 	$('#dataTree').html(html);
+	jscolor.init();
 }
 
 		  
@@ -973,24 +970,24 @@ function constructGraphPanel(graph, index){
 		})
 		
 	//Copy to clipboard button
-	graphPanel.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/clipboard.png")  //fix this
-		.width(30)
-		.height(30)
-		.top(4)
-		.left(30)
-		.cursor("pointer")
-		.title("Copy data to clipboard.")
-		.event("click", function(){
-			$('#cbText').val(graph.toString());
-			positionClipboardPrompt();
-			hideMenus();
-			$('#clipboardPrompt').slideDown();
-			$('#cbText').focus();
-			$('#cbText').select();
-			$('#clipboardPrompt').scrollTop(0);
-		
-		})
+	//graphPanel.add(pv.Image)
+	//	.url("http://centerforbiophotonics.github.com/SeeIt3/img/clipboard.png")  //fix this
+	//	.width(30)
+	//	.height(30)
+	//	.top(4)
+	//	.left(30)
+	//	.cursor("pointer")
+	//	.title("Copy data to clipboard.")
+	//	.event("click", function(){
+	//		$('#cbText').val(graph.toString());
+	//		positionClipboardPrompt();
+	//		hideMenus();
+	//		$('#clipboardPrompt').slideDown();
+	//		$('#cbText').focus();
+	//		$('#cbText').select();
+	//		$('#clipboardPrompt').scrollTop(0);
+	//	
+	//	})
 				
 	//Divider Line Between Graphs
 	graphPanel.add(pv.Rule)
