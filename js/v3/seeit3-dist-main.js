@@ -334,24 +334,18 @@ function constructVis(){
 				else
 					return false;
 			})
-		
+			
 	/*Toggle Basic/Advanced User Mode*/
 	var togUserModePanel = vis.add(pv.Panel)
 		.events("all")
 		.cursor("pointer")
-		.title("Toggle basic/advanced mode")
+		.title("Toggle advanced mode")
 		.height(30)
 		.width(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				if (graphCollection.advancedUser)
-					return 150;
-				else
-					return 142;
+				return 150;
 			}else if (!graphCollection.buttonIcon){
-				if (graphCollection.advancedUser)
-					return 122;
-				else
-					return 115;
+				return 122;
 			}else if (!graphCollection.buttonText){
 				return 34;
 			}
@@ -383,6 +377,13 @@ function constructVis(){
 				$('#scaleOptions').hide();
 				$('#divisionsCell').hide();
 				$('#stackAndButtonTable').hide();
+				graphCollection.editModeEnabled = false;
+				hideMenus();
+				graphCollection.buttonIcon = true;
+				graphCollection.buttonText = true;
+				$("#drawMode option[value='gravity']").attr('selected', 'selected');
+				graphCollection.buckets = 30;
+				$("#divisionsValue").html(graphCollection.buckets);
 				
 				graphCollection.graphs.forEach(function(g){
 					g.groupingMode = "NoGroups";
@@ -403,9 +404,9 @@ function constructVis(){
 	togUserModePanel.add(pv.Image)
 		.url(function(){
 			if (graphCollection.advancedUser)
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/advUser.png"
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeON.png"
 			else
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/user.png"
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeOFF.png"
 		})
 		.width(30)
 		.height(26)
@@ -415,6 +416,33 @@ function constructVis(){
 		.title("Toggle basic/advanced mode")
 		.event("click", function(){
 			graphCollection.advancedUser = !(graphCollection.advancedUser);
+			if (graphCollection.advancedUser){
+				$('#fixedSizeOptions').show();
+				$('#fixedIntervalOptions').show();
+				$('#boxPlotOptions').show();
+				$('#scaleOptions').show();
+				$('#divisionsCell').show();
+				$('#stackAndButtonTable').show();
+			} else {
+				$('#fixedSizeOptions').hide();
+				$('#fixedIntervalOptions').hide();
+				$('#boxPlotOptions').hide();
+				$('#scaleOptions').hide();
+				$('#divisionsCell').hide();
+				$('#stackAndButtonTable').hide();
+				graphCollection.editModeEnabled = false;
+				hideMenus();
+				graphCollection.buttonIcon = true;
+				graphCollection.buttonText = true;
+				$("#drawMode option[value='gravity']").attr('selected', 'selected');
+				graphCollection.buckets = 30;
+				$("#divisionsValue").html(graphCollection.buckets);
+				
+				graphCollection.graphs.forEach(function(g){
+					g.groupingMode = "NoGroups";
+				});
+				graphCollection.updateMenuOptions();
+			}
 			vis.render();
 		})
 		.visible(function() {
@@ -430,25 +458,136 @@ function constructVis(){
 				else
 				 return 32;
 			})
-			.text(function(){
-				if (graphCollection.advancedUser)
-					return "Advanced Mode"
-				else
-					return "Beginner Mode"
-			})
-			.font(fontString)
+			.text(function(){return "Advanced Mode"})
 			.textStyle(function(){
-				if (graphCollection.editModeEnabled)
+				if (graphCollection.advancedUser)
 					return "red"
 				else
-					return "black"
+					return "grey"
 			})
+			.font(fontString)
 			.visible(function() {
 				if (graphCollection.buttonText)
 					return true;
 				else
 					return false;
 			})
+			
+			
+	/*Toggle Basic/Advanced User Mode*/
+	//var togUserModePanel = vis.add(pv.Panel)
+	//	.events("all")
+	//	.cursor("pointer")
+	//	.title("Toggle basic/advanced mode")
+	//	.height(30)
+	//	.width(function() {
+	//		if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+	//			if (graphCollection.advancedUser)
+	//				return 150;
+	//			else
+	//				return 142;
+	//		}else if (!graphCollection.buttonIcon){
+	//			if (graphCollection.advancedUser)
+	//				return 122;
+	//			else
+	//				return 115;
+	//		}else if (!graphCollection.buttonText){
+	//			return 34;
+	//		}
+	//	})
+	//	.left(function() {
+	//		if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+	//			return 340;
+	//		}else if (!graphCollection.buttonIcon){
+	//			return 240;
+	//		}else if (!graphCollection.buttonText){
+	//			return 80;
+	//		}
+	//	})
+	//	.top(-31)
+	//	.lineWidth(1)
+	//	.event("click", function(){
+	//		graphCollection.advancedUser = !(graphCollection.advancedUser);
+	//		if (graphCollection.advancedUser){
+	//			$('#fixedSizeOptions').show();
+	//			$('#fixedIntervalOptions').show();
+	//			$('#boxPlotOptions').show();
+	//			$('#scaleOptions').show();
+	//			$('#divisionsCell').show();
+	//			$('#stackAndButtonTable').show();
+	//		} else {
+	//			$('#fixedSizeOptions').hide();
+	//			$('#fixedIntervalOptions').hide();
+	//			$('#boxPlotOptions').hide();
+	//			$('#scaleOptions').hide();
+	//			$('#divisionsCell').hide();
+	//			$('#stackAndButtonTable').hide();
+	//			
+	//			graphCollection.graphs.forEach(function(g){
+	//			g.groupingMode = "NoGroups";
+	//			});
+	//			graphCollection.updateMenuOptions();
+	//		}
+	//		vis.render();
+	//	})
+	//	.event("mouseover", function(d){
+	//		this.strokeStyle("black");
+	//		this.render();
+	//	})
+	//	.event("mouseout", function(d){ 
+	//		this.strokeStyle(pv.rgb(0,0,0,0));
+	//		this.render();
+	//	})
+	//	
+	//togUserModePanel.add(pv.Image)
+	//	.url(function(){
+	//		if (graphCollection.advancedUser)
+	//			return "http://centerforbiophotonics.github.com/SeeIt3/img/advUser.png"
+	//		else
+	//			return "http://centerforbiophotonics.github.com/SeeIt3/img/user.png"
+	//	})
+	//	.width(30)
+	//	.height(26)
+	//	.top(2)
+	//	.left(0)
+	//	.cursor("pointer")
+	//	.title("Toggle basic/advanced mode")
+	//	.event("click", function(){
+	//		graphCollection.advancedUser = !(graphCollection.advancedUser);
+	//		vis.render();
+	//	})
+	//	.visible(function() {
+	//		if (graphCollection.buttonIcon)
+	//			return true;
+	//		else
+	//			return false;
+	//	})
+	//	.anchor("left").add(pv.Label)
+	//		.left(function(){
+	//			if (graphCollection.buttonText && !graphCollection.buttonIcon)
+	//				return 2;
+	//			else
+	//			 return 32;
+	//		})
+	//		.text(function(){
+	//			if (graphCollection.advancedUser)
+	//				return "Advanced Mode"
+	//			else
+	//				return "Beginner Mode"
+	//		})
+	//		.font(fontString)
+	//		.textStyle(function(){
+	//			if (graphCollection.editModeEnabled)
+	//				return "red"
+	//			else
+	//				return "black"
+	//		})
+	//		.visible(function() {
+	//			if (graphCollection.buttonText)
+	//				return true;
+	//			else
+	//				return false;
+	//		})
 		
 	/* Toggle Edit Mode Button */
 	var togEditPanel = vis.add(pv.Panel)
