@@ -658,9 +658,13 @@ function constructDatasetPanel(){
 			html += "<div id='subtree"+i+"'>";
 			for (key in w.data){
 				var color = graphCollection.categoryColors[key];
-				html+="<div class='menuItemDef' onmouseover=\"this.className='menuItemOver'\" onmouseout=\"this.className='menuItemDef'\">"+
-							"<input class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key.trim()+"', this.color)\" style='width:20px; height:20px'>"+
-							key+"</div>";
+				html+="<table style='margin-left:15px;'><tr><td>"+
+							"<input class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key.trim()+"', this.color)\" style='width:20px; height:20px'></td>"+
+							"<td><div class='menuItemDef'"+
+							"onmouseover=\"this.className='menuItemOver'\""+
+							"onmouseout=\"this.className='menuItemDef'\""+
+							"onmousedown=\"javascript:dragStart(event,'"+key+"')\">"+
+							key+"</div></td></tr></table>";
 			}
 							
 			html += "</div>";
@@ -674,6 +678,58 @@ function constructDatasetPanel(){
 	jscolor.init();
 }
 
+var dragObj;
+function dragStart(event, category){
+	//console.log(event);
+	event.preventDefault();
+	
+	dragObj = new Object();
+	dragObj.category = category;
+	$('#dragFeedback').html(category);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.x)
+								 .css('top',event.y)
+								 .css('z-index', 10000);
+								 
+	document.addEventListener("mousemove", dragGo,   true);
+	document.addEventListener("mouseup",   dragStop, true);
+}
+
+function dragGo(event){
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.x)
+								 .css('top',event.y)
+								 .css('z-index', 10000);
+}
+
+function dragStop(event){
+	$('#dragFeedback').hide();
+	
+	var curX = event.x -
+						 $('span').offset().left -
+						 graphCollection.padLeft + 14;
+							
+	var curY = event.y - 
+						 $('span').offset().top - 
+						 graphCollection.padTop;
+						 
+	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
+		if (graphCollection.graphs.length > 4){
+			var which = parseInt(curY/graphCollection.defaultGraphHeight);
+			graphCollection.graphs[which].addCategory(dragObj.category);
+			graphCollection.updateMenuOptions();
+		} else {
+			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
+			graphCollection.graphs[which].addCategory(dragObj.category);
+			graphCollection.updateMenuOptions();
+		}
+	}
+	constructVis();
+	
+	document.removeEventListener("mousemove", dragGo,   true);
+	document.removeEventListener("mouseup",   dragStop, true);
+}
 		  
 function constructCategoryPanel(){
 	var row = 0;
