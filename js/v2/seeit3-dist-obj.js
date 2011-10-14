@@ -73,7 +73,7 @@ function GraphCollection(){
 	}
 	
 	this.editModeEnabled = false;
-	this.advancedUser = true;
+	this.advancedUser = false;
 	
 	this.buttonIcon = true;
 	this.buttonText = true;
@@ -152,8 +152,9 @@ GraphCollection.prototype = {
 		$('#fixedGroupSize').val(this.graphs[this.selectedGraphIndex].partitionGroupSize);
 		
 		if (this.graphs[this.selectedGraphIndex].includedCategories.length > 0){
-			$('#textXMin').val(this.graphs[this.selectedGraphIndex].x.domain()[0]);
-			$('#textXMax').val(this.graphs[this.selectedGraphIndex].x.domain()[1]);
+			var xDom = this.graphs[this.selectedGraphIndex].x.domain();
+			$('#textXMin').val(xDom[0]);
+			$('#textXMax').val(xDom[1]);
 		} else {
 			$('#textXMin').val("NA");
 			$('#textXMax').val("NA");
@@ -417,6 +418,18 @@ Graph.prototype = {
 			this.xMax = pv.max(this.dataVals(), function(d) { return d });
 			this.xMin = pv.min(this.dataVals(), function(d) { return d });
 			this.n = this.dataVals().length;
+			
+			//Change size of fixed interval width partitions to avoid hanging on large domains
+			var temp = this.xMax;
+			var mag = 0;
+			while(temp > 10) { 
+				mag++; 
+				temp = temp / 10; 
+			};
+			console.log(mag);
+			this.graphCollection.graphs.forEach(function(g){
+				g.partitionIntervalWidth = Math.pow(10, mag-1);
+			})
 			
 			this.graphCollection.scaleAllGraphsToFit();
 			

@@ -15,8 +15,8 @@ function pointFillStyle(set){
 	}
 }
 
-function toggleAdvancedOptions(){
-	graphCollection.advancedUser = !(graphCollection.advancedUser);
+function showHideAdvancedOptions(){
+	//graphCollection.advancedUser = !(graphCollection.advancedUser);
 	if (graphCollection.advancedUser){
 		$('#fixedSizeOptions').show();
 		$('#fixedIntervalOptions').show();
@@ -151,9 +151,10 @@ function partitionDataInFixedSizeGroups(graph){
 
 function partitionDataByIntervalWidth(graph){
 	var divs = [],
-			curr = graph.x.domain()[0];
+			xDom = graph.x.domain();
+			curr = xDom[0];
 	
-	while (curr <= graph.x.domain()[1]){
+	while (curr <= xDom[1]){
 		divs.push(curr)
 		curr += graph.partitionIntervalWidth;
 	}

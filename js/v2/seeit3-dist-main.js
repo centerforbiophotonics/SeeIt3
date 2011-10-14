@@ -40,7 +40,7 @@ var touch = new Touch();
 var fontString = "bold 14px arial";
 
 var dragging = false;
-var firstTime = true;
+//var firstTime = true;
 
 function constructVis(){
 	jQuery('span').remove();
@@ -251,7 +251,10 @@ function constructVis(){
 		})
 		.top(-60)
 		.lineWidth(1)
-		.event("click", toggleAdvancedOptions)
+		.event("click", function(){
+			graphCollection.advancedUser = !(graphCollection.advancedUser);
+			showHideAdvancedOptions();
+		})
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
 			this.render();
@@ -274,7 +277,10 @@ function constructVis(){
 		.left(0)
 		.cursor("pointer")
 		.title("Toggle basic/advanced mode")
-		.event("click", toggleAdvancedOptions)
+		.event("click", function(){
+			graphCollection.advancedUser = !(graphCollection.advancedUser);
+			showHideAdvancedOptions();
+		})
 		.visible(function() {
 			if (graphCollection.buttonIcon)
 				return true;
@@ -491,10 +497,11 @@ function constructVis(){
 	vis.render();
 	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 	
-	if (firstTime){
-		toggleAdvancedOptions();
-		firstTime = false;
-	}
+	//if (firstTime){
+	//	toggleAdvancedOptions();
+	//	firstTime = false;
+	//}
+	showHideAdvancedOptions();
 }
 		  
 function constructCategoryPanel(){
