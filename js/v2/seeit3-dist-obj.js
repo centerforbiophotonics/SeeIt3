@@ -429,7 +429,7 @@ Graph.prototype = {
 			console.log(mag);
 			this.graphCollection.graphs.forEach(function(g){
 				g.partitionIntervalWidth = Math.pow(10, mag-1);
-			})
+			});
 			
 			this.graphCollection.scaleAllGraphsToFit();
 			
@@ -456,6 +456,16 @@ Graph.prototype = {
 		this.xMax = pv.max(this.dataVals(), function(d) { return d });
 		this.xMin = pv.min(this.dataVals(), function(d) { return d });
 		this.n = this.dataVals().length;
+		
+		var temp = this.xMax;
+		var mag = 0;
+		while(temp > 10) { 
+			mag++; 
+			temp = temp / 10; 
+		};
+		this.graphCollection.graphs.forEach(function(g){
+			g.partitionIntervalWidth = Math.pow(10, mag-1);
+		});
 		
 		this.graphCollection.scaleAllGraphsToFit();
 		

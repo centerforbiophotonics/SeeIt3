@@ -55,12 +55,26 @@ jQuery('#workSheetSelector').change(function(event) {
 	}
 });
 
-$('#refreshWorksheet').click(function(event){
-	getWorksheet().fetchWorksheetData();
+//$('#refreshWorksheet').click(function(event){
+//	
+//});
+
+function refreshWorksheet(title){
+	graphCollection.worksheets[title].fetchWorksheetData();
+	//graphCollection.addWorksheet(graphCollection.worksheets[title]);
+	//constuctVis();
+	exampleSpreadsheets.forEach(function(s){
+		s.worksheets.forEach(function(w){
+			if (w.title == title){
+				graphCollection.addWorksheet(w);
+				//console.log("test");
+			}
+		})
+	})
 	if ($('#fitScaleToData').is(':checked')){
 		jQuery('#fitScaleToData').attr('checked', false);
 	}
-});
+};
 
 $('#about').click(function(){
 	$('#aboutPopup').slideToggle();
@@ -1302,15 +1316,22 @@ function positionWorksheetDescriptionPopup(){
 										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetDescriptionPopup').height()/2)+"px")
 										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetDescriptionPopup').width()/2)+"px");
 }
-positionWorksheetDescriptionPopup();
-
 
 $('#worksheetDescriptionPopup').hide();
 
-$('#worksheetDescriptionButton').click(function(){
-	$('#worksheetDescriptionParagraph').html(graphCollection.worksheet.description);
-	$('#worksheetDescriptionTitle').html(graphCollection.worksheet.title + "<br>by " + graphCollection.worksheet.labelType);
+//$('#worksheetDescriptionButton').click(function(){
+//	$('#worksheetDescriptionParagraph').html(graphCollection.worksheet.description);
+//	$('#worksheetDescriptionTitle').html(graphCollection.worksheet.title + "<br>by " + graphCollection.worksheet.labelType);
+//	positionWorksheetDescriptionPopup();
+//	$('#worksheetDescriptionPopup').slideToggle();
+//});
+
+function showWorksheetDescription(title){
+	var worksheet = graphCollection.worksheets[title];
+	
+	$('#worksheetDescriptionParagraph').html(worksheet.description);
+	$('#worksheetDescriptionTitle').html(worksheet.title + "<br>by " + worksheet.labelType);
 	positionWorksheetDescriptionPopup();
 	$('#worksheetDescriptionPopup').slideToggle();
-});
+}
 

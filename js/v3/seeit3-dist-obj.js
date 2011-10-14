@@ -77,7 +77,7 @@ function GraphCollection(){
 	//}
 	
 	this.editModeEnabled = false;
-	this.advancedUser = true;
+	this.advancedUser = false;
 	
 	this.buttonIcon = true;
 	this.buttonText = true;
@@ -243,11 +243,11 @@ GraphCollection.prototype = {
 		this.scaleAllGraphsToFit();
 	},
 	
-	editData: function(oldTitle, title, data){
+	editData: function(worksheet,oldTitle, title, data){
 		
 		if (oldTitle != title)
-			delete this.worksheet.data[oldTitle];
-		this.worksheet.data[title] = data;
+			delete this.worksheets[worksheet].data[oldTitle];
+		this.worksheets[worksheet].data[title] = data;
 		this.graphs.forEach(function(graph){
 			if (oldTitle != title)
 				delete graph.data[oldTitle];
@@ -287,12 +287,12 @@ GraphCollection.prototype = {
 		
 		for (var h = 0; h < exampleSpreadsheets.length; h++) {
 			for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
-				if (exampleSpreadsheets[h].worksheets[i].URL == this.worksheet.URL){
+				if (exampleSpreadsheets[h].worksheets[i].URL == this.worksheets[worksheet].URL){
 					exampleSpreadsheets[h].worksheets[i].edited[title] = true;
 				}
 			}
 		}
-		this.worksheet.edited[title] = true;
+		this.worksheets[worksheet].edited[title] = true;
 		
 		if (oldTitle != title){
 			this.categoryColors[title] = this.categoryColors[oldTitle];
@@ -302,9 +302,9 @@ GraphCollection.prototype = {
 		this.scaleAllGraphsToFit();
 	},
 	
-	editSinglePoint: function(set, label, value){
+	editSinglePoint: function(worksheet, set, label, value){
 		var graphCol = this;
-		this.worksheet.data[set].forEach(function(data){
+		this.worksheets[worksheet].data[set].forEach(function(data){
 			if (data.label == label){
 				data.value = value;
 				graphCol.graphs.forEach(function(graph){
@@ -314,7 +314,8 @@ GraphCollection.prototype = {
 				});
 				
 				graphCol.editedCategories[set] = true;
-				graphCol.worksheet.edited[set] = true;
+				graphCol.worksheets[worksheet].edited[set] = true;
+				$('#'+convertToID(set)).css('color','red');
 				
 			}
 		});
@@ -438,6 +439,16 @@ Graph.prototype = {
 			this.xMin = pv.min(this.dataVals(), function(d) { return d });
 			this.n = this.dataVals().length;
 			
+			var temp = this.xMax;
+			var mag = 0;
+			while(temp > 10) { 
+				mag++; 
+				temp = temp / 10; 
+			};
+			this.graphCollection.graphs.forEach(function(g){
+				g.partitionIntervalWidth = Math.pow(10, mag-1);
+			});
+			
 			this.graphCollection.scaleAllGraphsToFit();
 			
 			this.legendHidden = false;
@@ -463,6 +474,16 @@ Graph.prototype = {
 		this.xMax = pv.max(this.dataVals(), function(d) { return d });
 		this.xMin = pv.min(this.dataVals(), function(d) { return d });
 		this.n = this.dataVals().length;
+		
+		var temp = this.xMax;
+		var mag = 0;
+		while(temp > 10) { 
+			mag++; 
+			temp = temp / 10; 
+		};
+		this.graphCollection.graphs.forEach(function(g){
+			g.partitionIntervalWidth = Math.pow(10, mag-1);
+		});
 		
 		this.graphCollection.scaleAllGraphsToFit();
 		
@@ -712,7 +733,7 @@ Worksheet.prototype = {
 				for (var key in worksheet.data){
 					worksheet.edited[key] = false;
 				}
-				jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
+				jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet, refresh:true });
 			},
 			error:function() {
 			alert("Could not retrieve worksheet. Is it published?");

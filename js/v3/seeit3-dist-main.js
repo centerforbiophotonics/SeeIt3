@@ -26,6 +26,11 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 																.val(event.worksheet.URL);
 		graphCollection.addWorksheet(event.worksheet);
 	}
+	
+	if (event.refresh){
+		graphCollection.addWorksheet(event.worksheet);
+	}
+	
   lastSelectedWorksheet = event.worksheet.URL;
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
@@ -363,34 +368,7 @@ function constructVis(){
 		.lineWidth(1)
 		.event("click", function(){
 			graphCollection.advancedUser = !(graphCollection.advancedUser);
-			if (graphCollection.advancedUser){
-				$('#fixedSizeOptions').show();
-				$('#fixedIntervalOptions').show();
-				$('#boxPlotOptions').show();
-				$('#scaleOptions').show();
-				$('#divisionsCell').show();
-				$('#stackAndButtonTable').show();
-			} else {
-				$('#fixedSizeOptions').hide();
-				$('#fixedIntervalOptions').hide();
-				$('#boxPlotOptions').hide();
-				$('#scaleOptions').hide();
-				$('#divisionsCell').hide();
-				$('#stackAndButtonTable').hide();
-				graphCollection.editModeEnabled = false;
-				hideMenus();
-				graphCollection.buttonIcon = true;
-				graphCollection.buttonText = true;
-				$("#drawMode option[value='gravity']").attr('selected', 'selected');
-				graphCollection.buckets = 30;
-				$("#divisionsValue").html(graphCollection.buckets);
-				
-				graphCollection.graphs.forEach(function(g){
-					g.groupingMode = "NoGroups";
-				});
-				graphCollection.updateMenuOptions();
-			}
-			vis.render();
+			showHideAdvancedOptions();
 		})
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
@@ -416,34 +394,7 @@ function constructVis(){
 		.title("Toggle basic/advanced mode")
 		.event("click", function(){
 			graphCollection.advancedUser = !(graphCollection.advancedUser);
-			if (graphCollection.advancedUser){
-				$('#fixedSizeOptions').show();
-				$('#fixedIntervalOptions').show();
-				$('#boxPlotOptions').show();
-				$('#scaleOptions').show();
-				$('#divisionsCell').show();
-				$('#stackAndButtonTable').show();
-			} else {
-				$('#fixedSizeOptions').hide();
-				$('#fixedIntervalOptions').hide();
-				$('#boxPlotOptions').hide();
-				$('#scaleOptions').hide();
-				$('#divisionsCell').hide();
-				$('#stackAndButtonTable').hide();
-				graphCollection.editModeEnabled = false;
-				hideMenus();
-				graphCollection.buttonIcon = true;
-				graphCollection.buttonText = true;
-				$("#drawMode option[value='gravity']").attr('selected', 'selected');
-				graphCollection.buckets = 30;
-				$("#divisionsValue").html(graphCollection.buckets);
-				
-				graphCollection.graphs.forEach(function(g){
-					g.groupingMode = "NoGroups";
-				});
-				graphCollection.updateMenuOptions();
-			}
-			vis.render();
+			showHideAdvancedOptions();
 		})
 		.visible(function() {
 			if (graphCollection.buttonIcon)
@@ -779,6 +730,7 @@ function constructVis(){
 	vis.render();
 	if (graphCollection.datasetsMenuShowing) resizeVis();
 	//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+	showHideAdvancedOptions();
 }
 
 function constructDatasetPanel(){
@@ -790,8 +742,8 @@ function constructDatasetPanel(){
 							"<td><input type='image' id='subtreeToggle"+i+"' src='img/downTriangle.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='15' height='15'></td>"+
 							"<td nowrap><div id='treeTitle"+i+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")'>"+w.title+"</div></td>"+
 							"<td><input type='image' src='img/edit.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='25' height='25'></td>"+
-							"<td><input type='image' src='img/refresh.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='25' height='25'></td>"+
-							"<td><input type='image' src='img/question.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='30' height='30'></td>"+
+							"<td><input type='image' src='img/refresh.png' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'></td>"+
+							"<td><input type='image' src='img/question.png' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'></td>"+
 							"<td><input type='image' src='img/document.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='25' height='25'></td>"+
 							"</table></tr>";
 			html += "<div id='subtree"+i+"'>";
@@ -800,7 +752,8 @@ function constructDatasetPanel(){
 				var color = graphCollection.categoryColors[key];
 				html+="<table style='margin-left:15px;'><tr><td>"+
 							"<input class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key.trim()+"', this.color)\" style='width:20px; height:20px'></td>"+
-							"<td><div class='menuItemDef'"+
+							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
+							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
 							"onmouseover=\"this.className='menuItemOver'\""+
 							"onmouseout=\"this.className='menuItemDef'\""+
 							"onmousedown=\"javascript:dragStart(event,'"+key+"')\">"+
@@ -1909,9 +1862,23 @@ function constructGraphPanel(graph, index){
 				else
 					return pv.rgb(0,255,0,0.5);
 			})
-			.title(function(d){return d.toFixed(1)})
+			.title(function(d){
+				if(this.index == 0)
+					return "Mean: " + d.toFixed(1);
+				else if (this.index == 1)
+					return "Median: " + d.toFixed(1);
+				else
+					return "Mode: " + d.toFixed(1);
+			})
 			.anchor("top").add(pv.Dot)
-				.title(function(d){return d.toFixed(1)})
+				.title(function(d){
+					if(this.index == 0)
+						return "Mean: " + d.toFixed(1);
+					else if (this.index == 1)
+						return "Median: " + d.toFixed(1);
+					else
+						return "Mode: " + d.toFixed(1);
+				})
 				.shape("square")
 				.fillStyle(function(d){
 					if(this.index == 0)
@@ -2032,8 +1999,14 @@ function constructGraphPanel(graph, index){
 				if (graphCollection.editModeEnabled &&
 						vis.mouse().x >= 0 &&
 						vis.mouse().x <= graph.w - 5){
+							
+					var worksheet = "";
+					for (var key in graphCollection.worksheets){
+						if (graphCollection.worksheets[key].data[d.set] != undefined)
+							worksheet = key;
+					}
 					
-					graphCollection.editSinglePoint(d.set,d.label,graph.x.invert(vis.mouse().x));
+					graphCollection.editSinglePoint(worksheet, d.set,d.label,graph.x.invert(vis.mouse().x));
 					graph.selectedCategory = d.set;
 					
 					dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1));
@@ -2050,7 +2023,12 @@ function constructGraphPanel(graph, index){
 			})
 			.event("dragend",function(d){
 				if (graphCollection.editModeEnabled){
-					var newData = graphCollection.worksheet.data[d.set];
+					var worksheet = "";
+					for (var key in graphCollection.worksheets){
+						if (graphCollection.worksheets[key].data[d.set] != undefined)
+							worksheet = key;
+					}
+					var newData = graphCollection.worksheets[worksheet].data[d.set];
 					var remIndex = null;
 					newData.forEach(function(data, index){
 						if (data.label == d.label && 
@@ -2061,7 +2039,7 @@ function constructGraphPanel(graph, index){
 					});
 					if (remIndex != null)
 						newData.splice(remIndex,1);
-					graphCollection.editData(d.set,d.set,newData);
+					graphCollection.editData(worksheet,d.set,d.set,newData);
 					
 				
 					if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&

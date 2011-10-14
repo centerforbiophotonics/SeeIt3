@@ -23,6 +23,18 @@ function updateColor(category, color){
 	vis.render();
 }
 
+//Takes out characters that don't work in jquery selectors
+//probably misses a lot
+function convertToID(set){
+	return set.replace(/ /g,"_")
+						.replace(/\//g,"")
+						.replace(/,/g,"")
+						.split('.').join('')
+						.replace(/%/g,"")
+						.split(')').join('')
+						.split('(').join('')+"div";
+}
+
 function toggleDataSubtree(id,i){
 	$('#'+id).slideToggle(null,resizeVis);
 	if ($('#subtreeToggle'+i).attr("src") == "img/downTriangle.png")
@@ -162,9 +174,10 @@ function partitionDataInFixedSizeGroups(graph){
 
 function partitionDataByIntervalWidth(graph){
 	var divs = [],
-			curr = graph.x.domain()[0];
+			xDom = graph.x.domain();
+			curr = xDom[0];
 	
-	while (curr <= graph.x.domain()[1]){
+	while (curr <= xDom[1]){
 		divs.push(curr)
 		curr += graph.partitionIntervalWidth;
 	}
@@ -181,7 +194,38 @@ function toggleNetworkOptions(graph) {
 		$('#refreshWorksheet').show();
 		$('#editInGoogleDocs').show();
 	}
-	
+}
+
+function showHideAdvancedOptions(){
+	//graphCollection.advancedUser = !(graphCollection.advancedUser);
+	if (graphCollection.advancedUser){
+		$('#fixedSizeOptions').show();
+		$('#fixedIntervalOptions').show();
+		$('#boxPlotOptions').show();
+		$('#scaleOptions').show();
+		$('#divisionsCell').show();
+		$('#stackAndButtonTable').show();
+	} else {
+		$('#fixedSizeOptions').hide();
+		$('#fixedIntervalOptions').hide();
+		$('#boxPlotOptions').hide();
+		$('#scaleOptions').hide();
+		$('#divisionsCell').hide();
+		$('#stackAndButtonTable').hide();
+		graphCollection.editModeEnabled = false;
+		hideMenus();
+		graphCollection.buttonIcon = true;
+		graphCollection.buttonText = true;
+		$("#drawMode option[value='gravity']").attr('selected', 'selected');
+		graphCollection.buckets = 30;
+		$("#divisionsValue").html(graphCollection.buckets);
+		
+		graphCollection.graphs.forEach(function(g){
+			g.groupingMode = "NoGroups";
+		});
+		graphCollection.updateMenuOptions();
+	}
+	vis.render();
 }
 
 function hideMenus(){
