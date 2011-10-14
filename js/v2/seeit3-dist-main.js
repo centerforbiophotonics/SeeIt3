@@ -40,6 +40,7 @@ var touch = new Touch();
 var fontString = "bold 14px arial";
 
 var dragging = false;
+var firstTime = true;
 
 function constructVis(){
 	jQuery('span').remove();
@@ -250,37 +251,7 @@ function constructVis(){
 		})
 		.top(-60)
 		.lineWidth(1)
-		.event("click", function(){
-			graphCollection.advancedUser = !(graphCollection.advancedUser);
-			if (graphCollection.advancedUser){
-				$('#fixedSizeOptions').show();
-				$('#fixedIntervalOptions').show();
-				$('#boxPlotOptions').show();
-				$('#scaleOptions').show();
-				$('#divisionsCell').show();
-				$('#stackAndButtonTable').show();
-			} else {
-				$('#fixedSizeOptions').hide();
-				$('#fixedIntervalOptions').hide();
-				$('#boxPlotOptions').hide();
-				$('#scaleOptions').hide();
-				$('#divisionsCell').hide();
-				$('#stackAndButtonTable').hide();
-				graphCollection.editModeEnabled = false;
-				hideMenus();
-				graphCollection.buttonIcon = true;
-				graphCollection.buttonText = true;
-				$("#drawMode option[value='gravity']").attr('selected', 'selected');
-				graphCollection.buckets = 30;
-				$("#divisionsValue").html(graphCollection.buckets);
-				
-				graphCollection.graphs.forEach(function(g){
-					g.groupingMode = "NoGroups";
-				});
-				graphCollection.updateMenuOptions();
-			}
-			vis.render();
-		})
+		.event("click", toggleAdvancedOptions)
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
 			this.render();
@@ -303,37 +274,7 @@ function constructVis(){
 		.left(0)
 		.cursor("pointer")
 		.title("Toggle basic/advanced mode")
-		.event("click", function(){
-			graphCollection.advancedUser = !(graphCollection.advancedUser);
-			if (graphCollection.advancedUser){
-				$('#fixedSizeOptions').show();
-				$('#fixedIntervalOptions').show();
-				$('#boxPlotOptions').show();
-				$('#scaleOptions').show();
-				$('#divisionsCell').show();
-				$('#stackAndButtonTable').show();
-			} else {
-				$('#fixedSizeOptions').hide();
-				$('#fixedIntervalOptions').hide();
-				$('#boxPlotOptions').hide();
-				$('#scaleOptions').hide();
-				$('#divisionsCell').hide();
-				$('#stackAndButtonTable').hide();
-				graphCollection.editModeEnabled = false;
-				hideMenus();
-				graphCollection.buttonIcon = true;
-				graphCollection.buttonText = true;
-				$("#drawMode option[value='gravity']").attr('selected', 'selected');
-				graphCollection.buckets = 30;
-				$("#divisionsValue").html(graphCollection.buckets);
-				
-				graphCollection.graphs.forEach(function(g){
-					g.groupingMode = "NoGroups";
-				});
-				graphCollection.updateMenuOptions();
-			}
-			vis.render();
-		})
+		.event("click", toggleAdvancedOptions)
 		.visible(function() {
 			if (graphCollection.buttonIcon)
 				return true;
@@ -549,6 +490,11 @@ function constructVis(){
 	});
 	vis.render();
 	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+	
+	if (firstTime){
+		toggleAdvancedOptions();
+		firstTime = false;
+	}
 }
 		  
 function constructCategoryPanel(){
@@ -1593,9 +1539,23 @@ function constructGraphPanel(graph, index){
 				else
 					return pv.rgb(0,255,0,0.5);
 			})
-			.title(function(d){return d.toFixed(1)})
+			.title(function(d){
+				if(this.index == 0)
+					return "Mean: " + d.toFixed(1);
+				else if (this.index == 1)
+					return "Median: " + d.toFixed(1);
+				else
+					return "Mode: " + d.toFixed(1);
+			})
 			.anchor("top").add(pv.Dot)
-				.title(function(d){return d.toFixed(1)})
+				.title(function(d){
+					if(this.index == 0)
+						return "Mean: " + d.toFixed(1);
+					else if (this.index == 1)
+						return "Median: " + d.toFixed(1);
+					else
+						return "Mode: " + d.toFixed(1);
+				})
 				.shape("square")
 				.fillStyle(function(d){
 					if(this.index == 0)

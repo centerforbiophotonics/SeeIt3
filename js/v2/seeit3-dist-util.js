@@ -15,6 +15,38 @@ function pointFillStyle(set){
 	}
 }
 
+function toggleAdvancedOptions(){
+	graphCollection.advancedUser = !(graphCollection.advancedUser);
+	if (graphCollection.advancedUser){
+		$('#fixedSizeOptions').show();
+		$('#fixedIntervalOptions').show();
+		$('#boxPlotOptions').show();
+		$('#scaleOptions').show();
+		$('#divisionsCell').show();
+		$('#stackAndButtonTable').show();
+	} else {
+		$('#fixedSizeOptions').hide();
+		$('#fixedIntervalOptions').hide();
+		$('#boxPlotOptions').hide();
+		$('#scaleOptions').hide();
+		$('#divisionsCell').hide();
+		$('#stackAndButtonTable').hide();
+		graphCollection.editModeEnabled = false;
+		hideMenus();
+		graphCollection.buttonIcon = true;
+		graphCollection.buttonText = true;
+		$("#drawMode option[value='gravity']").attr('selected', 'selected');
+		graphCollection.buckets = 30;
+		$("#divisionsValue").html(graphCollection.buckets);
+		
+		graphCollection.graphs.forEach(function(g){
+			g.groupingMode = "NoGroups";
+		});
+		graphCollection.updateMenuOptions();
+	}
+	vis.render();
+}
+
 function trim(stringToTrim) {
 	return stringToTrim.replace(/^\s+|\s+$/g,"");
 }
