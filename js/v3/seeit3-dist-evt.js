@@ -37,12 +37,18 @@ jQuery('#newSpreadsheetURL').keyup(function(event) {
 	}
 });
 
-jQuery('#editInGoogleDocs').click(function(event) {
-	var URL = jQuery('#workSheetSelector').val();
+//jQuery('#editInGoogleDocs').click(function(event) {
+//	var URL = jQuery('#workSheetSelector').val();
+//	var matches = /feeds\/cells\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+//	window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
+//	event.preventDefault();
+//});
+
+function editInGoogleDocs(title){
+	var URL = graphCollection.worksheets[title].URL;
 	var matches = /feeds\/cells\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
 	window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
-	event.preventDefault();
-});
+}
 
 jQuery('#workSheetSelector').change(function(event) {
 	if (jQuery('#workSheetSelector').val() == "New"){
@@ -67,7 +73,6 @@ function refreshWorksheet(title){
 		s.worksheets.forEach(function(w){
 			if (w.title == title){
 				graphCollection.addWorksheet(w);
-				//console.log("test");
 			}
 		})
 	})
