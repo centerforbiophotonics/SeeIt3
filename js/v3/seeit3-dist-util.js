@@ -289,11 +289,9 @@ function getXBuckets(graph){
 
 function getXTicks(graph){
 	var xDomain = graph.x.domain();
-	var tickInterval = (xDomain[1]-xDomain[0])/25;
-	var mag = magnitude(tickInterval);
+	var mag = magnitude(xDomain[1]-xDomain[0]);
 	
-	if (tickInterval > 1)
-		tickInterval = Math.floor(tickInterval);
+	var tickInterval = Math.floor((xDomain[1]-xDomain[0])/Math.pow(10,mag))*Math.pow(10,mag-1);
 	
 	var points = [];
 
