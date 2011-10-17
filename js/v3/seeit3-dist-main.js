@@ -1198,11 +1198,11 @@ function constructGraphPanel(graph, index){
 	if (graph.includedCategories.length > 0){
 		/* Number of datapoints N */
 		graphPanel.add(pv.Label)
-			.right(function() {return graph.w/2})
-			.top(2)
+			.right(10)
+			.bottom(10)
 			.textAlign("center")
 			.textAngle(0)
-			.textBaseline("top")
+			.textBaseline("bottom")
 			.text(function(){return "N = " + graph.n})
 			.font(fontString);
 			
@@ -1222,8 +1222,6 @@ function constructGraphPanel(graph, index){
 		graphPanel.add(pv.Rule)
 			.bottom(graph.baseLine)
 			.strokeStyle("#000");
-		
-		
 		
 		/* UD Edge of the graph partition lines 
 		 * Where new partitions come from 
@@ -2106,49 +2104,19 @@ function constructGraphPanel(graph, index){
 			
 		/* Legend */
 		var legendPanel = graphPanel.add(pv.Panel)
-			.right(15)
-			.top(4)
-			.overflow("hidden")
-			.width(function(){
-				if(graph.legendHidden) return 110;
-				else if (graphCollection.editModeEnabled) return 220;
-				else return 190;
-			})
-			.height(function(){
-				if (graph.legendHidden)
-					return 25;
-				else
-					return graph.includedCategories.length * 30 + 30
-			})
-			.lineWidth(1)
-			.strokeStyle("black")
-			.fillStyle(function(){
-				if (graphCollection.editModeEnabled)
-					return "#FCA8B3";
-				else
-				 return "white";
-			})
-		
-		legendPanel.add(pv.Panel)
 			.left(0)
-			.top(0)
-			.width(100)
+			.bottom(4)
+			//.overflow("hidden")
+			.width(function(){return graphCollection.w - 40;})
 			.height(30)
-			.title("Click title to hide/show")
-			.events("all")
-			.event("click", function(){
-				graph.legendHidden = !graph.legendHidden;
-				legendPanel.render();
-			})
-			.add(pv.Label)
-				.text(function() {
-					if (graph.legendHidden) return "Show Legend";
-					else return "Legend:";
-				})
-				.left(5)
-				.top(5)
-				.textBaseline("top")
-				.font(fontString);
+			//.lineWidth(1)
+			//.strokeStyle("black")
+			//.fillStyle(function(){
+			//	if (graphCollection.editModeEnabled)
+			//		return "#FCA8B3";
+			//	else
+			//	 return "white";
+			//})
 
 		var dragFeedbackPanels = [];
 		graph.includedCategories.forEach(function(category, index){
@@ -2185,14 +2153,14 @@ function constructGraphPanel(graph, index){
 					});
 				
 			var catPanel = legendPanel.add(pv.Panel)
-				.left(5)
 				.data([{"x":0,"y":0}])
 				.def("category", category)
 				.def("row",index)
 				.title(category)
 				.lineWidth(1)
 				.visible(function(){ return !(graph.legendHidden)})
-				.top(30*index+25)
+				.top(0)
+				.left(180*index)
 				.height(30)
 				.cursor("move")
 				.events("all")
@@ -2282,28 +2250,28 @@ function constructGraphPanel(graph, index){
 					});
 			
 			/* Edit Mode Select Checkboxes */		
-			legendPanel.add(pv.Image)
-				.url(function(){
-					if (graph.selectedCategory == category)
-						return "http://centerforbiophotonics.github.com/SeeIt3/img/checkbox_checked.png"
-					else
-						return "http://centerforbiophotonics.github.com/SeeIt3/img/checkbox_unchecked.png"
-				})  
-				.width(30)
-				.height(30)
-				.top(30*index+23)
-				.right(3)
-				.visible(function(){return graphCollection.editModeEnabled})
-				.cursor("pointer")
-				.title("Clicking the graph will add data to the checked category or to a new category if none is checked.")
-				.events("all")
-				.event("click", function(){
-					if (graph.selectedCategory == category)
-						graph.selectedCategory = null;
-					else
-						graph.selectedCategory = category;
-					legendPanel.render();
-				})
+			//legendPanel.add(pv.Image)
+			//	.url(function(){
+			//		if (graph.selectedCategory == category)
+			//			return "http://centerforbiophotonics.github.com/SeeIt3/img/checkbox_checked.png"
+			//		else
+			//			return "http://centerforbiophotonics.github.com/SeeIt3/img/checkbox_unchecked.png"
+			//	})  
+			//	.width(30)
+			//	.height(30)
+			//	.top(30*index+23)
+			//	.right(3)
+			//	.visible(function(){return graphCollection.editModeEnabled})
+			//	.cursor("pointer")
+			//	.title("Clicking the graph will add data to the checked category or to a new category if none is checked.")
+			//	.events("all")
+			//	.event("click", function(){
+			//		if (graph.selectedCategory == category)
+			//			graph.selectedCategory = null;
+			//		else
+			//			graph.selectedCategory = category;
+			//		legendPanel.render();
+			//	})
 				
 		});	
 	} else {

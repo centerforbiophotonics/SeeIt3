@@ -415,7 +415,7 @@ function Graph(worksheet, graphCollection){
 	this.insufDataForTwo = true;
 	
 	this.panel = {};
-	this.baseLine = 20;
+	this.baseLine = 50;
 	
 	this.legendHidden = false;
 }
