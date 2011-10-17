@@ -1208,7 +1208,7 @@ function constructGraphPanel(graph, index){
 			
 		/* X-axis ticks */
 		graphPanel.add(pv.Rule)
-			.data(function() { return getXBuckets(graph) })
+			.data(function() { return getXTicks(graph) })
 			.left(function(d) {return graph.x(d)})
 			.bottom(graph.baseLine)
 			.strokeStyle("#aaa")

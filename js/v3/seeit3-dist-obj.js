@@ -200,8 +200,8 @@ GraphCollection.prototype = {
 			if (graph.xMin < min) min = graph.xMin
 		});
 		this.graphs.forEach(function(graph){
-			var mag = magnitude(max-min);
-			min = Math.floor(min/Math.pow(10,mag))*Math.pow(10,mag);
+			//var mag = magnitude(max-min);
+			//min = Math.floor(min/Math.pow(10,mag))*Math.pow(10,mag);
 			
 			if (!graph.customScale || graph.xMin < graph.scaleMin || graph.xMax > graph.scaleMax)
 				graph.setXScale(min, Math.ceil(max)+0.1);

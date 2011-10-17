@@ -181,11 +181,13 @@ GraphCollection.prototype = {
 			if (graph.xMin < min) min = graph.xMin
 		});
 		this.graphs.forEach(function(graph){
-			var mag = magnitude(max-min);
-			
-			min = Math.floor(min/Math.pow(10,mag))*Math.pow(10,mag);
+			//var mag = magnitude(max-min);
+			//min = Math.floor(min/Math.pow(10,mag))*Math.pow(10,mag);
+			if (min > 1000)
+				min = Math.floor(min/1000)*1000;
+				
 			if (!graph.customScale || graph.xMin < graph.scaleMin || graph.xMax > graph.scaleMax)
-				graph.setXScale(min, Math.ceil(max)+0.1);
+				graph.setXScale(Math.floor(min), Math.ceil(max)+0.1);
 		});
 	},
 	
