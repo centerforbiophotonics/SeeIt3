@@ -439,17 +439,40 @@ Graph.prototype = {
 			this.xMin = pv.min(this.dataVals(), function(d) { return d });
 			this.n = this.dataVals().length;
 			
+			/*
 			var temp = this.xMax;
 			var mag = 0;
 			while(temp > 10) { 
 				mag++; 
 				temp = temp / 10; 
 			};
+			
+			var maxIntvlWidth = Math.pow(10, mag-1);
 			this.graphCollection.graphs.forEach(function(g){
-				g.partitionIntervalWidth = Math.pow(10, mag-1);
+				if(g.partitionIntervalWidth > maxIntvlWidth)
+					maxIntvlWidth = g.partitionIntervalWidth;
 			});
 			
+			this.graphCollection.graphs.forEach(function(g){
+					g.partitionIntervalWidth = maxIntvlWidth;
+			});
+			*/
+			
 			this.graphCollection.scaleAllGraphsToFit();
+			this.graphCollection.graphs.forEach(function(g){
+				var temp = g.scaleMax;
+				var mag = 0;
+				console.log(mag);
+				while(temp > 10) { 
+					mag++; 
+					temp = temp / 10; 
+				}
+				if (Math.pow(10, mag)*4 < g.scaleMax)
+					g.partitionIntervalWidth = Math.pow(10, mag);
+				else
+					g.partitionIntervalWidth = Math.pow(10, mag-1);
+			});
+			
 			
 			this.legendHidden = false;
 			
@@ -475,17 +498,41 @@ Graph.prototype = {
 		this.xMin = pv.min(this.dataVals(), function(d) { return d });
 		this.n = this.dataVals().length;
 		
-		var temp = this.xMax;
+		/*
+		var maxXMax = 0;
+		this.graphCollection.graphs.forEach(function(g){
+			if (g.xMax > maxXMax)
+				maxXMax = g.xMax;
+		});
+		
+		var temp = maxXMax;
 		var mag = 0;
 		while(temp > 10) { 
 			mag++; 
 			temp = temp / 10; 
 		};
+		
+		var maxIntvlWidth = Math.pow(10, mag-1);
+		
 		this.graphCollection.graphs.forEach(function(g){
-			g.partitionIntervalWidth = Math.pow(10, mag-1);
+				g.partitionIntervalWidth = maxIntvlWidth;
 		});
+		*/
 		
 		this.graphCollection.scaleAllGraphsToFit();
+		this.graphCollection.graphs.forEach(function(g){
+			var temp = g.scaleMax;
+			var mag = 0;
+			console.log(mag);
+			while(temp > 10) { 
+				mag++; 
+				temp = temp / 10; 
+			}
+			if (Math.pow(10, mag)*4 < g.scaleMax)
+				g.partitionIntervalWidth = Math.pow(10, mag);
+			else
+				g.partitionIntervalWidth = Math.pow(10, mag-1);
+		});
 		
 		if (this.dataVals().length < 4)
 			this.insufDataForFour = true;

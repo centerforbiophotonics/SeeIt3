@@ -419,19 +419,20 @@ Graph.prototype = {
 			this.xMin = pv.min(this.dataVals(), function(d) { return d });
 			this.n = this.dataVals().length;
 			
-			//Change size of fixed interval width partitions to avoid hanging on large domains
-			var temp = this.xMax;
-			var mag = 0;
-			while(temp > 10) { 
-				mag++; 
-				temp = temp / 10; 
-			};
-			console.log(mag);
-			this.graphCollection.graphs.forEach(function(g){
-				g.partitionIntervalWidth = Math.pow(10, mag-1);
-			});
-			
 			this.graphCollection.scaleAllGraphsToFit();
+			this.graphCollection.graphs.forEach(function(g){
+				var temp = g.scaleMax;
+				var mag = 0;
+				console.log(mag);
+				while(temp > 10) { 
+					mag++; 
+					temp = temp / 10; 
+				}
+				if (Math.pow(10, mag)*4 < g.scaleMax)
+					g.partitionIntervalWidth = Math.pow(10, mag);
+				else
+					g.partitionIntervalWidth = Math.pow(10, mag-1);
+			});
 			
 			this.legendHidden = false;
 			
@@ -457,17 +458,20 @@ Graph.prototype = {
 		this.xMin = pv.min(this.dataVals(), function(d) { return d });
 		this.n = this.dataVals().length;
 		
-		var temp = this.xMax;
-		var mag = 0;
-		while(temp > 10) { 
-			mag++; 
-			temp = temp / 10; 
-		};
-		this.graphCollection.graphs.forEach(function(g){
-			g.partitionIntervalWidth = Math.pow(10, mag-1);
-		});
-		
 		this.graphCollection.scaleAllGraphsToFit();
+		this.graphCollection.graphs.forEach(function(g){
+			var temp = g.scaleMax;
+			var mag = 0;
+			console.log(mag);
+			while(temp > 10) { 
+				mag++; 
+				temp = temp / 10; 
+			}
+			if (Math.pow(10, mag)*4 < g.scaleMax)
+				g.partitionIntervalWidth = Math.pow(10, mag);
+			else
+				g.partitionIntervalWidth = Math.pow(10, mag-1);
+		});
 		
 		if (this.dataVals().length < 4)
 			this.insufDataForFour = true;
