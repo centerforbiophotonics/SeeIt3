@@ -1060,19 +1060,30 @@ function constructGraphPanel(graph, index){
 						 "value": graph.x.invert(loc)}
 					);
 					
-					graphCollection.editData(graph.selectedCategory, graph.selectedCategory, graph.data[graph.selectedCategory]);
-				} else if (graphCollection.editModeEnabled && 
-										graph.includedCategories.length < 4 &&
-										graph.includedCategories.length > 0) {
-					var loc = graphPanel.mouse().x;
+					var worksheet = "";
+					for (var key in graphCollection.worksheets){
+						if (graphCollection.worksheets[key].data[graph.selectedCategory] != undefined)
+							worksheet = key;
+					}
 					
-					var dataTitle = "userCreatedCategory"+graphCollection.nextDefaultCategory++;
-					var data = [{"label":"first", "value":graph.x.invert(loc)}];
-					
-					graphCollection.addData(dataTitle, data);
-					graph.addCategory(dataTitle);
-					graph.selectedCategory = dataTitle;
-				}
+					graphCollection.editData(worksheet, 
+																		graph.selectedCategory, 
+																		graph.selectedCategory, 
+																		graph.data[graph.selectedCategory]
+																	);
+				} 
+			//	else if (graphCollection.editModeEnabled && 
+			//							graph.includedCategories.length < 4 &&
+			//							graph.includedCategories.length > 0) {
+			//		var loc = graphPanel.mouse().x;
+			//		
+			//		var dataTitle = "userCreatedCategory"+graphCollection.nextDefaultCategory++;
+			//		var data = [{"label":"first", "value":graph.x.invert(loc)}];
+			//		
+			//		graphCollection.addData(dataTitle, data);
+			//		graph.addCategory(dataTitle);
+			//		graph.selectedCategory = dataTitle;
+			//	}
 			
 				constructVis();
 			}
@@ -2117,6 +2128,7 @@ function constructGraphPanel(graph, index){
 			//	else
 			//	 return "white";
 			//})
+			
 
 		var dragFeedbackPanels = [];
 		graph.includedCategories.forEach(function(category, index){
@@ -2158,6 +2170,12 @@ function constructGraphPanel(graph, index){
 				.def("row",index)
 				.title(category)
 				.lineWidth(1)
+				.strokeStyle(function(){
+					if (graph.selectedCategory == category && graphCollection.editModeEnabled)
+						return "red";
+					else
+						return pv.rgb(0,0,0,0);
+				})
 				.visible(function(){ return !(graph.legendHidden)})
 				.top(0)
 				.left(180*index)
@@ -2166,13 +2184,17 @@ function constructGraphPanel(graph, index){
 				.events("all")
 				.width(180)
 				.event("mouseover", function(d){
-					this.strokeStyle("black");
-					this.render();
+					if (graph.selectedCategory != category){
+						this.strokeStyle("black");
+						this.render();
+					}
 				})
 				.event("mouseout", function(d){ 
-					this.fillStyle(pv.rgb(0,0,0,0))
-					this.strokeStyle(pv.rgb(0,0,0,0));
-					this.render();
+					if (graph.selectedCategory != category){
+						this.fillStyle(pv.rgb(0,0,0,0))
+						this.strokeStyle(pv.rgb(0,0,0,0));
+						this.render();
+					}
 				})
 				.event("mousedown", pv.Behavior.drag())
 				.event("dragend", function(){
@@ -2213,6 +2235,12 @@ function constructGraphPanel(graph, index){
 					dragFeedbackPanels[this.row()].render();
 				})
 				.event("dragstart", function(){
+					if (graph.selectedCategory == category)
+						graph.selectedCategory = null;
+					else
+						graph.selectedCategory = category;
+					legendPanel.render();
+					
 					var mouseY = vis.mouse().y;
 					var mouseX = vis.mouse().x;
 					dragFeedbackPanels[this.row()].left(mouseX);

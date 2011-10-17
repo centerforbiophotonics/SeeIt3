@@ -220,6 +220,8 @@ $('#applyOptionsToAll').click(function(event){
 		
 		if (selGraph.customScale)
 			graph.setXScale(selGraph.scaleMin, selGraph.scaleMax);
+			
+		graph.setXScale();
 	});
 	vis.render();
 });
