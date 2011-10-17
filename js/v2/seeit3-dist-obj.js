@@ -108,7 +108,7 @@ GraphCollection.prototype = {
 		
 		this.setH(this.calcGraphHeight());
 			
-		this.selectedGraphIndex = -1;
+		this.selectedGraphIndex = 0;
 			
 		if (this.graphs.length == 0) this.addGraph();
 	},
