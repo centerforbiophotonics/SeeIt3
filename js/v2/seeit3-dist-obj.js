@@ -181,6 +181,9 @@ GraphCollection.prototype = {
 			if (graph.xMin < min) min = graph.xMin
 		});
 		this.graphs.forEach(function(graph){
+			var mag = magnitude(max-min);
+			
+			min = Math.floor(min/Math.pow(10,mag))*Math.pow(10,mag);
 			if (!graph.customScale || graph.xMin < graph.scaleMin || graph.xMax > graph.scaleMax)
 				graph.setXScale(min, Math.ceil(max)+0.1);
 		});
@@ -420,14 +423,10 @@ Graph.prototype = {
 			this.n = this.dataVals().length;
 			
 			this.graphCollection.scaleAllGraphsToFit();
+			
+			//Adjust fixed interval partition width to avoid hanging on large domains
 			this.graphCollection.graphs.forEach(function(g){
-				var temp = g.scaleMax;
-				var mag = 0;
-				console.log(mag);
-				while(temp > 10) { 
-					mag++; 
-					temp = temp / 10; 
-				}
+				var mag = magnitude(g.scaleMax - g.scaleMin);
 				if (Math.pow(10, mag)*4 < g.scaleMax)
 					g.partitionIntervalWidth = Math.pow(10, mag);
 				else
@@ -460,13 +459,7 @@ Graph.prototype = {
 		
 		this.graphCollection.scaleAllGraphsToFit();
 		this.graphCollection.graphs.forEach(function(g){
-			var temp = g.scaleMax;
-			var mag = 0;
-			console.log(mag);
-			while(temp > 10) { 
-				mag++; 
-				temp = temp / 10; 
-			}
+			var mag = magnitude(g.scaleMax - g.scaleMin);
 			if (Math.pow(10, mag)*4 < g.scaleMax)
 				g.partitionIntervalWidth = Math.pow(10, mag);
 			else

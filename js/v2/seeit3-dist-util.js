@@ -218,15 +218,33 @@ function positionDisplayMenu(){
 function getXBuckets(graph){
 	var xDomain = graph.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graph.graphCollection.buckets;
+	
+	var mag = magnitude(bucketSize);
+	
+	if (mag >= 2)
+		bucketSize = Math.floor(bucketSize/Math.pow(10,mag-1))*Math.pow(10,mag-1);
+		
+		
 	var points = [];
 	
 	points.push(xDomain[0]);
 	
-	for (var i = 1; i <= graph.graphCollection.buckets; i++){
-		points.push(xDomain[0] + (bucketSize * i));
+	var bucket = 1;
+	while (xDomain[0] + (bucketSize * bucket) < xDomain[1]){
+		points.push(xDomain[0] + (bucketSize * bucket));
+		bucket++;
 	}
 	
 	return points;
+}
+
+function magnitude(number){
+	var mag = 0;
+	while(number > 10) { 
+		mag++; 
+		number = number / 10; 
+	}
+	return mag;
 }
 
 
