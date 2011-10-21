@@ -26,6 +26,12 @@ table#menuItems h3 {
   margin-bottom:2px;
 }
 
+p#loadingMsg {
+	position:absolute;
+	left: 50%;
+	top: 50%;
+}
+
 #groupingOptions {
 	background: #ffffff;
 	border:1px solid black;
@@ -42,6 +48,35 @@ table#menuItems h3 {
 	max-height: 85%;
 	max-width: 30%;
 	overflow:auto;
+}
+
+#worksheetMenu {
+	position: absolute;
+	background: #ffffff;
+	border:1px solid black;
+	padding: 10px;
+	display: hidden;
+	height:75%;
+	width:75%;
+	overflow-x: hidden;
+	-ms-overflow-x: hidden;
+	overflow:hidden;
+}
+
+#worksheetText{
+	width:100%;
+	height:75%;
+}
+
+#worksheetURLMenu{
+	position: absolute;
+	background: #ffffff;
+	border:1px solid black;
+	padding: 10px;
+	display: hidden;
+	overflow-x: hidden;
+	-ms-overflow-x: hidden;
+	overflow:hidden;
 }
 
 .menuItemDef {
@@ -173,4 +208,11 @@ table#menuItems h3 {
   display: hidden;
   overflow-y: hidden;
   -ms-overflow-y: hidden;
+}
+
+#textWidthTest {
+	position: absolute;
+	visibility: hidden;
+	height: auto;
+	width: auto;
 }

@@ -15,6 +15,7 @@ function pointFillStyle(set){
 	}
 }
 
+
 function updateColor(category, color){
 	var r = parseInt(color.rgb[0]*255);
 	var g = parseInt(color.rgb[1]*255);
@@ -88,6 +89,12 @@ function pointStrokeStyle(set){
 			return graphCollection.categoryColors[set]
 		}
 	}
+}
+
+function pixelWidth(text){
+	$('#textWidthTest').html(text);
+	$('#textWidthTest').css("font", fontString);
+	return $('#textWidthTest').width();
 }
 
 function fitPointInGraph(candidate, collisions, radius){
@@ -229,19 +236,12 @@ function showHideAdvancedOptions(){
 }
 
 function hideMenus(){
-	$('#dataSetAdd').slideUp();
-	$('#dataSetEdit').slideUp();
 	$('#groupingOptions').slideUp();
 	$('#displayOptions').slideUp();
-	$('#worksheetCreate').slideUp();
-	$('#clipboardPrompt').slideUp();
+	$('#worksheetMenu').slideUp();
+	$('#worksheetURLMenu').slideUp();
 	$('#aboutPopup').slideUp();
 	$('#worksheetDescriptionPopup').slideUp();
-	$('#dataSetPaste').slideUp();
-	//$('#datasets').slideUp();
-	//graphCollection.datasetsMenuShowing = false;
-	//graphCollection.setW(calcGraphWidth());
-	//vis.render();
 }
 
 function positionGroupingMenuOverGraph(index, graphCollection){

@@ -813,10 +813,45 @@ Worksheet.prototype = {
 						return parseInt(e.title.$t.replace(/[A-Z]/g,"")) > 1 &&
 							e.title.$t.replace(/[0-9]/g,"") == "A"
 					})
+		.filter(function(e){
+			return e.content.$t[0] != '*';
+		})
 		.forEach(function(e){
 			labels.push(e.content.$t);
 		});
 		return labels;
+	},
+	
+	toString: function(){
+		var heading = "";
+		var dataStrings = [];
+		var fullString = "";
+		
+		heading += this.labelType + "\t";
+		this.labelMasterList.forEach(function(label){
+			dataStrings.push(label+"\t");
+		});
+		data = this.data;
+		for (var key in data){
+			heading += key+"\t";
+			
+			this.labelMasterList.forEach(function(l,i){
+				var val = "";
+				data[key].forEach(function(d){
+					if (l == d.label){
+						val = d.value.toFixed(2);
+					}
+				});
+				val += "\t";
+				dataStrings[i] += val;
+			});
+		}
+		fullString = heading + "\n";
+		dataStrings.forEach(function(d){
+			fullString += d + "\n";
+		});
+		
+		return fullString;
 	},
 };
 

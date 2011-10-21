@@ -172,6 +172,7 @@
 	</table>
 </div>
 
+<!--
 <div id="dataSetAdd">
 	<table>
 		<tr>
@@ -213,16 +214,26 @@
 		</tr>
 	</table>
 </div>
+-->
 
-<div id="dataSetPaste">
-	<input type="button" value="Import" id="pasteImport">
-	<input type='image' src='img/close.png' id='pasteClose' width='20' height='20' align='right'>
-	<h2>Paste Dataset</h2>
-	<label for="pasteHeading">With heading</label>
-	<input type="checkbox" id="pasteHeading" checked><br>
-	<textarea id="addPasteText" rows="10" cols="50"></textarea><br>
+<div id="worksheetMenu">
+	<input type="button" value="Load Worksheet From Form" id="loadFromForm"> -OR-
+	<input type="button" value="Load Worksheet From URL" id="loadFromURL">
+	<input type='image' src='img/close.png' id='worksheetMenuClose' width='20' height='20' align='right'><br>
+	
+	<hr>
+
+	Title: <input type="text" id="worksheetTitle" style="width: 25%;"><br>
+	Data:<br>
+	<textarea id="worksheetText"></textarea><br>
 </div>
 
+<div id="worksheetURLMenu">
+	Worksheet URL: <input type="text" id="worksheetURL"><br>
+	<input type="button" value="Submit" id="submitURL">
+</div>
+
+<!--
 <div id="dataSetEdit">
 	<table>
 		<tr>
@@ -263,7 +274,8 @@
 		</tr>
 	</table>
 </div>
-
+-->
+<!--
 <div id="worksheetCreate">
 	<table>
 		<tr>
@@ -298,13 +310,16 @@
 		</tr>
 	</table>
 </div>
+-->
 
+<!--
 <div id="clipboardPrompt">
 	<input type='image' src='img/close.png' id='cbClose' onclick='hideMenus()' width='20' height='20' align='right'>
 	<h2>Press Ctrl-C then Enter to Copy</h2>
 	<textarea id="cbText" cols="50" rows="10"></textarea><br>
 	<input type="button" value="Close" id="cbClose">
 </div>
+-->
 
 <div id="aboutPopup">
 	<input type='image' src='img/close.png' id='aboutClose' onclick='hideMenus()' width='20' height='20' align='right'>
@@ -324,7 +339,9 @@
 	<p id="worksheetDescriptionParagraph"></p>
 </div>
 
-<p id="loadingMsg">Loading...</p>
+<div id="textWidthTest"></div>
+
+<p id="loadingMsg">Loading 0%</p>
 
 <script type="text/javascript" src="js/v3/seeit3-dist-util.js"></script>
 <script type="text/javascript" src="js/v3/seeit3-dist-obj.js"></script>

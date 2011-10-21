@@ -25,6 +25,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 																.val(event.worksheet.URL);
   lastSelectedWorksheet = event.worksheet.URL;
   numWorksheetsLoaded++;
+  $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){
 		jQuery('p#loadingMsg').hide();	
 		graphCollection = new GraphCollection();

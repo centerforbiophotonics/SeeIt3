@@ -38,6 +38,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 	
   lastSelectedWorksheet = event.worksheet.URL;
   numWorksheetsLoaded++;
+  $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){
 		jQuery('p#loadingMsg').hide();
 		constructVis();
@@ -746,7 +747,7 @@ function constructDatasetPanel(){
 			html += "<table><tr>"+
 							"<td><input type='image' id='subtreeToggle"+i+"' src='img/downTriangle.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='15' height='15'></td>"+
 							"<td nowrap><div id='treeTitle"+i+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")'>"+w.title+"</div></td>"+
-							"<td><input type='image' src='img/edit.png' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+")' width='25' height='25'></td>"+
+							"<td><input type='image' src='img/edit.png' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'></td>"+
 							"<td><input type='image' src='img/refresh.png' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'></td>"+
 							"<td><input type='image' src='img/question.png' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'></td>"+
 							"<td><input type='image' src='img/document.png' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'></td>"+
@@ -769,9 +770,9 @@ function constructDatasetPanel(){
 			i++;
 		})
 	})
-	html+="<table><tr><td><input type='image' src='img/plus.png' onclick='openEditDataMenu(\""+key+
-							"\");' width='25' height='25'></td><div><td>"+
-							"</td><td>Add a Worksheet</td></div></tr></table>";
+	html+="<table><tr onclick=\"openWorksheetMenu()\" style=\"cursor:pointer;\">"+
+							"<td><image src='img/plus.png' width='25' height='25'></td>"+
+							"<td>Add a Worksheet</td></div></tr></table>";
 	$('#dataTree').html(html);
 	jscolor.init();
 }
@@ -2117,17 +2118,8 @@ function constructGraphPanel(graph, index){
 		var legendPanel = graphPanel.add(pv.Panel)
 			.left(0)
 			.bottom(4)
-			//.overflow("hidden")
 			.width(function(){return graphCollection.w - 40;})
 			.height(30)
-			//.lineWidth(1)
-			//.strokeStyle("black")
-			//.fillStyle(function(){
-			//	if (graphCollection.editModeEnabled)
-			//		return "#FCA8B3";
-			//	else
-			//	 return "white";
-			//})
 			
 
 		var dragFeedbackPanels = [];
