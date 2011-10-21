@@ -110,10 +110,10 @@ GraphCollection.prototype = {
 	calcGraphHeight: function (){
 		if (this.graphs.length > 4)
 			return Math.max(this.defaultGraphHeight*this.graphs.length,
-											(window.innerHeight - jQuery('div#notGraph').height()) - 80
+											(window.innerHeight - jQuery('div#notGraph').height()) - 60
 										 );
 		else
-			return (window.innerHeight - jQuery('div#notGraph').height()) - 80;
+			return (window.innerHeight - jQuery('div#notGraph').height()) - 60;
 	},
 	
 	addGraph: function() {

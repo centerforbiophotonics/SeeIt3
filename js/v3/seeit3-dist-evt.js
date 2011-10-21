@@ -26,13 +26,13 @@ $(window).resize(function() {
 });
 
 /* Top Bar Menu Items */
-jQuery('#newSpreadsheetURL').keyup(function(event) {
-	if (event.keyCode == '13') {
-		var key = parseSpreadsheetKeyFromURL($(this).val());
-		$(this).val('');
-		exampleSpreadsheets.push(new Spreadsheet(key));
-	}
-});
+//jQuery('#newSpreadsheetURL').keyup(function(event) {
+//	if (event.keyCode == '13') {
+//		var key = parseSpreadsheetKeyFromURL($(this).val());
+//		$(this).val('');
+//		exampleSpreadsheets.push(new Spreadsheet(key));
+//	}
+//});
 
 
 function editInGoogleDocs(title){
@@ -616,7 +616,6 @@ function partitionMoveTouchEnd(event){
 
 /*Worksheet Menu*/
 var worksheetNew;
-
 function positionWorksheetMenu(){
 	$('#worksheetMenu').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetMenu').height()/2)+"px")
@@ -632,10 +631,12 @@ function openWorksheetMenu(worksheetTitle){
 		title = "*** Enter Worksheet Title ***";
 		text = "*** Enter Worksheet Text ***";
 		worksheetNew = true;
+		$('#loadFromURL').show();
 	} else {
 		title = worksheetTitle;
 		text = graphCollection.worksheets[worksheetTitle].toString();
 		worksheetNew = false;
+		$('#loadFromURL').hide();
 	}
 	
 	$('#worksheetTitle').val(title);
@@ -656,15 +657,6 @@ $('#loadFromURL').click(function(){
 	hideMenus();
 	positionWorksheetURLMenu();
 	$('#worksheetURLMenu').slideDown();
-});
-
-$('#submitURL').click(function(){
-	var key = parseSpreadsheetKeyFromURL($('#worksheetURL').val());
-	if (worksheetNew){
-		exampleSpreadsheets.push(new Spreadsheet(key));
-	} else {
-		
-	}
 });
 
 $('#loadFromForm').click(function(){
@@ -689,6 +681,16 @@ function positionWorksheetURLMenu(){
 										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetURLMenu').width()/2)+"px");
 }
 $('#worksheetURLMenu').hide();
+
+$('#backToWorksheetMenu').click(function(){
+	$('#worksheetURLMenu').slideUp();
+	$('#worksheetMenu').slideDown();
+});
+
+$('#submitURL').click(function(){
+	var key = parseSpreadsheetKeyFromURL($('#worksheetURL').val());
+	exampleSpreadsheets.push(new Spreadsheet(key));
+});
 
 
 
