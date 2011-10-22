@@ -616,6 +616,7 @@ function partitionMoveTouchEnd(event){
 
 /*Worksheet Menu*/
 var worksheetNew;
+var worksheetToEdit;
 function positionWorksheetMenu(){
 	$('#worksheetMenu').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetMenu').height()/2)+"px")
@@ -636,6 +637,7 @@ function openWorksheetMenu(worksheetTitle){
 		title = worksheetTitle;
 		text = graphCollection.worksheets[worksheetTitle].toString();
 		worksheetNew = false;
+		worksheetToEdit = worksheetTitle;
 		$('#loadFromURL').hide();
 	}
 	
@@ -660,16 +662,72 @@ $('#loadFromURL').click(function(){
 });
 
 $('#loadFromForm').click(function(){
-	if (validateWorksheetForm()){
-		updateWorksheets();
+	var title = $('#worksheetTitle').val();
+	var rawText = $('#worksheetText').val();
+	var cells = [];
+	rawText.split('\n').forEach(function(line){
+		cells.push(line.split('\t'));
+	});
+	if (validateWorksheetForm(title, cells)){
+		if (worksheetNew)
+			addWorksheet(title, cells);
+		else
+			updateWorksheet(worksheetToEdit,title,cells);
 	}
 });
 
-function validateWorksheetForm(){
+function validateWorksheetForm(title, cells){
+	//Check for blank or default title
+	if (trim(title) == "" || title == "*** Enter Worksheet Title ***"){
+		alert("Error: Dataset requires a title.");
+		return false;
+	}
+	
+	//Check Duplicate Labels
+	for (var i=0; i<cells.length; i++){
+		for (var j=0; j<cells.length; j++){
+			if (cells[i][0] == cells[j][0] && i!=j && cells[i][0] != ""){
+				alert("Error: Data contains duplicate labels. Duplicate label is \""+cells[j][0]+"\"");
+				return false;
+			}
+		}
+	}
+	
+	//Check Duplicate Dataset Titles
+	for (var i=0; i<cells[0].length; i++){
+		for (var j=0; j<cells[0].length; j++){
+			if (cells[0][i] == cells[0][j] && i!=j){
+				alert("Error: Data contains duplicate dataset titles. Duplicate title is \""+cells[0][j]+"\"");
+				return false;
+			}
+		}
+	}
+	
+	//Check Duplicate Worksheet Titles
+	for (var key in graphCollection.worksheets){
+		if (title == key && key != worksheetToEdit){
+			alert("Error: Worksheet title is already used.");
+			return false;
+		}
+	}
+	
+	//Check for data without label
+	console.log(cells);
+	for (var i=0; i<cells.length; i++){
+		if (cells[i][0] == "" && cells[i].length > 1){
+			alert("Error: Data exists without a label.");
+			return false;
+		}
+	}
+	
 	return true;
 }
 
-function updateWorksheets(){
+function addWorksheet(title, cells){
+	
+};
+
+function updateWorksheet(oldTitle, newTitle, cells){
 	
 }
 

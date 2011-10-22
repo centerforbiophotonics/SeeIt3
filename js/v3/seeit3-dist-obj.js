@@ -37,6 +37,7 @@ function GraphCollection(){
 	this.graphs = [];
 	this.selectedGraphIndex = 0;
 	this.datasetsMenuShowing = false;
+	this.datasetsVisible = {};
 	
 	//Drawing Variables
 	this.w = this.calcGraphWidth();
@@ -97,7 +98,12 @@ GraphCollection.prototype = {
 			this.categoryColors[key] = this.colorScale(this.numberOfCategories);
 			this.numberOfCategories++;
 			this.editedCategories[key] = worksheet.edited[key];
+			this.datasetsVisible[worksheet.title] = false;
 		}
+	},
+	
+	removeWorksheet: function(title){
+		
 	},
 	
 	calcGraphWidth: function(){

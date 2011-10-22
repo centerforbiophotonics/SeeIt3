@@ -36,8 +36,11 @@ function convertToID(set){
 						.split('(').join('')+"div";
 }
 
-function toggleDataSubtree(id,i){
+function toggleDataSubtree(id,i,title){
 	$('#'+id).slideToggle(null,resizeVis);
+	graphCollection.datasetsVisible[title] ? 
+		graphCollection.datasetsVisible[title] = false :
+		graphCollection.datasetsVisible[title] = true;
 	if ($('#subtreeToggle'+i).attr("src") == "img/downTriangle.png")
 		$('#subtreeToggle'+i).attr("src","img/rightTriangle.png");
 	else
