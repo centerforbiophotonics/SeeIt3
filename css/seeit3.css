@@ -81,15 +81,15 @@ p#loadingMsg {
 
 .menuItemDef {
 	position: relative;
-	padding: 2px;
-	border: 2px #ffffff solid;
+	padding: 1px;
+	border: 2px transparent solid;
 	cursor: move;
 	margin-bottom:1px;
 }
 
 .menuItemOver {
 	position: relative;
-	padding: 2px;
+	padding: 1px;
 	border: 2px #000000 solid;
 	cursor: move;
 	margin-bottom:1px;
@@ -210,9 +210,12 @@ p#loadingMsg {
   -ms-overflow-y: hidden;
 }
 
-#textWidthTest {
-	position: absolute;
-	visibility: hidden;
-	height: auto;
-	width: auto;
+div.legend {
+	position:absolute;
+	overflow-x:hidden;
+	top:0px;
+	left:0px;
+
 }
+
+

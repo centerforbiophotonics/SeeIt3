@@ -22,6 +22,9 @@ $(window).resize(function() {
 		positionWorksheetURLMenu();
 		positionAboutPopup();
 		positionWorksheetDescriptionPopup();
+		graphCollection.graphs.forEach(function(graph,i){
+			positionAndSizeLegendPanel(graph,i);
+		})
 	}
 });
 

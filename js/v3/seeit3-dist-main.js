@@ -430,121 +430,6 @@ function constructVis(){
 					return false;
 			})
 			
-			
-	/*Toggle Basic/Advanced User Mode*/
-	//var togUserModePanel = vis.add(pv.Panel)
-	//	.events("all")
-	//	.cursor("pointer")
-	//	.title("Toggle basic/advanced mode")
-	//	.height(30)
-	//	.width(function() {
-	//		if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-	//			if (graphCollection.advancedUser)
-	//				return 150;
-	//			else
-	//				return 142;
-	//		}else if (!graphCollection.buttonIcon){
-	//			if (graphCollection.advancedUser)
-	//				return 122;
-	//			else
-	//				return 115;
-	//		}else if (!graphCollection.buttonText){
-	//			return 34;
-	//		}
-	//	})
-	//	.left(function() {
-	//		if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-	//			return 340;
-	//		}else if (!graphCollection.buttonIcon){
-	//			return 240;
-	//		}else if (!graphCollection.buttonText){
-	//			return 80;
-	//		}
-	//	})
-	//	.top(-31)
-	//	.lineWidth(1)
-	//	.event("click", function(){
-	//		graphCollection.advancedUser = !(graphCollection.advancedUser);
-	//		if (graphCollection.advancedUser){
-	//			$('#fixedSizeOptions').show();
-	//			$('#fixedIntervalOptions').show();
-	//			$('#boxPlotOptions').show();
-	//			$('#scaleOptions').show();
-	//			$('#divisionsCell').show();
-	//			$('#stackAndButtonTable').show();
-	//		} else {
-	//			$('#fixedSizeOptions').hide();
-	//			$('#fixedIntervalOptions').hide();
-	//			$('#boxPlotOptions').hide();
-	//			$('#scaleOptions').hide();
-	//			$('#divisionsCell').hide();
-	//			$('#stackAndButtonTable').hide();
-	//			
-	//			graphCollection.graphs.forEach(function(g){
-	//			g.groupingMode = "NoGroups";
-	//			});
-	//			graphCollection.updateMenuOptions();
-	//		}
-	//		vis.render();
-	//	})
-	//	.event("mouseover", function(d){
-	//		this.strokeStyle("black");
-	//		this.render();
-	//	})
-	//	.event("mouseout", function(d){ 
-	//		this.strokeStyle(pv.rgb(0,0,0,0));
-	//		this.render();
-	//	})
-	//	
-	//togUserModePanel.add(pv.Image)
-	//	.url(function(){
-	//		if (graphCollection.advancedUser)
-	//			return "http://centerforbiophotonics.github.com/SeeIt3/img/advUser.png"
-	//		else
-	//			return "http://centerforbiophotonics.github.com/SeeIt3/img/user.png"
-	//	})
-	//	.width(30)
-	//	.height(26)
-	//	.top(2)
-	//	.left(0)
-	//	.cursor("pointer")
-	//	.title("Toggle basic/advanced mode")
-	//	.event("click", function(){
-	//		graphCollection.advancedUser = !(graphCollection.advancedUser);
-	//		vis.render();
-	//	})
-	//	.visible(function() {
-	//		if (graphCollection.buttonIcon)
-	//			return true;
-	//		else
-	//			return false;
-	//	})
-	//	.anchor("left").add(pv.Label)
-	//		.left(function(){
-	//			if (graphCollection.buttonText && !graphCollection.buttonIcon)
-	//				return 2;
-	//			else
-	//			 return 32;
-	//		})
-	//		.text(function(){
-	//			if (graphCollection.advancedUser)
-	//				return "Advanced Mode"
-	//			else
-	//				return "Beginner Mode"
-	//		})
-	//		.font(fontString)
-	//		.textStyle(function(){
-	//			if (graphCollection.editModeEnabled)
-	//				return "red"
-	//			else
-	//				return "black"
-	//		})
-	//		.visible(function() {
-	//			if (graphCollection.buttonText)
-	//				return true;
-	//			else
-	//				return false;
-	//		})
 		
 	/* Toggle Edit Mode Button */
 	var togEditPanel = vis.add(pv.Panel)
@@ -735,8 +620,13 @@ function constructVis(){
 	});
 	vis.render();
 	if (graphCollection.datasetsMenuShowing) resizeVis();
-	//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 	showHideAdvancedOptions();
+	
+	
+	graphCollection.graphs.forEach(function(graph,i){
+		constructLegendPanel(graph,i);
+		positionAndSizeLegendPanel(graph,i);
+	})
 }
 
 function constructDatasetPanel(){
@@ -830,208 +720,7 @@ function dragStop(event){
 	document.removeEventListener("mouseup",   dragStop, true);
 }
 		  
-function constructCategoryPanel(){
-	var row = 0;
-	
-	vis.add(pv.Label)
-		.text("Data Sets:")
-		.left(-197)
-		.top(-40)
-		.font(fontString);
-	
-	var dragFeedbackPanels = [];
-	for (var key in graphCollection.worksheet.data){
-		var abbrevKey = key.slice(0,14);
-		if (key.length > 14)
-			abbrevKey += "...";
-		
-		//Copy of category panel which follows mouse as it is dragged
-		dragFeedbackPanels[row] = vis.add(pv.Panel)
-			.visible(false)
-			.lineWidth(1)
-			.strokeStyle("black")
-			.height(30)
-			.width(160)
-			.left(0)
-			.top(0)
-			
-		dragFeedbackPanels[row].add(pv.Dot)
-			.left(15)
-			.top(15)
-			.shape("square")
-			.size(80)
-			.def("category", key)
-			.fillStyle(function(d) {return pointFillStyle(this.category())})
-			.strokeStyle(function(d) {return pointStrokeStyle(this.category())})
-			.lineWidth(2)
-			.anchor("right").add(pv.Label)
-				.def("category", key)
-				.text(abbrevKey)
-				.font(fontString)
-				.textStyle(function(){
-					if (graphCollection.editedCategories[this.category()])
-						return "red";
-					else 
-						return "black";
-				})
-		
-		//Edit category button
-		vis.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/edit.png")  //fix this
-		.def("category", key)
-		.def("row",row)
-		.width(30)
-		.height(30)
-		.left(-232)
-		.top(40*row - 35)
-		.cursor("pointer")
-		.title("Edit dataset")
-		.event("click", function(){
-			hideMenus();
-			resetEditDataSetMenu();
-			populateEditMenuFromExisting(this.category());
-			$('#dataSetEdit').slideDown();
-			$('#dataSetEdit').scrollTop(0)
-		})
-		
-		
-		
-		
-		//Panel representing a data category/set
-		var catPanel = vis.add(pv.Panel)
-			.data([{"x":0,"y":0}])
-			.def("category", key)
-			.def("row",row)
-			.events("all")
-			.cursor("move")
-			.title(key)
-			.lineWidth(1)
-			.height(30)
-			.width(160)
-			.left(-198)
-			.top(40*row - 35)
-			.event("mouseover", function(d){
-				this.strokeStyle("black");
-				this.render();
-			})
-			.event("mouseout", function(d){ 
-				this.strokeStyle(pv.rgb(0,0,0,0));
-				this.render();
-			})
-			.event("mousedown", pv.Behavior.drag())
-			.event("dragstart", function(){
-				var mouseY = vis.mouse().y;
-				var mouseX = vis.mouse().x;
-				dragFeedbackPanels[this.row()].left(mouseX);
-				dragFeedbackPanels[this.row()].top(mouseY);
-				dragFeedbackPanels[this.row()].visible(true);
-				document.body.style.cursor="move";
-				dragFeedbackPanels[this.row()].render();
-			})
-			.event("drag", function(event){
-				var mouseY = vis.mouse().y;
-				var mouseX = vis.mouse().x;
-				dragFeedbackPanels[this.row()].left(mouseX);
-				dragFeedbackPanels[this.row()].top(mouseY);
-				dragFeedbackPanels[this.row()].render();
-			})
-			.event("dragend", function(){
-				var mouseY = vis.mouse().y;
-				var mouseX = vis.mouse().x;
-				if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
-					if (graphCollection.graphs.length > 4){
-						var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
-						graphCollection.graphs[which].addCategory(this.category());
-						graphCollection.updateMenuOptions();
-					} else {
-						var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
-						graphCollection.graphs[which].addCategory(this.category());
-						graphCollection.updateMenuOptions();
-					}
-				}
-				dragFeedbackPanels[this.row()].visible(false);
-				document.body.style.cursor="default";
-				constructVis();
-				//vis.render();
-			})
-			.event("touchstart", function(event){
-				touch.dragType = "sideCat"
-				touch.draggedObj = dragFeedbackPanels[this.row()];
-				touch.dragging = true;
-				touch.dragCat = this.category();
-			})
-			
-			
-			
-		catPanel.add(pv.Dot)
-			.left(15)
-			.top(15)
-			.def("category", key)
-			.shape("square")
-			.cursor("move")
-			.size(80)
-			.fillStyle(function(d) {return pointFillStyle(this.category())})
-			.strokeStyle(function(d) {return pointStrokeStyle(this.category())})
-			.lineWidth(2)
-			.anchor("right").add(pv.Label)
-				.text(abbrevKey)
-				.font(fontString)
-				.def("category", key)
-				.textStyle(function(){
-					if (graphCollection.editedCategories[this.category()])
-						return "red";
-					else 
-						return "black";
-				})
-
-		row++;
-	}
-	
-	//New Data Set Button
-	var newDataPanel = vis.add(pv.Panel)
-			.events("all")
-			.cursor("pointer")
-			.def("row", row)
-			.title("Add a Dataset")
-			.lineWidth(1)
-			.height(30)
-			.width(160)
-			.left(-198)
-			.top(40*row - 35)
-			.event("click", function(){
-				resetAddDataSetMenu();
-				populateAddMenuLabelsFromExisting();
-				hideMenus();
-				$('#dataSetAdd').slideDown();
-			});
-			
-		newDataPanel.add(pv.Dot)
-			.left(15)
-			.top(15)
-			.def("category", key)
-			.shape("square")
-			.cursor("pointer")
-			.size(80)
-			.strokeStyle("black")
-			.lineWidth(2)
-			.anchor("right").add(pv.Label)
-				.text("Add a Dataset")
-				.font(fontString)
-		
-		newDataPanel.add(pv.Dot)
-			.left(15)
-			.top(15)
-			.angle(Math.PI/4)
-			.shape("cross")
-			.cursor("pointer")
-			.events("all")
-			.size(20)
-			.lineWidth(2)
-			.title("Add a Dataset")
-			.strokeStyle("black")
-}
-
-
+		  
 function constructGraphPanel(graph, index){
 		
 	var graphPanel = vis.add(pv.Panel)
@@ -1135,25 +824,6 @@ function constructGraphPanel(graph, index){
 			$('#groupingOptions').slideDown();
 		})
 		
-	//Copy to clipboard button
-	//graphPanel.add(pv.Image)
-	//	.url("http://centerforbiophotonics.github.com/SeeIt3/img/clipboard.png")  //fix this
-	//	.width(30)
-	//	.height(30)
-	//	.top(4)
-	//	.left(30)
-	//	.cursor("pointer")
-	//	.title("Copy data to clipboard.")
-	//	.event("click", function(){
-	//		$('#cbText').val(graph.toString());
-	//		positionClipboardPrompt();
-	//		hideMenus();
-	//		$('#clipboardPrompt').slideDown();
-	//		$('#cbText').focus();
-	//		$('#cbText').select();
-	//		$('#clipboardPrompt').scrollTop(0);
-	//	
-	//	})
 				
 	//Divider Line Between Graphs
 	graphPanel.add(pv.Rule)
@@ -2112,9 +1782,12 @@ function constructGraphPanel(graph, index){
 				});
 				return retVal;
 			})
-			
-			
+
 		/* Legend */
+		//constructLegendPanel(graph,index);
+		
+		
+		/*
 		var legendPanel = graphPanel.add(pv.Panel)
 			.left(0)
 			.bottom(4)
@@ -2268,32 +1941,8 @@ function constructGraphPanel(graph, index){
 						else 
 							return "black";
 					});
-			
-			/* Edit Mode Select Checkboxes */		
-			//legendPanel.add(pv.Image)
-			//	.url(function(){
-			//		if (graph.selectedCategory == category)
-			//			return "http://centerforbiophotonics.github.com/SeeIt3/img/checkbox_checked.png"
-			//		else
-			//			return "http://centerforbiophotonics.github.com/SeeIt3/img/checkbox_unchecked.png"
-			//	})  
-			//	.width(30)
-			//	.height(30)
-			//	.top(30*index+23)
-			//	.right(3)
-			//	.visible(function(){return graphCollection.editModeEnabled})
-			//	.cursor("pointer")
-			//	.title("Clicking the graph will add data to the checked category or to a new category if none is checked.")
-			//	.events("all")
-			//	.event("click", function(){
-			//		if (graph.selectedCategory == category)
-			//			graph.selectedCategory = null;
-			//		else
-			//			graph.selectedCategory = category;
-			//		legendPanel.render();
-			//	})
-				
 		});	
+		*/
 	} else {
 		//Empty Graph Message
 		graphPanel.add(pv.Label)
@@ -2318,4 +1967,42 @@ function constructGraphPanel(graph, index){
 			.text("Maximum 4 Datasets per Graph")
 			.font(fontString)
 	}
+}
+
+function constructLegendPanel(graph, index){
+	if ($('#legend'+index).length == 0){
+		$('body').prepend("<div class=\"legend\" id=\"legend"+index+"\"></div>");
+	}
+	
+	var string = "<center><table cellpadding='0' cellspacing='0' style='table-layout:fixed;' width='100%'><tr>";
+	graph.includedCategories.forEach(function(category, i){
+		var color = graphCollection.categoryColors[category];
+		string += "<td align='center'><div class='menuItemDef'"+ 
+							"style=\"color:black; background-color:white;\""+
+							"onmouseover=\"this.className='menuItemOver'\""+
+							"onmouseout=\"this.className='menuItemDef'\""+
+							"onmousedown=\"javascript:dragStart(event,'"+category+"')\">"+
+							"<table cellpadding='2' cellspacing='0'><tr>"+
+							"<td><div style='background-color:rgb("+color.r+","+color.g+","+color.b+
+							"); border:2px solid black; width:20px; height:20px;'></div></td>"+
+							"<td style='overflow:hidden;'><div style='white-space:nowrap; width:100%;'>"+category+"</div></td></tr></table></div></td>";
+	});
+	string += "</tr></table></center>";
+	$('#legend'+index).html(string);
+}
+
+function positionAndSizeLegendPanel(graph,index){
+	var top = $('span').offset().top +
+						graphCollection.padTop +
+						graph.h * (index+1) - 33;
+						
+	var left = $('span').offset().left +
+						 graphCollection.padLeft;
+	
+	$('#legend'+index).css('top', top+"px")
+										.css('left',left+"px")
+										.css('width',graphCollection.w-50)
+										.css('max-width',graphCollection.w-40)
+										.css('z-index', 100);
+										//.css('left',parseInt(window.innerWidth/2 - $('#worksheetMenu').width()/2)+"px");
 }
