@@ -716,8 +716,20 @@ function validateWorksheetForm(title, cells){
 		}
 	}
 	
+	//Check Duplicate Dataset Titles
+	if (worksheetNew){
+		for (var i=1; i<cells.length; i++){
+			for (var key in graphCollection.data){
+				if (cells[0][i] == key){
+					alert("Error: a dataset already exists with the title \""+cells[0][i]+"\"");
+					return false;
+				}
+			}
+		}
+	}
+	
 	//Check for data without label
-	console.log(cells);
+	//console.log(cells);
 	for (var i=0; i<cells.length; i++){
 		if (cells[i][0] == "" && cells[i].length > 1){
 			alert("Error: Data exists without a label.");
@@ -768,7 +780,55 @@ function addWorksheet(title, cells){
 };
 
 function updateWorksheet(oldTitle, newTitle, cells){
+	var obj = {"title": newTitle};
+	var labelType = trim(cells[0][0]);
+	var labelMasterList = [];
+	var data = {};
+	var edited = {};
 	
+	//create labelMasterList
+	for (var y=1; y<cells.length; y++){
+		if (trim(cells[y][0]) != "")
+			labelMasterList.push(trim(cells[y][0]));
+	}
+	obj.labelMasterList = labelMasterList;
+	obj.labelType = labelType;
+	console.log(cells);
+	//create data and edited hash
+	for (var x=1; x<cells[0].length; x++){
+		if (trim(cells[0][x]) != ""){
+			data[trim(cells[0][x])] = [];
+			edited[trim(cells[0][x])] = true;
+			for (var y=1; y<cells.length; y++){
+				if (cells[y][0] != "" && cells[y][x] != ""){
+					data[trim(cells[0][x])].push({
+						"label":trim(cells[y][0]),
+						"value":parseFloat(cells[y][x])
+					});
+				}
+			}
+		}
+	}
+	obj.data = data;
+	obj.edited = edited;
+	
+	exampleSpreadsheets.forEach(function(s){
+		s.worksheets.forEach(function(w){
+			if (w.title == oldTitle){
+				w.title = newTitle;
+				w.data = obj.data;
+				w.edited = obj.edited;
+				w.labelMasterList = obj.labelMasterList;
+				w.labelType = obj.labelType;
+				
+				graphCollection.removeWorksheet(oldTitle);
+				graphCollection.addWorksheet(w);
+			}
+		});
+	});
+	
+	
+	constructVis();
 }
 
 

@@ -103,7 +103,15 @@ GraphCollection.prototype = {
 	},
 	
 	removeWorksheet: function(title){
-		
+		var worksheet = this.worksheets[title];
+		for (key in worksheet.data){
+			delete this.data[key];
+			delete this.categoryColors[key];
+			this.numberOfCategories--;
+			delete this.editedCategories[key];
+		}
+		delete this.datasetsVisible[title];
+		delete this.worksheets[title];
 	},
 	
 	calcGraphWidth: function(){
