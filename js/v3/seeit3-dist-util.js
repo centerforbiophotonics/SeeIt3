@@ -271,6 +271,7 @@ function positionGroupingMenuOverGraph(index, graphCollection){
 		.css('position', 'absolute')
 		.css('top', yPos + "px")
 		.css('left', xPos + "px")
+		.css('z-index', 1);
 	
 }
 
@@ -278,7 +279,8 @@ function positionDisplayMenu(){
 	$('#displayOptions').css('position', 'absolute')
 										 .css('top', $('span').offset().top +"px")
 										 .css('left',$('span').offset().left +
-													graphCollection.padLeft - 35 +"px");
+													graphCollection.padLeft - 35 +"px")
+										 .css('z-index', 1);
 }
 
 
