@@ -2078,6 +2078,6 @@ function positionAndSizeLegendPanel(graph,index){
 										.css('left',left+"px")
 										.css('width',graphCollection.w-50)
 										.css('max-width',graphCollection.w-40)
-										.css('z-index', 100);
+										.css('z-index', 1);
 										//.css('left',parseInt(window.innerWidth/2 - $('#worksheetMenu').width()/2)+"px");
 }

@@ -708,7 +708,7 @@ function Worksheet(param) {
 		this.userCreated = false;
 		this.fetchWorksheetData();
 	} else {
-		if (param.hasOwnProperty('labelMasterlist') == false){
+		if (param.hasOwnProperty('userDefined') == false){
 			this.URL = param.feed.link[1].href + "***";
 			this.local = true;
 			this.userCreated = false;
@@ -717,12 +717,14 @@ function Worksheet(param) {
 			this.URL = param.title;
 			this.local = true;
 			this.title = param.title;
-			this.labelMasterList = param.labelMasterlist;
+			this.labelMasterList = param.labelMasterList;
 			this.labelType = param.labelType;
 			this.userCreated = true;
-			this.data = {};
-			this.edited = {};
+			this.data = param.data;
+			this.edited = param.edited;
 			userCreatedWorksheet = this;
+			//jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:this });
+			graphCollection.addWorksheet(this);
 		}
 	}
 }
@@ -868,14 +870,15 @@ function Spreadsheet(key) {
 		this.fetchWorksheets();
 		this.local = false;
 	} else {
-		if (key.hasOwnProperty('labelMasterlist') == false){
+		if (key.hasOwnProperty('userDefined') == false){
 			this.key = 'local'
 			this.constructLocalWorksheets(key);
 			this.local = true;
 		} else {
 			this.key = 'local';
 			this.local = true;
-			this.constructBlankWorksheet(key);
+			this.constructUserDefinedWorksheet(key);
+			console.log("test");
 		}
 	}
 }
@@ -908,7 +911,7 @@ Spreadsheet.prototype = {
 		numWorksheets += local.length;  
 	},
 	
-	constructBlankWorksheet: function(attr){
+	constructUserDefinedWorksheet: function(attr){
 		this.worksheets.push(new Worksheet(attr));
 		numWorksheets++;
 	},

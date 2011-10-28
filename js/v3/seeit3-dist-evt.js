@@ -78,7 +78,8 @@ $('#aboutPopup').hide();
 function positionAboutPopup(){
 	$('#aboutPopup').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#aboutPopup').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#aboutPopup').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#aboutPopup').width()/2)+"px")
+										 .css("z-index",2);
 }
 positionAboutPopup();
 
@@ -623,7 +624,8 @@ var worksheetToEdit;
 function positionWorksheetMenu(){
 	$('#worksheetMenu').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetMenu').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetMenu').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetMenu').width()/2)+"px")
+										 .css("z-index",2);
 }
 
 $('#worksheetMenu').hide();
@@ -727,6 +729,41 @@ function validateWorksheetForm(title, cells){
 }
 
 function addWorksheet(title, cells){
+	var obj = {"title": title};
+	var labelType = trim(cells[0][0]);
+	var labelMasterList = [];
+	var data = {};
+	var edited = {};
+	
+	//create labelMasterList
+	for (var y=1; y<cells.length; y++){
+		if (trim(cells[y][0]) != "")
+			labelMasterList.push(trim(cells[y][0]));
+	}
+	obj.labelMasterList = labelMasterList;
+	obj.labelType = labelType;
+	
+	//create data and edited hash
+	for (var x=1; x<cells[0].length; x++){
+		if (trim(cells[0][x]) != ""){
+			data[trim(cells[0][x])] = [];
+			edited[trim(cells[0][x])] = true;
+			for (var y=1; y<cells.length; y++){
+				if (cells[y][0] != ""){
+					data[trim(cells[0][x])].push({
+						"label":trim(cells[y][0]),
+						"value":parseFloat(cells[y][x])
+					});
+				}
+			}
+		}
+	}
+	obj.data = data;
+	obj.edited = edited;
+	obj.userDefined = true;
+	
+	exampleSpreadsheets.push(new Spreadsheet(obj));
+	constructVis();
 	
 };
 
@@ -739,7 +776,8 @@ function updateWorksheet(oldTitle, newTitle, cells){
 function positionWorksheetURLMenu(){
 	$('#worksheetURLMenu').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetURLMenu').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetURLMenu').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetURLMenu').width()/2)+"px")
+										 .css("z-index",2);
 }
 $('#worksheetURLMenu').hide();
 
@@ -759,7 +797,8 @@ $('#submitURL').click(function(){
 function positionWorksheetDescriptionPopup(){
 	$('#worksheetDescriptionPopup').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetDescriptionPopup').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetDescriptionPopup').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetDescriptionPopup').width()/2)+"px")
+										 .css("z-index",2);
 }
 
 $('#worksheetDescriptionPopup').hide();
