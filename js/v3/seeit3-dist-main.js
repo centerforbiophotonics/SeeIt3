@@ -1994,7 +1994,7 @@ function constructLegendPanel(graph, index){
 function positionAndSizeLegendPanel(graph,index){
 	var top = $('span').offset().top +
 						graphCollection.padTop +
-						graph.h * (index+1) - 33;
+						graph.h * (index+1) - 34;
 						
 	var left = $('span').offset().left +
 						 graphCollection.padLeft;
