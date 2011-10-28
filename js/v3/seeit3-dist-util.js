@@ -22,6 +22,12 @@ function updateColor(category, color){
 	var b = parseInt(color.rgb[2]*255);
 	graphCollection.categoryColors[category]= new pv.Color.Rgb(r,g,b,1);
 	vis.render();
+	for (var i=0; i<graphCollection.graphs.length; i++){
+		for (var j=0; j<graphCollection.graphs[i].includedCategories.length; j++){
+			if ($('#lgndText'+i+"-"+j).html() == category)
+				$('#lgndColor'+i+"-"+j).css('background-color','#'+color.toString());
+		}
+	}
 }
 
 //Takes out characters that don't work in jquery selectors

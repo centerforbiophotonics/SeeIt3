@@ -160,7 +160,6 @@ GraphCollection.prototype = {
 	
 	setChildGraphWidths: function(){
 		var graphCollection = this;
-		console.log("resize");
 		graphCollection.graphs.forEach(function(g,i){
 			g.w = graphCollection.w;
 			g.setXScale();

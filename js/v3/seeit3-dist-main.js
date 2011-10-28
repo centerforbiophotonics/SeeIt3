@@ -2058,9 +2058,9 @@ function constructLegendPanel(graph, index){
 							"onmouseout=\"this.className='menuItemDef'\""+
 							"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+")\">"+
 							"<table cellpadding='2' cellspacing='0'><tr>"+
-							"<td><div style='background-color:rgb("+color.r+","+color.g+","+color.b+
+							"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
 							"); border:2px solid black; width:20px; height:20px;'></div></td>"+
-							"<td style='overflow:hidden;'><div style='white-space:nowrap; width:100%;'>"+category+"</div></td></tr></table></div></td>";
+							"<td style='overflow:hidden;'><div id='lgndText"+index+"-"+i+"' style='white-space:nowrap; width:100%;'>"+category+"</div></td></tr></table></div></td>";
 	});
 	string += "</tr></table></center>";
 	$('#legend'+index).html(string);
