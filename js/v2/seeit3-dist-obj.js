@@ -765,7 +765,7 @@ Worksheet.prototype = {
 															})
 												.forEach(function(e) {
 													data[columnToCategory[e.title.$t.replace(/[0-9]/g,"")]].push(
-														{"label": rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))],
+														{"label": trim(rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))]),
 														 "value": parseFloat(e.content.$t)
 														}
 													);													
@@ -789,7 +789,7 @@ Worksheet.prototype = {
 							e.title.$t.replace(/[0-9]/g,"") == "A"
 					})
 		.forEach(function(e){
-			labels.push(e.content.$t);
+			labels.push(trim(e.content.$t));
 		});
 		return labels;
 	},

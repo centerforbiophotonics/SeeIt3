@@ -771,11 +771,10 @@ Worksheet.prototype = {
 		feedData.feed.entry.filter(function(e) { return parseInt(e.title.$t.replace(/[A-Z]/g,"")) == 1 })
 			.slice(1)
 			.forEach(function(e) { 
-				var re = new RegExp("dependent variable:","i");
-				var cat = trim(e.content.$t.replace(re,""))
+				var cat = trim(e.content.$t.replace(new RegExp("dependent variable:","i"),"")
 										.replace(new RegExp("\\n", "g" ),"")
 										.replace(new RegExp("\'", "g"),"")
-										.replace(new RegExp("\"", "g"),"");
+										.replace(new RegExp("\"", "g"),""));
 				columnToCategory[e.title.$t.replace(/[0-9]/g,"")] = cat;
 				data[cat] = []
 			});
@@ -796,7 +795,7 @@ Worksheet.prototype = {
 															})
 												.forEach(function(e) {
 													data[columnToCategory[e.title.$t.replace(/[0-9]/g,"")]].push(
-														{"label": rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))],
+														{"label": trim(rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))]),
 														 "value": parseFloat(e.content.$t)
 														}
 													);													
@@ -823,7 +822,7 @@ Worksheet.prototype = {
 			return e.content.$t[0] != '*';
 		})
 		.forEach(function(e){
-			labels.push(e.content.$t);
+			labels.push(trim(e.content.$t));
 		});
 		return labels;
 	},
