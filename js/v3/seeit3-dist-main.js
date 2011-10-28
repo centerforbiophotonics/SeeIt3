@@ -669,7 +669,7 @@ function constructDatasetPanel(){
 
 var dragObj;
 function sidePanDragStart(event, category){
-	//console.log(event);
+	console.log(event);
 	event.preventDefault();
 	
 	dragObj = new Object();
@@ -677,8 +677,8 @@ function sidePanDragStart(event, category){
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
-								 .css('left',event.x)
-								 .css('top',event.y)
+								 .css('left',event.clientX)
+								 .css('top',event.clientY)
 								 .css('z-index', 10000);
 	
 	document.body.style.cursor="move";
@@ -688,19 +688,19 @@ function sidePanDragStart(event, category){
 
 function sidePanDragGo(event){
 	$('#dragFeedback').css('position', 'absolute')
-								 .css('left',event.x)
-								 .css('top',event.y)
+								 .css('left',event.clientX)
+								 .css('top',event.clientY)
 								 .css('z-index', 10000);
 }
 
 function sidePanDragStop(event){
 	$('#dragFeedback').hide();
 	
-	var curX = event.x -
+	var curX = event.clientX -
 						 $('span').offset().left -
 						 graphCollection.padLeft + 14;
 							
-	var curY = event.y - 
+	var curY = event.clientY - 
 						 $('span').offset().top - 
 						 graphCollection.padTop;
 						 
@@ -732,8 +732,8 @@ function legPanDragStart(event, category, index){
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
-								 .css('left',event.x)
-								 .css('top',event.y)
+								 .css('left',event.clientX)
+								 .css('top',event.clientY)
 								 .css('z-index', 10000);
 	
 	document.body.style.cursor="move";
@@ -743,19 +743,19 @@ function legPanDragStart(event, category, index){
 
 function legPanDragGo(event){
 	$('#dragFeedback').css('position', 'absolute')
-								 .css('left',event.x)
-								 .css('top',event.y)
+								 .css('left',event.clientX)
+								 .css('top',event.clientY)
 								 .css('z-index', 10000);
 }
 
 function legPanDragStop(event){
 	$('#dragFeedback').hide();
 	
-	var curX = event.x -
+	var curX = event.clientX -
 						 $('span').offset().left -
 						 graphCollection.padLeft + 14;
 							
-	var curY = event.y - 
+	var curY = event.clientY - 
 						 $('span').offset().top - 
 						 graphCollection.padTop;
 						 

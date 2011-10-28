@@ -793,7 +793,7 @@ function updateWorksheet(oldTitle, newTitle, cells){
 	}
 	obj.labelMasterList = labelMasterList;
 	obj.labelType = labelType;
-	console.log(cells);
+	
 	//create data and edited hash
 	for (var x=1; x<cells[0].length; x++){
 		if (trim(cells[0][x]) != ""){
