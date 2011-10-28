@@ -652,7 +652,7 @@ function constructDatasetPanel(){
 							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
 							"onmouseover=\"this.className='menuItemOver'\""+
 							"onmouseout=\"this.className='menuItemDef'\""+
-							"onmousedown=\"javascript:dragStart(event,'"+key+"')\">"+
+							"onmousedown=\"javascript:sidePanDragStart(event,'"+key+"')\">"+
 							key+"</div></td></tr></table>";
 			}
 							
@@ -668,7 +668,7 @@ function constructDatasetPanel(){
 }
 
 var dragObj;
-function dragStart(event, category){
+function sidePanDragStart(event, category){
 	//console.log(event);
 	event.preventDefault();
 	
@@ -680,19 +680,20 @@ function dragStart(event, category){
 								 .css('left',event.x)
 								 .css('top',event.y)
 								 .css('z-index', 10000);
-								 
-	document.addEventListener("mousemove", dragGo,   true);
-	document.addEventListener("mouseup",   dragStop, true);
+	
+	document.body.style.cursor="move";
+	document.addEventListener("mousemove", sidePanDragGo,   true);
+	document.addEventListener("mouseup",   sidePanDragStop, true);
 }
 
-function dragGo(event){
+function sidePanDragGo(event){
 	$('#dragFeedback').css('position', 'absolute')
 								 .css('left',event.x)
 								 .css('top',event.y)
 								 .css('z-index', 10000);
 }
 
-function dragStop(event){
+function sidePanDragStop(event){
 	$('#dragFeedback').hide();
 	
 	var curX = event.x -
@@ -716,9 +717,83 @@ function dragStop(event){
 	}
 	constructVis();
 	
-	document.removeEventListener("mousemove", dragGo,   true);
-	document.removeEventListener("mouseup",   dragStop, true);
+	document.body.style.cursor="default";
+	document.removeEventListener("mousemove", sidePanDragGo,   true);
+	document.removeEventListener("mouseup",   sidePanDragStop, true);
 }
+
+function legPanDragStart(event, category, index){
+	//console.log(event);
+	event.preventDefault();
+	
+	dragObj = new Object();
+	dragObj.category = category;
+	dragObj.index = index;
+	$('#dragFeedback').html(category);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.x)
+								 .css('top',event.y)
+								 .css('z-index', 10000);
+	
+	document.body.style.cursor="move";
+	document.addEventListener("mousemove", legPanDragGo,   true);
+	document.addEventListener("mouseup",   legPanDragStop, true);
+}
+
+function legPanDragGo(event){
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.x)
+								 .css('top',event.y)
+								 .css('z-index', 10000);
+}
+
+function legPanDragStop(event){
+	$('#dragFeedback').hide();
+	
+	var curX = event.x -
+						 $('span').offset().left -
+						 graphCollection.padLeft + 14;
+							
+	var curY = event.y - 
+						 $('span').offset().top - 
+						 graphCollection.padTop;
+						 
+	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
+		if (graphCollection.graphs.length > 4){
+			var which = parseInt(curY/graphCollection.defaultGraphHeight);
+			var toGraph = graphCollection.graphs[which];
+			var fromGraph = graphCollection.graphs[dragObj.index];
+			if (toGraph.addCategory(dragObj.category)){
+				fromGraph.removeCategory(dragObj.category);
+				if (fromGraph.selectedCategory == dragObj.category)
+					fromGraph.selectedCategory = null;
+			}
+			graphCollection.updateMenuOptions();
+		} else {
+			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
+			var toGraph = graphCollection.graphs[which];
+			var fromGraph = graphCollection.graphs[dragObj.index];
+			if (toGraph.addCategory(dragObj.category)){
+				fromGraph.removeCategory(dragObj.category);
+				if (fromGraph.selectedCategory == dragObj.category)
+					fromGraph.selectedCategory = null;
+			}
+			graphCollection.updateMenuOptions();
+		}
+	} else {
+		var fromGraph = graphCollection.graphs[dragObj.index];
+		fromGraph.removeCategory(dragObj.category);
+		if (fromGraph.selectedCategory == dragObj.category)
+			fromGraph.selectedCategory = null;
+	}
+	constructVis();
+	
+	document.body.style.cursor="default";
+	document.removeEventListener("mousemove", legPanDragGo,   true);
+	document.removeEventListener("mouseup",   legPanDragStop, true);
+}
+
 		  
 		  
 function constructGraphPanel(graph, index){
@@ -1981,7 +2056,7 @@ function constructLegendPanel(graph, index){
 							"style=\"color:black; background-color:white;\""+
 							"onmouseover=\"this.className='menuItemOver'\""+
 							"onmouseout=\"this.className='menuItemDef'\""+
-							"onmousedown=\"javascript:dragStart(event,'"+category+"')\">"+
+							"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+")\">"+
 							"<table cellpadding='2' cellspacing='0'><tr>"+
 							"<td><div style='background-color:rgb("+color.r+","+color.g+","+color.b+
 							"); border:2px solid black; width:20px; height:20px;'></div></td>"+
