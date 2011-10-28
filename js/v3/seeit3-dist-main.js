@@ -114,23 +114,23 @@ function constructVis(){
 			if (!graphCollection.datasetsMenuShowing){
 				$('#datasets').show();
 				graphCollection.datasetsMenuShowing = true;
-				graphCollection.setW(graphCollection.calcGraphWidth());
-				vis.render();
 				$('span').css('position', 'absolute')
 								 .css('left',$('#datasets').width()+29)
 								 .css('z-index', -1);
+				graphCollection.setW(graphCollection.calcGraphWidth());
 				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 				positionDisplayMenu();
+				vis.render();
 			} else {
 				$('#datasets').hide();
 				graphCollection.datasetsMenuShowing = false;
-				graphCollection.setW(graphCollection.calcGraphWidth());
-				vis.render();
 				$('span').css('position', 'absolute')
 								 .css('left',8)
 								 .css('z-index', -1);
+				graphCollection.setW(graphCollection.calcGraphWidth());
 				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 				positionDisplayMenu();
+				vis.render();
 			}
 		})
 		.event("mouseover", function(d){

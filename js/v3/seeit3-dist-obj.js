@@ -160,9 +160,10 @@ GraphCollection.prototype = {
 	
 	setChildGraphWidths: function(){
 		var graphCollection = this;
-		graphCollection.graphs.forEach(function(g){
+		graphCollection.graphs.forEach(function(g,i){
 			g.w = graphCollection.w;
 			g.setXScale();
+			positionAndSizeLegendPanel(g,i);
 		});
 	},
 	
