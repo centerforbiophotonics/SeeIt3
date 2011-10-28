@@ -669,7 +669,7 @@ function constructDatasetPanel(){
 
 var dragObj;
 function sidePanDragStart(event, category){
-	console.log(event);
+	//console.log(event);
 	event.preventDefault();
 	
 	dragObj = new Object();

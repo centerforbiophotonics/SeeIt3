@@ -51,12 +51,13 @@ function toggleDataSubtree(id,i,title){
 }
 
 function resizeVis(){
-	graphCollection.setW(graphCollection.calcGraphWidth());
-	vis.render();
 	$('span').css('position', 'absolute')
 					 .css('left',$('#datasets').width()+29)
 					 .css('z-index', -1);
+	graphCollection.setW(graphCollection.calcGraphWidth());
+	vis.render();
 	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+	
 	positionDisplayMenu();
 }
 
