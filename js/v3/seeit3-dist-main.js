@@ -622,7 +622,7 @@ function constructVis(){
 	if (graphCollection.datasetsMenuShowing) resizeVis();
 	//showHideAdvancedOptions();
 	
-	
+	$('.legend').remove();
 	graphCollection.graphs.forEach(function(graph,i){
 		constructLegendPanel(graph,i);
 		positionAndSizeLegendPanel(graph,i);
@@ -2049,9 +2049,10 @@ function constructGraphPanel(graph, index){
 }
 
 function constructLegendPanel(graph, index){
-	if ($('#legend'+index).length == 0){
-		$('body').prepend("<div class=\"legend\" id=\"legend"+index+"\"></div>");
-	}
+	//if ($('#legend'+index).length == 0){
+	//$('#legend'+index).remove();
+	$('body').prepend("<div class=\"legend\" id=\"legend"+index+"\"></div>");
+	//}
 	
 	var string = "<center><table cellpadding='0' cellspacing='0' style='table-layout:fixed;' width='100%'><tr>";
 	graph.includedCategories.forEach(function(category, i){
