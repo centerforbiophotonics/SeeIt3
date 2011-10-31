@@ -42,6 +42,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
   if (numWorksheetsLoaded >= numWorksheets){
 		jQuery('p#loadingMsg').hide();
 		constructVis();
+		showHideAdvancedOptions();
 		positionGroupingMenuOverGraph(0,graphCollection);
 		positionDisplayMenu();
   }
@@ -299,7 +300,6 @@ function constructVis(){
 		.lineWidth(1)
 		.event("click", function(){
 			graphCollection.addGraph();
-			//vis.render();
 			constructVis();
 		})
 		.event("mouseover", function(d){
@@ -620,7 +620,7 @@ function constructVis(){
 	});
 	vis.render();
 	if (graphCollection.datasetsMenuShowing) resizeVis();
-	showHideAdvancedOptions();
+	//showHideAdvancedOptions();
 	
 	
 	graphCollection.graphs.forEach(function(graph,i){
@@ -797,7 +797,6 @@ function legPanDragStop(event){
 		  
 		  
 function constructGraphPanel(graph, index){
-		
 	var graphPanel = vis.add(pv.Panel)
 		.top(function(){return graph.h*index})
 		.height(function(){return graph.h})
@@ -1695,7 +1694,12 @@ function constructGraphPanel(graph, index){
 			})
 			.font(fontString)
 			.textAlign("center")
-			.visible(function(){return graph.MMMLabelVis[this.index]})
+			.visible(function(){
+				return graph.MMMLabelVis[this.index] && //graph.showMMM &&
+					((this.index == 0) ? graph.showMean : true) &&
+					((this.index == 1) ? graph.showMedian : true) &&
+					((this.index >= 2) ? graph.showMode : true);
+			})
 		
 		
 		/*Insufficient Data for Four Warning */	

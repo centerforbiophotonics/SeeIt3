@@ -129,8 +129,15 @@ GraphCollection.prototype = {
 		delete this.datasetsVisible[title];
 		delete this.worksheets[title];
 		
-		
-		
+		exampleSpreadsheets.forEach(function(s){
+			var ri = null;
+			s.worksheets.forEach(function(w,i){
+				if (w.title == title)
+					ri = i;
+			});
+			if (ri != null)
+				s.worksheets.splice(ri,1);
+		});
 	},
 	
 	calcGraphWidth: function(){
@@ -150,8 +157,7 @@ GraphCollection.prototype = {
 	},
 	
 	addGraph: function() {
-		this.graphs.push(new Graph(this.worksheet, this));
-		
+		this.graphs.push(new Graph(this));
 		this.setH(this.calcGraphHeight());
 	},
 	
@@ -396,7 +402,7 @@ GraphCollection.prototype = {
 	},
 }
 
-function Graph(worksheet, graphCollection){
+function Graph(graphCollection){
 	this.graphCollection = graphCollection;
 	//this.worksheet = worksheet;
 	this.data = graphCollection.data;

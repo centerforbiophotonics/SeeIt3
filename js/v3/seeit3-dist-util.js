@@ -230,7 +230,7 @@ function showHideAdvancedOptions(){
 		$('#divisionsCell').hide();
 		$('#stackAndButtonTable').hide();
 		graphCollection.editModeEnabled = false;
-		hideMenus();
+		//hideMenus();
 		graphCollection.buttonIcon = true;
 		graphCollection.buttonText = true;
 		$("#drawMode option[value='gravity']").attr('selected', 'selected');
@@ -238,6 +238,10 @@ function showHideAdvancedOptions(){
 		$("#divisionsValue").html(graphCollection.buckets);
 		
 		graphCollection.graphs.forEach(function(g){
+			if (g.groupingMode != "NoGroups" &&
+					g.groupingMode != "UserDefGroups" &&
+					g.groupingMode != "TwoEqualGroups" &&
+					g.groupingMode != "FourEqualGroups")
 			g.groupingMode = "NoGroups";
 		});
 		graphCollection.updateMenuOptions();

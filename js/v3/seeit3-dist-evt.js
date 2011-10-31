@@ -638,12 +638,14 @@ function openWorksheetMenu(worksheetTitle){
 		text = "*** Enter Worksheet Text ***";
 		worksheetNew = true;
 		$('#loadFromURL').show();
+		$('#deleteWorksheet').hide();
 	} else {
 		title = worksheetTitle;
 		text = graphCollection.worksheets[worksheetTitle].toString();
 		worksheetNew = false;
 		worksheetToEdit = worksheetTitle;
 		$('#loadFromURL').hide();
+		$('#deleteWorksheet').show();
 	}
 	
 	$('#worksheetTitle').val(title);
@@ -679,6 +681,16 @@ $('#loadFromForm').click(function(){
 		else
 			updateWorksheet(worksheetToEdit,title,cells);
 	}
+});
+
+$('#deleteWorksheet').click(function(){
+	if (confirm("Are you sure you want to delete "+worksheetToEdit+"?")) { 
+		graphCollection.removeWorksheet(worksheetToEdit);
+		constructVis();
+		hideMenus();
+	}
+	
+	
 });
 
 function validateWorksheetForm(title, cells){
