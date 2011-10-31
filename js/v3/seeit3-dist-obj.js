@@ -104,6 +104,22 @@ GraphCollection.prototype = {
 	
 	removeWorksheet: function(title){
 		var worksheet = this.worksheets[title];
+		
+		for (var key in worksheet.data){
+			this.graphs.forEach(function(g){
+				var rInd = null;
+				g.includedCategories.forEach(function(c,i){
+					console.log(c+"..."+key);
+					if (c == key){
+						//console.log(c);
+						rInd = i;
+					}
+				});
+				if (rInd != null)
+					g.includedCategories.splice(rInd,1);
+			});
+		}
+		
 		for (key in worksheet.data){
 			delete this.data[key];
 			delete this.categoryColors[key];
@@ -112,6 +128,9 @@ GraphCollection.prototype = {
 		}
 		delete this.datasetsVisible[title];
 		delete this.worksheets[title];
+		
+		
+		
 	},
 	
 	calcGraphWidth: function(){

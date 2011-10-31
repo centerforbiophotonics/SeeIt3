@@ -987,7 +987,7 @@ function constructGraphPanel(graph, index){
 			.data([{"x":0,"y":0}])
 			.left(0)
 			.bottom(function(){return graph.baseLine})
-			.height(function(){return graph.h * 0.75})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle("green")
 			.visible(function(){return graph.groupingMode == "UserDefGroups"})
 			.anchor("top").add(pv.Dot)
@@ -1024,7 +1024,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return graph.udPartitions})
 			.left(function(d){return d.x})
 			.bottom(function(){return graph.baseLine})
-			.height(function(){return graph.h * 0.75})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle("green")
 			.visible(function(){return graph.groupingMode == "UserDefGroups"})
 			.anchor("top").add(pv.Dot)
@@ -1056,7 +1056,7 @@ function constructGraphPanel(graph, index){
 		graphPanel.add(pv.Rule)
 			.right(0)
 			.bottom(function(){return graph.baseLine})
-			.height(function(){return graph.h * 0.75})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle("green")
 			.visible(function(){return graph.groupingMode == "UserDefGroups"})
 			
@@ -1066,7 +1066,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return countDataInUserDefPartitions(graph)})
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
 			.left(function(d){
 				var udPartXVals = getSortedUDPartitionXVals(graph);
 				if (this.index != udPartXVals.length-1){
@@ -1097,7 +1097,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return partitionDataByIntervalWidth(graph)})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
-			.height(function(){return graph.h * 0.75})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.visible(function(){return graph.groupingMode == "FixedIntervalGroups"})
 			.strokeStyle("green")
 			.title(function(d){return d})
@@ -1113,7 +1113,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return countDataInPartitions(graph,partitionDataByIntervalWidth(graph))})
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
 			.left(function(){
 				if (this.index != partitionDataByIntervalWidth(graph).length-1){
 					return graph.x((partitionDataByIntervalWidth(graph)[this.index]+partitionDataByIntervalWidth(graph)[this.index+1])/2);
@@ -1145,7 +1145,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return partitionDataInFixedSizeGroups(graph)})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
-			.height(function(){return graph.h * 0.75})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.visible(function(){return graph.groupingMode == "FixedSizeGroups"})
 			.strokeStyle("green")
 			.title(function(d){return d.toFixed(1)})
@@ -1161,7 +1161,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return partitionDataInFixedSizeGroups(graph)})
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
 			.left(function(){
 				if (this.index != partitionDataInFixedSizeGroups(graph).length-1){
 					return graph.x((partitionDataInFixedSizeGroups(graph)[this.index]+partitionDataInFixedSizeGroups(graph)[this.index+1])/2);
@@ -1186,7 +1186,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return partitionDataInTwo(graph)})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
-			.height(function(){return graph.h * 0.75})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.visible(function(){
 				return graph.groupingMode == "TwoEqualGroups" &&
 							 !graph.insufDataForTwo;
@@ -1205,7 +1205,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return partitionDataInTwo(graph)})
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
 			.left(function(){
 				if (this.index != partitionDataInTwo(graph).length-1){
 					return graph.x((partitionDataInTwo(graph)[this.index]+partitionDataInTwo(graph)[this.index+1])/2);
@@ -1245,7 +1245,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return partitionDataInFour(graph)})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
-			.height(function(){return graph.h * 0.75})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
 																 !graph.insufDataForFour;
 			})
@@ -1266,7 +1266,7 @@ function constructGraphPanel(graph, index){
 			.data(function(){return countDataInPartitions(graph, partitionDataInFour(graph))})
 			.textAlign("center")
 			.textStyle("green")
-			.bottom(function(){return graph.h * 0.70 + graph.baseLine})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
 			.left(function(){
 				if (this.index != partitionDataInFour(graph).length-1){
 					return graph.x((partitionDataInFour(graph)[this.index]+partitionDataInFour(graph)[this.index+1])/2);
@@ -1605,7 +1605,7 @@ function constructGraphPanel(graph, index){
 			})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return graph.baseLine})
-			.height(function(){return graph.h * 0.75})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.visible(function(){
 				if (this.index == 0)
 					return graph.showMMM || graph.showMean;
@@ -1683,7 +1683,7 @@ function constructGraphPanel(graph, index){
 			})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(d){
-				return graph.baseLine + graph.h * 0.75 + 5;
+				return graph.baseLine + (graph.h-graph.baseLine) * 0.75 + 5;
 			})
 			.textStyle(function(d){
 				if(this.index == 0)

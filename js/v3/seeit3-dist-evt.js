@@ -780,6 +780,7 @@ function addWorksheet(title, cells){
 };
 
 function updateWorksheet(oldTitle, newTitle, cells){
+	console.log("update");
 	var obj = {"title": newTitle};
 	var labelType = trim(cells[0][0]);
 	var labelMasterList = [];
@@ -812,21 +813,23 @@ function updateWorksheet(oldTitle, newTitle, cells){
 	obj.data = data;
 	obj.edited = edited;
 	
+	var wrksheet;
 	exampleSpreadsheets.forEach(function(s){
 		s.worksheets.forEach(function(w){
 			if (w.title == oldTitle){
-				w.title = newTitle;
-				w.data = obj.data;
-				w.edited = obj.edited;
-				w.labelMasterList = obj.labelMasterList;
-				w.labelType = obj.labelType;
-				
-				graphCollection.removeWorksheet(oldTitle);
-				graphCollection.addWorksheet(w);
+				wrksheet = w;
 			}
 		});
 	});
+	graphCollection.removeWorksheet(oldTitle);
 	
+	wrksheet.title = newTitle;
+	wrksheet.data = obj.data;
+	wrksheet.edited = obj.edited;
+	wrksheet.labelMasterList = obj.labelMasterList;
+	wrksheet.labelType = obj.labelType;
+	
+	graphCollection.addWorksheet(wrksheet);
 	
 	constructVis();
 }
