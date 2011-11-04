@@ -24,10 +24,14 @@ function updateColor(category, color){
 	vis.render();
 	for (var i=0; i<graphCollection.graphs.length; i++){
 		for (var j=0; j<graphCollection.graphs[i].includedCategories.length; j++){
-			if ($('#lgndText'+i+"-"+j).html() == category)
-				$('#lgndColor'+i+"-"+j).css('background-color','#'+color.toString());
+			var text = graphCollection.graphs[i].includedCategories[j];
+			if (trim(text) == trim(category)){
+				$('#lgndColor'+i+'-'+j).css('background-color','#'+color.toString());
+			}
 		}
 	}
+	
+	//constructVis();
 }
 
 //Takes out characters that don't work in jquery selectors
