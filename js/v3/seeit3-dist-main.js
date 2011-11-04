@@ -50,7 +50,10 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 
 
 function constructVis(){
-	jQuery('span').remove();
+	if (jQuery('span').length != 0){
+		closeColorPickers();
+		jQuery('span').remove();
+	}
 
 	vis = new pv.Panel()
 		.width(function(){return graphCollection.w})
@@ -632,6 +635,7 @@ function constructVis(){
 function constructDatasetPanel(){
 	var html = "";
 	var i = 0;
+	var picker = 0;
 	exampleSpreadsheets.forEach(function(s){
 		s.worksheets.forEach(function(w){
 			html += "<table><tr>"+
@@ -647,13 +651,14 @@ function constructDatasetPanel(){
 				
 				var color = graphCollection.categoryColors[key];
 				html+="<table style='margin-left:15px;'><tr><td>"+
-							"<input class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key+"', this.color)\" style='width:20px; height:20px'></td>"+
+							"<input id='colorPick"+picker+"' class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key+"', this.color)\" style='width:20px; height:20px'></td>"+
 							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
 							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
 							"onmouseover=\"this.className='menuItemOver'\""+
 							"onmouseout=\"this.className='menuItemDef'\""+
 							"onmousedown=\"javascript:sidePanDragStart(event,'"+key+"')\">"+
 							key+"</div></td></tr></table>";
+				picker++;
 			}
 							
 			html += "</div>";
@@ -715,8 +720,9 @@ function sidePanDragStop(event){
 			graphCollection.graphs[which].addCategory(dragObj.category);
 			graphCollection.updateMenuOptions();
 		}
+		constructVis();
 	}
-	constructVis();
+	
 	
 	document.body.style.cursor="default";
 	document.removeEventListener("mousemove", sidePanDragGo,   true);
@@ -795,6 +801,18 @@ function legPanDragStop(event){
 	document.body.style.cursor="default";
 	document.removeEventListener("mousemove", legPanDragGo,   true);
 	document.removeEventListener("mouseup",   legPanDragStop, true);
+}
+
+function closeColorPickers(){
+	var picker = 0;
+	for (var i=0; i<exampleSpreadsheets.length; i++){
+		for (var j=0; j<exampleSpreadsheets[i].worksheets.length; j++){
+			for (var key in exampleSpreadsheets[i].worksheets[j].data){
+				document.getElementById('colorPick'+picker).color.hidePicker()
+				picker++;
+			}
+		}
+	} 
 }
 
 		  

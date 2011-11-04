@@ -781,7 +781,7 @@ function addWorksheet(title, cells){
 			data[trim(cells[0][x])] = [];
 			edited[trim(cells[0][x])] = true;
 			for (var y=1; y<cells.length; y++){
-				if (cells[y][0] != ""){
+				if (cells[y][0] != "" && cells[y][x] != ""){
 					data[trim(cells[0][x])].push({
 						"label":trim(cells[y][0]),
 						"value":parseFloat(cells[y][x])
@@ -800,57 +800,8 @@ function addWorksheet(title, cells){
 };
 
 function updateWorksheet(oldTitle, newTitle, cells){
-	console.log("update");
-	var obj = {"title": newTitle};
-	var labelType = trim(cells[0][0]);
-	var labelMasterList = [];
-	var data = {};
-	var edited = {};
-	
-	//create labelMasterList
-	for (var y=1; y<cells.length; y++){
-		if (trim(cells[y][0]) != "")
-			labelMasterList.push(trim(cells[y][0]));
-	}
-	obj.labelMasterList = labelMasterList;
-	obj.labelType = labelType;
-	
-	//create data and edited hash
-	for (var x=1; x<cells[0].length; x++){
-		if (trim(cells[0][x]) != ""){
-			data[trim(cells[0][x])] = [];
-			edited[trim(cells[0][x])] = true;
-			for (var y=1; y<cells.length; y++){
-				if (cells[y][0] != "" && cells[y][x] != ""){
-					data[trim(cells[0][x])].push({
-						"label":trim(cells[y][0]),
-						"value":parseFloat(cells[y][x])
-					});
-				}
-			}
-		}
-	}
-	obj.data = data;
-	obj.edited = edited;
-	
-	var wrksheet;
-	exampleSpreadsheets.forEach(function(s){
-		s.worksheets.forEach(function(w){
-			if (w.title == oldTitle){
-				wrksheet = w;
-			}
-		});
-	});
 	graphCollection.removeWorksheet(oldTitle);
-	
-	wrksheet.title = newTitle;
-	wrksheet.data = obj.data;
-	wrksheet.edited = obj.edited;
-	wrksheet.labelMasterList = obj.labelMasterList;
-	wrksheet.labelType = obj.labelType;
-	
-	graphCollection.addWorksheet(wrksheet);
-	
+	addWorksheet(newTitle, cells);
 	constructVis();
 }
 
