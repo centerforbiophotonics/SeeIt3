@@ -220,7 +220,8 @@ function showHideAdvancedOptions(){
 		$('#fixedIntervalOptions').show();
 		$('#boxPlotOptions').show();
 		$('#scaleOptions').show();
-		$('#divisionsCell').show();
+		if ($('#drawMode option:selected').text() != "Gravity")
+			$('#divisionsCell').show();
 		$('#stackAndButtonTable').show();
 	} else {
 		$('#fixedSizeOptions').hide();
@@ -303,23 +304,6 @@ function getXBuckets(graph){
 	return points;
 }
 
-function getXTicks(graph){
-	var xDomain = graph.x.domain();
-	var mag = magnitude(xDomain[1]-xDomain[0]);
-	
-	var tickInterval = Math.floor((xDomain[1]-xDomain[0])/Math.pow(10,mag))*Math.pow(10,mag-1);
-	
-	var points = [];
-
-	points.push(xDomain[0]);
-	var nextTick = xDomain[0]+tickInterval;
-	while (nextTick < xDomain[1]){
-		points.push(nextTick);
-		nextTick += tickInterval;
-	}
-
-	return points;
-}
 
 function magnitude(number){
 	var mag = 0;

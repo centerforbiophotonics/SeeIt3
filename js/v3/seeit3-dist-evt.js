@@ -276,7 +276,15 @@ $("#textSizeDec").click(function(){
 
 $('#checkboxHideData').change(function() { vis.render();});
 
+$('#divisionsCell').hide();
+
 $('#displayOptions').change(function(){
+	console.log("test");
+	if ($('#drawMode option:selected').text() != "Gravity"){
+		$('#divisionsCell').show();
+	} else {
+		$('#divisionsCell').hide();
+	}
 	vis.render();
 })
 

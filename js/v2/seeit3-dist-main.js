@@ -888,7 +888,7 @@ function constructGraphPanel(graph, index){
 			
 		/* X-axis ticks */
 		graphPanel.add(pv.Rule)
-			.data(function() { return getXTicks(graph) })
+			.data(function() { return graph.x.ticks() })
 			.left(function(d) {return graph.x(d)})
 			.bottom(graph.baseLine)
 			.strokeStyle("#aaa")
@@ -896,7 +896,6 @@ function constructGraphPanel(graph, index){
 			.anchor("bottom").add(pv.Label)
 				.text(function(d) {return d.toFixed(1)})
 				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-				.visible(function(d) {return this.index % 2 == 0})
 			
 		/* X-axis line */
 		graphPanel.add(pv.Rule)

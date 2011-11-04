@@ -95,6 +95,14 @@ p#loadingMsg {
 	margin-bottom:1px;
 }
 
+.menuItemSel {
+	position: relative;
+	padding: 1px;
+	border: 2px #ff0000 solid;
+	cursor: move;
+	margin-bottom:1px;
+}
+
 #displayOptions {
 	background: #ffffff;
 	border:1px solid black;

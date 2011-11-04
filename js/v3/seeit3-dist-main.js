@@ -667,6 +667,7 @@ function constructDatasetPanel(){
 	jscolor.init();
 }
 
+
 var dragObj;
 function sidePanDragStart(event, category){
 	//console.log(event);
@@ -725,6 +726,8 @@ function sidePanDragStop(event){
 function legPanDragStart(event, category, index){
 	//console.log(event);
 	event.preventDefault();
+	
+	graphCollection.graphs[index].selectedCategory = category;
 	
 	dragObj = new Object();
 	dragObj.category = category;
@@ -964,7 +967,7 @@ function constructGraphPanel(graph, index){
 			
 		/* X-axis ticks */
 		graphPanel.add(pv.Rule)
-			.data(function() { return getXTicks(graph) })
+			.data(function() { return graph.x.ticks() })
 			.left(function(d) {return graph.x(d)})
 			.bottom(graph.baseLine)
 			.strokeStyle("#aaa")
@@ -972,7 +975,6 @@ function constructGraphPanel(graph, index){
 			.anchor("bottom").add(pv.Label)
 				.text(function(d) {return d.toFixed(1)})
 				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-				.visible(function(d) {return this.index % 2 == 0})
 			
 		/* X-axis line */
 		graphPanel.add(pv.Rule)
@@ -2059,8 +2061,8 @@ function constructLegendPanel(graph, index){
 		var color = graphCollection.categoryColors[category];
 		string += "<td align='center'><div class='menuItemDef'"+ 
 							"style=\"color:black; background-color:white;\""+
-							"onmouseover=\"this.className='menuItemOver'\""+
-							"onmouseout=\"this.className='menuItemDef'\""+
+							"onmouseover=\"javascript:drawLegendBorder(event,'"+category+"',"+index+",true)\" "+//this.className='menuItemOver'\""+
+							"onmouseout=\"javascript:drawLegendBorder(event,'"+category+"',"+index+",false)\" "+//this.className='menuItemDef'\""+
 							"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+")\">"+
 							"<table cellpadding='2' cellspacing='0'><tr>"+
 							"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
@@ -2069,6 +2071,21 @@ function constructLegendPanel(graph, index){
 	});
 	string += "</tr></table></center>";
 	$('#legend'+index).html(string);
+}
+
+function drawLegendBorder(event, category, index, over){
+	//console.log(event);
+	if (category == graphCollection.graphs[index].selectedCategory){}
+		//event.srcElement.attr("class", "menuItemSel");
+		//event.fromElement.className = "menuItemSel";
+	else if (over){
+		//event.srcElement.attr("class", "menuItemOver");
+		//event.fromElement.className = "menuItemOver";
+	} else {
+		//event.fromElement.className = "menuItemDef";
+		//event.srcElement.attr("class", "menuItemDef");
+	}
+	
 }
 
 function positionAndSizeLegendPanel(graph,index){
