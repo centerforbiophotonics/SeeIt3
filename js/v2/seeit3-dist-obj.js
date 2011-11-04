@@ -163,6 +163,9 @@ GraphCollection.prototype = {
 		$('#fitScaleToData').attr('checked', this.graphs[this.selectedGraphIndex].fitScaleToData);
 		
 		$('#checkboxMMM').attr('checked', this.graphs[this.selectedGraphIndex].showMMM);
+		$('#checkboxMean').attr('checked', this.graphs[this.selectedGraphIndex].showMean);
+		$('#checkboxMedian').attr('checked', this.graphs[this.selectedGraphIndex].showMedian);
+		$('#checkboxMode').attr('checked', this.graphs[this.selectedGraphIndex].showMode);
 	},
 	
 	selectAUserDefPartition: function(graphIndex, partIndex){
