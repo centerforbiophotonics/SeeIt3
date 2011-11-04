@@ -207,15 +207,6 @@ function partitionDataByIntervalWidth(graph){
 }
 
 /*HTML Element Manipulation*/
-function toggleNetworkOptions(graph) {
-	if (graph.worksheet.local == true){
-		$('#refreshWorksheet').hide();
-		$('#editInGoogleDocs').hide();
-	} else {
-		$('#refreshWorksheet').show();
-		$('#editInGoogleDocs').show();
-	}
-}
 
 function showHideAdvancedOptions(){
 	//graphCollection.advancedUser = !(graphCollection.advancedUser);
