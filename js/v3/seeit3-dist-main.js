@@ -454,7 +454,8 @@ function constructVis(){
 		})
 		.event("click", function(){
 			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
-			vis.render();
+			constructVis();
+			//vis.render();
 		})
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
@@ -717,7 +718,8 @@ function sidePanDragStop(event){
 function legPanDragStart(event, category, index, i){
 	event.preventDefault();
 	
-	$('#legCat'+index+"-"+i).attr('class','menuItemSel');
+	if (graphCollection.editModeEnabled)
+		$('#legCat'+index+"-"+i).attr('class','menuItemSel');
 	graphCollection.graphs[index].selectedCategory = category;
 	
 	dragObj = new Object();
@@ -2064,10 +2066,10 @@ function constructLegendPanel(graph, index){
 	var string = "<center><table cellpadding='0' cellspacing='0' style='table-layout:fixed;' width='100%'><tr>";
 	graph.includedCategories.forEach(function(category, i){
 		var color = graphCollection.categoryColors[category];
-		string += "<td align='center'><div class='"+(category==selCat?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+ 
+		string += "<td align='center'><div class='"+(category==selCat&&graphCollection.editModeEnabled?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+ 
 							"style=\"color:black; background-color:white;\""+
-							"onmouseover=\"javascript:"+ (category==selCat?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
-							"onmouseout=\"javascript:"+ (category==selCat?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
+							"onmouseover=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
+							"onmouseout=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
 							"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+")\">"+
 							"<table cellpadding='2' cellspacing='0'><tr>"+
 							"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
