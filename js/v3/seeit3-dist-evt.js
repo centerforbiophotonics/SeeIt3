@@ -708,6 +708,12 @@ function validateWorksheetForm(title, cells){
 		return false;
 	}
 	
+	//Check for more than two columns
+	if (cells[0].length < 2){
+		alert("Error: Data contains less than two columns.  The first column is for labels.");
+		return false;
+	}
+	
 	//Check Duplicate Labels
 	for (var i=0; i<cells.length; i++){
 		for (var j=0; j<cells.length; j++){

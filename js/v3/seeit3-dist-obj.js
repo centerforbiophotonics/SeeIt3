@@ -53,36 +53,28 @@ function GraphCollection(){
 	this.bucketDotSize = 5;
 	this.numberOfCategories = 0;
 	
-	
-	
-	//for (var key in this.worksheet.data){
-	//	this.numberOfCategories++;
-	//}
-	
+	//used when adding
 	this.nextDefaultCategory = 0;
 	
 	//Colors
 	this.categoryColors = {};
 	this.colorScale = pv.Colors.category20(0,20);
 	
-	//var counter = 0;
-	//for (var key in this.worksheet.data){
-	//	this.categoryColors[key] = this.colorScale(counter);
-	//	counter++;
-	//}
 	this.numberOfAddedCategories = this.numberOfCategories;
 	
+	//Used to draw edited category titles in red
 	this.editedCategories = {};
-	//for (var key in this.worksheet.data){
-	//	this.editedCategories[key] = this.worksheet.edited[key];
-	//}
-	
+
+	//Increments a value added to end of default labels
+	this.nextDefaultLabel = {};
+
+	//Mode flags
 	this.editModeEnabled = false;
 	this.advancedUser = false;
-	
 	this.buttonIcon = true;
 	this.buttonText = true;
 	
+	//for highlighting points with the same label
 	this.selectedLabel = null;
 	
 	this.addGraph();
@@ -98,6 +90,7 @@ GraphCollection.prototype = {
 			this.categoryColors[key] = this.colorScale(this.numberOfCategories);
 			this.numberOfCategories++;
 			this.editedCategories[key] = worksheet.edited[key];
+			this.nextDefaultLabel[key] = 0;
 			this.datasetsVisible[worksheet.title] = false;
 		}
 	},
@@ -109,7 +102,6 @@ GraphCollection.prototype = {
 			this.graphs.forEach(function(g){
 				var rInd = null;
 				g.includedCategories.forEach(function(c,i){
-					console.log(c+"..."+key);
 					if (c == key){
 						//console.log(c);
 						rInd = i;
@@ -412,11 +404,6 @@ function Graph(graphCollection){
 	this.includedCategories = [];
 	this.selectedCategory = null;
 	this.editedCategories = this.graphCollection.editedCategories;
-	
-	this.nextDefaultLabel = {};
-	for (var key in this.editedCategories){
-		this.nextDefaultLabel[key] = 0;
-	}
 	
 	this.w = graphCollection.calcGraphWidth();
 	this.h = 200;
@@ -760,7 +747,6 @@ function Worksheet(param) {
 			this.data = param.data;
 			this.edited = param.edited;
 			userCreatedWorksheet = this;
-			//jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:this });
 			graphCollection.addWorksheet(this);
 		}
 	}
@@ -915,7 +901,6 @@ function Spreadsheet(key) {
 			this.key = 'local';
 			this.local = true;
 			this.constructUserDefinedWorksheet(key);
-			console.log("test");
 		}
 	}
 }

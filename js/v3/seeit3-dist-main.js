@@ -62,12 +62,6 @@ function constructVis(){
 		.left(function(){return graphCollection.padLeft})
 		.right(function(){return graphCollection.padRight})
 		.top(function(){return graphCollection.padTop})
-	
-	/* Divider Between Graphs and Data Sets */
-	//vis.add(pv.Rule)
-	//	.left(-35)
-	//	.bottom(0)
-	//	.top(graphCollection.padTop * -1)
 		
 	/*Divider Between Top Graph and Title*/
 	vis.add(pv.Rule)
@@ -87,14 +81,6 @@ function constructVis(){
 				return "black"
 		})
 	
-	/*Graph Title*/		  
-	//vis.add(pv.Label)
-	//	.left(function(){return graphCollection.w / 2})
-	//	.top(-5)
-	//	.textAlign("center")
-	//	.textAngle(0)
-	//	.text(graphCollection.worksheet.title + " by " +graphCollection.worksheet.labelType)
-	//	.font("bold 20px sans-serif");
 	
 	//Datasets
 	var dataSetsPanel = vis.add(pv.Panel)
@@ -675,7 +661,6 @@ function constructDatasetPanel(){
 
 var dragObj;
 function sidePanDragStart(event, category){
-	//console.log(event);
 	event.preventDefault();
 	
 	dragObj = new Object();
@@ -729,10 +714,10 @@ function sidePanDragStop(event){
 	document.removeEventListener("mouseup",   sidePanDragStop, true);
 }
 
-function legPanDragStart(event, category, index){
-	//console.log(event);
+function legPanDragStart(event, category, index, i){
 	event.preventDefault();
 	
+	$('#legCat'+index+"-"+i).attr('class','menuItemSel');
 	graphCollection.graphs[index].selectedCategory = category;
 	
 	dragObj = new Object();
@@ -808,7 +793,8 @@ function closeColorPickers(){
 	for (var i=0; i<exampleSpreadsheets.length; i++){
 		for (var j=0; j<exampleSpreadsheets[i].worksheets.length; j++){
 			for (var key in exampleSpreadsheets[i].worksheets[j].data){
-				document.getElementById('colorPick'+picker).color.hidePicker()
+				if (document.getElementById('colorPick'+picker) != null)
+					document.getElementById('colorPick'+picker).color.hidePicker()
 				picker++;
 			}
 		}
@@ -827,7 +813,7 @@ function constructGraphPanel(graph, index){
 			if (!dragging){
 				var oldIndex = graphCollection.selectedGraphIndex;
 				if (oldIndex != index){
-					graphCollection.selectAUserDefPartition();
+					graphCollection.selectAUserDefPartition();  //deselect ud partitions
 				}
 				graphCollection.selectedGraphIndex = index;
 				graphCollection.selectedLabel = null;
@@ -839,22 +825,24 @@ function constructGraphPanel(graph, index){
 				if (graph.selectedCategory != null && graphCollection.editModeEnabled){
 					var loc = graphPanel.mouse().x;
 					
-					
-					graph.data[graph.selectedCategory].push(
-						{"label": "default"+graph.nextDefaultLabel[graph.selectedCategory]++,
-						 "value": graph.x.invert(loc)}
-					);
-					
 					var worksheet = "";
 					for (var key in graphCollection.worksheets){
 						if (graphCollection.worksheets[key].data[graph.selectedCategory] != undefined)
 							worksheet = key;
 					}
 					
+					graphCollection.worksheets[worksheet].labelMasterList.push(
+						"default"+graphCollection.nextDefaultLabel[graph.selectedCategory]);
+					
+					graphCollection.data[graph.selectedCategory].push(
+						{"label": "default"+graphCollection.nextDefaultLabel[graph.selectedCategory]++,
+						 "value": graph.x.invert(loc)}
+					);
+					
 					graphCollection.editData(worksheet, 
 																		graph.selectedCategory, 
 																		graph.selectedCategory, 
-																		graph.data[graph.selectedCategory]
+																		graphCollection.data[graph.selectedCategory]
 																	);
 				} 
 			//	else if (graphCollection.editModeEnabled && 
@@ -2069,19 +2057,18 @@ function constructGraphPanel(graph, index){
 }
 
 function constructLegendPanel(graph, index){
-	//if ($('#legend'+index).length == 0){
-	//$('#legend'+index).remove();
 	$('body').prepend("<div class=\"legend\" id=\"legend"+index+"\"></div>");
-	//}
+	
+	var selCat = graphCollection.graphs[index].selectedCategory;
 	
 	var string = "<center><table cellpadding='0' cellspacing='0' style='table-layout:fixed;' width='100%'><tr>";
 	graph.includedCategories.forEach(function(category, i){
 		var color = graphCollection.categoryColors[category];
-		string += "<td align='center'><div class='menuItemDef'"+ 
+		string += "<td align='center'><div class='"+(category==selCat?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+ 
 							"style=\"color:black; background-color:white;\""+
-							"onmouseover=\"javascript:drawLegendBorder(event,'"+category+"',"+index+",true)\" "+//this.className='menuItemOver'\""+
-							"onmouseout=\"javascript:drawLegendBorder(event,'"+category+"',"+index+",false)\" "+//this.className='menuItemDef'\""+
-							"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+")\">"+
+							"onmouseover=\"javascript:"+ (category==selCat?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
+							"onmouseout=\"javascript:"+ (category==selCat?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
+							"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+")\">"+
 							"<table cellpadding='2' cellspacing='0'><tr>"+
 							"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
 							"); border:2px solid black; width:20px; height:20px;'></div></td>"+
