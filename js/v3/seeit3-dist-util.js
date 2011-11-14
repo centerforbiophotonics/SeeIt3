@@ -264,7 +264,7 @@ function positionGroupingMenuOverGraph(index, graphCollection){
 							graphCollection.padLeft - 35;
 					
 	if (yPos + $('#groupingOptions').height() > graphCollection.h){
-		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 20 ;
+		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 6 ;
 	}
 		
 	$('#groupingOptions')
