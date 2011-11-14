@@ -122,6 +122,9 @@ function constructVis(){
 				positionDisplayMenu();
 				vis.render();
 			}
+			for(var i=0; i<graphCollection.graphs.length();i++){
+				positionAndSizeLegendPanel(graphCollection.graphs[i],i);
+			}
 		})
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
