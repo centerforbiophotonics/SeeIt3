@@ -44,10 +44,14 @@ Touch.prototype = {
 // Represents the collection of graphs and the area where all graphs are drawn
 function GraphCollection(){
 	var graphCollection = this;
-	this.worksheet = getWorksheet();
+	//this.worksheet = getWorksheet();
+	this.worksheets = {};
+	
 	
 	this.graphs = [];
 	this.selectedGraphIndex = 0;
+	this.datasetsMenuShowing = false;
+	this.datasetsVisible = {};
 	
 	//Drawing Variables
 	this.w = calcGraphWidth();
@@ -95,6 +99,55 @@ function GraphCollection(){
 }
 
 GraphCollection.prototype = {
+	addWorksheet: function(worksheet){
+		for (key in worksheet.data){
+			this.data[key] = worksheet.data[key];
+			this.worksheets[worksheet.title] = worksheet;
+			this.categoryColors[key] = this.colorScale(this.numberOfCategories);
+			this.numberOfCategories++;
+			this.editedCategories[key] = worksheet.edited[key];
+			this.nextDefaultLabel[key] = 0;
+			this.datasetsVisible[worksheet.title] = false;
+		}
+	},
+	
+	removeWorksheet: function(title){
+		var worksheet = this.worksheets[title];
+		
+		for (var key in worksheet.data){
+			this.graphs.forEach(function(g){
+				var rInd = null;
+				g.includedCategories.forEach(function(c,i){
+					if (c == key){
+						//console.log(c);
+						rInd = i;
+					}
+				});
+				if (rInd != null)
+					g.includedCategories.splice(rInd,1);
+			});
+		}
+		
+		for (key in worksheet.data){
+			delete this.data[key];
+			delete this.categoryColors[key];
+			this.numberOfCategories--;
+			delete this.editedCategories[key];
+		}
+		delete this.datasetsVisible[title];
+		delete this.worksheets[title];
+		
+		exampleSpreadsheets.forEach(function(s){
+			var ri = null;
+			s.worksheets.forEach(function(w,i){
+				if (w.title == title)
+					ri = i;
+			});
+			if (ri != null)
+				s.worksheets.splice(ri,1);
+		});
+	},
+	
 	calcGraphHeight: function (){
 		return Math.max(this.numberOfCategories*40,
 										(window.innerHeight - jQuery('div#notGraph').height()) - 150

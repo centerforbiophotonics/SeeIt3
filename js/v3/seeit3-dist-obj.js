@@ -77,6 +77,7 @@ function GraphCollection(){
 	//for highlighting points with the same label
 	this.selectedLabel = null;
 	
+	//Add an empty graph and initialize menu
 	this.addGraph();
 	this.updateMenuOptions();
 }
@@ -796,14 +797,12 @@ Worksheet.prototype = {
 		feedData.feed.entry.filter(function(e) { return parseInt(e.title.$t.replace(/[A-Z]/g,"")) == 1 })
 			.slice(1)
 			.forEach(function(e) {
-				//if (e.content.$t != undefined){
-					var cat = trim(e.content.$t.replace(new RegExp("dependent variable:","i"),"")
-											.replace(new RegExp("\\n", "g" ),"")
-											.replace(new RegExp("\'", "g"),"")
-											.replace(new RegExp("\"", "g"),""));
-					columnToCategory[e.title.$t.replace(/[0-9]/g,"")] = cat;
-					data[cat] = []
-				//}
+				var cat = trim(e.content.$t.replace(new RegExp("dependent variable:","i"),"")
+										.replace(new RegExp("\\n", "g" ),"")
+										.replace(new RegExp("\'", "g"),"")
+										.replace(new RegExp("\"", "g"),""));
+				columnToCategory[e.title.$t.replace(/[0-9]/g,"")] = cat;
+				data[cat] = [];
 			});
 												
 		var rowToLabelVal = {};

@@ -20,17 +20,9 @@ var exampleSpreadsheets = [
 var lastSelectedWorksheet; 
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
-	if ($('#workSheetSelector option[value='+event.worksheet.URL+']').length == 0){
-		jQuery('#workSheetSelector').prepend(jQuery("<option value='" + 
-																					event.worksheet.URL + 
-																					"'>" + 
-																					event.worksheet.title + 
-																					" by " + 
-																					event.worksheet.labelType + 
-																					"</option>"))
-																.val(event.worksheet.URL);
-		graphCollection.addWorksheet(event.worksheet);
-	}
+	
+	//if (graphCollection.worksheets[event.worksheet.title] == undefined)
+	//	graphCollection.addWorksheet(event.worksheet);
 	
 	if (event.refresh){
 		graphCollection.addWorksheet(event.worksheet);

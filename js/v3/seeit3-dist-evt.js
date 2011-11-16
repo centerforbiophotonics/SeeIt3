@@ -841,7 +841,12 @@ $('#backToWorksheetMenu').click(function(){
 
 $('#submitURL').click(function(){
 	var key = parseSpreadsheetKeyFromURL($('#worksheetURL').val());
-	exampleSpreadsheets.push(new Spreadsheet(key));
+	var exists = false;
+	exampleSpreadsheets.forEach(function(s){
+		if (s.key == key) exists = true;
+	});
+	if (!exists) exampleSpreadsheets.push(new Spreadsheet(key));
+	else alert("Error: that worksheet has already been loaded.");
 	$('#worksheetURLMenu').slideUp();
 });
 

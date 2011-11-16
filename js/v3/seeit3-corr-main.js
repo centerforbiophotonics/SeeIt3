@@ -18,10 +18,10 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 															.val(event.worksheet.URL);
   numWorksheetsLoaded++;
   if (numWorksheetsLoaded >= numWorksheets){
-	jQuery('p#loadingMsg').hide();	
-	graphCollection = new GraphCollection();
-	constructVis();
-	positionDisplayMenu();
+		jQuery('p#loadingMsg').hide();	
+		graphCollection = new GraphCollection();
+		constructVis();
+		positionDisplayMenu();
   }
 });
 
@@ -295,9 +295,49 @@ function constructVis() {
 		constructGraphPanel(graph, index);
 	});
 	constructSidePanel();
-	
+	//constructDatasetPanel();
 	
 	vis.render();
+}
+
+function constructDatasetPanel(){
+	var html = "";
+	var i = 0;
+	var picker = 0;
+	exampleSpreadsheets.forEach(function(s){
+		s.worksheets.forEach(function(w){
+			html += "<table><tr>"+
+							"<td><input type='image' id='subtreeToggle"+i+"' src='"+(graphCollection.datasetsVisible[w.title]?"img/downTriangle.png":"img/rightTriangle.png")+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")' width='15' height='15'></td>"+
+							"<td nowrap><div id='treeTitle"+i+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'>"+w.title+"</div></td>"+
+							"<td><input type='image' src='img/edit.png' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'></td>"+
+							"<td><input type='image' src='img/refresh.png' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'></td>"+
+							"<td><input type='image' src='img/question.png' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'></td>"+
+							"<td><input type='image' src='img/document.png' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'></td>"+
+							"</table></tr>";
+			html += "<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">";
+			for (key in w.data){
+				
+				var color = graphCollection.categoryColors[key];
+				html+="<table style='margin-left:15px;'><tr><td>"+
+							"<input id='colorPick"+picker+"' class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key+"', this.color)\" style='width:20px; height:20px'></td>"+
+							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
+							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
+							"onmouseover=\"this.className='menuItemOver'\""+
+							"onmouseout=\"this.className='menuItemDef'\""+
+							"onmousedown=\"javascript:sidePanDragStart(event,'"+key+"')\">"+
+							key+"</div></td></tr></table>";
+				picker++;
+			}
+							
+			html += "</div>";
+			i++;
+		})
+	})
+	html+="<table><tr onclick=\"openWorksheetMenu()\" style=\"cursor:pointer;\">"+
+							"<td><image src='img/plus.png' width='25' height='25'></td>"+
+							"<td>Add a Worksheet</td></div></tr></table>";
+	$('#dataTree').html(html);
+	jscolor.init();
 }
 
 function constructSidePanel(){
@@ -1273,6 +1313,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.radius(10)
 		.fillStyle("red")
 		.strokeStyle("red")
+		.title(function(){return "# of Points Inside = "+ numPointsInEllipse(graph)})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(){
 			dragging = true;
@@ -1366,6 +1407,19 @@ function constructCorrGraph(graph, index, graphPanel){
 			touch.graphPanel = graphPanel;
 			touch.graphIndex = index;
 		})
+		
+	//graphPanel.add(pv.Label)
+	//	.data(function() {return [[graph.ellipseCX, graph.ellipseCY]]})
+	//	.left(function(d) { return d[0] })
+	//	.bottom(function(d) { return d[1] })
+	//	.text(function(d) {return numPointsInEllipse(graph)})
+	//	.visible(function() { return graph.udEllipse })
+	//	.textAlign("center")
+	//	.textBaseline("middle")
+	//	.textStyle("red")
+	//	.textAngle(0)
+	//	.textMargin(10)
+	//	.font("bold 12px sans-serif");
 	
 	/* dot plot */
 	graphPanel.add(pv.Dot)
