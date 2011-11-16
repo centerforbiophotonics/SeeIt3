@@ -795,13 +795,15 @@ Worksheet.prototype = {
 		var columnToCategory = {};
 		feedData.feed.entry.filter(function(e) { return parseInt(e.title.$t.replace(/[A-Z]/g,"")) == 1 })
 			.slice(1)
-			.forEach(function(e) { 
-				var cat = trim(e.content.$t.replace(new RegExp("dependent variable:","i"),"")
-										.replace(new RegExp("\\n", "g" ),"")
-										.replace(new RegExp("\'", "g"),"")
-										.replace(new RegExp("\"", "g"),""));
-				columnToCategory[e.title.$t.replace(/[0-9]/g,"")] = cat;
-				data[cat] = []
+			.forEach(function(e) {
+				//if (e.content.$t != undefined){
+					var cat = trim(e.content.$t.replace(new RegExp("dependent variable:","i"),"")
+											.replace(new RegExp("\\n", "g" ),"")
+											.replace(new RegExp("\'", "g"),"")
+											.replace(new RegExp("\"", "g"),""));
+					columnToCategory[e.title.$t.replace(/[0-9]/g,"")] = cat;
+					data[cat] = []
+				//}
 			});
 												
 		var rowToLabelVal = {};
@@ -819,11 +821,13 @@ Worksheet.prototype = {
 																	e.title.$t.replace(/[0-9]/g,"") != "A";
 															})
 												.forEach(function(e) {
-													data[columnToCategory[e.title.$t.replace(/[0-9]/g,"")]].push(
-														{"label": trim(rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))]),
-														 "value": parseFloat(e.content.$t)
-														}
-													);													
+													if (columnToCategory[e.title.$t.replace(/[0-9]/g,"")] != undefined &&
+															rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))] != undefined)
+														data[columnToCategory[e.title.$t.replace(/[0-9]/g,"")]].push(
+															{"label": trim(rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))]),
+															 "value": parseFloat(e.content.$t)
+															}
+														);													
 												});		
 		return data;
 	},

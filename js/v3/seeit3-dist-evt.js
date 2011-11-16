@@ -708,6 +708,12 @@ function validateWorksheetForm(title, cells){
 		return false;
 	}
 	
+	//Check for blank label type
+	if(cells[0][0] == ""){
+		alert("Error: Label type is blank.");
+		return false;
+	}
+	
 	//Check for more than two columns
 	if (cells[0].length < 2){
 		alert("Error: Data contains less than two columns.  The first column is for labels.");
@@ -836,6 +842,7 @@ $('#backToWorksheetMenu').click(function(){
 $('#submitURL').click(function(){
 	var key = parseSpreadsheetKeyFromURL($('#worksheetURL').val());
 	exampleSpreadsheets.push(new Spreadsheet(key));
+	$('#worksheetURLMenu').slideUp();
 });
 
 
