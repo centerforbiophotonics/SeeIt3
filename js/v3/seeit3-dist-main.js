@@ -1040,6 +1040,7 @@ function constructGraphPanel(graph, index){
 					graphPanel.render();
 				}) 
 				.event("touchstart", function(event){
+					console.log("UDtouchStart");
 					touch.dragType = "partitionCreate";
 					touch.graphPanel = graphPanel;
 					touch.graphIndex = index;
