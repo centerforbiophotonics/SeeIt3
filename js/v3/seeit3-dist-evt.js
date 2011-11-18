@@ -422,6 +422,8 @@ function dataTouchMove(event){
 	touch.finalY = curY;
 	var d = touch.dataObj;
 	var graph = graphCollection.graphs[touch.graphIndex];
+	console.log(graph);
+	console.log(d);
 	
 	console.log("beforeIF");
 	if (graphCollection.editModeEnabled &&
