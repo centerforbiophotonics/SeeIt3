@@ -332,6 +332,7 @@ function touchStart(event){
 }
 
 function dataTouchStart(event){
+	console.log("dataTouchStart");
 	return;
 }
 
