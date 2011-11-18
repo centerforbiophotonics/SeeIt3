@@ -1031,7 +1031,6 @@ function constructGraphPanel(graph, index){
 					graphPanel.render();
 				}) 
 				.event("touchstart", function(event){
-					console.log("UDtouchStart");
 					touch.dragType = "partitionCreate";
 					touch.graphPanel = graphPanel;
 					touch.graphIndex = index;
@@ -1881,167 +1880,7 @@ function constructGraphPanel(graph, index){
 				});
 				return retVal;
 			})
-
-		/* Legend */
-		//constructLegendPanel(graph,index);
-		
-		
-		/*
-		var legendPanel = graphPanel.add(pv.Panel)
-			.left(0)
-			.bottom(4)
-			.width(function(){return graphCollection.w - 40;})
-			.height(30)
 			
-
-		var dragFeedbackPanels = [];
-		graph.includedCategories.forEach(function(category, index){
-			var abbrevKey = category.slice(0,15);//+"..."
-			if (category.length > 15)
-			abbrevKey += "...";
-			
-			//Copy of category panel which follows mouse as it is dragged
-			dragFeedbackPanels[index] = vis.add(pv.Panel)
-				.visible(false)
-				.lineWidth(1)
-				.strokeStyle("black")
-				.height(30)
-				.width(180)
-				.left(0)
-				.top(0)
-				
-			dragFeedbackPanels[index].add(pv.Dot)
-				.left(15)
-				.top(15)
-				.shape("square")
-				.size(80)
-				.fillStyle(function(d) {return pointFillStyle(category)})
-				.strokeStyle(function(d) {return pointStrokeStyle(category)})
-				.lineWidth(2)
-				.anchor("right").add(pv.Label)
-					.text(abbrevKey)
-					.font(fontString)
-					.textStyle(function(){
-						if (graphCollection.editedCategories[category])
-							return "red";
-						else 
-							return "black";
-					});
-				
-			var catPanel = legendPanel.add(pv.Panel)
-				.data([{"x":0,"y":0}])
-				.def("category", category)
-				.def("row",index)
-				.title(category)
-				.lineWidth(1)
-				.strokeStyle(function(){
-					if (graph.selectedCategory == category && graphCollection.editModeEnabled)
-						return "red";
-					else
-						return pv.rgb(0,0,0,0);
-				})
-				.visible(function(){ return !(graph.legendHidden)})
-				.top(0)
-				.left(180*index)
-				.height(30)
-				.cursor("move")
-				.events("all")
-				.width(180)
-				.event("mouseover", function(d){
-					if (graph.selectedCategory != category){
-						this.strokeStyle("black");
-						this.render();
-					}
-				})
-				.event("mouseout", function(d){ 
-					if (graph.selectedCategory != category){
-						this.fillStyle(pv.rgb(0,0,0,0))
-						this.strokeStyle(pv.rgb(0,0,0,0));
-						this.render();
-					}
-				})
-				.event("mousedown", pv.Behavior.drag())
-				.event("dragend", function(){
-					var mouseY = vis.mouse().y;
-					var mouseX = vis.mouse().x;
-					if(mouseX > 0 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h){
-						if (graphCollection.graphs.length > 4){
-							var which = parseInt(mouseY/graphCollection.defaultGraphHeight);
-							if (graphCollection.graphs[which].addCategory(this.category())){
-								graph.removeCategory(this.category());
-								if (graph.selectedCategory == this.category())
-									graph.selectedCategory = null;
-							}
-							graphCollection.updateMenuOptions();
-						} else {
-							var which = parseInt(mouseY/(graphCollection.h/graphCollection.graphs.length));
-							if (graphCollection.graphs[which].addCategory(this.category())){
-								graph.removeCategory(this.category());
-								if (graph.selectedCategory == this.category())
-									graph.selectedCategory = null;
-							}
-							graphCollection.updateMenuOptions();
-						}
-					} else {
-						graph.removeCategory(category);
-						if (graph.selectedCategory == category)
-							graph.selectedCategory = null;
-					}
-					dragFeedbackPanels[this.row()].visible(false);
-					document.body.style.cursor="default";
-					constructVis();
-				})
-				.event("drag", function(){
-					var mouseY = vis.mouse().y;
-					var mouseX = vis.mouse().x;
-					dragFeedbackPanels[this.row()].left(mouseX);
-					dragFeedbackPanels[this.row()].top(mouseY);
-					dragFeedbackPanels[this.row()].render();
-				})
-				.event("dragstart", function(){
-					if (graph.selectedCategory == category)
-						graph.selectedCategory = null;
-					else
-						graph.selectedCategory = category;
-					legendPanel.render();
-					
-					var mouseY = vis.mouse().y;
-					var mouseX = vis.mouse().x;
-					dragFeedbackPanels[this.row()].left(mouseX);
-					dragFeedbackPanels[this.row()].top(mouseY);
-					dragFeedbackPanels[this.row()].visible(true);
-					document.body.style.cursor="move";
-					dragFeedbackPanels[this.row()].render();
-				})
-				.event("touchstart", function(event){
-					touch.dragType="graphCat";
-					touch.draggedObj = dragFeedbackPanels[this.row()];
-					touch.dragging = true;
-					touch.dragCat = this.category();
-					touch.graphIndex = graphCollection.graphs.indexOf(graph);
-				})
-				
-				
-			catPanel.add(pv.Dot)
-				.left(15)
-				.top(15)
-				.shape("square")
-				.cursor("move")
-				.size(80)
-				.fillStyle(function(d) {return pointFillStyle(category)})
-				.strokeStyle(function(d) {return pointStrokeStyle(category)})
-				.lineWidth(2)
-				.anchor("right").add(pv.Label)
-					.text(abbrevKey)
-					.font(fontString)	
-					.textStyle(function(){
-						if (graphCollection.editedCategories[category])
-							return "red";
-						else 
-							return "black";
-					});
-		});	
-		*/
 	} else {
 		//Empty Graph Message
 		graphPanel.add(pv.Label)
@@ -2094,20 +1933,6 @@ function constructLegendPanel(graph, index){
 	$('#legend'+index).html(string);
 }
 
-function drawLegendBorder(event, category, index, over){
-	//console.log(event);
-	if (category == graphCollection.graphs[index].selectedCategory){}
-		//event.srcElement.attr("class", "menuItemSel");
-		//event.fromElement.className = "menuItemSel";
-	else if (over){
-		//event.srcElement.attr("class", "menuItemOver");
-		//event.fromElement.className = "menuItemOver";
-	} else {
-		//event.fromElement.className = "menuItemDef";
-		//event.srcElement.attr("class", "menuItemDef");
-	}
-	
-}
 
 function positionAndSizeLegendPanel(graph,index){
 	var top = $('span').offset().top +
@@ -2122,5 +1947,4 @@ function positionAndSizeLegendPanel(graph,index){
 										.css('width',graphCollection.w-50)
 										.css('max-width',graphCollection.w-40)
 										.css('z-index', 1);
-										//.css('left',parseInt(window.innerWidth/2 - $('#worksheetMenu').width()/2)+"px");
 }
