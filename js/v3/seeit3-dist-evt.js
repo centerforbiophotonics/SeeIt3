@@ -455,13 +455,13 @@ function dataTouchMove(event){
 function sideCatTouchMove(event, category){
 	event.preventDefault();
 
-	var curX = event.targetTouches[0].pageX -
-							$('span').offset().left -
-							graphCollection.padLeft + 14;
+	var curX = event.targetTouches[0].pageX;// -
+							//$('span').offset().left -
+							//graphCollection.padLeft + 14;
 							
-	var curY = event.targetTouches[0].pageY - 
-							$('span').offset().top - 
-							graphCollection.padTop;
+	var curY = event.targetTouches[0].pageY;// - 
+							//$('span').offset().top - 
+							//graphCollection.padTop;
 							
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
