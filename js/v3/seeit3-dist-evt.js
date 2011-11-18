@@ -306,10 +306,11 @@ $("#buttonMode").change(function(){
 
 
 /* Touch Events */
-//document.addEventListener("touchstart", touchStart, false);
+document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
   if (!touch.dragging) return;
+  console.log("touchStart");
 	
 	switch (touch.dragType){
 		case "data":
@@ -381,7 +382,7 @@ function partitionMoveTouchStart(event){
 }
 
 
-//document.addEventListener("touchmove", touchMove, false);
+document.addEventListener("touchmove", touchMove, false);
 
 function touchMove(event){
   if (!touch.dragging) return;
@@ -505,7 +506,7 @@ function partitionMoveTouchMove(event){
 }
 
 
-//document.addEventListener("touchend", touchEnd, false);
+document.addEventListener("touchend", touchEnd, false);
 
 function touchEnd(event){ 
   if (!touch.dragging) return;
