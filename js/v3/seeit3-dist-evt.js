@@ -422,14 +422,10 @@ function dataTouchMove(event){
 	touch.finalY = curY;
 	var d = touch.dataObj;
 	var graph = graphCollection.graphs[touch.graphIndex];
-	console.log(touch.graphIndex);
-	console.log(d);
 	
-	console.log("beforeIF");
 	if (graphCollection.editModeEnabled &&
 			curX >= 0 &&
 			curY <= graph.w - 5){
-		console.log("insideGraph");
 		var worksheet = "";
 		for (var key in graphCollection.worksheets){
 			if (graphCollection.worksheets[key].data[d.set] != undefined)
@@ -437,15 +433,12 @@ function dataTouchMove(event){
 		}
 		
 		graphCollection.editSinglePoint(worksheet,d.set,d.label,graph.x.invert(curX));
-		console.log("editSinglePoint");
 		graph.selectedCategory = d.set;
-		console.log("setSelectedCat");
 	
 		touch.dragLabel.text(graph.x.invert(curX).toFixed(1));
 		touch.dragLabel.left(curX)
 		touch.dragLabel.top(curY - 10)
 		touch.dragLabel.visible(true)
-		console.log("updateDragLabel");
 		
 		vis.render();
 	} else {
@@ -547,6 +540,7 @@ function touchEnd(event){
 }
 
 function dataTouchEnd(event){
+	console.log("dataTouchEnd");
 	if (graphCollection.editModeEnabled){
 		var d = touch.dataObj;
 		var graph = graphCollection.graphs[touch.graphIndex];
@@ -564,7 +558,14 @@ function dataTouchEnd(event){
 		});
 		if (remIndex != null)
 			newData.splice(remIndex,1);
-		graphCollection.editData(d.set,d.set,newData);
+			
+		var worksheet = "";
+		for (var key in graphCollection.worksheets){
+			if (graphCollection.worksheets[key].data[d.set] != undefined)
+				worksheet = key;
+		}
+		
+		graphCollection.editData(worksheet,d.set,d.set,newData);
 		
 	
 		if (Math.abs(curX - d.x) <= graphCollection.bucketDotSize &&
