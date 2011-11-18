@@ -463,6 +463,13 @@ function sideCatTouchMove(event, category){
 							//$('span').offset().top - 
 							//graphCollection.padTop;
 							
+	touch.finalX = curX -
+									$('span').offset().left -
+									graphCollection.padLeft + 14;
+	touch.finalY = curY - 
+									$('span').offset().top - 
+									graphCollection.padTop;
+							
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
@@ -586,15 +593,15 @@ function dataTouchEnd(event){
 function sideCatTouchEnd(event, category){
 	console.log("sideCatTouchEnd");
 	
-	console.log(event.targetTouches[0].clientX);
+	//console.log(event.targetTouches[0].clientX);
 	
-	var curX = event.targetTouches[0].pageX; -
-							$('span').offset().left -
-							graphCollection.padLeft + 14;
+	var curX = touch.finalX;//event.targetTouches[0].pageX; -
+							//$('span').offset().left -
+							//graphCollection.padLeft + 14;
 							
-	var curY = event.targetTouches[0].pageY - 
-							$('span').offset().top - 
-							graphCollection.padTop;
+	var curY = touch.finalY;//event.targetTouches[0].pageY - 
+							//$('span').offset().top - 
+							//graphCollection.padTop;
 	
 	//touch.draggedObj.visible(false);
 	$('#dragFeedback').hide();
