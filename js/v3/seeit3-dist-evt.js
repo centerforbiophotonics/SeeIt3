@@ -427,7 +427,7 @@ function dataTouchMove(event){
 	if (graphCollection.editModeEnabled &&
 			curX >= 0 &&
 			curY <= graph.w - 5){
-		
+		console.log("insideGraph");
 		graphCollection.editSinglePoint(d.set,d.label,graph.x.invert(curX));
 		graph.selectedCategory = d.set;
 		
