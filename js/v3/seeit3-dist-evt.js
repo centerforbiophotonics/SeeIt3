@@ -586,7 +586,7 @@ function dataTouchEnd(event){
 function sideCatTouchEnd(event, category){
 	console.log("sideCatTouchEnd");
 	
-	console.log(event);
+	console.log(event.targetTouches);
 	
 	var curX = event.targetTouches[0].pageX; -
 							$('span').offset().left -
