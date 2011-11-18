@@ -422,7 +422,7 @@ function dataTouchMove(event){
 	
 		touch.dragLabel.text(graph.x.invert(curX).toFixed(1));
 		touch.dragLabel.left(curX)
-		touch.dragLabel.top(curY - 10)
+		touch.dragLabel.top(curY - 20)
 		touch.dragLabel.visible(true)
 		
 		vis.render();
