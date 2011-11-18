@@ -360,18 +360,28 @@ function sideCatTouchStart(event, category){
 	//touch.draggedObj.render();
 }
 
-function graphCatTouchStart(event){
-	var curX = event.targetTouches[0].pageX -
-							$('span').offset().left -
-							graphCollection.padLeft + 14;
+function graphCatTouchStart(event, category, graphIndex){
+	console.log("graphCatTouchStart");
+	
+	var curX = event.targetTouches[0].clientX;// -
+							//$('span').offset().left -
+							//graphCollection.padLeft + 14;
 							
-	var curY = event.targetTouches[0].pageY - 
-							$('span').offset().top - 
-							graphCollection.padTop;
-	touch.draggedObj.left(curX);
-	touch.draggedObj.top(curY);
-	touch.draggedObj.visible(true);
-	touch.draggedObj.render();
+	var curY = event.targetTouches[0].clientY;// - 
+							//$('span').offset().top - 
+							//graphCollection.padTop;
+							
+	$('#dragFeedback').html(category);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+										.css('left',curX)
+										.css('top',curY)
+										.css('z-index', 10000);
+	
+	//touch.draggedObj.left(curX);
+	//touch.draggedObj.top(curY);
+	//touch.draggedObj.visible(true);
+	//touch.draggedObj.render();
 }
 
 function partitionCreateTouchStart(event){
@@ -463,12 +473,8 @@ function sideCatTouchMove(event, category){
 							//$('span').offset().top - 
 							//graphCollection.padTop;
 							
-	touch.finalX = curX -
-									$('span').offset().left -
-									graphCollection.padLeft + 14;
-	touch.finalY = curY - 
-									$('span').offset().top - 
-									graphCollection.padTop;
+	touch.finalX = curX;
+	touch.finalY = curY;
 							
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
@@ -483,19 +489,28 @@ function sideCatTouchMove(event, category){
 	//touch.draggedObj.render();
 }
 
-function graphCatTouchMove(event){
-	var curX = event.targetTouches[0].pageX -
-							$('span').offset().left -
-							graphCollection.padLeft + 14;
+function graphCatTouchMove(event, category, graphIndex){
+	var curX = event.targetTouches[0].clientX;// -
+							//$('span').offset().left -
+							//graphCollection.padLeft + 14;
 							
-	var curY = event.targetTouches[0].pageY - 
-							$('span').offset().top - 
-							graphCollection.padTop;
-	touch.draggedObj.left(curX);
-	touch.draggedObj.top(curY);
-	touch.finalX = curX;
-	touch.finalY = curY;
-	touch.draggedObj.render();
+	var curY = event.targetTouches[0].clientY;// - 
+							//$('span').offset().top - 
+							//graphCollection.padTop;
+							
+	$('#dragFeedback').html(category);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+										.css('left',curX)
+										.css('top',curY)
+										.css('z-index', 10000);
+							
+							
+	//touch.draggedObj.left(curX);
+	//touch.draggedObj.top(curY);
+	//touch.finalX = curX;
+	//touch.finalY = curY;
+	//touch.draggedObj.render();
 }
 
 function partitionCreateTouchMove(event){
@@ -595,11 +610,15 @@ function sideCatTouchEnd(event, category){
 	
 	//console.log(event.targetTouches[0].clientX);
 	
-	var curX = touch.finalX;//event.targetTouches[0].pageX; -
+	var curX = touch.finalX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;//event.targetTouches[0].pageX; -
 							//$('span').offset().left -
 							//graphCollection.padLeft + 14;
 							
-	var curY = touch.finalY;//event.targetTouches[0].pageY - 
+	var curY = touch.finalY - 
+							$('span').offset().top - 
+							graphCollection.padTop;//event.targetTouches[0].pageY - 
 							//$('span').offset().top - 
 							//graphCollection.padTop;
 	
@@ -621,32 +640,39 @@ function sideCatTouchEnd(event, category){
 	constructVis();
 }
 
-function graphCatTouchEnd(event){
-	var curX = touch.finalX;
-	var curY = touch.finalY;
+function graphCatTouchEnd(event, category, graphIndex){
+	var curX = touch.finalX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;;
 	
-	touch.draggedObj.visible(false);
+	var curY = touch.finalY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+	
+	//touch.draggedObj.visible(false);
+	$('#dragFeedback').hide();
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		if (graphCollection.graphs.length > 4){
 			var which = parseInt(curY/graphCollection.defaultGraphHeight);
 			
-			if (graphCollection.graphs[which].addCategory(touch.dragCat))
-				graphCollection.graphs[touch.dragGraphIndex].removeCategory(touch.dragCat);
+			if (graphCollection.graphs[which].addCategory(category))
+				graphCollection.graphs[touch.dragGraphIndex].removeCategory(category);
 			
 			graphCollection.updateMenuOptions();
 		} else {
 			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
 			
-			if (graphCollection.graphs[which].addCategory(touch.dragCat))
-				graphCollection.graphs[touch.dragGraphIndex].removeCategory(touch.dragCat);
+			if (graphCollection.graphs[which].addCategory(category))
+				graphCollection.graphs[graphIndex].removeCategory(category);
 			
 			graphCollection.updateMenuOptions();
 		}
 	} else {
-		graphCollection.graphs[touch.dragGraphIndex].removeCategory(touch.dragCat);
+		graphCollection.graphs[graphIndex].removeCategory(category);
 	}
 	
-	touch.reset();
+	//touch.reset();
+	touch.touch = true;
 	constructVis();
 }
 

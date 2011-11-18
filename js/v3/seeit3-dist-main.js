@@ -2082,7 +2082,11 @@ function constructLegendPanel(graph, index){
 							"style=\"color:black; background-color:white;\""+
 							"onmouseover=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
 							"onmouseout=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
-							"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+")\">"+
+							"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+")\""+
+							"ontouchstart=\"graphCatTouchStart(event, '"+category+"', "+index+")\""+
+							"ontouchmove=\"graphCatTouchMove(event, '"+category+"', "+index+")\""+
+							"ontouchend=\"graphCatTouchEnd(event, '"+category+"', "+index+")\""+
+							">"+
 							"<table cellpadding='2' cellspacing='0'><tr>"+
 							"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
 							"); border:2px solid black; width:20px; height:20px;'></div></td>"+
