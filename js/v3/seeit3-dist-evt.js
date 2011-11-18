@@ -614,7 +614,7 @@ function graphCatTouchEnd(event, category, graphIndex){
 			graphCollection.updateMenuOptions();
 		} else {
 			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-			
+			console.log(which);
 			if (graphCollection.graphs[which].addCategory(category))
 				graphCollection.graphs[graphIndex].removeCategory(category);
 			
