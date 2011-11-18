@@ -567,21 +567,14 @@ function dataTouchEnd(event){
 function sideCatTouchEnd(event, category){
 	console.log("sideCatTouchEnd");
 	
-	//console.log(event.targetTouches[0].clientX);
-	
 	var curX = touch.finalX -
 							$('span').offset().left -
-							graphCollection.padLeft + 14;//event.targetTouches[0].pageX; -
-							//$('span').offset().left -
-							//graphCollection.padLeft + 14;
+							graphCollection.padLeft + 14;
 							
 	var curY = touch.finalY - 
 							$('span').offset().top - 
-							graphCollection.padTop;//event.targetTouches[0].pageY - 
-							//$('span').offset().top - 
-							//graphCollection.padTop;
+							graphCollection.padTop;
 	
-	//touch.draggedObj.visible(false);
 	$('#dragFeedback').hide();
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		if (graphCollection.graphs.length > 4){
@@ -594,12 +587,13 @@ function sideCatTouchEnd(event, category){
 			graphCollection.updateMenuOptions();
 		}
 	}
-	//touch.reset();
 	touch.touch = true;
 	constructVis();
 }
 
 function graphCatTouchEnd(event, category, graphIndex){
+	console.log("graphCatTouchEnd");
+	
 	var curX = touch.finalX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;;
@@ -610,6 +604,7 @@ function graphCatTouchEnd(event, category, graphIndex){
 	
 	$('#dragFeedback').hide();
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
+		console.log("inside");
 		if (graphCollection.graphs.length > 4){
 			var which = parseInt(curY/graphCollection.defaultGraphHeight);
 			
