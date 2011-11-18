@@ -339,13 +339,8 @@ function dataTouchStart(event){
 function sideCatTouchStart(event, category){
 	console.log("sideCatTouchStart");
 	
-	var curX = event.targetTouches[0].clientX;// -
-							//$('span').offset().left -
-							//graphCollection.padLeft + 14;
-							
-	var curY = event.targetTouches[0].clientY;// - 
-							//$('span').offset().top - 
-							//graphCollection.padTop;
+	var curX = event.targetTouches[0].clientX;
+	var curY = event.targetTouches[0].clientY;
 							
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
@@ -353,23 +348,13 @@ function sideCatTouchStart(event, category){
 								 .css('left',curX)
 								 .css('top',curY)
 								 .css('z-index', 10000);
-							
-	//touch.draggedObj.left(curX);
-	//touch.draggedObj.top(curY);
-	//touch.draggedObj.visible(true);
-	//touch.draggedObj.render();
 }
 
 function graphCatTouchStart(event, category, graphIndex){
 	console.log("graphCatTouchStart");
 	
-	var curX = event.targetTouches[0].clientX;// -
-							//$('span').offset().left -
-							//graphCollection.padLeft + 14;
-							
-	var curY = event.targetTouches[0].clientY;// - 
-							//$('span').offset().top - 
-							//graphCollection.padTop;
+	var curX = event.targetTouches[0].clientX;
+	var curY = event.targetTouches[0].clientY;
 							
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
@@ -377,11 +362,6 @@ function graphCatTouchStart(event, category, graphIndex){
 										.css('left',curX)
 										.css('top',curY)
 										.css('z-index', 10000);
-	
-	//touch.draggedObj.left(curX);
-	//touch.draggedObj.top(curY);
-	//touch.draggedObj.visible(true);
-	//touch.draggedObj.render();
 }
 
 function partitionCreateTouchStart(event){
@@ -465,13 +445,8 @@ function dataTouchMove(event){
 function sideCatTouchMove(event, category){
 	event.preventDefault();
 
-	var curX = event.targetTouches[0].clientX;// -
-							//$('span').offset().left -
-							//graphCollection.padLeft + 14;
-							
-	var curY = event.targetTouches[0].clientY;// - 
-							//$('span').offset().top - 
-							//graphCollection.padTop;
+	var curX = event.targetTouches[0].clientX;
+	var curY = event.targetTouches[0].clientY;
 							
 	touch.finalX = curX;
 	touch.finalY = curY;
@@ -482,22 +457,12 @@ function sideCatTouchMove(event, category){
 								 .css('left',curX)
 								 .css('top',curY)
 								 .css('z-index', 10000);
-	//touch.draggedObj.left(curX);
-	//touch.draggedObj.top(curY);
-	//touch.finalX = curX;
-	//touch.finalY = curY;
-	//touch.draggedObj.render();
 }
 
 function graphCatTouchMove(event, category, graphIndex){
 	event.preventDefault();
-	var curX = event.targetTouches[0].clientX;// -
-							//$('span').offset().left -
-							//graphCollection.padLeft + 14;
-							
-	var curY = event.targetTouches[0].clientY;// - 
-							//$('span').offset().top - 
-							//graphCollection.padTop;
+	var curX = event.targetTouches[0].clientX;
+	var curY = event.targetTouches[0].clientY;
 							
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
@@ -505,13 +470,6 @@ function graphCatTouchMove(event, category, graphIndex){
 										.css('left',curX)
 										.css('top',curY)
 										.css('z-index', 10000);
-							
-							
-	//touch.draggedObj.left(curX);
-	//touch.draggedObj.top(curY);
-	//touch.finalX = curX;
-	//touch.finalY = curY;
-	//touch.draggedObj.render();
 }
 
 function partitionCreateTouchMove(event){
@@ -650,7 +608,6 @@ function graphCatTouchEnd(event, category, graphIndex){
 							$('span').offset().top - 
 							graphCollection.padTop;
 	
-	//touch.draggedObj.visible(false);
 	$('#dragFeedback').hide();
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		if (graphCollection.graphs.length > 4){
@@ -672,7 +629,6 @@ function graphCatTouchEnd(event, category, graphIndex){
 		graphCollection.graphs[graphIndex].removeCategory(category);
 	}
 	
-	//touch.reset();
 	touch.touch = true;
 	constructVis();
 }
