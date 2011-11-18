@@ -398,7 +398,7 @@ function touchMove(event){
 function dataTouchMove(event){
 	var curX = event.targetTouches[0].pageX -
 							$('span').offset().left -
-							graphCollection.padLeft + 14;
+							graphCollection.padLeft;
 							
 	var curY = event.targetTouches[0].pageY - 
 							$('span').offset().top - 
