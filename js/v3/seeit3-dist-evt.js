@@ -452,7 +452,7 @@ function dataTouchMove(event){
 	}
 }
 
-function sideCatTouchMove(event){
+function sideCatTouchMove(event, category){
 	var curX = event.targetTouches[0].pageX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
@@ -460,11 +460,18 @@ function sideCatTouchMove(event){
 	var curY = event.targetTouches[0].pageY - 
 							$('span').offset().top - 
 							graphCollection.padTop;
-	touch.draggedObj.left(curX);
-	touch.draggedObj.top(curY);
-	touch.finalX = curX;
-	touch.finalY = curY;
-	touch.draggedObj.render();
+							
+	$('#dragFeedback').html(category);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',curX)
+								 .css('top',curY)
+								 .css('z-index', 10000);
+	//touch.draggedObj.left(curX);
+	//touch.draggedObj.top(curY);
+	//touch.finalX = curX;
+	//touch.finalY = curY;
+	//touch.draggedObj.render();
 }
 
 function graphCatTouchMove(event){

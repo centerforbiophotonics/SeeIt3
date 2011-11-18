@@ -638,7 +638,7 @@ function constructDatasetPanel(){
 							"onmouseout=\"this.className='menuItemDef'\""+
 							"onmousedown=\"javascript:sidePanDragStart(event,'"+key+"')\""+
 							"ontouchstart=\"sideCatTouchStart(event, '"+key+"')\""+
-							
+							"ontouchmove=\"sideCatTouchMove(event, '"+key+"')\""+
 							">"+
 							key+"</div></td></tr></table>";
 				picker++;
