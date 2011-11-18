@@ -1847,6 +1847,7 @@ function constructGraphPanel(graph, index){
 				}
 			})
 			.event("touchstart", function(d){
+				console.log("pvTouchStart");
 				touch.dragType = "data";
 				touch.dataObj = d;
 				touch.graphIndex = index;
