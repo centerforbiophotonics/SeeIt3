@@ -584,6 +584,8 @@ function dataTouchEnd(event){
 }
 
 function sideCatTouchEnd(event, category){
+	console.log("sideCatTouchEnd");
+	
 	var curX = event.targetTouches[0].pageX; -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
@@ -597,11 +599,11 @@ function sideCatTouchEnd(event, category){
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		if (graphCollection.graphs.length > 4){
 			var which = parseInt(curY/graphCollection.defaultGraphHeight);
-			graphCollection.graphs[which].addCategory(touch.dragCat);
+			graphCollection.graphs[which].addCategory(category);
 			graphCollection.updateMenuOptions();
 		} else {
 			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-			graphCollection.graphs[which].addCategory(touch.dragCat);
+			graphCollection.graphs[which].addCategory(category);
 			graphCollection.updateMenuOptions();
 		}
 	}
