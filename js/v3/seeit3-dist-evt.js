@@ -351,6 +351,8 @@ function graphCatTouchStart(event, category, graphIndex){
 	
 	var curX = event.targetTouches[0].clientX;
 	var curY = event.targetTouches[0].clientY;
+	
+	graphCollection.graphs[graphIndex].selectedCategory = category;
 							
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
