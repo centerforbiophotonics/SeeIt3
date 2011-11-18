@@ -490,6 +490,7 @@ function sideCatTouchMove(event, category){
 }
 
 function graphCatTouchMove(event, category, graphIndex){
+	event.preventDefault();
 	var curX = event.targetTouches[0].clientX;// -
 							//$('span').offset().left -
 							//graphCollection.padLeft + 14;
