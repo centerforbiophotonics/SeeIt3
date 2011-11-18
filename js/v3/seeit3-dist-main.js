@@ -661,6 +661,11 @@ var dragObj;
 function sidePanDragStart(event, category){
 	event.preventDefault();
 	
+	if (touch.touch) {
+		touch.touch = false;
+		return;
+	}
+	
 	console.log("dragStart");
 	
 	//setup touch object for touch events

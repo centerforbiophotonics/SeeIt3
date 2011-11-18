@@ -617,6 +617,7 @@ function sideCatTouchEnd(event, category){
 		}
 	}
 	//touch.reset();
+	touch.touch = true;
 	constructVis();
 }
 
