@@ -630,7 +630,7 @@ function constructDatasetPanel(){
 			for (key in w.data){
 				
 				var color = graphCollection.categoryColors[key];
-				html+="<table style='margin-left:15px;'><tr><td>"+
+				html+="<table style='margin-left:25px;'><tr><td>"+
 							"<input id='colorPick"+picker+"' class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key+"', this.color)\" style='width:20px; height:20px'></td>"+
 							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
 							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
