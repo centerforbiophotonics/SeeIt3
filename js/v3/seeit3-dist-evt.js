@@ -423,6 +423,7 @@ function dataTouchMove(event){
 	var d = touch.dataObj;
 	var graph = graphCollection.graphs[touch.graphIndex];
 	
+	console.log("beforeIF");
 	if (graphCollection.editModeEnabled &&
 			curX >= 0 &&
 			curY <= graph.w - 5){
