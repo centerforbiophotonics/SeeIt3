@@ -463,6 +463,9 @@ function graphCatTouchMove(event, category, graphIndex){
 	event.preventDefault();
 	var curX = event.targetTouches[0].clientX;
 	var curY = event.targetTouches[0].clientY;
+	
+	touch.finalX = curX;
+	touch.finalY = curY;
 							
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
@@ -596,7 +599,7 @@ function graphCatTouchEnd(event, category, graphIndex){
 	
 	var curX = touch.finalX -
 							$('span').offset().left -
-							graphCollection.padLeft + 14;;
+							graphCollection.padLeft + 14;
 	
 	var curY = touch.finalY - 
 							$('span').offset().top - 
