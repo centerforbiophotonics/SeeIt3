@@ -436,7 +436,7 @@ function dataTouchMove(event){
 				worksheet = key;
 		}
 		
-		graphCollection.editSinglePoint(d.set,d.label,graph.x.invert(curX));
+		graphCollection.editSinglePoint(worksheet,d.set,d.label,graph.x.invert(curX));
 		console.log("editSinglePoint");
 		graph.selectedCategory = d.set;
 		console.log("setSelectedCat");
