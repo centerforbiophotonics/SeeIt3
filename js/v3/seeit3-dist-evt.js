@@ -386,12 +386,6 @@ function touchMove(event){
 		case "data":
 			dataTouchMove(event);
 			break;
-		case "sideCat":
-			sideCatTouchMove(event);
-			break;
-		case "graphCat":
-			graphCatTouchMove(event);
-			break;
 		case "partitionCreate":
 			partitionCreateTouchMove(event);
 			break;
@@ -514,12 +508,6 @@ function touchEnd(event){
 	switch (touch.dragType){
 		case "data":
 			dataTouchEnd(event);
-			break;
-		case "sideCat":
-			sideCatTouchEnd(event);
-			break;
-		case "graphCat":
-			graphCatTouchEnd(event);
 			break;
 		case "partitionCreate":
 			partitionCreateTouchEnd(event);

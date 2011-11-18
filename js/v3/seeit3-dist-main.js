@@ -666,16 +666,6 @@ function sidePanDragStart(event, category){
 		return;
 	}
 	
-	console.log("dragStart");
-	
-	//setup touch object for touch events
-	touch.dragType = "sideCat"
-	//touch.draggedObj = dragFeedbackPanels[this.row()];
-	touch.dragging = true;
-	touch.dragCat = category;
-	
-	
-	
 	dragObj = new Object();
 	dragObj.category = category;
 	$('#dragFeedback').html(category);
@@ -691,6 +681,7 @@ function sidePanDragStart(event, category){
 }
 
 function sidePanDragGo(event){
+	event.preventDefault();
 	$('#dragFeedback').css('position', 'absolute')
 								 .css('left',event.clientX)
 								 .css('top',event.clientY)
@@ -732,7 +723,6 @@ function legPanDragStart(event, category, index, i){
 		touch.touch = false;
 		return;
 	}
-	console.log("legPanDragStart");
 	
 	event.preventDefault();
 	
@@ -756,6 +746,7 @@ function legPanDragStart(event, category, index, i){
 }
 
 function legPanDragGo(event){
+	event.preventDefault();
 	$('#dragFeedback').css('position', 'absolute')
 								 .css('left',event.clientX)
 								 .css('top',event.clientY)
