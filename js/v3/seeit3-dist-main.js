@@ -621,10 +621,6 @@ function constructDatasetPanel(){
 			html += "<table><tr>"+
 							"<td><input type='image' id='subtreeToggle"+i+"' src='"+(graphCollection.datasetsVisible[w.title]?"img/downTriangle.png":"img/rightTriangle.png")+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")' width='15' height='15'></td>"+
 							"<td nowrap><div id='treeTitle"+i+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'>"+w.title+"</div></td>"+
-//							"<td><input type='image' src='img/edit.png' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'></td>"+
-//							"<td><input type='image' src='img/refresh.png' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'></td>"+
-//							"<td><input type='image' src='img/question.png' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'></td>"+
-//							"<td><input type='image' src='img/document.png' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'></td>"+
 							"</table></tr>";
 			html += "<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">";
 			html += "<input style='margin-left:25px;' type='image' src='img/edit.png' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+

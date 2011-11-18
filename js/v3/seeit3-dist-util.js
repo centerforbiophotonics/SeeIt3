@@ -373,7 +373,7 @@ function fiwHistogram(graph, partitions){
 	for (var i=0;i<counts.length;i++){
 		rectangles.push({"left": graph.x(partitions[i]),
 										 "width": graph.x(partitions[i+1])-graph.x(partitions[i]),
-										 "height": graph.h * 0.75 * counts[i]/maxCount});
+										 "height": (graph.h-graph.baseLine) * 0.75 * counts[i]/maxCount});
 	}
 
 	return rectangles;
