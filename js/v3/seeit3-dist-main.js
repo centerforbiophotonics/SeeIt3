@@ -17,7 +17,6 @@ var exampleSpreadsheets = [
 
 
 // Populate dataset drop down menu
-var lastSelectedWorksheet; 
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
 	
@@ -28,7 +27,6 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		graphCollection.addWorksheet(event.worksheet);
 	}
 	
-  lastSelectedWorksheet = event.worksheet.URL;
   numWorksheetsLoaded++;
   $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){

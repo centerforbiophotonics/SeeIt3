@@ -335,6 +335,7 @@ function dataTouchStart(event){
 }
 
 function sideCatTouchStart(event){
+	console.log("touchStart");
 	var curX = event.targetTouches[0].pageX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
