@@ -639,6 +639,7 @@ function constructDatasetPanel(){
 							"onmousedown=\"javascript:sidePanDragStart(event,'"+key+"')\""+
 							"ontouchstart=\"sideCatTouchStart(event, '"+key+"')\""+
 							"ontouchmove=\"sideCatTouchMove(event, '"+key+"')\""+
+							"ontouchend=\"sideCatTouchEnd(event, '"+key+"')\""+
 							">"+
 							key+"</div></td></tr></table>";
 				picker++;

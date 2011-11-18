@@ -583,11 +583,17 @@ function dataTouchEnd(event){
 	}
 }
 
-function sideCatTouchEnd(event){
-	var curX = touch.finalX;
-	var curY = touch.finalY;
+function sideCatTouchEnd(event, category){
+	var curX = event.targetTouches[0].pageX; -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
 	
-	touch.draggedObj.visible(false);
+	//touch.draggedObj.visible(false);
+	$('#dragFeedback').hide();
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		if (graphCollection.graphs.length > 4){
 			var which = parseInt(curY/graphCollection.defaultGraphHeight);
@@ -599,7 +605,7 @@ function sideCatTouchEnd(event){
 			graphCollection.updateMenuOptions();
 		}
 	}
-	touch.reset();
+	//touch.reset();
 	constructVis();
 }
 
