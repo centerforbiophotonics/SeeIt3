@@ -588,7 +588,6 @@ function sideCatTouchEnd(event, category){
 }
 
 function graphCatTouchEnd(event, category, graphIndex){
-	
 	var curX = touch.finalX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
