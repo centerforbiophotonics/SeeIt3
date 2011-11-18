@@ -343,10 +343,18 @@ function sideCatTouchStart(event){
 	var curY = event.targetTouches[0].pageY - 
 							$('span').offset().top - 
 							graphCollection.padTop;
-	touch.draggedObj.left(curX);
-	touch.draggedObj.top(curY);
-	touch.draggedObj.visible(true);
-	touch.draggedObj.render();
+							
+	$('#dragFeedback').html(touch.dragCat);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',curX)
+								 .css('top',curY)
+								 .css('z-index', 10000);
+							
+	//touch.draggedObj.left(curX);
+	//touch.draggedObj.top(curY);
+	//touch.draggedObj.visible(true);
+	//touch.draggedObj.render();
 }
 
 function graphCatTouchStart(event){

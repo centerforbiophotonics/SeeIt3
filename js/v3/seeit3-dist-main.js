@@ -657,6 +657,11 @@ var dragObj;
 function sidePanDragStart(event, category){
 	event.preventDefault();
 	
+	touch.dragType = "sideCat"
+	//touch.draggedObj = dragFeedbackPanels[this.row()];
+	touch.dragging = true;
+	touch.dragCat = category;
+	
 	dragObj = new Object();
 	dragObj.category = category;
 	$('#dragFeedback').html(category);
