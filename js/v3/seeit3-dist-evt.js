@@ -309,6 +309,8 @@ $("#buttonMode").change(function(){
 document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
+	console.log("touchStart");
+	
   if (!touch.dragging) return;
 	
 	switch (touch.dragType){
@@ -335,7 +337,6 @@ function dataTouchStart(event){
 }
 
 function sideCatTouchStart(event){
-	console.log("touchStart");
 	var curX = event.targetTouches[0].pageX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
