@@ -431,12 +431,15 @@ function dataTouchMove(event){
 			curY <= graph.w - 5){
 		console.log("insideGraph");
 		graphCollection.editSinglePoint(d.set,d.label,graph.x.invert(curX));
+		console.log("editSinglePoint");
 		graph.selectedCategory = d.set;
-		
+		console.log("setSelectedCat");
+	
 		touch.dragLabel.text(graph.x.invert(curX).toFixed(1));
 		touch.dragLabel.left(curX)
 		touch.dragLabel.top(curY - 10)
 		touch.dragLabel.visible(true)
+		console.log("updateDragLabel");
 		
 		vis.render();
 	} else {
