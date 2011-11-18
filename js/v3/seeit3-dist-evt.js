@@ -430,6 +430,12 @@ function dataTouchMove(event){
 			curX >= 0 &&
 			curY <= graph.w - 5){
 		console.log("insideGraph");
+		var worksheet = "";
+		for (var key in graphCollection.worksheets){
+			if (graphCollection.worksheets[key].data[d.set] != undefined)
+				worksheet = key;
+		}
+		
 		graphCollection.editSinglePoint(d.set,d.label,graph.x.invert(curX));
 		console.log("editSinglePoint");
 		graph.selectedCategory = d.set;
