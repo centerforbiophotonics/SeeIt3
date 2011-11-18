@@ -636,7 +636,10 @@ function constructDatasetPanel(){
 							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
 							"onmouseover=\"this.className='menuItemOver'\""+
 							"onmouseout=\"this.className='menuItemDef'\""+
-							"onmousedown=\"javascript:sidePanDragStart(event,'"+key+"')\">"+
+							"onmousedown=\"javascript:sidePanDragStart(event,'"+key+"')\""+
+							"ontouchstart=\"sideCatTouchStart(event, '"+key+"')\""+
+							
+							">"+
 							key+"</div></td></tr></table>";
 				picker++;
 			}

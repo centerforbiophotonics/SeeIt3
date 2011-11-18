@@ -336,7 +336,7 @@ function dataTouchStart(event){
 	return;
 }
 
-function sideCatTouchStart(event){
+function sideCatTouchStart(event, category){
 	var curX = event.targetTouches[0].pageX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
@@ -345,7 +345,7 @@ function sideCatTouchStart(event){
 							$('span').offset().top - 
 							graphCollection.padTop;
 							
-	$('#dragFeedback').html(touch.dragCat);
+	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
 								 .css('left',curX)
