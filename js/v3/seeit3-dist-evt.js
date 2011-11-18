@@ -453,6 +453,8 @@ function dataTouchMove(event){
 }
 
 function sideCatTouchMove(event, category){
+	event.preventDefault();
+
 	var curX = event.targetTouches[0].pageX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
