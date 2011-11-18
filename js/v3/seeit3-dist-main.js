@@ -627,10 +627,10 @@ function constructDatasetPanel(){
 //							"<td><input type='image' src='img/document.png' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'></td>"+
 							"</table></tr>";
 			html += "<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">";
-			html += "<input type='image' src='img/edit.png' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
+			html += "<input style='margin-left:25px;' type='image' src='img/edit.png' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
 							"<input type='image' src='img/refresh.png' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>"+
 							"<input type='image' src='img/question.png' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
-							"<input type='image' src='img/document.png' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>"+
+							"<input type='image' src='img/document.png' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>";
 			for (key in w.data){
 				
 				var color = graphCollection.categoryColors[key];
