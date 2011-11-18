@@ -410,6 +410,7 @@ function touchMove(event){
 }
 
 function dataTouchMove(event){
+	console.log("dataTouchMove");
 	var curX = event.targetTouches[0].pageX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
