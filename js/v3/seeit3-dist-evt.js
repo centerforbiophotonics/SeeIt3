@@ -309,8 +309,6 @@ $("#buttonMode").change(function(){
 //document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
-	console.log("touchStart");
-	
   if (!touch.dragging) return;
 	
 	switch (touch.dragType){
@@ -337,8 +335,6 @@ function dataTouchStart(event){
 }
 
 function sideCatTouchStart(event, category){
-	console.log("sideCatTouchStart");
-	
 	var curX = event.targetTouches[0].clientX;
 	var curY = event.targetTouches[0].clientY;
 							
@@ -351,7 +347,6 @@ function sideCatTouchStart(event, category){
 }
 
 function graphCatTouchStart(event, category, graphIndex){
-	console.log("graphCatTouchStart");
 	
 	var curX = event.targetTouches[0].clientX;
 	var curY = event.targetTouches[0].clientY;
@@ -568,8 +563,6 @@ function dataTouchEnd(event){
 }
 
 function sideCatTouchEnd(event, category){
-	console.log("sideCatTouchEnd");
-	
 	var curX = touch.finalX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
@@ -595,7 +588,6 @@ function sideCatTouchEnd(event, category){
 }
 
 function graphCatTouchEnd(event, category, graphIndex){
-	console.log("graphCatTouchEnd");
 	
 	var curX = touch.finalX -
 							$('span').offset().left -
@@ -607,7 +599,6 @@ function graphCatTouchEnd(event, category, graphIndex){
 	
 	$('#dragFeedback').hide();
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
-		console.log("inside");
 		if (graphCollection.graphs.length > 4){
 			var which = parseInt(curY/graphCollection.defaultGraphHeight);
 			
@@ -617,7 +608,6 @@ function graphCatTouchEnd(event, category, graphIndex){
 			graphCollection.updateMenuOptions();
 		} else {
 			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-			console.log(which);
 			if (graphCollection.graphs[which].addCategory(category))
 				graphCollection.graphs[graphIndex].removeCategory(category);
 			

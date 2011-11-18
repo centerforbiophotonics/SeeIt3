@@ -728,6 +728,7 @@ function sidePanDragStop(event){
 }
 
 function legPanDragStart(event, category, index, i){
+	console.log("legPanDragStart");
 	event.preventDefault();
 	
 	if (graphCollection.editModeEnabled)
