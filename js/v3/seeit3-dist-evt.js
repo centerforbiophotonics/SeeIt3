@@ -310,17 +310,10 @@ document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
   if (!touch.dragging) return;
-  console.log("touchStart");
 	
 	switch (touch.dragType){
 		case "data":
 			dataTouchStart(event);
-			break;
-		case "sideCat":
-			sideCatTouchStart(event);
-			break;
-		case "graphCat":
-			graphCatTouchStart(event);
 			break;
 		case "partitionCreate":
 			partitionCreateTouchStart(event);
@@ -332,7 +325,6 @@ function touchStart(event){
 }
 
 function dataTouchStart(event){
-	console.log("dataTouchStart");
 	return;
 }
 
@@ -410,7 +402,6 @@ function touchMove(event){
 }
 
 function dataTouchMove(event){
-	console.log("dataTouchMove");
 	var curX = event.targetTouches[0].pageX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
@@ -540,7 +531,6 @@ function touchEnd(event){
 }
 
 function dataTouchEnd(event){
-	console.log("dataTouchEnd");
 	if (graphCollection.editModeEnabled){
 		var d = touch.dataObj;
 		var graph = graphCollection.graphs[touch.graphIndex];
