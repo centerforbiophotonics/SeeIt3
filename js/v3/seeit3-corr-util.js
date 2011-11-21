@@ -31,6 +31,61 @@ function toggleNormalViewOptions(){
 	}
 }
 
+//Takes out characters that don't work in jquery selectors
+//probably misses some and throws out some it doesn't need to
+function convertToID(set){
+	return set.replace(/ /g,"_")
+						.replace(/\//g,"")
+						.replace(/,/g,"")
+						.split('.').join('')
+						.replace(/%/g,"")
+						.split(')').join('')
+						.split('(').join('')+"div";
+}
+
+function toggleDataSubtree(id,i,title){
+	$('#'+id).slideToggle(null,resizeVis);
+	graphCollection.datasetsVisible[title] ? 
+		graphCollection.datasetsVisible[title] = false :
+		graphCollection.datasetsVisible[title] = true;
+	if ($('#subtreeToggle'+i).attr("src") == "img/downTriangle.png")
+		$('#subtreeToggle'+i).attr("src","img/rightTriangle.png");
+	else
+		$('#subtreeToggle'+i).attr("src","img/downTriangle.png");
+}
+
+function resizeVis(){
+	$('span').css('position', 'absolute')
+					 .css('left',$('#datasets').width()+29)
+					 .css('z-index', -1);
+	graphCollection.setW(graphCollection.calcGraphWidth());
+	vis.render();
+	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+	
+	positionDisplayMenu();
+}
+
+function positionGroupingMenuOverGraph(index, graphCollection){
+	var yPos = $('span').offset().top +
+							graphCollection.padTop +
+							(index == 0 ? 0 : 1) +
+							index*graphCollection.graphs[0].h;
+	
+	var xPos = $('span').offset().left +
+							graphCollection.padLeft - 35;
+					
+	if (yPos + $('#groupingOptions').height() > graphCollection.h){
+		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 6 ;
+	}
+		
+	$('#groupingOptions')
+		.css('position', 'absolute')
+		.css('top', yPos + "px")
+		.css('left', xPos + "px")
+		.css('z-index', 1);
+	
+}
+
 
 /*Drawing Related Functions*/
 function getUserLineMidpoint(graph){
@@ -753,10 +808,6 @@ function parseSpreadsheetKeyFromURL(URL) {
 	alert("That doesn't appear to be a valid URL");
   else
 	return matches[1];
-}
-
-function calcGraphWidth(){
-	return window.innerWidth - 290;
 }
 
 function sortByXValues(data) {

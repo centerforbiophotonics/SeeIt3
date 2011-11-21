@@ -1,4 +1,10 @@
 //Entry Point
+var graphCollection = new GraphCollection();
+var vis = {};
+var touch = new Touch();
+var fontString = "bold 14px arial";
+var dragging = false;
+
 var exampleSpreadsheets = [
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
 	new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'),
@@ -8,29 +14,44 @@ var exampleSpreadsheets = [
 var lastSelectedWorksheet; 
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
-	if ($('#workSheetSelector option[value='+event.worksheet.URL+']').length == 0)
-  jQuery('#workSheetSelector').prepend(jQuery("<option value='" + 
-																				event.worksheet.URL + "'>" + 
-																				event.worksheet.title + 
-																				" by " + 
-																				event.worksheet.labelType + 
-																				"</option>"))
-															.val(event.worksheet.URL);
+	if (event.refresh){
+		graphCollection.addWorksheet(event.worksheet);
+	}
+	
   numWorksheetsLoaded++;
+  $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){
-		jQuery('p#loadingMsg').hide();	
-		graphCollection = new GraphCollection();
+		jQuery('p#loadingMsg').hide();
 		constructVis();
-		positionDisplayMenu();
+		//showHideAdvancedOptions();
+		//positionGroupingMenuOverGraph(0,graphCollection);
+		//positionDisplayMenu();
   }
 });
 
-var vis = {};
-var graphCollection = {};
-var touch = new Touch();
-var fontString = "bold 14px arial";
+//jQuery('body').bind('WorksheetLoaded', function(event) {
+//	if ($('#workSheetSelector option[value='+event.worksheet.URL+']').length == 0)
+//  jQuery('#workSheetSelector').prepend(jQuery("<option value='" + 
+//																				event.worksheet.URL + "'>" + 
+//																				event.worksheet.title + 
+//																				" by " + 
+//																				event.worksheet.labelType + 
+//																				"</option>"))
+//															.val(event.worksheet.URL);
+//	numWorksheetsLoaded++;
+//	if (numWorksheetsLoaded >= numWorksheets){
+//		jQuery('p#loadingMsg').hide();	
+//		graphCollection = new GraphCollection();
+//		constructVis();
+//		positionDisplayMenu();
+//	}
+//});
 
-var dragging = false;
+//var vis = {};
+//var graphCollection = {};
+//var touch = new Touch();
+//var fontString = "bold 14px arial";
+//var dragging = false;
 
 function constructVis() {
 	jQuery('span').remove();
@@ -43,19 +64,122 @@ function constructVis() {
 		.left(function(){return graphCollection.padLeft})
 		.right(function(){return graphCollection.padRight})
 		.top(function(){return graphCollection.padTop})
-	
-	/* Divider Between Graphs and Data Sets */
-	vis.add(pv.Rule)
-		.left(-35)
-		.bottom(graphCollection.padBot * -1)
-		.top(graphCollection.padTop * -1)
 		
 	/* Divider Between Graphs and Buttons */
 	vis.add(pv.Rule)
 		.left(-35)
 		.right(graphCollection.padRight * -1)
 		.top(-30)
-		
+	
+	
+	//Datasets
+	var dataSetsPanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Show Datasets")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 100;
+			}else if (!graphCollection.buttonIcon){
+				return 70;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(-34)
+		.top(-60)
+		.lineWidth(1)
+		.event("click", function(){
+			$('#datasets').css('top',$('span').offset().top);
+			if (!graphCollection.datasetsMenuShowing){
+				$('#datasets').show();
+				graphCollection.datasetsMenuShowing = true;
+				$('span').css('position', 'absolute')
+								 .css('left',$('#datasets').width()+29)
+								 .css('z-index', -1);
+				graphCollection.setW(graphCollection.calcGraphWidth());
+				//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+				positionDisplayMenu();
+				vis.render();
+			} else {
+				$('#datasets').hide();
+				graphCollection.datasetsMenuShowing = false;
+				$('span').css('position', 'absolute')
+								 .css('left',8)
+								 .css('z-index', -1);
+				graphCollection.setW(graphCollection.calcGraphWidth());
+				//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+				positionDisplayMenu();
+				vis.render();
+			}
+			for(var i=0; i<graphCollection.graphs.length;i++){
+				//positionAndSizeLegendPanel(graphCollection.graphs[i],i);
+			}
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+	
+	dataSetsPanel.add(pv.Image)
+		.url("http://centerforbiophotonics.github.com/SeeIt3/img/dataset.png")  //fix this
+		.width(25)
+		.height(25)
+		.top(2)
+		.left(2)
+		.cursor("pointer")
+		.title("Show Datasets")
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.event("click", function(){
+			if (!graphCollection.datasetsMenuShowing){
+				$('#datasets').show();
+				graphCollection.datasetsMenuShowing = true;
+				graphCollection.setW(graphCollection.calcGraphWidth());
+				vis.render();
+				$('span').css('position', 'absolute')
+								 .css('left',$('#datasets').width()+29)
+								 .css('z-index', -1);
+				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+				positionDisplayMenu();
+			} else {
+				$('#datasets').hide();
+				graphCollection.datasetsMenuShowing = false;
+				graphCollection.setW(graphCollection.calcGraphWidth());
+				vis.render();
+				$('span').css('position', 'absolute')
+								 .css('left',8)
+								 .css('z-index', -1);
+				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+				positionDisplayMenu();
+			}
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon){
+					return 2;
+				}else
+					return 32;
+			})
+			.top(15)
+			.text("Datasets")
+			.font(fontString)
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
+	
 	/* Display Options Menu Button */
 	var dispOptPanel = vis.add(pv.Panel)
 		.events("all")
@@ -71,11 +195,20 @@ function constructVis() {
 				return 34;
 			}
 		})
-		.left(-34)
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 67;
+			}else if (!graphCollection.buttonIcon){
+				return 40;
+			}else if (!graphCollection.buttonText){
+				return 0;
+			}
+		})
 		.top(-60)
 		.lineWidth(1)
 		.event("click", function(){
 			hideMenus();
+			positionDisplayMenu();
 			$('#displayOptions').slideDown();
 		})
 		.event("mouseover", function(d){
@@ -138,11 +271,11 @@ function constructVis() {
 		})
 		.left(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 120;
+				return 220;
 			}else if (!graphCollection.buttonIcon){
-				return 90;
+				return 160;
 			}else if (!graphCollection.buttonText){
-				return 4;
+				return 35;
 			}
 		})
 		.top(-60)
@@ -222,11 +355,11 @@ function constructVis() {
 		})
 		.left(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 235;
+				return 330;
 			}else if (!graphCollection.buttonIcon){
-				return 175;
+				return 240;
 			}else if (!graphCollection.buttonText){
-				return 43;
+				return 70;
 			}
 		})
 		.top(-60)
@@ -294,8 +427,8 @@ function constructVis() {
 	graphCollection.graphs.forEach(function(graph, index){
 		constructGraphPanel(graph, index);
 	});
-	constructSidePanel();
-	//constructDatasetPanel();
+	//constructSidePanel();
+	constructDatasetPanel();
 	
 	vis.render();
 }
@@ -317,9 +450,7 @@ function constructDatasetPanel(){
 			html += "<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">";
 			for (key in w.data){
 				
-				var color = graphCollection.categoryColors[key];
-				html+="<table style='margin-left:15px;'><tr><td>"+
-							"<input id='colorPick"+picker+"' class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key+"', this.color)\" style='width:20px; height:20px'></td>"+
+				html+="<table style='margin-left:15px;'><tr>"+
 							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
 							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
 							"onmouseover=\"this.className='menuItemOver'\""+
@@ -337,7 +468,6 @@ function constructDatasetPanel(){
 							"<td><image src='img/plus.png' width='25' height='25'></td>"+
 							"<td>Add a Worksheet</td></div></tr></table>";
 	$('#dataTree').html(html);
-	jscolor.init();
 }
 
 function constructSidePanel(){
@@ -350,7 +480,7 @@ function constructSidePanel(){
 		.font(fontString);
 	
 	var dragFeedbackPanels = [];
-	for (var key in graphCollection.worksheet.data){
+	for (var key in graphCollection.data){
 		var abbrevKey = key.slice(0,18);
 		if (key.length > 18)
 			abbrevKey += "...";
@@ -560,7 +690,7 @@ function constructGraphPanel(graph,index){
 		.top(-15)
 		.textAlign("center")
 		.textAngle(0)
-		.text(graph.worksheet.title)
+		.text("test")//)graph.worksheet.title)
 		.font("bold 20px sans-serif");
 	
 	//Remove Graph Button

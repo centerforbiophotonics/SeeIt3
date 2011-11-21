@@ -1328,7 +1328,7 @@ function positionDisplayMenu(){
 			.css('position', 'absolute')
 			.css('top', $('span').offset().top +"px")
 			.css('left', $('span').offset().left +
-					graphCollection.padLeft - 34 +"px")
+					graphCollection.padLeft - 35 +"px")
 }
 		
 $('#displayOptClose').click(function(){
