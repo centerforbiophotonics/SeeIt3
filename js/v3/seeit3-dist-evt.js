@@ -29,15 +29,6 @@ $(window).resize(function() {
 });
 
 /* Top Bar Menu Items */
-//jQuery('#newSpreadsheetURL').keyup(function(event) {
-//	if (event.keyCode == '13') {
-//		var key = parseSpreadsheetKeyFromURL($(this).val());
-//		$(this).val('');
-//		exampleSpreadsheets.push(new Spreadsheet(key));
-//	}
-//});
-
-
 function editInGoogleDocs(title){
 	var URL = graphCollection.worksheets[title].URL;
 	var matches = /feeds\/cells\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
@@ -279,7 +270,6 @@ $('#checkboxHideData').change(function() { vis.render();});
 $('#divisionsCell').hide();
 
 $('#displayOptions').change(function(){
-	console.log("test");
 	if ($('#drawMode option:selected').text() != "Gravity"){
 		$('#divisionsCell').show();
 	} else {
@@ -766,7 +756,6 @@ function validateWorksheetForm(title, cells){
 	}
 	
 	//Check for data without label
-	//console.log(cells);
 	for (var i=0; i<cells.length; i++){
 		if (cells[i][0] == "" && cells[i].length > 1){
 			alert("Error: Data exists without a label.");

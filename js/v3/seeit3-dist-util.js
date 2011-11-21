@@ -30,12 +30,10 @@ function updateColor(category, color){
 			}
 		}
 	}
-	
-	//constructVis();
 }
 
 //Takes out characters that don't work in jquery selectors
-//probably misses a lot
+//probably misses some and throws out some it doesn't need to
 function convertToID(set){
 	return set.replace(/ /g,"_")
 						.replace(/\//g,"")
@@ -55,9 +53,6 @@ function toggleDataSubtree(id,i,title){
 		$('#subtreeToggle'+i).attr("src","img/rightTriangle.png");
 	else
 		$('#subtreeToggle'+i).attr("src","img/downTriangle.png");
-	
-	//setTimeout("resizeVis()",1000); 
-	
 }
 
 function resizeVis(){
@@ -209,7 +204,6 @@ function partitionDataByIntervalWidth(graph){
 /*HTML Element Manipulation*/
 
 function showHideAdvancedOptions(){
-	//graphCollection.advancedUser = !(graphCollection.advancedUser);
 	if (graphCollection.advancedUser){
 		$('#fixedSizeOptions').show();
 		$('#fixedIntervalOptions').show();
@@ -226,7 +220,6 @@ function showHideAdvancedOptions(){
 		$('#divisionsCell').hide();
 		$('#stackAndButtonTable').hide();
 		graphCollection.editModeEnabled = false;
-		//hideMenus();
 		graphCollection.buttonIcon = true;
 		graphCollection.buttonText = true;
 		$("#drawMode option[value='gravity']").attr('selected', 'selected');
@@ -329,13 +322,6 @@ function parseSpreadsheetKeyFromURL(URL) {
   else
 	return matches[1];
 }
-
-//function calcGraphWidth(){
-//	if (graphCollection.datasetsMenuShowing)
-//		return window.innerWidth - $('#datasets').width() - 111;
-//	else
-//		return window.innerWidth - 90;
-//}
 
 function countDataInPartitions(graph, partitions){
 	var counts = [];
@@ -446,30 +432,4 @@ function getSDLinePoints(graph){
 	var mean = getMean(graph.dataVals());
 	
 	return [mean-sd,mean+sd];
-	
-}
-
-
-function objectToString(o){
-	var parse = function(_o){
-		var a = [], t;
-		for(var p in _o){
-			if(_o.hasOwnProperty(p)){
-				t = _o[p];
-				if(t && typeof t == "object"){
-					a[a.length]= p + ":{ " + arguments.callee(t).join(", ") + "}";
-				}
-				else {
-					if(typeof t == "string"){
-						a[a.length] = [ p+ ": \"" + t.toString() + "\"" ];
-					}
-					else{
-						a[a.length] = [ p+ ": " + t.toString()];
-					}           
-				}
-			}
-		}
-		return a;   
-	}
-	return "{" + parse(o).join(", ") + "}";   
 }

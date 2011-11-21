@@ -19,10 +19,6 @@ var exampleSpreadsheets = [
 // Populate dataset drop down menu
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
-	
-	//if (graphCollection.worksheets[event.worksheet.title] == undefined)
-	//	graphCollection.addWorksheet(event.worksheet);
-	
 	if (event.refresh){
 		graphCollection.addWorksheet(event.worksheet);
 	}
@@ -448,7 +444,6 @@ function constructVis(){
 		.event("click", function(){
 			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
 			constructVis();
-			//vis.render();
 		})
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
@@ -594,16 +589,13 @@ function constructVis(){
 					return false;
 			})
 	
-	//constructCategoryPanel();
 	constructDatasetPanel();
-	
 	
 	graphCollection.graphs.forEach(function(graph,index,graphs){
 		constructGraphPanel(graph, index);
 	});
 	vis.render();
 	if (graphCollection.datasetsMenuShowing) resizeVis();
-	//showHideAdvancedOptions();
 	
 	$('.legend').remove();
 	graphCollection.graphs.forEach(function(graph,i){
@@ -856,18 +848,6 @@ function constructGraphPanel(graph, index){
 																		graphCollection.data[graph.selectedCategory]
 																	);
 				} 
-			//	else if (graphCollection.editModeEnabled && 
-			//							graph.includedCategories.length < 4 &&
-			//							graph.includedCategories.length > 0) {
-			//		var loc = graphPanel.mouse().x;
-			//		
-			//		var dataTitle = "userCreatedCategory"+graphCollection.nextDefaultCategory++;
-			//		var data = [{"label":"first", "value":graph.x.invert(loc)}];
-			//		
-			//		graphCollection.addData(dataTitle, data);
-			//		graph.addCategory(dataTitle);
-			//		graph.selectedCategory = dataTitle;
-			//	}
 			
 				constructVis();
 			}

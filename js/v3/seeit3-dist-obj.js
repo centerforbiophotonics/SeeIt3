@@ -55,9 +55,6 @@ function GraphCollection(){
 	this.bucketDotSize = 5;
 	this.numberOfCategories = 0;
 	
-	//used when adding
-	this.nextDefaultCategory = 0;
-	
 	//Colors
 	this.categoryColors = {};
 	this.colorScale = pv.Colors.category20(0,20);
@@ -106,7 +103,6 @@ GraphCollection.prototype = {
 				var rInd = null;
 				g.includedCategories.forEach(function(c,i){
 					if (c == key){
-						//console.log(c);
 						rInd = i;
 					}
 				});
@@ -238,9 +234,6 @@ GraphCollection.prototype = {
 			if (graph.xMin < min) min = graph.xMin
 		});
 		this.graphs.forEach(function(graph){
-			//var mag = magnitude(max-min);
-			//min = Math.floor(min/Math.pow(10,mag))*Math.pow(10,mag);
-			
 			if (min > 1000)
 				min = Math.floor(min/1000)*1000;
 			
@@ -402,7 +395,6 @@ GraphCollection.prototype = {
 
 function Graph(graphCollection){
 	this.graphCollection = graphCollection;
-	//this.worksheet = worksheet;
 	this.data = graphCollection.data;
 	this.includedCategories = [];
 	this.selectedCategory = null;
@@ -426,7 +418,6 @@ function Graph(graphCollection){
 	this.partitionIntervalWidth = 10;
 	
 	this.histogram = false;
-	//this.boxPlot = false;
 	this.advBoxPlot = false;
 	this.sdLine = false;
 	
