@@ -191,7 +191,10 @@ GraphCollection.prototype = {
 	setH: function(height){
 		this.h = height;
 		this.setChildGraphHeights();
-		$("#datasets").css("max-height", height+12+"px");
+		if (this.graphs.length <= 4)
+			$("#datasets").css("max-height", height+12+"px");
+		else
+			$("#datasets").css("max-height", "90%");
 	},
 	
 	updateMenuOptions: function(){

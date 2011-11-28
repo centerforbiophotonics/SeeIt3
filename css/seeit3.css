@@ -16,6 +16,7 @@ body {
   width:200px;
 }
 
+
 table#menuItems {
   /*width:100%;*/
   margin-bottom:10px;
@@ -40,12 +41,13 @@ p#loadingMsg {
 }
 
 #datasets {
-	position: absolute;
+	position: fixed;
 	background: #ffffff;
 	border:1px solid black;
 	padding: 10px;
 	display: hidden;
-	max-height: 85%;
+	overflow-y: auto;
+	max-height: 90%;
 	max-width: 30%;
 	overflow:auto;
 }

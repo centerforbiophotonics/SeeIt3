@@ -92,6 +92,7 @@ function constructVis(){
 				graphCollection.datasetsMenuShowing = true;
 				$('span').css('position', 'absolute')
 								 .css('left',$('#datasets').width()+29)
+								 //.css('top', $('#notGraph').height()+10)
 								 .css('z-index', -1);
 				graphCollection.setW(graphCollection.calcGraphWidth());
 				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
@@ -102,6 +103,7 @@ function constructVis(){
 				graphCollection.datasetsMenuShowing = false;
 				$('span').css('position', 'absolute')
 								 .css('left',8)
+								 //.css('top', $('#notGraph').height()+10)
 								 .css('z-index', -1);
 				graphCollection.setW(graphCollection.calcGraphWidth());
 				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
@@ -595,8 +597,10 @@ function constructVis(){
 		constructGraphPanel(graph, index);
 	});
 	vis.render();
+	
 	if (graphCollection.datasetsMenuShowing) resizeVis();
 	
+	//remove and redraw legends
 	$('.legend').remove();
 	graphCollection.graphs.forEach(function(graph,i){
 		constructLegendPanel(graph,i);
@@ -653,6 +657,7 @@ var dragObj;
 function sidePanDragStart(event, category){
 	event.preventDefault();
 	
+	//To prevent a touch event from firing an additional drag event
 	if (touch.touch) {
 		touch.touch = false;
 		return;
@@ -663,8 +668,8 @@ function sidePanDragStart(event, category){
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
-								 .css('left',event.clientX)
-								 .css('top',event.clientY)
+								 .css('left',event.pageX)
+								 .css('top',event.pageY)
 								 .css('z-index', 10000);
 	
 	document.body.style.cursor="move";
@@ -675,19 +680,19 @@ function sidePanDragStart(event, category){
 function sidePanDragGo(event){
 	event.preventDefault();
 	$('#dragFeedback').css('position', 'absolute')
-								 .css('left',event.clientX)
-								 .css('top',event.clientY)
+								 .css('left',event.pageX)
+								 .css('top',event.pageY)
 								 .css('z-index', 10000);
 }
 
 function sidePanDragStop(event){
 	$('#dragFeedback').hide();
 	
-	var curX = event.clientX -
+	var curX = event.pageX -
 						 $('span').offset().left -
 						 graphCollection.padLeft + 14;
 							
-	var curY = event.clientY - 
+	var curY = event.pageY - 
 						 $('span').offset().top - 
 						 graphCollection.padTop;
 						 
@@ -728,8 +733,8 @@ function legPanDragStart(event, category, index, i){
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
-								 .css('left',event.clientX)
-								 .css('top',event.clientY)
+								 .css('left',event.pageX)
+								 .css('top',event.pageY)
 								 .css('z-index', 10000);
 	
 	document.body.style.cursor="move";
@@ -740,19 +745,19 @@ function legPanDragStart(event, category, index, i){
 function legPanDragGo(event){
 	event.preventDefault();
 	$('#dragFeedback').css('position', 'absolute')
-								 .css('left',event.clientX)
-								 .css('top',event.clientY)
+								 .css('left',event.pageX)
+								 .css('top',event.pageY)
 								 .css('z-index', 10000);
 }
 
 function legPanDragStop(event){
 	$('#dragFeedback').hide();
 	
-	var curX = event.clientX -
+	var curX = event.pageX -
 						 $('span').offset().left -
 						 graphCollection.padLeft + 14;
 							
-	var curY = event.clientY - 
+	var curY = event.pageY - 
 						 $('span').offset().top - 
 						 graphCollection.padTop;
 						 
