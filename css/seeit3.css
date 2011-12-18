@@ -97,6 +97,22 @@ p#loadingMsg {
 	margin-bottom:1px;
 }
 
+.axisDef {
+	position: relative;
+	padding: 1px;
+	background: #ffffff;
+	cursor: move;
+	margin-bottom:1px;
+}
+
+.axisOver {
+	position: relative;
+	padding: 1px;
+	background: #cccccc; 
+	cursor: move;
+	margin-bottom:1px;
+}
+
 .menuItemSel {
 	position: relative;
 	padding: 1px;

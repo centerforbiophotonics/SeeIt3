@@ -1094,11 +1094,16 @@ function whichDropZone(x,y){
 
 /* Dynamic Graph Resizing */
 $(window).resize(function() {
-	if (graphCollection.hasOwnProperty("worksheet")){
-		graphCollection.setW(calcGraphWidth());
+	if (graphCollection.hasOwnProperty("worksheets")){
+		graphCollection.setW(graphCollection.calcGraphWidth());
 		graphCollection.setH(graphCollection.calcGraphHeight());
 		//constructVis();
 		vis.render();
+		
+		positionAndSizeGraph();
+		graphCollection.graphs.forEach(function(graph, index){
+			positionAndSizeAxisPanels(graph,index);
+		});
 	}
 })
 
@@ -1150,7 +1155,8 @@ $('#aboutPopup').hide();
 function positionAboutPopup(){
 	$('#aboutPopup').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#aboutPopup').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#aboutPopup').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#aboutPopup').width()/2)+"px")
+										 .css('z-index',2);
 }
 positionAboutPopup();
 
@@ -1158,7 +1164,8 @@ positionAboutPopup();
 function positionWorksheetDescriptionPopup(){
 	$('#worksheetDescriptionPopup').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetDescriptionPopup').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetDescriptionPopup').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetDescriptionPopup').width()/2)+"px")
+										 .css('z-index',2);
 }
 positionWorksheetDescriptionPopup();
 
@@ -1180,6 +1187,7 @@ $('#graphOptions')
 		.css('position', 'absolute')
 		.css('top', "0px")
 		.css('left', "0px")
+		.css('z-index',2)
 		
 $('#graphOptClose').click(function(){
 	hideMenus();
@@ -1329,6 +1337,7 @@ function positionDisplayMenu(){
 			.css('top', $('span').offset().top +"px")
 			.css('left', $('span').offset().left +
 					graphCollection.padLeft - 35 +"px")
+			.css('z-index',2)
 }
 		
 $('#displayOptClose').click(function(){
@@ -1407,7 +1416,8 @@ $("#buttonMode").change(function(){
 function positionDatasetAddMenu(){
 	$('#dataSetAdd').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetAdd').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetAdd').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetAdd').width()/2)+"px")
+										 .css('z-index',2);
 }
 positionDatasetAddMenu();
 
@@ -1632,7 +1642,8 @@ $('#dataSetPaste').hide();
 function positionDatasetPaste(){
 	$('#dataSetPaste').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetPaste').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetPaste').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetPaste').width()/2)+"px")
+										 .css('z-index',2);
 }
 positionDatasetPaste();
 
@@ -1719,7 +1730,8 @@ function populateAddMenuFromPaste(cells){
 function positionDatasetEditMenu(){
 	$('#dataSetEdit').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetEdit').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetEdit').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetEdit').width()/2)+"px")
+										 .css('z-index',2);
 }
 positionDatasetEditMenu();
 
@@ -1932,7 +1944,8 @@ function delEditField(){
 function positionCreateWorksheetMenu(){
 	$('#worksheetCreate').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetCreate').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetCreate').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetCreate').width()/2)+"px")
+										 .css('z-index',2);
 }
 positionCreateWorksheetMenu();
 
@@ -2058,7 +2071,8 @@ function delWCField(){
 function positionClipboardPrompt(){
 	$('#clipboardPrompt').css('position', 'absolute')
 										 .css('top', parseInt(window.innerHeight/2 - $('#clipboardPrompt').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#clipboardPrompt').width()/2)+"px");
+										 .css('left',parseInt(window.innerWidth/2 - $('#clipboardPrompt').width()/2)+"px")
+										 .css('z-index',2);
 }
 positionClipboardPrompt();
 

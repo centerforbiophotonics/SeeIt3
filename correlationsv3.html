@@ -25,7 +25,7 @@
 	
 	<script>
 		function BlockMove(event) {
-			// Tell Safari not to move the window.
+			// Tell Safari not to move the window on touch.
 			//event.preventDefault();
 		};
 	</script>
@@ -33,7 +33,9 @@
 
 </head>
 <body ontouchmove="BlockMove(event);">
-	
+
+<div id="dragFeedback" hidden></div>
+
 <div id="datasets" hidden>
 	<center>Datasets</center>
 	<hr>
@@ -44,19 +46,7 @@
 	<div id="menu" class="menu">
 		<table style="border-spacing: 20px 0px;">
 			<tr>
-				<td>
-						Select a worksheet: 
-						<select id="workSheetSelector">
-								<option value="New">*Add a new worksheet*</option>
-						</select>
-				</td>
-				<td><a href="#" id="refreshWorksheet">Refresh</a></td>
-				<td><a href="#" id="worksheetDescriptionButton">Description</a></td>
-				<td><a href="#" id="editInGoogleDocs">View Data</a></td>
-				<td>
-					<label for="newSpreadsheetURL">New Worksheet URL:</label>
-					<input type="text" name="newSpreadsheetURL" id="newSpreadsheetURL" placeholder="https://spreadsheets.google.com/..." />
-				</td>
+				<td>Copyright &copy; UC Regents, Davis campus. All rights reserved.</td>
 				<td><a href="corrhelp.html" target="_blank" id="help">Help</a></td>
 				<td><a href="#" id="about">About</a></td>
 			</tr>
@@ -381,7 +371,7 @@
 -->
 
 <div style="position:absolute; bottom:10px; left:20px; background-color:white">
-  Copyright &copy; UC Regents, Davis campus. All rights reserved.</div>
+  </div>
 
 </body>
 </html>

@@ -60,12 +60,15 @@ function resizeVis(){
 					 .css('z-index', -1);
 	graphCollection.setW(graphCollection.calcGraphWidth());
 	vis.render();
-	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+	positionGraphMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 	
+	graphCollection.graphs.forEach(function(graph, index){
+		positionAndSizeAxisPanels(graph,index);
+	});
 	positionDisplayMenu();
 }
 
-function positionGroupingMenuOverGraph(index, graphCollection){
+function positionGraphMenuOverGraph(index, graphCollection){
 	var yPos = $('span').offset().top +
 							graphCollection.padTop +
 							(index == 0 ? 0 : 1) +
@@ -78,11 +81,12 @@ function positionGroupingMenuOverGraph(index, graphCollection){
 		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 6 ;
 	}
 		
-	$('#groupingOptions')
+	console.log("posGraph");
+	$('#graphOptions')
 		.css('position', 'absolute')
 		.css('top', yPos + "px")
 		.css('left', xPos + "px")
-		.css('z-index', 1);
+		.css('z-index', 10);
 	
 }
 
@@ -523,7 +527,7 @@ function yDistributionPoints(graph){
 	var yDomain = graph.y.domain();
 	var bucketSize = (yDomain[1]-yDomain[0])/graph.graphCollection.buckets;
 	var points = [];
-	var data = graph.worksheet.data[graph.yData];
+	var data = graph.data[graph.yData];
 	var drawMode = jQuery("#drawMode option:selected").val();
 	
 	for (var i = 0; i < graph.graphCollection.buckets; i++){

@@ -17,7 +17,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 	if (event.refresh){
 		graphCollection.addWorksheet(event.worksheet);
 	}
-	
+	graphCollection.addWorksheet(event.worksheet);
   numWorksheetsLoaded++;
   $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){
@@ -95,26 +95,24 @@ function constructVis() {
 			if (!graphCollection.datasetsMenuShowing){
 				$('#datasets').show();
 				graphCollection.datasetsMenuShowing = true;
-				$('span').css('position', 'absolute')
-								 .css('left',$('#datasets').width()+29)
-								 .css('z-index', -1);
-				graphCollection.setW(graphCollection.calcGraphWidth());
+				positionAndSizeGraph();
+				//positionAndSizeAxisPanels();
 				//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 				positionDisplayMenu();
 				vis.render();
+				
 			} else {
 				$('#datasets').hide();
 				graphCollection.datasetsMenuShowing = false;
-				$('span').css('position', 'absolute')
-								 .css('left',8)
-								 .css('z-index', -1);
-				graphCollection.setW(graphCollection.calcGraphWidth());
+				positionAndSizeGraph();
+				//positionAndSizeAxisPanels();
 				//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 				positionDisplayMenu();
 				vis.render();
+				
 			}
 			for(var i=0; i<graphCollection.graphs.length;i++){
-				//positionAndSizeLegendPanel(graphCollection.graphs[i],i);
+				positionAndSizeAxisPanels(graphCollection.graphs[i],i);
 			}
 		})
 		.event("mouseover", function(d){
@@ -140,29 +138,29 @@ function constructVis() {
 			else
 				return false;
 		})
-		.event("click", function(){
-			if (!graphCollection.datasetsMenuShowing){
-				$('#datasets').show();
-				graphCollection.datasetsMenuShowing = true;
-				graphCollection.setW(graphCollection.calcGraphWidth());
-				vis.render();
-				$('span').css('position', 'absolute')
-								 .css('left',$('#datasets').width()+29)
-								 .css('z-index', -1);
-				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-				positionDisplayMenu();
-			} else {
-				$('#datasets').hide();
-				graphCollection.datasetsMenuShowing = false;
-				graphCollection.setW(graphCollection.calcGraphWidth());
-				vis.render();
-				$('span').css('position', 'absolute')
-								 .css('left',8)
-								 .css('z-index', -1);
-				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-				positionDisplayMenu();
-			}
-		})
+//		.event("click", function(){
+//			if (!graphCollection.datasetsMenuShowing){
+//				$('#datasets').show();
+//				graphCollection.datasetsMenuShowing = true;
+//				graphCollection.setW(graphCollection.calcGraphWidth());
+//				vis.render();
+//				$('span').css('position', 'absolute')
+//								 .css('left',$('#datasets').width()+29)
+//								 .css('z-index', -1);
+//				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+//				positionDisplayMenu();
+//			} else {
+//				$('#datasets').hide();
+//				graphCollection.datasetsMenuShowing = false;
+//				graphCollection.setW(graphCollection.calcGraphWidth());
+//				vis.render();
+//				$('span').css('position', 'absolute')
+//								 .css('left',8)
+//								 .css('z-index', -1);
+//				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+//				positionDisplayMenu();
+//			}
+//		})
 		.anchor("left").add(pv.Label)
 			.left(function(){
 				if (graphCollection.buttonText && !graphCollection.buttonIcon){
@@ -431,6 +429,17 @@ function constructVis() {
 	constructDatasetPanel();
 	
 	vis.render();
+	
+	graphCollection.graphs.forEach(function(graph, index){
+		constructLegendPanel(graph, index);
+	});
+	
+	positionAndSizeGraph();
+	
+	graphCollection.graphs.forEach(function(graph, index){
+		positionAndSizeAxisPanels(graph,index);
+	});
+	
 }
 
 function constructDatasetPanel(){
@@ -440,14 +449,19 @@ function constructDatasetPanel(){
 	exampleSpreadsheets.forEach(function(s){
 		s.worksheets.forEach(function(w){
 			html += "<table><tr>"+
-							"<td><input type='image' id='subtreeToggle"+i+"' src='"+(graphCollection.datasetsVisible[w.title]?"img/downTriangle.png":"img/rightTriangle.png")+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")' width='15' height='15'></td>"+
-							"<td nowrap><div id='treeTitle"+i+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'>"+w.title+"</div></td>"+
-							"<td><input type='image' src='img/edit.png' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'></td>"+
-							"<td><input type='image' src='img/refresh.png' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'></td>"+
-							"<td><input type='image' src='img/question.png' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'></td>"+
-							"<td><input type='image' src='img/document.png' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'></td>"+
+							"<td><input type='image' id='subtreeToggle"+i+"'"+
+								"src='"+(graphCollection.datasetsVisible[w.title]?"img/downTriangle.png":"img/rightTriangle.png")+"'"+
+								"onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
+								"width='15' height='15'></td>"+
+							"<td nowrap><div id='treeTitle"+i+"' "+
+								"onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'>"+
+								w.title+"</div></td>"+
 							"</table></tr>";
 			html += "<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">";
+			html += "<input type='image' src='img/edit.png'  style='margin-left:15px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
+							"<input type='image' src='img/refresh.png' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>"+
+							"<input type='image' src='img/question.png' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
+							"<input type='image' src='img/document.png' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>";
 			for (key in w.data){
 				
 				html+="<table style='margin-left:15px;'><tr>"+
@@ -468,6 +482,7 @@ function constructDatasetPanel(){
 							"<td><image src='img/plus.png' width='25' height='25'></td>"+
 							"<td>Add a Worksheet</td></div></tr></table>";
 	$('#dataTree').html(html);
+	$('#datasets').css('z-index',2)
 }
 
 function constructSidePanel(){
@@ -735,227 +750,227 @@ function constructGraphPanel(graph,index){
 		
 		
 	//X-axis drag drop zone
-	graph.xAxisPanel = graphPanel.add(pv.Panel)
-		.data([{"x":0,"y":0}])
-		.height(80)
-		.width(function(){return graph.w})
-		.left(0)
-		.top(function(){return graph.h})
-		.lineWidth(1)
-		.cursor("move")
-		.events("all")
-		.event("mouseover", function(d){
-			this.fillStyle(pv.rgb(50,50,50,0.25));
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.fillStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-		.event("mousedown", pv.Behavior.drag())
-		.event("dragstart", function(){
-			var mouseY = vis.mouse().y;
-			var mouseX = vis.mouse().x;
-			xAxisDragFeedbackPanel.left(mouseX);
-			xAxisDragFeedbackPanel.top(mouseY);
-			xAxisDragFeedbackPanel.visible(true);
-			document.body.style.cursor="move";
-			xAxisDragFeedbackPanel.render();
-		})
-		.event("drag", function(event){
-			var mouseY = vis.mouse().y;
-			var mouseX = vis.mouse().x;
-			xAxisDragFeedbackPanel.left(mouseX);
-			xAxisDragFeedbackPanel.top(mouseY);
-			xAxisDragFeedbackPanel.render();
-		})
-		.event("dragend", function(){
-			var mouseY = vis.mouse().y;
-			var mouseX = vis.mouse().x;
-			var category = graph.xData;
-			var thisGraphIndex = index;
+//	graph.xAxisPanel = graphPanel.add(pv.Panel)
+//		.data([{"x":0,"y":0}])
+//		.height(80)
+//		.width(function(){return graph.w})
+//		.left(0)
+//		.top(function(){return graph.h})
+//		.lineWidth(1)
+//		.cursor("move")
+//		.events("all")
+//		.event("mouseover", function(d){
+//			this.fillStyle(pv.rgb(50,50,50,0.25));
+//			this.render();
+//		})
+//		.event("mouseout", function(d){ 
+//			this.fillStyle(pv.rgb(0,0,0,0));
+//			this.render();
+//		})
+//		.event("mousedown", pv.Behavior.drag())
+//		.event("dragstart", function(){
+//			var mouseY = vis.mouse().y;
+//			var mouseX = vis.mouse().x;
+//			xAxisDragFeedbackPanel.left(mouseX);
+//			xAxisDragFeedbackPanel.top(mouseY);
+//			xAxisDragFeedbackPanel.visible(true);
+//			document.body.style.cursor="move";
+//			xAxisDragFeedbackPanel.render();
+//		})
+//		.event("drag", function(event){
+//			var mouseY = vis.mouse().y;
+//			var mouseX = vis.mouse().x;
+//			xAxisDragFeedbackPanel.left(mouseX);
+//			xAxisDragFeedbackPanel.top(mouseY);
+//			xAxisDragFeedbackPanel.render();
+//		})
+//		.event("dragend", function(){
+//			var mouseY = vis.mouse().y;
+//			var mouseX = vis.mouse().x;
+//			var category = graph.xData;
+//			var thisGraphIndex = index;
 			
-			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
-				graphCollection.graphs.forEach(function(g,i){
-					if (g.xAxisPanel.mouse().x > 0 &&
-							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
-							g.xAxisPanel.mouse().y > 0 &&
-							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
-					{
-						if (i != thisGraphIndex){
-							g.assignX(category);
-							graph.assignX(null);
-						}
-					}
-					
-					if (g.yAxisPanel.mouse().x > 0 &&
-							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
-							g.yAxisPanel.mouse().y > 0 &&
-							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
-					{
-						if (i == thisGraphIndex){
-							g.assignX(g.yData);
-							g.assignY(category);
-						} else {
-							g.assignY(category);
-							graph.assignX(null);
-						}
-					}
-				});
-			} else {
-				graph.assignX(null);
-			}
-			
-			graphCollection.updateMenuOptions();
-			
-			xAxisDragFeedbackPanel.visible(false);
-			document.body.style.cursor="default";
-			constructVis();
+//			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
+//				graphCollection.graphs.forEach(function(g,i){
+//					if (g.xAxisPanel.mouse().x > 0 &&
+//							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
+//							g.xAxisPanel.mouse().y > 0 &&
+//							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
+//					{
+//						if (i != thisGraphIndex){
+//							g.assignX(category);
+//							graph.assignX(null);
+//						}
+//					}
+//					
+//					if (g.yAxisPanel.mouse().x > 0 &&
+//							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
+//							g.yAxisPanel.mouse().y > 0 &&
+//							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
+//					{
+//						if (i == thisGraphIndex){
+//							g.assignX(g.yData);
+//							g.assignY(category);
+//						} else {
+//							g.assignY(category);
+//							graph.assignX(null);
+//						}
+//					}
+//				});
+//			} else {
+//				graph.assignX(null);
+//			}
+//			
+//			graphCollection.updateMenuOptions();
+//			
+//			xAxisDragFeedbackPanel.visible(false);
+//			document.body.style.cursor="default";
+//			constructVis();
 			//vis.render();
-		})
-		.event("touchstart", function(event){
-			touch.dragType = "graphXCat";
-			touch.draggedObj = xAxisDragFeedbackPanel;
-			touch.dragging = true;
-			touch.graphIndex = index;
-		})
-		.event('touchend', function(event){
-			setTimeout("constructVis()",100); 
-		})
+//		})
+//		.event("touchstart", function(event){
+//			touch.dragType = "graphXCat";
+//			touch.draggedObj = xAxisDragFeedbackPanel;
+//			touch.dragging = true;
+//			touch.graphIndex = index;
+//		})
+//		.event('touchend', function(event){
+//			setTimeout("constructVis()",100); 
+//		})
+//		
 		
-		
-	graph.xAxisPanel.add(pv.Label)
-		.text(function(){
-			if (graph.xData == null)
-				return "Drag data to x-axis"
-			else
-				return graph.xData;
-		})
-		.left(function(){return graph.xAxisPanel.width()/2})
-		.top(function(){return graph.xAxisPanel.height()/2})
-		.textAlign("center")
-		.textBaseline("middle")
-		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
-		
+//	graph.xAxisPanel.add(pv.Label)
+//		.text(function(){
+//			if (graph.xData == null)
+//				return "Drag data to x-axis"
+//			else
+//				return graph.xData;
+//		})
+//		.left(function(){return graph.xAxisPanel.width()/2})
+//		.top(function(){return graph.xAxisPanel.height()/2})
+//		.textAlign("center")
+//		.textBaseline("middle")
+//		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
+//		
 	//Y-axis drag feedback panel
-	var yAxisDragFeedbackPanel = vis.add(pv.Label)
-		.text(function(){
-			if (graph.yData == null)
-				return "No Data"
-			else
-				return graph.yData;
-		})
-		.left(function(){return graph.yAxisPanel.width()/2})
-		.top(function(){return graph.yAxisPanel.height()/2})
-		.textAlign("center")
-		.textBaseline("middle")
-		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
-		.visible(false)
-		
+//	var yAxisDragFeedbackPanel = vis.add(pv.Label)
+//		.text(function(){
+//			if (graph.yData == null)
+//				return "No Data"
+//			else
+//				return graph.yData;
+//		})
+//		.left(function(){return graph.yAxisPanel.width()/2})
+//		.top(function(){return graph.yAxisPanel.height()/2})
+//		.textAlign("center")
+//		.textBaseline("middle")
+//		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
+//		.visible(false)
+//		
 	//Y-axis drag drop zone
-	graph.yAxisPanel = graphPanel.add(pv.Panel)
-		.data([{"x":0,"y":0}])
-		.width(95)
-		.height(function(){return graph.h})
-		.left(-95)
-		.visible(function(){return graph.twoDistView == false || graph.xData == null || graph.yData == null})
-		.top(0)
-		.lineWidth(1)
-		.cursor("move")
-		.events("all")
-		.event("mouseover", function(d){
-			this.fillStyle(pv.rgb(50,50,50,0.25));
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.fillStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-		.event("mousedown", pv.Behavior.drag())
-		.event("dragstart", function(){
-			var mouseY = vis.mouse().y;
-			var mouseX = vis.mouse().x;
-			yAxisDragFeedbackPanel.left(mouseX);
-			yAxisDragFeedbackPanel.top(mouseY);
-			yAxisDragFeedbackPanel.visible(true);
-			document.body.style.cursor="move";
-			yAxisDragFeedbackPanel.render();
-		})
-		.event("drag", function(event){
-			var mouseY = vis.mouse().y;
-			var mouseX = vis.mouse().x;
-			yAxisDragFeedbackPanel.left(mouseX);
-			yAxisDragFeedbackPanel.top(mouseY);
-			yAxisDragFeedbackPanel.render();
-		})
-		.event("dragend", function(){
-			var mouseY = vis.mouse().y;
-			var mouseX = vis.mouse().x;
-			var category = graph.yData;
-			var thisGraphIndex = index;
-			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
-				graphCollection.graphs.forEach(function(g,i){
-					if (g.xAxisPanel.mouse().x > 0 &&
-							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
-							g.xAxisPanel.mouse().y > 0 &&
-							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
-					{
-						if (i == thisGraphIndex){
-							g.assignY(g.xData);
-							g.assignX(category);
-						} else {
-							g.assignX(category);
-							graph.assignY(null);
-						}
-					}
-					
-					if (g.yAxisPanel.mouse().x > 0 &&
-							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
-							g.yAxisPanel.mouse().y > 0 &&
-							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
-					{
-						if (i != thisGraphIndex){
-							g.assignY(category);
-							graph.assignY(null);
-						}
-					}
-				});
-			} else {
-				graph.assignY(null);
-			}
-			
-			graphCollection.updateMenuOptions();
-			
-			yAxisDragFeedbackPanel.visible(false);
-			document.body.style.cursor="default";
-			constructVis();
-			//vis.render();
-		})
-		.event("touchstart", function(event){
-			touch.dragType = "graphYCat";
-			touch.draggedObj = yAxisDragFeedbackPanel;
-			touch.dragging = true;
-			touch.graphIndex = index;
-		})
-		.event('touchend', function(event){
-			setTimeout("constructVis()",100); 
-		})
-		
-		
-	graph.yAxisPanel.add(pv.Label)
-		.text(function(){
-			if (graph.yData == null)
-				return "Drag data to y-axis"
-			else
-				return graph.yData;
-		})
-		.left(30)
-		.top(function(){return graph.yAxisPanel.height()/2})
-		.textAngle(-Math.PI/2)
-		.textAlign("center")
-		.textBaseline("middle")
-		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
-		
+//	graph.yAxisPanel = graphPanel.add(pv.Panel)
+//		.data([{"x":0,"y":0}])
+//		.width(95)
+//		.height(function(){return graph.h})
+//		.left(-95)
+//		.visible(function(){return graph.twoDistView == false || graph.xData == null || graph.yData == null})
+//		.top(0)
+//		.lineWidth(1)
+//		.cursor("move")
+//		.events("all")
+//		.event("mouseover", function(d){
+//			this.fillStyle(pv.rgb(50,50,50,0.25));
+//			this.render();
+//		})
+//		.event("mouseout", function(d){ 
+//			this.fillStyle(pv.rgb(0,0,0,0));
+//			this.render();
+//		})
+//		.event("mousedown", pv.Behavior.drag())
+//		.event("dragstart", function(){
+//			var mouseY = vis.mouse().y;
+//			var mouseX = vis.mouse().x;
+//			yAxisDragFeedbackPanel.left(mouseX);
+//			yAxisDragFeedbackPanel.top(mouseY);
+//			yAxisDragFeedbackPanel.visible(true);
+//			document.body.style.cursor="move";
+//			yAxisDragFeedbackPanel.render();
+//		})
+//		.event("drag", function(event){
+//			var mouseY = vis.mouse().y;
+//			var mouseX = vis.mouse().x;
+//			yAxisDragFeedbackPanel.left(mouseX);
+//			yAxisDragFeedbackPanel.top(mouseY);
+//			yAxisDragFeedbackPanel.render();
+//		})
+//		.event("dragend", function(){
+//			var mouseY = vis.mouse().y;
+//			var mouseX = vis.mouse().x;
+//			var category = graph.yData;
+//			var thisGraphIndex = index;
+//			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
+//				graphCollection.graphs.forEach(function(g,i){
+//					if (g.xAxisPanel.mouse().x > 0 &&
+//							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
+//							g.xAxisPanel.mouse().y > 0 &&
+//							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
+//					{
+//						if (i == thisGraphIndex){
+//							g.assignY(g.xData);
+//							g.assignX(category);
+//						} else {
+//							g.assignX(category);
+//							graph.assignY(null);
+//						}
+//					}
+//				
+//					if (g.yAxisPanel.mouse().x > 0 &&
+//							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
+//							g.yAxisPanel.mouse().y > 0 &&
+//							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
+//					{
+//						if (i != thisGraphIndex){
+//							g.assignY(category);
+//							graph.assignY(null);
+//						}
+//					}
+//				});
+//			} else {
+//				graph.assignY(null);
+//			}
+//			
+//			graphCollection.updateMenuOptions();
+//			
+//			yAxisDragFeedbackPanel.visible(false);
+//			document.body.style.cursor="default";
+//			constructVis();
+//			//vis.render();
+//		})
+//		.event("touchstart", function(event){
+//			touch.dragType = "graphYCat";
+//			touch.draggedObj = yAxisDragFeedbackPanel;
+//			touch.dragging = true;
+//			touch.graphIndex = index;
+//		})
+//		.event('touchend', function(event){
+//			setTimeout("constructVis()",100); 
+//		})
+//		
+//		
+//	graph.yAxisPanel.add(pv.Label)
+//		.text(function(){
+//			if (graph.yData == null)
+//				return "Drag data to y-axis"
+//			else
+//				return graph.yData;
+//		})
+//		.left(30)
+//		.top(function(){return graph.yAxisPanel.height()/2})
+//		.textAngle(-Math.PI/2)
+//		.textAlign("center")
+//		.textBaseline("middle")
+//		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
+//		
 	
 	//Divider between graphs
 	graphPanel.add(pv.Rule)
@@ -1677,11 +1692,11 @@ function constructCorrGraph(graph, index, graphPanel){
 }
 
 function constructTwoDistGraph(graph,index, graphPanel){	
-	graph.xMax = pv.max(graph.worksheet.data[graph.xData], function(d) { return d.value });
-	graph.xMin = pv.min(graph.worksheet.data[graph.xData], function(d) { return d.value });
+	graph.xMax = pv.max(graph.data[graph.xData], function(d) { return d.value });
+	graph.xMin = pv.min(graph.data[graph.xData], function(d) { return d.value });
 	graph.setXScale();
-	graph.yMax = pv.max(graph.worksheet.data[graph.yData], function(d) { return d.value });
-	graph.yMin = pv.min(graph.worksheet.data[graph.yData], function(d) { return d.value });
+	graph.yMax = pv.max(graph.data[graph.yData], function(d) { return d.value });
+	graph.yMin = pv.min(graph.data[graph.yData], function(d) { return d.value });
 	graph.setYScale();
 	
 	graphPanel.event("click", function(){
@@ -1750,7 +1765,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.top(0)
 		.textAlign("center")
 		.textAngle(0)
-		.text(function(){return "N = " + graph.worksheet.data[graph.yData].length})
+		.text(function(){return "N = " + graph.data[graph.yData].length})
 		.font("bold 14px sans-serif");
 	
 	//Mouse position label for drag editing
@@ -1904,7 +1919,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	
 	/* Dots */	
 	topDist.add(pv.Dot)
-		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.yData], graph.yHoriz)})
+		.data(function() {return xDistributionPoints(graph, graph.data[graph.yData], graph.yHoriz)})
 		.left(function(d) {return d.x})
 		.bottom(function(d) {return d.y})
 		.radius(function() {return graphCollection.dotSize})
@@ -1988,7 +2003,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.textAlign("center")
 		.visible(function(){
 			var retVal = false;
-			 xDistributionPoints(graph, graph.worksheet.data[graph.yData], graph.yHoriz).forEach(function(d){
+			 xDistributionPoints(graph, graph.data[graph.yData], graph.yHoriz).forEach(function(d){
 				if (d.y > topDist.height() ||
 						d.x > topDist.width() ||
 						d.x < 0)
@@ -2074,7 +2089,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.top(-5)
 		.textAlign("center")
 		.textAngle(0)
-		.text(function(){return "N = " + graph.worksheet.data[graph.xData].length})
+		.text(function(){return "N = " + graph.data[graph.xData].length})
 		.font("bold 14px sans-serif");
 		
 	/* X-axis ticks */
@@ -2106,7 +2121,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	
 	/* Dots */	
 	bottomDist.add(pv.Dot)
-		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x)})
+		.data(function() {return xDistributionPoints(graph, graph.data[graph.xData], graph.x)})
 		.left(function(d) {return d.x})
 		.bottom(function(d) {return d.y})
 		.radius(function() {return graphCollection.dotSize})
@@ -2189,7 +2204,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.textAlign("center")
 		.visible(function(){
 			var retVal = false;
-			 xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x).forEach(function(d){
+			 xDistributionPoints(graph, graph.data[graph.xData], graph.x).forEach(function(d){
 				if (d.y > bottomDist.height() ||
 						d.x > bottomDist.width() ||
 						d.x < 0)
@@ -2257,7 +2272,7 @@ function constructXDistGraph(graph, index, graphPanel){
 		.top(0)
 		.textAlign("center")
 		.textAngle(0)
-		.text(function(){return "N = " + graph.worksheet.data[graph.xData].length})
+		.text(function(){return "N = " + graph.data[graph.xData].length})
 		.font("bold 14px sans-serif");
 
 	/* X-axis ticks */
@@ -2295,7 +2310,7 @@ function constructXDistGraph(graph, index, graphPanel){
 	
 	/* Dots */	
 	graphPanel.add(pv.Dot)
-		.data(function() {return xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x)})
+		.data(function() {return xDistributionPoints(graph, graph.data[graph.xData], graph.x)})
 		.left(function(d) {return d.x})
 		.bottom(function(d) {return d.y})
 		.radius(function() {return graphCollection.dotSize})
@@ -2379,7 +2394,7 @@ function constructXDistGraph(graph, index, graphPanel){
 		.textAlign("center")
 		.visible(function(){
 			var retVal = false;
-			 xDistributionPoints(graph, graph.worksheet.data[graph.xData], graph.x).forEach(function(d){
+			 xDistributionPoints(graph, graph.data[graph.xData], graph.x).forEach(function(d){
 				if (d.y > graph.h ||
 						d.x < 0 ||
 						d.x > graph.w)
@@ -2447,7 +2462,7 @@ function constructYDistGraph(graph,index, graphPanel){
 		.top(0)
 		.textAlign("center")
 		.textAngle(0)
-		.text(function(){return "N = " + graph.worksheet.data[graph.yData].length})
+		.text(function(){return "N = " + graph.data[graph.yData].length})
 		.font("bold 14px sans-serif");
 
 	/* Y-axis ticks */
@@ -2577,5 +2592,284 @@ function constructYDistGraph(graph,index, graphPanel){
 		
 	vis.render();
 }
+
+function constructLegendPanel(graph, index){	
+	$("#YAxisHorizontal"+index).remove();
+	$("#YAxis"+index).remove();
+	$("#XAxis"+index).remove();
+	
+	//Y-Axis Horizontal
+	if (graph.twoDistView){
+		$('body').prepend("<div class=\"axisDef\" id=\"YAxisHorizontal"+index+"\""+
+											"onmouseover=\"this.className='axisOver'\""+
+											"onmouseout=\"this.className='axisDef'\""+
+											"onmousedown=\"javascript:legPanDragStart(event,'"+key+"')\""+
+											">"+
+											"<center>"+graph.yData+"</center>"+
+											"</div>");
+	}
+	//Y-Axis
+	else {
+		$('body').prepend("<div class=\"axisDef\" id=\"YAxis"+index+"\""+
+											"onmouseover=\"this.className='axisOver'\""+
+											"onmouseout=\"this.className='axisDef'\">"+
+											"<center><p style=\"margin-top:14px;\">"+graph.yData+"</p></center>"+
+											"</div>");
+	}
+	//X-Axis
+	$('body').prepend("<div class=\"axisDef\" id=\"XAxis"+index+"\""+
+										"onmouseover=\"this.className='axisOver'\""+
+										"onmouseout=\"this.className='axisDef'\""+
+										">"+
+										"<center><p style=\"margin-top:22px;\">"+graph.xData+"</p></center>"+
+										"</div>");
+	
+	
+	positionAndSizeAxisPanels(graph,index);
+}
+
+function xAxisDragEnd(event, index){
+	console.log("xAxis");
+	if (dragObj.dragging){
+		graphCollection.graphs[index].assignX(dragObj.category);
+	}
+	
+}
+
+function positionAndSizeAxisPanels(graph,index){
+	//$('#YAxisHorizontal'+index).css('position', 'absolute')
+	//														.css('left', $('span').offset().left + 
+	//																					graphCollection.padLeft +
+	//																					60 + index * graph.w + index * 130 )
+	//														.css('top', $('span').offset().top + 
+	//																					graphCollection.padTop +
+	//																					graph.h )
+	//														.css('height', 80+"px")
+	//														.css('width', graph.w+"px")
+	//														.css('z-index', 1)
+															
+	$('#YAxis'+index).css('position', 'absolute')
+										.css('left', $('span').offset().left - (graph.h-40)/2 +
+													index * graph.w + index * 132 + 2)
+										.css('top', $('span').offset().top + graphCollection.padTop+40 + (graph.h-40)/2)
+										.css('height', 40+"px")
+										.css('width', graph.h+"px")
+										.css("-webkit-transform", "rotate(90deg)") 
+										.css("-moz-transform", "rotate(90deg)")	
+										.css('z-index', 1)
+															
+	$('#XAxis'+index).css('position', 'absolute')
+										.css('left', $('span').offset().left + 
+																	graphCollection.padLeft +
+																	60 + index * graph.w + index * 130 )
+										.css('top', $('span').offset().top + 
+																	graphCollection.padTop +
+																	graph.h + 60 - 1)
+										.css('height', 60+"px")
+										.css('width', graph.w+"px")
+										.css('z-index', 1)
+}
+
+function positionAndSizeGraph(){
+	if (graphCollection.datasetsMenuShowing){
+		$('span').css('position', 'absolute')
+						 .css('left',$('#datasets').width()+29)
+						 .css('z-index', -1);
+		graphCollection.setW(graphCollection.calcGraphWidth());
+	} else {
+		$('span').css('position', 'absolute')
+						 .css('left',8)
+						 .css('z-index', -1);
+		graphCollection.setW(graphCollection.calcGraphWidth());
+	}
+}
+
+var dragObj;
+function sidePanDragStart(event, category){
+	event.preventDefault();
+	
+	//To prevent a touch event from firing an additional drag event
+	if (touch.touch) {
+		touch.touch = false;
+		return;
+	}
+	
+	//console.log("sideStart");
+	dragObj = new Object();
+	dragObj.category = category;
+	dragObj.type = "side";
+	dragObj.dragging = true;
+	
+	$('#dragFeedback').html(category);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.pageX)
+								 .css('top',event.pageY)
+								 .css('z-index', 10000);
+	
+	document.body.style.cursor="move";
+	document.addEventListener("mousemove", sidePanDragGo,   true);
+	document.addEventListener("mouseup",   sidePanDragStop, true);
+}
+
+function sidePanDragGo(event){
+	event.preventDefault();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.pageX)
+								 .css('top',event.pageY)
+								 .css('z-index', 10);
+								 
+	var curX = event.pageX;
+	var curY = event.pageY;
+								 
+	for (var i=0; i<graphCollection.graphs.length; i++){				 
+		if (curX - $('#XAxis'+i).offset().left >= 0 &&
+				curX - $('#XAxis'+i).offset().left <= graphCollection.graphs[i].w &&
+				curY - $('#XAxis'+i).offset().top >= 0 &&
+				curY - $('#XAxis'+i).offset().top <= 80)
+		{
+			$('#XAxis'+i).attr('class','axisOver');
+		} else {
+			$('#XAxis'+i).attr('class','axisDef');
+		}
+		
+		if (curX - ($('#YAxis'+i).offset().left) >= 0 &&
+				curX - ($('#YAxis'+i).offset().left) <= 80 &&
+				curY - ($('#YAxis'+i).offset().top) >= 0 &&
+				curY - ($('#YAxis'+i).offset().top) <= graphCollection.graphs[i].h)
+		{
+			$('#YAxis'+i).attr('class','axisOver');
+		} else {
+			$('#YAxis'+i).attr('class','axisDef');
+		}
+	}
+}
+
+function sidePanDragStop(event){
+	$('#dragFeedback').hide();
+	
+	var curX = event.pageX;
+	var curY = event.pageY;
+	
+	for (var i=0; i<graphCollection.graphs.length; i++){				 
+		if (curX - $('#XAxis'+i).offset().left >= 0 &&
+				curX - $('#XAxis'+i).offset().left <= graphCollection.graphs[i].w &&
+				curY - $('#XAxis'+i).offset().top >= 0 &&
+				curY - $('#XAxis'+i).offset().top <= 80)
+		{
+				graphCollection.graphs[i].assignX(dragObj.category);
+				constructVis();
+		} 
+		else if(curX - ($('#YAxis'+i).offset().left) >= 0 &&
+						curX - ($('#YAxis'+i).offset().left) <= 80 &&
+						curY - ($('#YAxis'+i).offset().top) >= 0 &&
+						curY - ($('#YAxis'+i).offset().top) <= graphCollection.graphs[i].h)
+		{
+			//console.log("yAdd");
+			graphCollection.graphs[i].assignY(dragObj.category);
+			constructVis();
+		}
+	}
+	
+	/*					 
+	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
+		if (graphCollection.graphs.length > 4){
+			var which = parseInt(curY/graphCollection.defaultGraphHeight);
+			graphCollection.graphs[which].addCategory(dragObj.category);
+			graphCollection.updateMenuOptions();
+		} else {
+			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
+			graphCollection.graphs[which].addCategory(dragObj.category);
+			graphCollection.updateMenuOptions();
+		}
+		constructVis();
+	}
+	*/
+	
+	dragObj.dragging = false;
+	
+	
+	document.body.style.cursor="default";
+	document.removeEventListener("mousemove", sidePanDragGo,   true);
+	document.removeEventListener("mouseup",   sidePanDragStop, true);
+}
+
+function legPanDragStart(event, category, index, axis){
+	if (touch.touch){
+		touch.touch = false;
+		return;
+	}
+	
+	event.preventDefault();
+	
+	dragObj = new Object();
+	dragObj.category = category;
+	dragObj.index = index;
+	$('#dragFeedback').html(category);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.pageX)
+								 .css('top',event.pageY)
+								 .css('z-index', 10000);
+	
+	document.body.style.cursor="move";
+	document.addEventListener("mousemove", legPanDragGo,   true);
+	document.addEventListener("mouseup",   legPanDragStop, true);
+}
+
+function legPanDragGo(event){
+	event.preventDefault();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.pageX)
+								 .css('top',event.pageY)
+								 .css('z-index', 10000);
+}
+
+function legPanDragStop(event){
+	$('#dragFeedback').hide();
+	
+	var curX = event.pageX -
+						 $('span').offset().left -
+						 graphCollection.padLeft + 14;
+							
+	var curY = event.pageY - 
+						 $('span').offset().top - 
+						 graphCollection.padTop;
+						 
+	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
+		if (graphCollection.graphs.length > 4){
+			var which = parseInt(curY/graphCollection.defaultGraphHeight);
+			var toGraph = graphCollection.graphs[which];
+			var fromGraph = graphCollection.graphs[dragObj.index];
+			if (toGraph.addCategory(dragObj.category)){
+				fromGraph.removeCategory(dragObj.category);
+				if (fromGraph.selectedCategory == dragObj.category)
+					fromGraph.selectedCategory = null;
+			}
+			graphCollection.updateMenuOptions();
+		} else {
+			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
+			var toGraph = graphCollection.graphs[which];
+			var fromGraph = graphCollection.graphs[dragObj.index];
+			if (toGraph.addCategory(dragObj.category)){
+				fromGraph.removeCategory(dragObj.category);
+				if (fromGraph.selectedCategory == dragObj.category)
+					fromGraph.selectedCategory = null;
+			}
+			graphCollection.updateMenuOptions();
+		}
+	} else {
+		var fromGraph = graphCollection.graphs[dragObj.index];
+		fromGraph.removeCategory(dragObj.category);
+		if (fromGraph.selectedCategory == dragObj.category)
+			fromGraph.selectedCategory = null;
+	}
+	constructVis();
+	
+	document.body.style.cursor="default";
+	document.removeEventListener("mousemove", legPanDragGo,   true);
+	document.removeEventListener("mouseup",   legPanDragStop, true);
+}
+
 
 

@@ -79,6 +79,7 @@ function GraphCollection(){
 	//Colors
 	this.labelColors = {};
 	this.colorScale = pv.Colors.category20(0,20);
+	this.numLabels = 0;
 	//this.worksheet.labelMasterList.forEach(function(label, index){
 	//	graphCollection.labelColors[label] = graphCollection.colorScale(index);
 	//});
@@ -100,13 +101,21 @@ function GraphCollection(){
 
 GraphCollection.prototype = {
 	addWorksheet: function(worksheet){
+		//console.log("add");
+		//console.log(worksheet);
+		graphCollection = this;
 		for (key in worksheet.data){
+			//console.log(key);
 			this.data[key] = worksheet.data[key];
 			this.worksheets[worksheet.title] = worksheet;
 			this.labelColors[key] = this.colorScale(this.numberOfCategories);
+			worksheet.data[key].forEach(function(w){
+				if (graphCollection.labelColors[w.label] == undefined)
+					graphCollection.labelColors[w.label] = graphCollection.colorScale(graphCollection.numLabels++); 
+			});
 			this.numberOfCategories++;
 			this.editedCategories[key] = worksheet.edited[key];
-			this.nextDefaultLabel[key] = 0;
+			//this.nextDefaultLabel[key] = 0;
 			this.datasetsVisible[worksheet.title] = false;
 		}
 	},
@@ -149,9 +158,9 @@ GraphCollection.prototype = {
 	},
 	
 	calcGraphHeight: function (){
-		return Math.max(this.numberOfCategories*40,
-										(window.innerHeight - jQuery('div#notGraph').height()) - 150
-									 );
+		//return Math.max(this.numberOfCategories*40,
+									return	(window.innerHeight - jQuery('div#notGraph').height()) - 150
+									// );
 	},
 	
 	calcGraphWidth: function(){
@@ -390,7 +399,8 @@ function Graph(graphCollection){
 	
 	this.graphCollection = graphCollection;
 	//this.worksheet = worksheet;
-	this.data = null;
+	this.data = this.graphCollection.data;	//Master list of all categories
+	this.dataList;													//Filtered list of categories currently displayed if both axes not null
 	
 	this.yData = null;
 	this.xData = null;
@@ -491,12 +501,12 @@ Graph.prototype = {
 		this.userDrawnLinePoints = null;
 		this.pointsInEllipse = null;
 		if (this.yData != null){
-			this.yMax = pv.max(this.worksheet.data[this.yData], function(d) { return d.value });
-			this.yMin = pv.min(this.worksheet.data[this.yData], function(d) { return d.value });
+			this.yMax = pv.max(this.data[this.yData], function(d) { return d.value });
+			this.yMin = pv.min(this.data[this.yData], function(d) { return d.value });
 			this.yScaleMin = 0;
 			this.yScaleMax = Math.ceil(this.yMax);
 			this.setYScale();
-			this.n = this.worksheet.data[this.yData].length;
+			this.n = this.data[this.yData].length;
 		}
 		
 		if (this.yData != null && this.xData != null){
@@ -510,12 +520,12 @@ Graph.prototype = {
 		this.pointsInEllipse = null;
 		this.dataChanged = true;
 		if (this.xData != null){
-			this.xMax = pv.max(this.worksheet.data[this.xData], function(d) { return d.value });
-			this.xMin = pv.min(this.worksheet.data[this.xData], function(d) { return d.value });
+			this.xMax = pv.max(this.data[this.xData], function(d) { return d.value });
+			this.xMin = pv.min(this.data[this.xData], function(d) { return d.value });
 			this.xScaleMin = 0;
 			this.xScaleMax = Math.ceil(this.xMax);
 			this.setXScale();
-			this.n = this.worksheet.data[this.xData].length;
+			this.n = this.data[this.xData].length;
 		}
 		
 		if (this.yData != null && this.xData != null){
@@ -528,34 +538,30 @@ Graph.prototype = {
 		if (this.dataChanged){
 			var data = [];
 			if (this.xData != null && this.yData != null)
-				this.worksheet.data[this.xData].forEach(function(dx){
+				this.data[this.xData].forEach(function(dx){
 					var label = dx.label;
-					graph.worksheet.data[graph.yData].forEach(function(dy){
+					graph.data[graph.yData].forEach(function(dy){
 						if(dy.label == label)
 							data.push({"label":label, "x":dx.value, "y":dy.value});
 					});
 					
 				});
 			this.graphCollection.updateMenuOptions();
-			this.data = data;
+			this.dataList = data;
 			this.dataChanged = false;
 		}
-		return this.data;
+		return this.dataList;
 	},
 	
 	getClonedData: function(){
 		var graph = this;
 	
 		var data = [];
-		if (this.xData != null && this.yData != null)
-			this.worksheet.data[this.xData].forEach(function(dx){
-				var label = dx.label;
-				graph.worksheet.data[graph.yData].forEach(function(dy){
-					if(dy.label == label)
-						data.push({"label":label, "x":dx.value, "y":dy.value});
-				});
-				
+		if (this.xData != null && this.yData != null){
+			this.dataList.forEach(function(d){
+				data.push({"label":d.label, "x":d.x, "y":d.y});
 			});
+		}
 		this.graphCollection.updateMenuOptions();
 	
 		return data;
@@ -681,12 +687,15 @@ function Worksheet(param) {
 		this.local = false;
 		this.userCreated = false;
 		this.fetchWorksheetData();
+		graphCollection.addWorksheet(this);
 	} else {
 		if (param.hasOwnProperty('labelMasterlist') == false){
 			this.URL = param.feed.link[1].href + "***";
 			this.local = true;
 			this.userCreated = false;
 			this.fetchLocalData(param);
+			
+			graphCollection.addWorksheet(this);
 		} else {
 			this.URL = param.title;
 			this.local = true;
@@ -737,7 +746,75 @@ Worksheet.prototype = {
 		jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
 	},
 	
+	transformFeedData: function(feedData) {
+		var data = {};
+		var worksheet = this;
+		
+		//Creates of map of column letters to data categories; 
+		//ALSO maps each category to an empty array of maps (in data obj)
+		var columnToCategory = {};
+		feedData.feed.entry.filter(function(e) { return parseInt(e.title.$t.replace(/[A-Z]/g,"")) == 1 })
+			.slice(1)
+			.forEach(function(e) {
+				var cat = trim(e.content.$t.replace(new RegExp("dependent variable:","i"),"")
+										.replace(new RegExp("\\n", "g" ),"")
+										.replace(new RegExp("\'", "g"),"")
+										.replace(new RegExp("\"", "g"),""));
+				columnToCategory[e.title.$t.replace(/[0-9]/g,"")] = cat;
+				data[cat] = [];
+			});
+												
+		var rowToLabelVal = {};
+		feedData.feed.entry.filter(function(e) { 
+																return parseInt(e.title.$t.replace(/[A-Z]/g,"")) > 1 &&
+																	e.title.$t.replace(/[0-9]/g,"") == "A"
+															})
+												.forEach(function(e){
+													if (e.content.$t[0] != '*')
+														rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))] = e.content.$t;
+												});
+
+		feedData.feed.entry.filter(function(e) { 
+																return parseInt(e.title.$t.replace(/[A-Z]/g,"")) > 1 &&
+																	e.title.$t.replace(/[0-9]/g,"") != "A";
+															})
+												.forEach(function(e) {
+													if (columnToCategory[e.title.$t.replace(/[0-9]/g,"")] != undefined &&
+															rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))] != undefined)
+														data[columnToCategory[e.title.$t.replace(/[0-9]/g,"")]].push(
+															{"label": trim(rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))]),
+															 "value": parseFloat(e.content.$t)
+															}
+														);													
+												});	
+		//console.log(data);	
+		return data;
+	},
 	
+	getDescription: function(feedData){
+		var lastCell = feedData.feed.entry.slice(-1)[0].content.$t;
+		
+		if (lastCell[0] == '*')
+			return lastCell.slice(1)
+		else
+			return "";
+	},
+	
+	getLabels: function(feedData){
+		var labels = [];
+		feedData.feed.entry.filter(function(e) { 
+						return parseInt(e.title.$t.replace(/[A-Z]/g,"")) > 1 &&
+							e.title.$t.replace(/[0-9]/g,"") == "A"
+					})
+		.filter(function(e){
+			return e.content.$t[0] != '*';
+		})
+		.forEach(function(e){
+			labels.push(trim(e.content.$t));
+		});
+		return labels;
+	},
+	/*
 	transformFeedData: function(feedData) {
 		var data = {};
 		var worksheet = this;
@@ -799,7 +876,7 @@ Worksheet.prototype = {
 			labels.push(e.content.$t);
 		});
 		return labels;
-	},
+	},*/
 };
 
 
