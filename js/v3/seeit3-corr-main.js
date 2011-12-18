@@ -733,6 +733,7 @@ function constructGraphPanel(graph,index){
 			.title("Remove Graph")
 			.strokeStyle("black")
 	
+	/*
 	//X-axis drag feedback
 	var xAxisDragFeedbackPanel = vis.add(pv.Label)
 		.text(function(){
@@ -747,7 +748,7 @@ function constructGraphPanel(graph,index){
 		.textBaseline("middle")
 		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
 		.visible(false)
-		
+		*/
 		
 	//X-axis drag drop zone
 //	graph.xAxisPanel = graphPanel.add(pv.Panel)
@@ -1114,10 +1115,10 @@ function constructCorrGraph(graph, index, graphPanel){
 		}
 	});
 	
-	
+	//graphPanel.height(
 	/* Y-axis ticks */
   graphPanel.add(pv.Rule)
-		.data(function() { return getYBuckets(graph)})
+		.data(function() { return graph.y.ticks()})
 		.bottom(function(d){return graph.y(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
@@ -1128,11 +1129,11 @@ function constructCorrGraph(graph, index, graphPanel){
 		.anchor('left').add(pv.Label)
 			.text(function(d) {return d.toFixed(1)})
 			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-			.visible(function(){return this.index % 2 == 0})
+			//.visible(function(){return this.index % 2 == 0})
 	
 	/* X-axis ticks */
   graphPanel.add(pv.Rule)
-		.data(function() { return getXBuckets(graph)})
+		.data(function() { return graph.x.ticks()})
 		.left(function(d) {return graph.x(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
@@ -1143,7 +1144,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.anchor("bottom").add(pv.Label)
 			.text(function(d) {return d.toFixed(1)})
 			.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-			.visible(function(){return this.index % 2 == 0})
+			//.visible(function(){return this.index % 2 == 0})
 			
 	/* Number of datapoints N */
   graphPanel.add(pv.Label)
@@ -1703,7 +1704,9 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		hideMenus();
 	});
 	
+	///////////////////////////////////////////////////////////////////
 	//Top subgraph is y-axis data
+	///////////////////////////////////////////////////////////////////
 	var topDist = graphPanel.add(pv.Panel)
 		.width(function(){return graph.w})
 		.height(function(){return (graph.h-80)/2})
@@ -1775,7 +1778,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.textAlign("center")
 		.text("0")
 	
-	
+	/*
 	//Y-axis drag feedback panel
 	var yAxisDragFeedbackPanel = vis.add(pv.Label)
 		.text(function(){
@@ -1891,10 +1894,11 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.textAlign("center")
 		.textBaseline("middle")
 		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
-		
-	/* X-axis ticks */
+	*/
+	
+	/* Y-axis (horizontal) ticks */
 	topDist.add(pv.Rule)
-		.data(function() { return getYBuckets(graph) })
+		.data(function() { return graph.y.ticks() })
 		.left(function(d) {return graph.yHoriz(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
@@ -1905,7 +1909,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.anchor("bottom").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-		  .visible(function(){return this.index % 2 == 0})
+		  //.visible(function(){return this.index % 2 == 0})
 		  
 	/* X-axis line */
 	topDist.add(pv.Rule)
@@ -2019,8 +2023,10 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.left(0)
 		.right(0)
 		.strokeStyle("#000");
-		
+	
+	/////////////////////////////////////////////////////////////////////
 	//Bottom subgraph is x-axis data
+	/////////////////////////////////////////////////////////////////////
 	var bottomDist = graphPanel.add(pv.Panel)
 		.width(function(){return graph.w})
 		.height(function(){return (graph.h-80)/2})
@@ -2094,7 +2100,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		
 	/* X-axis ticks */
 	bottomDist.add(pv.Rule)
-		.data(function() { return getXBuckets(graph) })
+		.data(function() { return graph.x.ticks() })
 		.left(function(d) {return graph.x(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
@@ -2105,7 +2111,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.anchor("bottom").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-		  .visible(function(){return this.index % 2 == 0})
+		  //.visible(function(){return this.index % 2 == 0})
 		
 	/* X-axis line */
 	bottomDist.add(pv.Rule)
@@ -2277,7 +2283,7 @@ function constructXDistGraph(graph, index, graphPanel){
 
 	/* X-axis ticks */
 	graphPanel.add(pv.Rule)
-		.data(function() { return getXBuckets(graph) })
+		.data(function() { return graph.x.ticks() })
 		.left(function(d) {return graph.x(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
@@ -2289,7 +2295,7 @@ function constructXDistGraph(graph, index, graphPanel){
 			.bottom(-10)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-			.visible(function(){return this.index % 2 == 0})
+			//.visible(function(){return this.index % 2 == 0})
 			
 	/* X-axis line */
 	graphPanel.add(pv.Rule)
@@ -2467,7 +2473,7 @@ function constructYDistGraph(graph,index, graphPanel){
 
 	/* Y-axis ticks */
 	graphPanel.add(pv.Rule)
-		.data(function() { return getYBuckets(graph) })
+		.data(function() { return graph.y.ticks() })
 		.bottom(function(d) {return graph.y(d)})
 		.strokeStyle(function(){
 			if(graphCollection.editModeEnabled)
@@ -2478,7 +2484,7 @@ function constructYDistGraph(graph,index, graphPanel){
 		.anchor("left").add(pv.Label)
 		  .text(function(d) {return d.toFixed(1)})
 		  .font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-		  .visible(function(){return this.index % 2 == 0})
+		  //.visible(function(){return this.index % 2 == 0})
 		  
 	/* Y-axis line */
 	graphPanel.add(pv.Rule)
@@ -2601,18 +2607,18 @@ function constructLegendPanel(graph, index){
 	//Y-Axis Horizontal
 	if (graph.twoDistView){
 		$('body').prepend("<div class=\"axisDef\" id=\"YAxisHorizontal"+index+"\""+
-											"onmouseover=\"this.className='axisOver'\""+
-											"onmouseout=\"this.className='axisDef'\""+
-											"onmousedown=\"javascript:legPanDragStart(event,'"+key+"')\""+
-											">"+
-											"<center>"+graph.yData+"</center>"+
-											"</div>");
+										"onmouseover=\"this.className='axisOver'\""+
+										"onmouseout=\"this.className='axisDef'\""+
+										"onmousedown=\"javascript:legPanDragStart(event,'"+graph.yData+"',"+index+",'y')\">"+
+										"<center><p style=\"margin-top:11px;\">"+graph.yData+"</p></center>"+
+										"</div>");
 	}
 	//Y-Axis
 	else {
 		$('body').prepend("<div class=\"axisDef\" id=\"YAxis"+index+"\""+
 											"onmouseover=\"this.className='axisOver'\""+
-											"onmouseout=\"this.className='axisDef'\">"+
+											"onmouseout=\"this.className='axisDef'\""+
+											"onmousedown=\"javascript:legPanDragStart(event,'"+graph.yData+"',"+index+",'y')\">"+
 											"<center><p style=\"margin-top:14px;\">"+graph.yData+"</p></center>"+
 											"</div>");
 	}
@@ -2620,8 +2626,8 @@ function constructLegendPanel(graph, index){
 	$('body').prepend("<div class=\"axisDef\" id=\"XAxis"+index+"\""+
 										"onmouseover=\"this.className='axisOver'\""+
 										"onmouseout=\"this.className='axisDef'\""+
-										">"+
-										"<center><p style=\"margin-top:22px;\">"+graph.xData+"</p></center>"+
+										"onmousedown=\"javascript:legPanDragStart(event,'"+graph.xData+"',"+index+",'x')\">"+
+										"<center><p style=\"margin-top:12px;\">"+graph.xData+"</p></center>"+
 										"</div>");
 	
 	
@@ -2637,16 +2643,16 @@ function xAxisDragEnd(event, index){
 }
 
 function positionAndSizeAxisPanels(graph,index){
-	//$('#YAxisHorizontal'+index).css('position', 'absolute')
-	//														.css('left', $('span').offset().left + 
-	//																					graphCollection.padLeft +
-	//																					60 + index * graph.w + index * 130 )
-	//														.css('top', $('span').offset().top + 
-	//																					graphCollection.padTop +
-	//																					graph.h )
-	//														.css('height', 80+"px")
-	//														.css('width', graph.w+"px")
-	//														.css('z-index', 1)
+	$('#YAxisHorizontal'+index).css('position', 'absolute')
+															.css('left', $('span').offset().left + 
+																						graphCollection.padLeft +
+																						60 + index * graph.w + index * 130 )
+															.css('top', $('span').offset().top + 
+																						graphCollection.padTop +
+																						graph.h/2+20 )
+															.css('height', 40+"px")
+															.css('width', graph.w+"px")
+															.css('z-index', 1)
 															
 	$('#YAxis'+index).css('position', 'absolute')
 										.css('left', $('span').offset().left - (graph.h-40)/2 +
@@ -2665,7 +2671,7 @@ function positionAndSizeAxisPanels(graph,index){
 										.css('top', $('span').offset().top + 
 																	graphCollection.padTop +
 																	graph.h + 60 - 1)
-										.css('height', 60+"px")
+										.css('height', 40+"px")
 										.css('width', graph.w+"px")
 										.css('z-index', 1)
 }
@@ -2726,21 +2732,34 @@ function sidePanDragGo(event){
 		if (curX - $('#XAxis'+i).offset().left >= 0 &&
 				curX - $('#XAxis'+i).offset().left <= graphCollection.graphs[i].w &&
 				curY - $('#XAxis'+i).offset().top >= 0 &&
-				curY - $('#XAxis'+i).offset().top <= 80)
+				curY - $('#XAxis'+i).offset().top <= 40)
 		{
 			$('#XAxis'+i).attr('class','axisOver');
 		} else {
 			$('#XAxis'+i).attr('class','axisDef');
 		}
 		
-		if (curX - ($('#YAxis'+i).offset().left) >= 0 &&
-				curX - ($('#YAxis'+i).offset().left) <= 80 &&
-				curY - ($('#YAxis'+i).offset().top) >= 0 &&
-				curY - ($('#YAxis'+i).offset().top) <= graphCollection.graphs[i].h)
-		{
-			$('#YAxis'+i).attr('class','axisOver');
-		} else {
-			$('#YAxis'+i).attr('class','axisDef');
+		if (graphCollection.graphs[i].twoDistView){
+			if (curX - ($('#YAxisHorizontal'+i).offset().left) >= 0 &&
+					curX - ($('#YAxisHorizontal'+i).offset().left) <= graphCollection.graphs[i].w &&
+					curY - ($('#YAxisHorizontal'+i).offset().top) >= 0 &&
+					curY - ($('#YAxisHorizontal'+i).offset().top) <= 40)
+			{
+				$('#YAxisHorizontal'+i).attr('class','axisOver');
+			} else {
+				$('#YAxisHorizontal'+i).attr('class','axisDef');
+			}
+		} 
+		else {
+			if (curX - ($('#YAxis'+i).offset().left) >= 0 &&
+					curX - ($('#YAxis'+i).offset().left) <= 40 &&
+					curY - ($('#YAxis'+i).offset().top) >= 0 &&
+					curY - ($('#YAxis'+i).offset().top) <= graphCollection.graphs[i].h)
+			{
+				$('#YAxis'+i).attr('class','axisOver');
+			} else {
+				$('#YAxis'+i).attr('class','axisDef');
+			}
 		}
 	}
 }
@@ -2755,36 +2774,33 @@ function sidePanDragStop(event){
 		if (curX - $('#XAxis'+i).offset().left >= 0 &&
 				curX - $('#XAxis'+i).offset().left <= graphCollection.graphs[i].w &&
 				curY - $('#XAxis'+i).offset().top >= 0 &&
-				curY - $('#XAxis'+i).offset().top <= 80)
+				curY - $('#XAxis'+i).offset().top <= 40)
 		{
-				graphCollection.graphs[i].assignX(dragObj.category);
-				constructVis();
-		} 
-		else if(curX - ($('#YAxis'+i).offset().left) >= 0 &&
-						curX - ($('#YAxis'+i).offset().left) <= 80 &&
-						curY - ($('#YAxis'+i).offset().top) >= 0 &&
-						curY - ($('#YAxis'+i).offset().top) <= graphCollection.graphs[i].h)
-		{
-			//console.log("yAdd");
-			graphCollection.graphs[i].assignY(dragObj.category);
+			graphCollection.graphs[i].assignX(dragObj.category);
 			constructVis();
 		}
-	}
-	
-	/*					 
-	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
-		if (graphCollection.graphs.length > 4){
-			var which = parseInt(curY/graphCollection.defaultGraphHeight);
-			graphCollection.graphs[which].addCategory(dragObj.category);
-			graphCollection.updateMenuOptions();
-		} else {
-			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-			graphCollection.graphs[which].addCategory(dragObj.category);
-			graphCollection.updateMenuOptions();
+		
+		if (graphCollection.graphs[i].twoDistView){
+			if (curX - ($('#YAxisHorizontal'+i).offset().left) >= 0 &&
+					curX - ($('#YAxisHorizontal'+i).offset().left) <= graphCollection.graphs[i].w &&
+					curY - ($('#YAxisHorizontal'+i).offset().top) >= 0 &&
+					curY - ($('#YAxisHorizontal'+i).offset().top) <= 40)
+			{
+				graphCollection.graphs[i].assignY(dragObj.category);
+				constructVis();
+			}
+		} 
+		else {
+			if (curX - ($('#YAxis'+i).offset().left) >= 0 &&
+					curX - ($('#YAxis'+i).offset().left) <= 80 &&
+					curY - ($('#YAxis'+i).offset().top) >= 0 &&
+					curY - ($('#YAxis'+i).offset().top) <= graphCollection.graphs[i].h)
+			{
+				graphCollection.graphs[i].assignY(dragObj.category);
+				constructVis();
+			}
 		}
-		constructVis();
 	}
-	*/
 	
 	dragObj.dragging = false;
 	
@@ -2804,13 +2820,14 @@ function legPanDragStart(event, category, index, axis){
 	
 	dragObj = new Object();
 	dragObj.category = category;
-	dragObj.index = index;
+	dragObj.fromGraph = index;
+	dragObj.fromAxis = axis;
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
 								 .css('left',event.pageX)
 								 .css('top',event.pageY)
-								 .css('z-index', 10000);
+								 .css('z-index', 10);
 	
 	document.body.style.cursor="move";
 	document.addEventListener("mousemove", legPanDragGo,   true);
@@ -2823,11 +2840,133 @@ function legPanDragGo(event){
 								 .css('left',event.pageX)
 								 .css('top',event.pageY)
 								 .css('z-index', 10000);
+	
+	var curX = event.pageX;
+	var curY = event.pageY;
+								 
+	for (var i=0; i<graphCollection.graphs.length; i++){				 
+		if (curX - $('#XAxis'+i).offset().left >= 0 &&
+				curX - $('#XAxis'+i).offset().left <= graphCollection.graphs[i].w &&
+				curY - $('#XAxis'+i).offset().top >= 0 &&
+				curY - $('#XAxis'+i).offset().top <= 40)
+		{
+			$('#XAxis'+i).attr('class','axisOver');
+		} else {
+			$('#XAxis'+i).attr('class','axisDef');
+		}
+		
+		if (graphCollection.graphs[i].twoDistView){
+			if (curX - ($('#YAxisHorizontal'+i).offset().left) >= 0 &&
+					curX - ($('#YAxisHorizontal'+i).offset().left) <= graphCollection.graphs[i].w &&
+					curY - ($('#YAxisHorizontal'+i).offset().top) >= 0 &&
+					curY - ($('#YAxisHorizontal'+i).offset().top) <= 40)
+			{
+				$('#YAxisHorizontal'+i).attr('class','axisOver');
+			} else {
+				$('#YAxisHorizontal'+i).attr('class','axisDef');
+			}
+		} 
+		else {
+			if (curX - ($('#YAxis'+i).offset().left) >= 0 &&
+					curX - ($('#YAxis'+i).offset().left) <= 40 &&
+					curY - ($('#YAxis'+i).offset().top) >= 0 &&
+					curY - ($('#YAxis'+i).offset().top) <= graphCollection.graphs[i].h)
+			{
+				$('#YAxis'+i).attr('class','axisOver');
+			} else {
+				$('#YAxis'+i).attr('class','axisDef');
+			}
+		}
+	}
 }
 
 function legPanDragStop(event){
 	$('#dragFeedback').hide();
 	
+	var curX = event.pageX;
+	var curY = event.pageY;
+	
+	var visX = event.pageX -
+						 $('span').offset().left -
+						 graphCollection.padLeft + 40;
+							
+	var visY = event.pageY - 
+						 $('span').offset().top - 
+						 graphCollection.padTop;
+	
+	if (visX > 0 && 
+			visX < graphCollection.w+graphCollection.padRight && 
+			visY > 0 && 
+			visY < graphCollection.h+graphCollection.padBot)
+	{
+		for (var i=0; i<graphCollection.graphs.length; i++){				 
+			if (curX - $('#XAxis'+i).offset().left >= 0 &&
+					curX - $('#XAxis'+i).offset().left <= graphCollection.graphs[i].w &&
+					curY - $('#XAxis'+i).offset().top >= 0 &&
+					curY - $('#XAxis'+i).offset().top <= 40)
+			{
+				var tempX = graphCollection.graphs[i].xData;
+				graphCollection.graphs[i].assignX(dragObj.category);
+				if (dragObj.fromAxis == 'y'){
+					if (dragObj.fromGraph == i)
+						graphCollection.graphs[dragObj.fromGraph].assignY(tempX);
+					else
+						graphCollection.graphs[dragObj.fromGraph].assignY(null);
+				}else if (dragObj.fromGraph != i){
+					graphCollection.graphs[dragObj.fromGraph].assignX(null);
+				}
+				constructVis();
+			}
+			
+			if (graphCollection.graphs[i].twoDistView){
+				if (curX - ($('#YAxisHorizontal'+i).offset().left) >= 0 &&
+						curX - ($('#YAxisHorizontal'+i).offset().left) <= graphCollection.graphs[i].w &&
+						curY - ($('#YAxisHorizontal'+i).offset().top) >= 0 &&
+						curY - ($('#YAxisHorizontal'+i).offset().top) <= 40)
+				{
+					var tempY = graphCollection.graphs[i].yData;
+					graphCollection.graphs[i].assignY(dragObj.category);
+					if (dragObj.fromAxis == 'y' && dragObj.fromGraph != i){
+						graphCollection.graphs[dragObj.fromGraph].assignY(null);
+					} else {
+						if (dragObj.fromGraph == i)
+							graphCollection.graphs[dragObj.fromGraph].assignX(tempY);
+						else
+							graphCollection.graphs[dragObj.fromGraph].assignX(null);
+					}
+					constructVis();
+				}
+			} 
+			else {
+				if (curX - ($('#YAxis'+i).offset().left) >= 0 &&
+						curX - ($('#YAxis'+i).offset().left) <= 80 &&
+						curY - ($('#YAxis'+i).offset().top) >= 0 &&
+						curY - ($('#YAxis'+i).offset().top) <= graphCollection.graphs[i].h)
+				{
+					var tempY = graphCollection.graphs[i].yData;
+					graphCollection.graphs[i].assignY(dragObj.category);
+					if (dragObj.fromAxis == 'y' && dragObj.fromGraph != i){
+						graphCollection.graphs[dragObj.fromGraph].assignY(null);
+					} else {
+						if (dragObj.fromGraph == i)
+							graphCollection.graphs[dragObj.fromGraph].assignX(tempY);
+						else
+							graphCollection.graphs[dragObj.fromGraph].assignX(null);
+					}
+					constructVis();
+				}
+			}
+		}
+	} else {
+		console.log("outside delete");
+		if (dragObj.fromAxis == 'y')
+			graphCollection.graphs[dragObj.fromGraph].assignY(null);
+		else
+			graphCollection.graphs[dragObj.fromGraph].assignX(null);
+		constructVis();
+	}
+	
+	/*
 	var curX = event.pageX -
 						 $('span').offset().left -
 						 graphCollection.padLeft + 14;
@@ -2865,6 +3004,7 @@ function legPanDragStop(event){
 			fromGraph.selectedCategory = null;
 	}
 	constructVis();
+	*/
 	
 	document.body.style.cursor="default";
 	document.removeEventListener("mousemove", legPanDragGo,   true);
