@@ -2104,7 +2104,9 @@ function constructLegendPanel(graph, index){
 										"onmouseover=\"this.className='axisOver'\""+
 										"onmouseout=\"this.className='axisDef'\""+
 										"onmousedown=\"javascript:legPanDragStart(event,'"+graph.yData+"',"+index+",'y')\">"+
-										"<center><p style=\"margin-top:11px;\">"+graph.yData+"</p></center>"+
+										"<center><p style=\"margin-top:11px;\">"+
+										(graph.yData != null ? graph.yData : "Drag a dataset here to assign it to the Y-Axis.")+
+										"</p></center>"+
 										"</div>");
 	}
 	//Y-Axis
@@ -2113,7 +2115,9 @@ function constructLegendPanel(graph, index){
 											"onmouseover=\"this.className='axisOver'\""+
 											"onmouseout=\"this.className='axisDef'\""+
 											"onmousedown=\"javascript:legPanDragStart(event,'"+graph.yData+"',"+index+",'y')\">"+
-											"<center><p style=\"margin-top:14px;\">"+graph.yData+"</p></center>"+
+											"<center><p style=\"margin-top:14px;\">"+
+											(graph.yData != null ? graph.yData : "Drag a dataset here to assign it to the Y-Axis.")+
+											"</p></center>"+
 											"</div>");
 	}
 	//X-Axis
@@ -2121,7 +2125,9 @@ function constructLegendPanel(graph, index){
 										"onmouseover=\"this.className='axisOver'\""+
 										"onmouseout=\"this.className='axisDef'\""+
 										"onmousedown=\"javascript:legPanDragStart(event,'"+graph.xData+"',"+index+",'x')\">"+
-										"<center><p style=\"margin-top:12px;\">"+graph.xData+"</p></center>"+
+										"<center><p style=\"margin-top:12px;\">"+
+										(graph.xData != null ? graph.xData : "Drag a dataset here to assign it to the X-Axis.")+
+										"</p></center>"+
 										"</div>");
 	
 	
