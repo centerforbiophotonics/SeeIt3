@@ -274,11 +274,11 @@ GraphCollection.prototype = {
 		
 	},
 	
-	editData: function(oldTitle, title, data){
+	editData: function(worksheet, oldTitle, title, data){
 		
 		if (oldTitle != title)
 			delete this.worksheet.data[oldTitle];
-		this.worksheet.data[title] = data;
+		worksheet.data[title] = data;
 		this.graphs.forEach(function(graph){
 			graph.dataChanged = true;
 			
@@ -290,13 +290,13 @@ GraphCollection.prototype = {
 				graph.n = (graph.getData()).length;
 				graph.setupStats();
 			} else if ( graph.xData != null ){
-				graph.xMax = pv.max(graph.worksheet.data[graph.xData], function(d) { return d.value });
-				graph.xMin = pv.min(graph.worksheet.data[graph.xData], function(d) { return d.value });
-				graph.n = graph.worksheet.data[graph.xData].length;
+				graph.xMax = pv.max(worksheet.data[graph.xData], function(d) { return d.value });
+				graph.xMin = pv.min(worksheet.data[graph.xData], function(d) { return d.value });
+				graph.n = worksheet.data[graph.xData].length;
 			} else if (graph.yData != null){
-				graph.yMax = pv.max(graph.worksheet.data[graph.yData], function(d) { return d.value });
-				graph.yMin = pv.min(graph.worksheet.data[graph.yData], function(d) { return d.value });
-				graph.n = graph.worksheet.data[graph.yData].length;
+				graph.yMax = pv.max(worksheet.data[graph.yData], function(d) { return d.value });
+				graph.yMin = pv.min(worksheet.data[graph.yData], function(d) { return d.value });
+				graph.n = worksheet.data[graph.yData].length;
 			}
 				
 			if (graph.xMax > graph.scaleMax)
@@ -312,12 +312,12 @@ GraphCollection.prototype = {
 		
 		for (var h = 0; h < exampleSpreadsheets.length; h++) {
 			for (var i = 0; i < exampleSpreadsheets[h].worksheets.length; i++) {
-				if (exampleSpreadsheets[h].worksheets[i].URL == this.worksheet.URL){
+				if (exampleSpreadsheets[h].worksheets[i].URL == worksheet.URL){
 					exampleSpreadsheets[h].worksheets[i].edited[title] = true;
 				}
 			}
 		}
-		this.worksheet.edited[title] = true;
+		worksheet.edited[title] = true;
 	},
 	
 	editSinglePoint: function(set, label, value){

@@ -100,7 +100,7 @@ p#loadingMsg {
 .axisDef {
 	position: relative;
 	padding: 1px;
-	background: #ffffff;
+	background: rgba(255,255,255,0.0);
 	cursor: move;
 	margin-bottom:1px;
 }
@@ -108,7 +108,7 @@ p#loadingMsg {
 .axisOver {
 	position: relative;
 	padding: 1px;
-	background: #cccccc; 
+	background: rgba(100,100,100,0.5); 
 	cursor: move;
 	margin-bottom:1px;
 }
