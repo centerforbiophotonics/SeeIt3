@@ -412,12 +412,11 @@ function constructDatasetPanel(){
 								w.title+"</div></td>"+
 							"</table></tr>";
 			html += "<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">";
-			html += "<input type='image' src='img/edit.png'  style='margin-left:15px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
-							"<input type='image' src='img/refresh.png' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>"+
-							"<input type='image' src='img/question.png' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
-							"<input type='image' src='img/document.png' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>";
+			html += "<input type='image' src='img/edit.png'  style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
+							"<input type='image' src='img/refresh.png' style='margin-left:25px;' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>"+
+							"<input type='image' src='img/question.png' style='margin-left:25px;' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
+							"<input type='image' src='img/document.png' style='margin-left:25px;' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>";
 			for (key in w.data){
-				
 				html+="<table style='margin-left:15px;'><tr>"+
 							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
 							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
@@ -729,27 +728,6 @@ function constructGraphPanel(graph,index){
 			hideMenus();
 			$('#graphOptions').slideDown();
 		})
-		
-	//Copy to clipboard button
-	graphPanel.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/clipboard.png")  //fix this
-		.width(30)
-		.height(30)
-		.top(-65)
-		.left(-20)
-		.cursor("pointer")
-		.title("Copy data to clipboard.")
-		.event("click", function(){
-			$('#cbText').val(graph.toString());
-			positionClipboardPrompt();
-			hideMenus();
-			$('#clipboardPrompt').slideDown();
-			$('#cbText').focus();
-			$('#cbText').select();
-			$('#clipboardPrompt').scrollTop(0);
-		
-		})
-		
 	
 	
 	if (graph.yData != null && graph.xData != null){

@@ -48,7 +48,6 @@ function GraphCollection(){
 	this.data = {};
 	this.worksheets = {};
 	
-	
 	this.graphs = [];
 	this.selectedGraphIndex = 0;
 	this.datasetsMenuShowing = false;
@@ -63,27 +62,14 @@ function GraphCollection(){
 	this.padRight = 25;
 	
 	this.numberOfCategories = 0;
-	//for (var key in this.worksheet.data){
-	//	this.numberOfCategories++;
-	//}
-	
 	this.nextDefaultCategory = 0;
-
 	this.editedCategories = {};
-	//for (var key in this.worksheet.data){
-	//	this.editedCategories[key] = this.worksheet.edited[key];
-	//}
-	
 	this.editModeEnabled = false;
 	
 	//Colors
 	this.labelColors = {};
 	this.colorScale = pv.Colors.category20(0,20);
 	this.numLabels = 0;
-	//this.worksheet.labelMasterList.forEach(function(label, index){
-	//	graphCollection.labelColors[label] = graphCollection.colorScale(index);
-	//});
-	
 	this.defaultLabel = 0;
 	
 	//Display Options
@@ -101,11 +87,8 @@ function GraphCollection(){
 
 GraphCollection.prototype = {
 	addWorksheet: function(worksheet){
-		//console.log("add");
-		//console.log(worksheet);
 		graphCollection = this;
 		for (key in worksheet.data){
-			//console.log(key);
 			this.data[key] = worksheet.data[key];
 			this.worksheets[worksheet.title] = worksheet;
 			this.labelColors[key] = this.colorScale(this.numberOfCategories);
@@ -115,7 +98,6 @@ GraphCollection.prototype = {
 			});
 			this.numberOfCategories++;
 			this.editedCategories[key] = worksheet.edited[key];
-			//this.nextDefaultLabel[key] = 0;
 			this.datasetsVisible[worksheet.title] = false;
 		}
 	},
@@ -125,21 +107,13 @@ GraphCollection.prototype = {
 		
 		for (var key in worksheet.data){
 			this.graphs.forEach(function(g){
-				var rInd = null;
-				g.includedCategories.forEach(function(c,i){
-					if (c == key){
-						//console.log(c);
-						rInd = i;
-					}
-				});
-				if (rInd != null)
-					g.includedCategories.splice(rInd,1);
+				if (key == g.xData) g.xData = null;
+				if (key == g.yData) g.yData = null;
 			});
 		}
 		
 		for (key in worksheet.data){
 			delete this.data[key];
-			delete this.categoryColors[key];
 			this.numberOfCategories--;
 			delete this.editedCategories[key];
 		}
@@ -689,25 +663,42 @@ function Worksheet(param) {
 		this.fetchWorksheetData();
 		graphCollection.addWorksheet(this);
 	} else {
-		if (param.hasOwnProperty('labelMasterlist') == false){
+		if (param.hasOwnProperty('userDefined') == false){
 			this.URL = param.feed.link[1].href + "***";
 			this.local = true;
 			this.userCreated = false;
 			this.fetchLocalData(param);
-			
-			graphCollection.addWorksheet(this);
 		} else {
 			this.URL = param.title;
 			this.local = true;
 			this.title = param.title;
-			this.labelMasterList = param.labelMasterlist;
+			this.labelMasterList = param.labelMasterList;
 			this.labelType = param.labelType;
 			this.userCreated = true;
-			this.data = {};
-			this.edited = {};
+			this.data = param.data;
+			this.edited = param.edited;
 			userCreatedWorksheet = this;
 			graphCollection.addWorksheet(this);
 		}
+		//if (param.hasOwnProperty('labelMasterlist') == false){
+			//this.URL = param.feed.link[1].href + "***";
+			//this.local = true;
+			//this.userCreated = false;
+			//this.fetchLocalData(param);
+			
+			//graphCollection.addWorksheet(this);
+		//} else {
+			//this.URL = param.title;
+			//this.local = true;
+			//this.title = param.title;
+			//this.labelMasterList = param.labelMasterlist;
+			//this.labelType = param.labelType;
+			//this.userCreated = true;
+			//this.data = {};
+			//this.edited = {};
+			//userCreatedWorksheet = this;
+			//graphCollection.addWorksheet(this);
+		//}
 	}
 }
 
@@ -918,14 +909,14 @@ function Spreadsheet(key) {
 		this.fetchWorksheets();
 		this.local = false;
 	} else {
-		if (key.hasOwnProperty('labelMasterlist') == false){
+		if (key.hasOwnProperty('userDefined') == false){
 			this.key = 'local'
 			this.constructLocalWorksheets(key);
 			this.local = true;
 		} else {
 			this.key = 'local';
 			this.local = true;
-			this.constructBlankWorksheet(key);
+			this.constructUserDefinedWorksheet(key);
 		}
 	}
 }
@@ -958,7 +949,12 @@ Spreadsheet.prototype = {
 		numWorksheets += local.length;  
 	},
 	
-	constructBlankWorksheet: function(attr){
+//	constructBlankWorksheet: function(attr){
+//		this.worksheets.push(new Worksheet(attr));
+//		numWorksheets++;
+//	},
+	
+	constructUserDefinedWorksheet: function(attr){
 		this.worksheets.push(new Worksheet(attr));
 		numWorksheets++;
 	},

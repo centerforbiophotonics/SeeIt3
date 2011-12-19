@@ -1214,7 +1214,9 @@ $('#loadFromForm').click(function(){
 			addWorksheet(title, cells);
 		else
 			updateWorksheet(worksheetToEdit,title,cells);
+		$('#worksheetMenu').slideUp();
 	}
+	
 });
 
 $('#deleteWorksheet').click(function(){
@@ -1333,7 +1335,6 @@ function addWorksheet(title, cells){
 	
 	exampleSpreadsheets.push(new Spreadsheet(obj));
 	constructVis();
-	
 };
 
 function updateWorksheet(oldTitle, newTitle, cells){
@@ -1372,6 +1373,8 @@ $('#submitURL').click(function(){
 	if (!exists) exampleSpreadsheets.push(new Spreadsheet(key));
 	else alert("Error: that worksheet has already been loaded.");
 	$('#worksheetURLMenu').slideUp();
+	$('#worksheetMenu').slideUp();
+	constructVis();
 });
 
 
