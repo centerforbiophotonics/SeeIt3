@@ -4,6 +4,7 @@ var vis = {};
 var touch = new Touch();
 var fontString = "bold 14px arial";
 var dragging = false;
+var dragID = null;
 
 var exampleSpreadsheets = [
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
@@ -1114,7 +1115,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	//	.textMargin(10)
 	//	.font("bold 12px sans-serif");
 	
-	/* dot plot */
+	/* Dots */
 	graphPanel.add(pv.Dot)
 		.data(function(){return graph.getClonedData()})
 		.event("point", function() { return this.active(this.index).parent })
@@ -1142,18 +1143,31 @@ function constructCorrGraph(graph, index, graphPanel){
 		})
 		.event("mousedown", pv.Behavior.drag())
 		.event("drag", function(d){
-			dragging = true;  
+			dragging = true;
+			if (dragID == null) dragID = d.label; //to ensure other data points don't get stuck to the one that is being dragged
+			
 			if (graphCollection.editModeEnabled &&
 					graphPanel.mouse().x >= 0 &&
 					graphPanel.mouse().x <= graph.w &&
 					graphPanel.mouse().y >= 0 &&
 					graphPanel.mouse().y <= graph.h){
 				
-				graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
-				graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
+				var worksheetX = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+						worksheetX = graphCollection.worksheets[key];
+				}
+				var worksheetY = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+						worksheetY = graphCollection.worksheets[key];
+				}
+				
+				graphCollection.editSinglePoint(worksheetX, graph.xData, dragID, graph.x.invert(graphPanel.mouse().x));
+				graphCollection.editSinglePoint(worksheetY, graph.yData, dragID, graph.y.invert(graph.h - graphPanel.mouse().y));
 				
 				dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1) +
-												", " +
+											", " +
 											graph.y.invert(graph.h - graphPanel.mouse().y).toFixed(1));
 				dragLabel.left(graphPanel.mouse().x)
 				dragLabel.top(graphPanel.mouse().y - 10)
@@ -1167,11 +1181,22 @@ function constructCorrGraph(graph, index, graphPanel){
 		})
 		.event("dragend",function(d){
 			if (graphCollection.editModeEnabled){
-				var newXData = graphCollection.worksheet.data[graph.xData];
-				var newYData = graphCollection.worksheet.data[graph.yData];
+				var worksheetX = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+						worksheetX = graphCollection.worksheets[key];
+				}
+				var worksheetY = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+						worksheetY = graphCollection.worksheets[key];
+				}
+				
+				var newXData = worksheetX.data[graph.xData];
+				var newYData = worksheetY.data[graph.yData];
 				var remIndex = null;
 				newXData.forEach(function(data, index){
-					if (data.label == d.label && 
+					if (data.label == dragID && 
 					(graphPanel.mouse().x < 0 ||
 					 graphPanel.mouse().x > graph.w ||
 					 graphPanel.mouse().y < 0 ||
@@ -1182,11 +1207,11 @@ function constructCorrGraph(graph, index, graphPanel){
 				});
 				if (remIndex != null)
 					newXData.splice(remIndex,1);
-				graphCollection.editData(graph.xData,graph.xData,newXData);
+				graphCollection.editData(worksheetX, graph.xData,graph.xData,newXData);
 				
 				remIndex = null;
 				newYData.forEach(function(data, index){
-					if (data.label == d.label && 
+					if (data.label == dragID && 
 					(graphPanel.mouse().x < 0 ||
 					 graphPanel.mouse().x > graph.w ||
 					 graphPanel.mouse().y < 0 ||
@@ -1197,9 +1222,10 @@ function constructCorrGraph(graph, index, graphPanel){
 				});
 				if (remIndex != null)
 					newYData.splice(remIndex,1);
-				graphCollection.editData(graph.yData,graph.yData,newYData);
+				graphCollection.editData(worksheetY, graph.yData,graph.yData,newYData);
 				
 				dragLabel.visible(false);
+				dragID = null;
 				constructVis();
 				//vis.render();
 			}
@@ -1397,8 +1423,13 @@ function constructTwoDistGraph(graph,index, graphPanel){
 					topDist.mouse().x <= graph.w &&
 					topDist.mouse().y >= 0 &&
 					topDist.mouse().y <= graph.h){
+				var worksheet = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+						worksheet = graphCollection.worksheets[key];
+				}
 				
-				graphCollection.editSinglePoint(graph.yData, d.label, graph.yHoriz.invert(topDist.mouse().x));
+				graphCollection.editSinglePoint(worksheet, graph.yData, d.label, graph.yHoriz.invert(topDist.mouse().x));
 				
 				topDragLabel.text(graph.yHoriz.invert(topDist.mouse().x).toFixed(1))
 				topDragLabel.left(topDist.mouse().x)
@@ -1413,7 +1444,12 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		})
 		.event("dragend",function(d){
 			if (graphCollection.editModeEnabled){
-				var newYData = graphCollection.worksheet.data[graph.yData];
+				var worksheet = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+						worksheet = graphCollection.worksheets[key];
+				}
+				var newYData = worksheet.data[graph.yData];
 				var remIndex = null;
 				
 				newYData.forEach(function(data, index){
@@ -1428,11 +1464,12 @@ function constructTwoDistGraph(graph,index, graphPanel){
 				});
 				if (remIndex != null)
 					newYData.splice(remIndex,1);
-				graphCollection.editData(graph.yData,graph.yData,newYData);
+				graphCollection.editData(worksheet, graph.yData,graph.yData,newYData);
 				
 				topDragLabel.visible(false);
 				
 				vis.render();
+				constructDatasetPanel();
 			}
 		})
 		.event("touchstart", function(d){
@@ -1618,7 +1655,13 @@ function constructTwoDistGraph(graph,index, graphPanel){
 					bottomDist.mouse().y >= 0 &&
 					bottomDist.mouse().y <= graph.h){
 				
-				graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(bottomDist.mouse().x));
+				var worksheet = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+						worksheet = graphCollection.worksheets[key];
+				}
+				
+				graphCollection.editSinglePoint(worksheet, graph.xData, d.label, graph.x.invert(bottomDist.mouse().x));
 
 				botDragLabel.text(graph.x.invert(bottomDist.mouse().x).toFixed(1))
 				botDragLabel.left(bottomDist.mouse().x)
@@ -1633,7 +1676,13 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		})
 		.event("dragend",function(d){
 			if (graphCollection.editModeEnabled){
-				var newXData = graphCollection.worksheet.data[graph.xData];
+				var worksheet = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+						worksheet = graphCollection.worksheets[key];
+				}
+				
+				var newXData = worksheet.data[graph.xData];
 				var remIndex = null;
 				newXData.forEach(function(data, index){
 					if (data.label == d.label && 
@@ -1647,11 +1696,12 @@ function constructTwoDistGraph(graph,index, graphPanel){
 				});
 				if (remIndex != null)
 					newXData.splice(remIndex,1);
-				graphCollection.editData(graph.xData,graph.xData,newXData);
+				graphCollection.editData(worksheet, graph.xData,graph.xData,newXData);
 				
 				botDragLabel.visible(false);
 				
 				vis.render();
+				constructDatasetPanel();
 			}
 		})
 		.event("touchstart", function(d){
@@ -1823,7 +1873,13 @@ function constructXDistGraph(graph, index, graphPanel){
 					graphPanel.mouse().y >= 0 &&
 					graphPanel.mouse().y <= graph.h){
 				
-				graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
+				var worksheet = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+						worksheet = graphCollection.worksheets[key];
+				}
+				
+				graphCollection.editSinglePoint(worksheet, graph.xData, d.label, graph.x.invert(graphPanel.mouse().x));
 				
 				dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1))
 				dragLabel.left(graphPanel.mouse().x)
@@ -1838,7 +1894,13 @@ function constructXDistGraph(graph, index, graphPanel){
 		})
 		.event("dragend",function(d){
 			if (graphCollection.editModeEnabled){
-				var newXData = graphCollection.worksheet.data[graph.xData];
+				var worksheet = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+						worksheet = graphCollection.worksheets[key];
+				}
+				
+				var newXData = worksheet.data[graph.xData];
 				var remIndex = null;
 				newXData.forEach(function(data, index){
 					if (data.label == d.label && 
@@ -1852,11 +1914,12 @@ function constructXDistGraph(graph, index, graphPanel){
 				});
 				if (remIndex != null)
 					newXData.splice(remIndex,1);
-				graphCollection.editData(graph.xData,graph.xData,newXData);
+				graphCollection.editData(worksheet, graph.xData,graph.xData,newXData);
 				
 				dragLabel.visible(false);
 				
 				vis.render();
+				constructDatasetPanel();
 			}
 		})
 		.event("touchstart", function(d){
@@ -2029,8 +2092,13 @@ function constructYDistGraph(graph,index,graphPanel){
 					graphPanel.mouse().x <= graph.w &&
 					graphPanel.mouse().y >= 0 &&
 					graphPanel.mouse().y <= graph.h){
+				var worksheet = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+						worksheet = graphCollection.worksheets[key];
+				}
 				
-				graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
+				graphCollection.editSinglePoint(worksheet, graph.yData, d.label, graph.y.invert(graph.h - graphPanel.mouse().y));
 				
 				dragLabel.text(graph.y.invert(graph.h - graphPanel.mouse().y).toFixed(1));
 				dragLabel.left(graphPanel.mouse().x)
@@ -2045,7 +2113,12 @@ function constructYDistGraph(graph,index,graphPanel){
 		})
 		.event("dragend",function(d){
 			if (graphCollection.editModeEnabled){
-				var newYData = graphCollection.worksheet.data[graph.yData];
+				var worksheet = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+						worksheet = graphCollection.worksheets[key];
+				}
+				var newYData = worksheet.data[graph.yData];
 				var remIndex = null;
 				newYData.forEach(function(data, index){
 					if (data.label == d.label && 
@@ -2059,11 +2132,12 @@ function constructYDistGraph(graph,index,graphPanel){
 				});
 				if (remIndex != null)
 					newYData.splice(remIndex,1);
-				graphCollection.editData(graph.yData,graph.yData,newYData);
+				graphCollection.editData(worksheet, graph.yData,graph.yData,newYData);
 				
 				dragLabel.visible(false);
 				
 				vis.render();
+				constructDatasetPanel();
 			}
 		})
 		.event("touchstart", function(d){
