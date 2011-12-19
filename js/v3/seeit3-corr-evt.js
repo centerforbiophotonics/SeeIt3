@@ -1135,7 +1135,10 @@ function refreshWorksheet(title){
 	if ($('#fitScaleToData').is(':checked')){
 		jQuery('#fitScaleToData').attr('checked', false);
 	}
-	console.log("refresh");
+	graphCollection.graphs.forEach(function(g){
+		g.xData = null;
+		g.yData = null;
+	});
 };
 
 $('#about').click(function(){

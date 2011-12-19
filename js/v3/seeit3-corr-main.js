@@ -528,11 +528,13 @@ function constructGraphPanel(graph,index){
 		.cursor("pointer")
 		.title("Show graph option menu")
 		.event("click", function(){
+			var oldSelIndex = graphCollection.selectedGraphIndex;
 			graphCollection.selectedGraphIndex = index;
 			graphCollection.updateMenuOptions();
 			positionGraphMenuOverGraph(index, graphCollection);
-			hideMenus();
-			$('#graphOptions').slideDown();
+			if (oldSelIndex == index)
+				hideMenus();
+				$('#graphOptions').slideDown();
 		})
 	
 	
@@ -583,10 +585,6 @@ function constructCorrGraph(graph, index, graphPanel){
 				if (graph.labelPrompt){
 					var label = prompt("Enter a label for the data", "defaultLabel"+graphCollection.defaultLabel);
 					
-					worksheetX.labelMasterList.push(label);
-					if (worksheetX.title != worksheetY.title)		//push label to y worksheet if it is not x worksheet
-						worksheetX.labelMasterList.push(label);
-					
 					var dupFlag = false;
 					worksheetX.data[graph.xData].forEach(function(d){
 						if (d.label == label){
@@ -607,6 +605,14 @@ function constructCorrGraph(graph, index, graphPanel){
 							{"label": label,
 							 "value": graph.x.invert(mouseX)}
 						);
+						
+						worksheetX.labelMasterList.push(label);
+						if (worksheetX.title != worksheetY.title)		//push label to y worksheet if it is not x worksheet
+							worksheetY.labelMasterList.push(label);
+						
+						worksheetX.edited[graph.xData] = true;
+						worksheetY.edited[graph.yData] = true;
+						
 						graphCollection.editData(worksheetX, graph.xData,graph.xData,worksheetX.data[graph.xData]);
 						
 						worksheetY.data[graph.yData].push(
@@ -644,6 +650,7 @@ function constructCorrGraph(graph, index, graphPanel){
 					graphCollection.defaultLabel++;
 				}
 				vis.render();
+				constructDatasetPanel();
 			}
 		} else {
 			dragging = false;
@@ -1267,7 +1274,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 					if (graph.labelPrompt){
 						var label = prompt("Enter a label for the data", "defaultLabel"+graphCollection.defaultLabel);
 						
-						worksheet.labelMasterList.push(label);
+						
 						
 						var dupFlag = false;
 						worksheet.data[graph.yData].forEach(function(d){
@@ -1282,6 +1289,9 @@ function constructTwoDistGraph(graph,index, graphPanel){
 								{"label": label,
 								 "value": graph.yHoriz.invert(mouseX)}
 							);
+							worksheet.labelMasterList.push(label);
+							worksheet.edited[graph.yData] = true;
+							
 							graphCollection.editData(worksheet, graph.yData,graph.yData,worksheet.data[graph.yData]);
 							
 							if (!graphCollection.labelColors.hasOwnProperty(label))
@@ -1305,6 +1315,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 						graphCollection.defaultLabel++;
 					}
 					vis.render();
+					constructDatasetPanel();
 				}
 			} else {
 				dragging = false;
@@ -1484,8 +1495,6 @@ function constructTwoDistGraph(graph,index, graphPanel){
 					if (graph.labelPrompt){
 						var label = prompt("Enter a label for the data", "defaultLabel"+graphCollection.defaultLabel);
 						
-						worksheet.labelMasterList.push(label);
-						
 						var dupFlag = false;
 						worksheet.data[graph.xData].forEach(function(d){
 							if (d.label == label){
@@ -1499,6 +1508,9 @@ function constructTwoDistGraph(graph,index, graphPanel){
 								{"label": label,
 								 "value": graph.x.invert(mouseX)}
 							);
+							worksheet.labelMasterList.push(label);
+							worksheet.edited[graph.xData] = true;
+							
 							graphCollection.editData(worksheet, graph.xData,graph.xData,worksheet.data[graph.xData]);
 							
 							if (!graphCollection.labelColors.hasOwnProperty(label))
@@ -1522,6 +1534,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 						graphCollection.defaultLabel++;
 					}
 					vis.render();
+					constructDatasetPanel();
 				}
 			} else {
 				dragging = false;
@@ -1688,8 +1701,6 @@ function constructXDistGraph(graph, index, graphPanel){
 				if (graph.labelPrompt){
 					var label = prompt("Enter a label for the data", "defaultLabel"+graphCollection.defaultLabel);
 					
-					worksheet.labelMasterList.push(label);
-					
 					var dupFlag = false;
 					worksheet.data[graph.xData].forEach(function(d){
 						if (d.label == label){
@@ -1703,6 +1714,9 @@ function constructXDistGraph(graph, index, graphPanel){
 							{"label": label,
 							 "value": graph.x.invert(mouseX)}
 						);
+						worksheet.labelMasterList.push(label);
+						worksheet.edited[graph.xData] = true;
+						
 						graphCollection.editData(worksheet, graph.xData,graph.xData,worksheet.data[graph.xData]);
 						
 						if (!graphCollection.labelColors.hasOwnProperty(label))
@@ -1726,6 +1740,7 @@ function constructXDistGraph(graph, index, graphPanel){
 					graphCollection.defaultLabel++;
 				}
 				vis.render();
+				constructDatasetPanel();
 			}
 		} else {
 			dragging = false;
@@ -1892,8 +1907,6 @@ function constructYDistGraph(graph,index,graphPanel){
 				if (graph.labelPrompt){
 					var label = prompt("Enter a label for the data", "defaultLabel"+graphCollection.defaultLabel);
 					
-					worksheet.labelMasterList.push(label);
-					
 					var dupFlag = false;
 					worksheet.data[graph.yData].forEach(function(d){
 						if (d.label == label){
@@ -1907,6 +1920,9 @@ function constructYDistGraph(graph,index,graphPanel){
 							{"label": label,
 							 "value": graph.y.invert(mouseY)}
 						);
+						worksheet.labelMasterList.push(label);
+						worksheet.edited[graph.yData] = true;
+						
 						graphCollection.editData( worksheet,
 																			graph.yData, 
 																			graph.yData, 
@@ -1937,6 +1953,7 @@ function constructYDistGraph(graph,index,graphPanel){
 					graphCollection.defaultLabel++;
 				}
 				vis.render();
+				constructDatasetPanel();
 			}
 		} else {
 			dragging = false;
