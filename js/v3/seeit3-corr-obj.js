@@ -877,6 +877,37 @@ Worksheet.prototype = {
 		});
 		return labels;
 	},*/
+	toString: function(){
+		var heading = "";
+		var dataStrings = [];
+		var fullString = "";
+		
+		heading += this.labelType + "\t";
+		this.labelMasterList.forEach(function(label){
+			dataStrings.push(label+"\t");
+		});
+		data = this.data;
+		for (var key in data){
+			heading += key+"\t";
+			
+			this.labelMasterList.forEach(function(l,i){
+				var val = "";
+				data[key].forEach(function(d){
+					if (l == d.label){
+						val = d.value.toFixed(2);
+					}
+				});
+				val += "\t";
+				dataStrings[i] += val;
+			});
+		}
+		fullString = heading + "\n";
+		dataStrings.forEach(function(d){
+			fullString += d + "\n";
+		});
+		
+		return fullString;
+	},
 };
 
 

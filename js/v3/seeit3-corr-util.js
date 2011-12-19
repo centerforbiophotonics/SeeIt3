@@ -68,28 +68,6 @@ function resizeVis(){
 	positionDisplayMenu();
 }
 
-function positionGraphMenuOverGraph(index, graphCollection){
-	var yPos = $('span').offset().top +
-							graphCollection.padTop +
-							(index == 0 ? 0 : 1) +
-							index*graphCollection.graphs[0].h;
-	
-	var xPos = $('span').offset().left +
-							graphCollection.padLeft - 35;
-					
-	if (yPos + $('#groupingOptions').height() > graphCollection.h){
-		yPos -= (yPos + $('#groupingOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 6 ;
-	}
-		
-	console.log("posGraph");
-	$('#graphOptions')
-		.css('position', 'absolute')
-		.css('top', yPos + "px")
-		.css('left', xPos + "px")
-		.css('z-index', 10);
-	
-}
-
 
 /*Drawing Related Functions*/
 function getUserLineMidpoint(graph){
@@ -1003,12 +981,12 @@ function positionGraphMenuOverGraph(index, graphCollection){
 							graphCollection.padTop - 29;
 	
 	var xPos = $('span').offset().left +
-							graphCollection.padLeft - 34 +
+							graphCollection.padLeft - 35 +
 							index * (graphCollection.graphs[index].w + 110);
 							
 					
 	if (yPos + $('#graphOptions').height() > graphCollection.h){
-		yPos -= (yPos + $('#graphOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 20 ;
+		yPos -= (yPos + $('#graphOptions').height()) - graphCollection.h - graphCollection.padBot - graphCollection.padTop - 6;
 	}
 		
 	$('#graphOptions')

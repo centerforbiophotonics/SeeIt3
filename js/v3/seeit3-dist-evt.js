@@ -35,16 +35,6 @@ function editInGoogleDocs(title){
 	window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
 }
 
-jQuery('#workSheetSelector').change(function(event) {
-	if (jQuery('#workSheetSelector').val() == "New"){
-		hideMenus();
-		$('#worksheetCreate').slideDown();
-	} else {
-		graphCollection = new GraphCollection();
-		lastSelectedWorksheet = jQuery('#workSheetSelector').val();
-		constructVis();
-	}
-});
 
 function refreshWorksheet(title){
 	graphCollection.worksheets[title].fetchWorksheetData();

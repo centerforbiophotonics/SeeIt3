@@ -1117,34 +1117,26 @@ jQuery('#newSpreadsheetURL').keyup(function(event) {
   }
 });
 
+function editInGoogleDocs(title){
+	var URL = graphCollection.worksheets[title].URL;
+	var matches = /feeds\/cells\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+	window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
+}
 
-$('#refreshWorksheet').click(function(event){
-	getWorksheet().fetchWorksheetData();
-	if ($('#fitScalesToData').is(':checked')){
-		jQuery('#fitScalesToData').attr('checked', false);
+function refreshWorksheet(title){
+	graphCollection.worksheets[title].fetchWorksheetData();
+	exampleSpreadsheets.forEach(function(s){
+		s.worksheets.forEach(function(w){
+			if (w.title == title){
+				graphCollection.addWorksheet(w);
+			}
+		})
+	})
+	if ($('#fitScaleToData').is(':checked')){
+		jQuery('#fitScaleToData').attr('checked', false);
 	}
-	
-});
-
-jQuery('#editInGoogleDocs').click(function(event) {
-  var URL = jQuery('#workSheetSelector').val();
-  console.log(URL);
-  var matches = /feeds\/cells\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
-  window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
-  event.preventDefault();
-});
-
-jQuery('#workSheetSelector').change(function(event) {
-	if (jQuery('#workSheetSelector').val() == "New"){
-		hideMenus();
-		$('#worksheetCreate').slideDown();
-	} else {
-		graphCollection = new GraphCollection();
-		lastSelectedWorksheet = jQuery('#workSheetSelector').val();
-		constructVis();
-	}
-});
-
+	console.log("refresh");
+};
 
 $('#about').click(function(){
 	$('#aboutPopup').slideToggle();
@@ -1160,6 +1152,230 @@ function positionAboutPopup(){
 }
 positionAboutPopup();
 
+/*Worksheet Menu*/
+var worksheetNew;
+var worksheetToEdit;
+function positionWorksheetMenu(){
+	$('#worksheetMenu').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetMenu').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetMenu').width()/2)+"px")
+										 .css("z-index",2);
+}
+
+$('#worksheetMenu').hide();
+
+function openWorksheetMenu(worksheetTitle){
+	var text, title;
+	
+	if (worksheetTitle == undefined){
+		title = "*** Enter Worksheet Title ***";
+		text = "*** Enter Worksheet Text ***";
+		worksheetNew = true;
+		$('#loadFromURL').show();
+		$('#deleteWorksheet').hide();
+	} else {
+		title = worksheetTitle;
+		text = graphCollection.worksheets[worksheetTitle].toString();
+		worksheetNew = false;
+		worksheetToEdit = worksheetTitle;
+		$('#loadFromURL').hide();
+		$('#deleteWorksheet').show();
+	}
+	
+	$('#worksheetTitle').val(title);
+	$('#worksheetText').val(text);
+	positionWorksheetMenu();
+	hideMenus();
+	$('#worksheetMenu').slideDown();
+	$('#worksheetText').focus();
+	$('#worksheetText').select();
+	$('#worksheetMenu').scrollTop(0);
+}
+
+$('#worksheetMenuClose').click(function(){
+	$('#worksheetMenu').slideUp();
+});
+
+$('#loadFromURL').click(function(){
+	hideMenus();
+	positionWorksheetURLMenu();
+	$('#worksheetURLMenu').slideDown();
+});
+
+$('#loadFromForm').click(function(){
+	var title = $('#worksheetTitle').val();
+	var rawText = $('#worksheetText').val();
+	var cells = [];
+	rawText.split('\n').forEach(function(line){
+		cells.push(line.split('\t'));
+	});
+	if (validateWorksheetForm(title, cells)){
+		if (worksheetNew)
+			addWorksheet(title, cells);
+		else
+			updateWorksheet(worksheetToEdit,title,cells);
+	}
+});
+
+$('#deleteWorksheet').click(function(){
+	if (confirm("Are you sure you want to delete "+worksheetToEdit+"?")) { 
+		hideMenus();
+		graphCollection.removeWorksheet(worksheetToEdit);
+		constructVis();
+	}
+	
+	
+});
+
+function validateWorksheetForm(title, cells){
+	//Check for blank or default title
+	if (trim(title) == "" || title == "*** Enter Worksheet Title ***"){
+		alert("Error: Dataset requires a title.");
+		return false;
+	}
+	
+	//Check for blank label type
+	if(cells[0][0] == ""){
+		alert("Error: Label type is blank.");
+		return false;
+	}
+	
+	//Check for more than two columns
+	if (cells[0].length < 2){
+		alert("Error: Data contains less than two columns.  The first column is for labels.");
+		return false;
+	}
+	
+	//Check Duplicate Labels
+	for (var i=0; i<cells.length; i++){
+		for (var j=0; j<cells.length; j++){
+			if (cells[i][0] == cells[j][0] && i!=j && cells[i][0] != ""){
+				alert("Error: Data contains duplicate labels. Duplicate label is \""+cells[j][0]+"\"");
+				return false;
+			}
+		}
+	}
+	
+	//Check Duplicate Dataset Titles
+	for (var i=0; i<cells[0].length; i++){
+		for (var j=0; j<cells[0].length; j++){
+			if (cells[0][i] == cells[0][j] && i!=j){
+				alert("Error: Data contains duplicate dataset titles. Duplicate title is \""+cells[0][j]+"\"");
+				return false;
+			}
+		}
+	}
+	
+	//Check Duplicate Worksheet Titles
+	for (var key in graphCollection.worksheets){
+		if (title == key && key != worksheetToEdit){
+			alert("Error: Worksheet title is already used.");
+			return false;
+		}
+	}
+	
+	//Check Duplicate Dataset Titles
+	if (worksheetNew){
+		for (var i=1; i<cells.length; i++){
+			for (var key in graphCollection.data){
+				if (cells[0][i] == key){
+					alert("Error: a dataset already exists with the title \""+cells[0][i]+"\"");
+					return false;
+				}
+			}
+		}
+	}
+	
+	//Check for data without label
+	for (var i=0; i<cells.length; i++){
+		if (cells[i][0] == "" && cells[i].length > 1){
+			alert("Error: Data exists without a label.");
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+function addWorksheet(title, cells){
+	var obj = {"title": title};
+	var labelType = trim(cells[0][0]);
+	var labelMasterList = [];
+	var data = {};
+	var edited = {};
+	
+	//create labelMasterList
+	for (var y=1; y<cells.length; y++){
+		if (trim(cells[y][0]) != "")
+			labelMasterList.push(trim(cells[y][0]));
+	}
+	obj.labelMasterList = labelMasterList;
+	obj.labelType = labelType;
+	
+	//create data and edited hash
+	for (var x=1; x<cells[0].length; x++){
+		if (trim(cells[0][x]) != ""){
+			data[trim(cells[0][x])] = [];
+			edited[trim(cells[0][x])] = true;
+			for (var y=1; y<cells.length; y++){
+				if (cells[y][0] != "" && cells[y][x] != ""){
+					data[trim(cells[0][x])].push({
+						"label":trim(cells[y][0]),
+						"value":parseFloat(cells[y][x])
+					});
+				}
+			}
+		}
+	}
+	obj.data = data;
+	obj.edited = edited;
+	obj.userDefined = true;
+	
+	exampleSpreadsheets.push(new Spreadsheet(obj));
+	constructVis();
+	
+};
+
+function updateWorksheet(oldTitle, newTitle, cells){
+	var URL;
+	
+	for (var key in graphCollection.worksheets){
+		if (graphCollection.worksheets[key].title == oldTitle)
+			URL = graphCollection.worksheets[key].URL;
+	}
+	graphCollection.removeWorksheet(oldTitle);
+	addWorksheet(newTitle, cells);
+	exampleSpreadsheets[exampleSpreadsheets.length-1].worksheets[0].URL = URL;
+	constructVis();
+}
+
+/*Worksheet URL Menu*/
+function positionWorksheetURLMenu(){
+	$('#worksheetURLMenu').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetURLMenu').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetURLMenu').width()/2)+"px")
+										 .css("z-index",2);
+}
+$('#worksheetURLMenu').hide();
+
+$('#backToWorksheetMenu').click(function(){
+	$('#worksheetURLMenu').slideUp();
+	$('#worksheetMenu').slideDown();
+});
+
+$('#submitURL').click(function(){
+	var key = parseSpreadsheetKeyFromURL($('#worksheetURL').val());
+	var exists = false;
+	exampleSpreadsheets.forEach(function(s){
+		if (s.key == key) exists = true;
+	});
+	if (!exists) exampleSpreadsheets.push(new Spreadsheet(key));
+	else alert("Error: that worksheet has already been loaded.");
+	$('#worksheetURLMenu').slideUp();
+});
+
+
+
 /* Worksheet Description Popup */
 function positionWorksheetDescriptionPopup(){
 	$('#worksheetDescriptionPopup').css('position', 'absolute')
@@ -1172,12 +1388,14 @@ positionWorksheetDescriptionPopup();
 
 $('#worksheetDescriptionPopup').hide();
 
-$('#worksheetDescriptionButton').click(function(){
-	$('#worksheetDescriptionParagraph').html(graphCollection.worksheet.description);
-	$('#worksheetDescriptionTitle').html(graphCollection.worksheet.title + "<br>by " + graphCollection.worksheet.labelType);
+function showWorksheetDescription(title){
+	var worksheet = graphCollection.worksheets[title];
+	
+	$('#worksheetDescriptionParagraph').html(worksheet.description);
+	$('#worksheetDescriptionTitle').html(worksheet.title + "<br>by " + worksheet.labelType);
 	positionWorksheetDescriptionPopup();
 	$('#worksheetDescriptionPopup').slideToggle();
-});
+}
 
 
 //Graph Options
@@ -1410,680 +1628,5 @@ $("#buttonMode").change(function(){
 		graphCollection.buttonIcon = false;
 	}
 	vis.render();
-});
-
-/* Add Data Set Menu */
-function positionDatasetAddMenu(){
-	$('#dataSetAdd').css('position', 'absolute')
-										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetAdd').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetAdd').width()/2)+"px")
-										 .css('z-index',2);
-}
-positionDatasetAddMenu();
-
-$('#dataSetAdd').hide();
-
-$('#addNonNumWarning').hide();
-$('#addNoTitleWarning').hide();
-$('#addNoLabelWarning').hide();
-$('#addNoValueWarning').hide();
-$('#addNoDataWarning').hide();
-$('#addDupTitleWarning').hide();
-$('#addPasteFormatWarning').hide();
-
-
-var addNextRow = 1;
-
-$('#addLabLast').change(function(){
-	$('#addValLast').focus();
-});
-
-var firstKey = true;
-$('#addValLast').keyup(function(evt){
-	if (isNaN(parseFloat($('#addValLast').val()))){
-		if ($('#addValLast').val() != "-" && $('#addValLast').val() != ".")
-			$('#addValLast').val("");
-		if (event.keyCode != '9'){
-			$('#addNonNumWarning').show();
-			$('#dataSetAdd').scrollTop(0);
-		}
-	} else {
-		$('#addNonNumWarning').hide();
-		
-		$('#addDatasetEntry tr:last').before(
-			"<tr id='addRow" +
-			addNextRow +
-			"'><td><input type='text' id='addLab" +
-			addNextRow +
-			"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal" +
-			addNextRow +
-			"'></td>"+
-			"<td><input type='image' src='img/garbage.png' id='addGarbage"+
-			addNextRow +
-			"' onclick='delAddField()' width='20' height='20'></td></tr>");
-			
-		$('#addLab'+addNextRow).val($('#addLabLast').val());
-		$('#addVal'+addNextRow).val(parseFloat($('#addValLast').val()));
-		$('#addValLast').val("");
-		$('#addLabLast').val("");
-		$('#addVal'+addNextRow).focus();
-		addNextRow++;
-	}
-});
-
-
-$("#addFormAdd").click(function(){
-	var labelError = false;
-	var titleError = false;
-	var valueError = false;
-	var noDataError = false;
-	var addConfirm = false;
-	var dupTitle = false;
-	
-	$('#addNoTitleWarning').hide();
-	$('#addNoLabelWarning').hide();
-	$('#addNoValueWarning').hide();
-	$('#addNoDataWarning').hide();
-	$('#addDupTitleWarning').hide();
-	$('#addPasteFormatWarning').hide();
-	
-	var datasetTitle;
-	var data = [];
-	if ($('#addDataSetTitle').val() == ""){
-		titleError = true;
-		$('#addNoTitleWarning').show();
-		$('#addDataSetTitle').focus();
-	} else {
-		$('#addNoTitleWarning').hide();
-		datasetTitle = $('#addDataSetTitle').val()
-	}
-	
-	for (var key in graphCollection.worksheet.data){
-		if (datasetTitle == key){
-			dupTitle = true;
-			$('#addDupTitleWarning').show();
-			$('#addDataSetTitle').focus();
-		}
-	}
-	
-	for (var i=1; i<addNextRow; i++){
-		var label = $('#addLab'+i).val();
-		var value = $('#addVal'+i).val();
-		if (label == "" && value != ""){
-			labelError = true;
-			$('#addNoLabelWarning').show();
-			$('#addLab'+i).focus();
-		}
-		if (value == "" && label != ""){
-			valueError = true;
-		}
-		if (!isNaN(parseFloat(value)) && label != "")
-			data.push({"label":label, "value":parseFloat(value)})
-	}
-	
-	var label = $('#addLabLast').val();
-	var value = $('#addValLast').val();
-	
-	if (label == "" && value != ""){
-		labelError = true;
-		$('#addNoLabelWarning').show();
-		$('#addLabLast').focus();
-	}
-	if (value == "" && label != ""){
-		valueError = true;
-		$('#addNoValueWarning').show();
-		$('#addValLast').focus();
-	}
-	
-	if (!isNaN(parseFloat(value)) && label != "")
-		data.push({"label":label, "value":parseFloat(value)})
-
-	if (data.length == 0){
-		$('#addNoDataWarning').show();
-		noDataError = true;
-	}
-	
-	if (!labelError && !titleError && !noDataError && !dupTitle){
-		if (valueError) addConfirm = confirm("Entries with a label and no value will not be included in the dataset.  Are you sure you wish to add this dataset?");
-		else addConfirm = confirm("Are you sure you wish to add this dataset?");
-	}
-		
-	if(!labelError && !titleError && addConfirm && !noDataError && !dupTitle){
-		$('#addNoTitleWarning').hide();
-		$('#addNoLabelWarning').hide();
-		$('#addNoValueWarning').hide();
-		graphCollection.addData(datasetTitle, data);
-		vis.render();
-		$('#dataSetAdd').slideUp();
-		resetAddDataSetMenu();
-	}
-	
-	constructVis();
-});
-
-$('#addFormClose').click(function(){
-	resetAddDataSetMenu();
-	$('#dataSetAdd').slideUp();
-});
-
-$('#addFormReset').click(function(){
-	resetAddDataSetMenu();
-	populateAddMenuLabelsFromExisting();
-});
-
-function resetAddDataSetMenu(){
-	$('#addNonNumWarning').hide();
-	$('#addNoTitleWarning').hide();
-	$('#addNoLabelWarning').hide();
-	$('#addNoValueWarning').hide();
-	$('#addNoDataWarning').hide();
-	$('#addDupTitleWarning').hide();
-	$('#addPasteFormatWarning').hide();
-	
-	$('#addDataSetTitle').val("");
-	$('#addValLast').val("");
-	$('#addLabLast').val("");
-	$('#addPaste').val("");
-	$('#addLabLast').focus();
-	for (var i=0; i<addNextRow; i++)
-		$('#addRow'+i).remove();
-	addNextRow = 1;
-}
-
-function addEntryValidate(elem){
-	if (isNaN(parseFloat(elem.value))){
-		$('#addNonNumWarning').show();
-		$('#dataSetAdd').scrollTop(0);
-		elem.value = "";
-	} else {
-		$('#addNonNumWarning').hide();
-	}
-}
-
-function populateAddMenuLabelsFromExisting(){
-	graphCollection.worksheet.labelMasterList.forEach(function(label){
-		$('#addDatasetEntry tr:last').before(
-			"<tr id='addRow" +addNextRow +
-			"'><td><input type='text' id='addLab"+addNextRow +
-			"' value='"+label +
-			"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal"+addNextRow +
-			"'></td>"+
-			"<td><input type='image' src='img/garbage.png' id='addGarbage"+
-			addNextRow +
-			"' onclick='delAddField()' width='20' height='20'></td></tr>");
-			
-			addNextRow++;
-	});
-}
-
-function delAddField(){
-	var which = parseInt((event.target.id).slice(10))
-	$('#addRow'+which).remove();
-	for (var i = which+1; i < addNextRow; i++){
-		$('#addRow'+i).attr("id","addRow"+(i-1));
-		$('#addLab'+i).attr("id","addLab"+(i-1));
-		$('#addVal'+i).attr("id","addVal"+(i-1));
-		$('#addGarbage'+i).attr("id","addGarbage"+(i-1));
-	}
-	addNextRow--;
-	if (addNextRow < 1)
-		addNextRow = 1;
-	
-}
-
-$('#addFormPaste').click(function(e){
-	$('#dataSetAdd').slideUp();
-	$('#dataSetPaste').slideDown();
-})
-
-
-/* Paste Data Set Menu */
-$('#dataSetPaste').hide();
-function positionDatasetPaste(){
-	$('#dataSetPaste').css('position', 'absolute')
-										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetPaste').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetPaste').width()/2)+"px")
-										 .css('z-index',2);
-}
-positionDatasetPaste();
-
-$('#pasteClose').click(function(){
-	$('#addPasteText').val("");
-	$('#dataSetPaste').slideUp();
-	$('#dataSetAdd').slideDown();
-});
-
-$('#pasteImport').click(function(){
-	var rawText = $('#addPasteText').val();
-	var cells = [];
-	rawText.split('\n').forEach(function(line){
-		cells.push(line.split('\t'));
-	});
-	
-	resetAddDataSetMenu();
-	if (!populateAddMenuFromPaste(cells))
-		$('#addPasteFormatWarning').show();
-	$('#addPasteText').val("");
-	$('#dataSetPaste').slideUp();
-	$('#dataSetAdd').slideDown();
-	
-});
-
-function populateAddMenuFromPaste(cells){
-	var noFormatError = true;
-	if ($('#pasteHeading').is(':checked')){
-		if (cells[0].length == 1)
-			$('#addDataSetTitle').val(cells[0][0]);
-		else if (cells[0].length >= 2)
-			$('#addDataSetTitle').val(cells[0][1]);
-		else{
-			noFormatError = false;
-		}
-			
-		cells.slice(1).forEach(function(line){
-			if (line.length >= 2){
-				if (line.length > 2) noFormatError = false;
-				
-				$('#addDatasetEntry tr:last').before(
-					"<tr id='addRow" +addNextRow +
-					"'><td><input type='text' id='addLab"+addNextRow +
-					"' value='"+line[0] +
-					"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal"+addNextRow +
-					"' value='"+line[1] +
-					"'></td>"+
-					"<td><input type='image' src='img/garbage.png' id='addGarbage"+
-					addNextRow +
-					"' onclick='delAddField()' width='20' height='20'></td></tr>");
-					
-				addNextRow++;
-			} else if(line.length != 1 || line[0] != ""){
-				noFormatError = false;
-			}
-		});
-	} else {
-		cells.forEach(function(line){
-			if (line.length >= 2){
-				if (line.length > 2) noFormatError = false;
-				
-				$('#addDatasetEntry tr:last').before(
-					"<tr id='addRow" +addNextRow +
-					"'><td><input type='text' id='addLab"+addNextRow +
-					"' value='"+line[0] +
-					"'></td><td><input type='text' onChange ='addEntryValidate(this)' id='addVal"+addNextRow +
-					"' value='"+line[1] +
-					"'></td>"+
-					"<td><input type='image' src='img/garbage.png' id='addGarbage"+
-					addNextRow +
-					"' onclick='delAddField()' width='20' height='20'></td></tr>");
-					
-				addNextRow++;
-			} else if(line.length != 1 || line[0] != ""){
-				noFormatError = false;
-			}
-		});
-	}
-	return noFormatError;
-}
-
-
-/* Edit Data Set Menu */
-function positionDatasetEditMenu(){
-	$('#dataSetEdit').css('position', 'absolute')
-										 .css('top', parseInt(window.innerHeight/2 - $('#dataSetEdit').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#dataSetEdit').width()/2)+"px")
-										 .css('z-index',2);
-}
-positionDatasetEditMenu();
-
-$('#dataSetEdit').hide();
-
-$('#editNonNumWarning').hide();
-$('#editNoTitleWarning').hide();
-$('#editNoLabelWarning').hide();
-$('#editNoValueWarning').hide();
-$('#editNoDataWarning').hide();
-$('#editDupTitleWarning').hide();
-
-
-var editNextRow = 1;
-
-$('#editLabLast').change(function(){
-	$('#editValLast').focus();
-});
-
-var firstKey = true;
-$('#editValLast').keyup(function(evt){
-	if (isNaN(parseFloat($('#editValLast').val()))){
-		if ($('#editValLast').val() != "-" && $('#editValLast').val() != ".")
-			$('#editValLast').val("");
-		if (event.keyCode != '9'){
-			$('#editNonNumWarning').show();
-			$('#dataSetEdit').scrollTop(0);
-		}
-	} else {
-		$('#editNonNumWarning').hide();
-		
-		$('#editDatasetEntry tr:last').before(
-			"<tr id='editRow" +
-			editNextRow +
-			"'><td><input type='text' id='editLab" +
-			editNextRow +
-			"'></td><td><input type='text' onChange ='editEntryValidate(this)' id='editVal" +
-			editNextRow +
-			"'></td>"+
-			"<td><input type='image' src='img/garbage.png' id='editGarbage"+
-			editNextRow +
-			"' onclick='delEditField()' width='20' height='20'></td></tr>");
-			
-		$('#editLab'+editNextRow).val($('#editLabLast').val());
-		$('#editVal'+editNextRow).val(parseFloat($('#editValLast').val()));
-		$('#editValLast').val("");
-		$('#editLabLast').val("");
-		$('#editVal'+editNextRow).focus();
-		editNextRow++;
-	}
-});
-
-$("#editFormApply").click(function(){
-	var labelError = false;
-	var titleError = false;
-	var valueError = false;
-	var noDataError = false;
-	var applyConfirm = false;
-	
-	$('#editNoTitleWarning').hide();
-	$('#editNoLabelWarning').hide();
-	$('#editNoValueWarning').hide();
-	$('#editNoDataWarning').hide();
-	
-	var oldDatasetTitle = $('#datasetTitle').html();
-	var datasetTitle;
-	var data = [];
-	if ($('#editDataSetTitle').val() == ""){
-		titleError = true;
-		$('#editNoTitleWarning').show();
-		$('#editDataSetTitle').focus();
-	} else {
-		$('#editNoTitleWarning').hide();
-		datasetTitle = $('#editDataSetTitle').val()
-	}
-	
-	for (var i=1; i<editNextRow; i++){
-		var label = $('#editLab'+i).val();
-		var value = $('#editVal'+i).val();
-		
-		if (label == "" && value != ""){
-			labelError = true;
-			$('#editNoLabelWarning').show();
-			$('#editLab'+i).focus();
-		}
-		if (value == "" && label != ""){
-			valueError = true;
-		}
-		if (!isNaN(parseFloat(value)) && label != "")
-			data.push({"label":label, "value":parseFloat(value)})
-	}
-	
-	var label = $('#editLabLast').val();
-	var value = $('#editValLast').val();
-	
-	if (label == "" && value != ""){
-		labelError = true;
-		$('#editNoLabelWarning').show();
-		$('#editLabLast').focus();
-	}
-	if (value == "" && label != ""){
-		valueError = true;
-		$('#editNoValueWarning').show();
-		$('#editValLast').focus();
-	}
-	
-	if (!isNaN(parseFloat(value)) && label != "")
-		data.push({"label":label, "value":parseFloat(value)})
-
-	if (data.length == 0){
-		$('#editNoDataWarning').show();
-		noDataError = true;
-	}
-	
-	if (!labelError && !titleError && !noDataError){
-		if (valueError) applyConfirm = confirm("Entries with a label and no value will not be included in the dataset.  Are you sure you wish to apply these changes?");
-		else applyConfirm = confirm("Are you sure you wish to apply these changes?");
-	}
-		
-	if(!labelError && !titleError && applyConfirm && !noDataError){
-		$('#editNoTitleWarning').hide();
-		$('#editNoLabelWarning').hide();
-		$('#editNoValueWarning').hide();
-		graphCollection.editData(oldDatasetTitle, datasetTitle, data);
-		
-		vis.render();
-		$('#dataSetEdit').slideUp();
-		resetEditDataSetMenu();
-	}
-});
-
-$('#editFormClose').click(function(){
-	resetEditDataSetMenu();
-	$('#dataSetEdit').slideUp();
-});
-
-$('#editFormReset').click(function(){
-	resetEditDataSetMenu();
-	populateEditMenuFromExisting($('#datasetTitle').html());
-});
-
-$('#editFormDelete').click(function(){
-	var datasetTitle = $('#datasetTitle').html();
-	if (confirm("Are you sure you want to delete this dataset?")){
-		graphCollection.deleteData(datasetTitle);
-		$('#dataSetEdit').slideUp();
-		constructVis();
-	}
-	
-});
-
-function resetEditDataSetMenu(){
-	$('#editDataSetTitle').val("");
-	$('#editValLast').val("");
-	$('#editLabLast').val("");
-	$('#editLabLast').focus();
-	for (var i=1; i<editNextRow; i++)
-		$('#editRow'+i).remove();
-	editNextRow = 1;
-}
-
-function editEntryValidate(elem){
-	if (isNaN(parseFloat(elem.value))){
-		$('#editNonNumWarning').show();
-		$('#dataSetEdit').scrollTop(0);
-		elem.value = "";
-	} else {
-		$('#editNonNumWarning').hide();
-	}
-}
-
-function populateEditMenuFromExisting(dataset){
-	$('#datasetTitle').html(dataset);
-	
-	$('#editDataSetTitle').val(dataset);
-	
-	graphCollection.worksheet.data[dataset].forEach(function(data){
-		$('#editDatasetEntry tr:last').before(
-			"<tr id='editRow" +editNextRow +
-			"'><td><input type='text' id='editLab"+editNextRow +
-			"' value='"+data.label +
-			"' ></td><td><input type='text' onChange ='editEntryValidate(this)' id='editVal"+editNextRow +
-			"' value='"+data.value.toFixed(2) + 
-			"'></td>"+
-			"<td><input type='image' src='img/garbage.png' id='editGarbage"+
-			editNextRow +
-			"' onclick='delEditField()' width='20' height='20'></td></tr>");
-			
-			editNextRow++;
-		
-	});
-}
-
-function delEditField(){
-	var which = parseInt((event.target.id).slice(11))
-	$('#editRow'+which).remove();
-	for (var i = which+1; i < editNextRow; i++){
-		$('#editRow'+i).attr("id","editRow"+(i-1));
-		$('#editLab'+i).attr("id","editLab"+(i-1));
-		$('#editVal'+i).attr("id","editVal"+(i-1));
-		$('#editGarbage'+i).attr("id","editGarbage"+(i-1));
-	}
-	editNextRow--;
-	if (editNextRow < 1)
-		editNextRow = 1;
-	
-}
-
-/* Create Worksheet Menu */
-function positionCreateWorksheetMenu(){
-	$('#worksheetCreate').css('position', 'absolute')
-										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetCreate').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetCreate').width()/2)+"px")
-										 .css('z-index',2);
-}
-positionCreateWorksheetMenu();
-
-$('#worksheetCreate').hide();
-
-$('#wcNoTitleWarning').hide();
-$('#wcNoLabelTypeWarning').hide();
-$('#wcDupTitleWarning').hide();
-$('#wcDupLabelWarning').hide();
-	
-
-var wcNextRow = 1;
-$('#wcLabLast').keydown(function(evt){
-	$('#wcLabelEntry tr:last').before(
-		"<tr id='wcRow" +
-		wcNextRow +
-		"'><td><input type='text' id='wcLab" +
-		wcNextRow +
-		"'></td><td><input type='image' src='img/garbage.png' id='wcGarbage"+
-		wcNextRow +
-		"' onclick='delWCField()' width='20' height='20'></td></tr>");
-			
-		$('#wcLab'+wcNextRow).val($('#wcLabLast').val());
-		$('#wcLabLast').val("");
-		$('#wcLab'+wcNextRow).focus();
-		wcNextRow++;
-});
-
-$("#wcAdd").click(function(){
-	var dupLabelError = false;
-	var dupTitleError = false;
-	var noTitleError = false;
-	var noLabelTypeError = false;
-	
-	
-	var wcLabelMasterlist = [];
-	var wcTitle = $('#wcTitle').val();
-	var wcLabelType = $('#wcLabelType').val();
-	
-	if (wcTitle == ""){
-		noTitleError = true;
-		$('#wcNoTitleWarning').show();
-		$('#wcTitle').focus();
-	}
-	
-	if (wcLabelType == ""){
-		noLabelTypeError = true;
-		$('#wcNoLabelTypeWarning').show();
-		$('#wcLabelType').focus();
-	}
-	
-	$("#workSheetSelector option").each(function(){
-		if (wcTitle == $(this).html()){
-			dupTitleError = true;
-			$('#wcDupTitleWarning').show();
-			$('#wcTitle').focus();
-		}
-	});
-	
-	for (var i=1; i<wcNextRow; i++){
-		var label = $('#wcLab'+i).val();
-		
-		if(wcLabelMasterlist.indexOf(label) != -1){
-			dupLabelError = true;
-			$('#wcDupLabelWarning').show();
-			$('#wcLab'+i).focus();
-		}
-		
-		if (label != "")
-			wcLabelMasterlist.push(label);
-	}
-	
-	if (!dupLabelError && !dupTitleError && !noTitleError && !noLabelTypeError){
-		if (confirm("Are you sure you wish to add this worksheet?")){
-			var attr = {"title": wcTitle,
-									"labelType": wcLabelType,
-									"labelMasterlist": wcLabelMasterlist};
-			exampleSpreadsheets.push(new Spreadsheet(attr));
-			resetWCMenu();
-			$('#worksheetCreate').slideUp();
-			
-			jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:userCreatedWorksheet});
-		}
-	}
-});
-
-$('#wcClose').click(function(){
-	resetWCMenu();
-	$('#worksheetCreate').slideUp();
-	$('#workSheetSelector').val(lastSelectedWorksheet);
-});
-
-$('#wcReset').click(function(){
-	resetWCMenu();
-});
-
-function resetWCMenu(){
-	$('#wcTitle').val("");
-	$('#wcLabelType').val("");
-	$('#wcLabLast').val("");
-	$('#wcLabLast').focus();
-	for (var i=0; i<wcNextRow; i++)
-		$('#wcRow'+i).remove();
-	wcNextRow = 1;
-}
-
-function delWCField(){
-	var which = parseInt((event.target.id).slice(9))
-	$('#wcRow'+which).remove();
-	for (var i = which+1; i < wcNextRow; i++){
-		$('#wcRow'+i).attr("id","wcRow"+(i-1));
-		$('#wcLab'+i).attr("id","wcLab"+(i-1));
-		$('#wcGarbage'+i).attr("id","wcGarbage"+(i-1));
-	}
-	wcNextRow--;
-	if (wcNextRow < 1)
-		wcNextRow = 1;
-}
-
-
-
-/* Clipboard Prompt */
-function positionClipboardPrompt(){
-	$('#clipboardPrompt').css('position', 'absolute')
-										 .css('top', parseInt(window.innerHeight/2 - $('#clipboardPrompt').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#clipboardPrompt').width()/2)+"px")
-										 .css('z-index',2);
-}
-positionClipboardPrompt();
-
-$('#clipboardPrompt').hide();
-
-$('#cbText').keydown(function(event){
-	if (event.keyCode == '13')
-		$('#clipboardPrompt').slideUp();
-});
-
-$('#cbClose').click(function(){
-	$('#clipboardPrompt').slideUp();
 });
 

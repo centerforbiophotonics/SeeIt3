@@ -23,35 +23,8 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
   if (numWorksheetsLoaded >= numWorksheets){
 		jQuery('p#loadingMsg').hide();
 		constructVis();
-		//showHideAdvancedOptions();
-		//positionGroupingMenuOverGraph(0,graphCollection);
-		//positionDisplayMenu();
   }
 });
-
-//jQuery('body').bind('WorksheetLoaded', function(event) {
-//	if ($('#workSheetSelector option[value='+event.worksheet.URL+']').length == 0)
-//  jQuery('#workSheetSelector').prepend(jQuery("<option value='" + 
-//																				event.worksheet.URL + "'>" + 
-//																				event.worksheet.title + 
-//																				" by " + 
-//																				event.worksheet.labelType + 
-//																				"</option>"))
-//															.val(event.worksheet.URL);
-//	numWorksheetsLoaded++;
-//	if (numWorksheetsLoaded >= numWorksheets){
-//		jQuery('p#loadingMsg').hide();	
-//		graphCollection = new GraphCollection();
-//		constructVis();
-//		positionDisplayMenu();
-//	}
-//});
-
-//var vis = {};
-//var graphCollection = {};
-//var touch = new Touch();
-//var fontString = "bold 14px arial";
-//var dragging = false;
 
 function constructVis() {
 	jQuery('span').remove();
@@ -96,8 +69,7 @@ function constructVis() {
 				$('#datasets').show();
 				graphCollection.datasetsMenuShowing = true;
 				positionAndSizeGraph();
-				//positionAndSizeAxisPanels();
-				//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+				positionGraphMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 				positionDisplayMenu();
 				vis.render();
 				
@@ -105,8 +77,7 @@ function constructVis() {
 				$('#datasets').hide();
 				graphCollection.datasetsMenuShowing = false;
 				positionAndSizeGraph();
-				//positionAndSizeAxisPanels();
-				//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+				positionGraphMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 				positionDisplayMenu();
 				vis.render();
 				
@@ -138,29 +109,6 @@ function constructVis() {
 			else
 				return false;
 		})
-//		.event("click", function(){
-//			if (!graphCollection.datasetsMenuShowing){
-//				$('#datasets').show();
-//				graphCollection.datasetsMenuShowing = true;
-//				graphCollection.setW(graphCollection.calcGraphWidth());
-//				vis.render();
-//				$('span').css('position', 'absolute')
-//								 .css('left',$('#datasets').width()+29)
-//								 .css('z-index', -1);
-//				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-//				positionDisplayMenu();
-//			} else {
-//				$('#datasets').hide();
-//				graphCollection.datasetsMenuShowing = false;
-//				graphCollection.setW(graphCollection.calcGraphWidth());
-//				vis.render();
-//				$('span').css('position', 'absolute')
-//								 .css('left',8)
-//								 .css('z-index', -1);
-//				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-//				positionDisplayMenu();
-//			}
-//		})
 		.anchor("left").add(pv.Label)
 			.left(function(){
 				if (graphCollection.buttonText && !graphCollection.buttonIcon){
@@ -430,6 +378,12 @@ function constructVis() {
 	
 	vis.render();
 	
+	$("#YAxisHorizontal0").remove();
+	$("#YAxis0").remove();
+	$("#XAxis0").remove();
+	$("#YAxisHorizontal1").remove();
+	$("#YAxis1").remove();
+	$("#XAxis1").remove();
 	graphCollection.graphs.forEach(function(graph, index){
 		constructLegendPanel(graph, index);
 	});
@@ -705,8 +659,26 @@ function constructGraphPanel(graph,index){
 		.top(-15)
 		.textAlign("center")
 		.textAngle(0)
-		.text("test")//)graph.worksheet.title)
-		.font("bold 20px sans-serif");
+		.text(function(){
+			var title = "";
+			if (graph.xData != null){
+				title += graph.xData;
+			}
+			if (graph.yData != null && graph.xData != null){
+				title += " vs. ";
+			} 
+			if (graph.yData != null){
+				title += graph.yData;
+			}
+			return title;
+		})
+		.font(function(){
+			if (graph.yData != null && graph.xData != null && 
+					graphCollection.graphs.length == 2)
+				return "bold 12px sans-serif";
+			else
+				return "bold 20px sans-serif";
+		});
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
@@ -733,245 +705,6 @@ function constructGraphPanel(graph,index){
 			.title("Remove Graph")
 			.strokeStyle("black")
 	
-	/*
-	//X-axis drag feedback
-	var xAxisDragFeedbackPanel = vis.add(pv.Label)
-		.text(function(){
-			if (graph.xData == null)
-				return "No Data"
-			else
-				return graph.xData;
-		})
-		.left(function(){return xAxisDragFeedbackPanel.width()/2})
-		.top(function(){return xAxisDragFeedbackPanel.height()/2})
-		.textAlign("center")
-		.textBaseline("middle")
-		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
-		.visible(false)
-		*/
-		
-	//X-axis drag drop zone
-//	graph.xAxisPanel = graphPanel.add(pv.Panel)
-//		.data([{"x":0,"y":0}])
-//		.height(80)
-//		.width(function(){return graph.w})
-//		.left(0)
-//		.top(function(){return graph.h})
-//		.lineWidth(1)
-//		.cursor("move")
-//		.events("all")
-//		.event("mouseover", function(d){
-//			this.fillStyle(pv.rgb(50,50,50,0.25));
-//			this.render();
-//		})
-//		.event("mouseout", function(d){ 
-//			this.fillStyle(pv.rgb(0,0,0,0));
-//			this.render();
-//		})
-//		.event("mousedown", pv.Behavior.drag())
-//		.event("dragstart", function(){
-//			var mouseY = vis.mouse().y;
-//			var mouseX = vis.mouse().x;
-//			xAxisDragFeedbackPanel.left(mouseX);
-//			xAxisDragFeedbackPanel.top(mouseY);
-//			xAxisDragFeedbackPanel.visible(true);
-//			document.body.style.cursor="move";
-//			xAxisDragFeedbackPanel.render();
-//		})
-//		.event("drag", function(event){
-//			var mouseY = vis.mouse().y;
-//			var mouseX = vis.mouse().x;
-//			xAxisDragFeedbackPanel.left(mouseX);
-//			xAxisDragFeedbackPanel.top(mouseY);
-//			xAxisDragFeedbackPanel.render();
-//		})
-//		.event("dragend", function(){
-//			var mouseY = vis.mouse().y;
-//			var mouseX = vis.mouse().x;
-//			var category = graph.xData;
-//			var thisGraphIndex = index;
-			
-//			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
-//				graphCollection.graphs.forEach(function(g,i){
-//					if (g.xAxisPanel.mouse().x > 0 &&
-//							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
-//							g.xAxisPanel.mouse().y > 0 &&
-//							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
-//					{
-//						if (i != thisGraphIndex){
-//							g.assignX(category);
-//							graph.assignX(null);
-//						}
-//					}
-//					
-//					if (g.yAxisPanel.mouse().x > 0 &&
-//							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
-//							g.yAxisPanel.mouse().y > 0 &&
-//							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
-//					{
-//						if (i == thisGraphIndex){
-//							g.assignX(g.yData);
-//							g.assignY(category);
-//						} else {
-//							g.assignY(category);
-//							graph.assignX(null);
-//						}
-//					}
-//				});
-//			} else {
-//				graph.assignX(null);
-//			}
-//			
-//			graphCollection.updateMenuOptions();
-//			
-//			xAxisDragFeedbackPanel.visible(false);
-//			document.body.style.cursor="default";
-//			constructVis();
-			//vis.render();
-//		})
-//		.event("touchstart", function(event){
-//			touch.dragType = "graphXCat";
-//			touch.draggedObj = xAxisDragFeedbackPanel;
-//			touch.dragging = true;
-//			touch.graphIndex = index;
-//		})
-//		.event('touchend', function(event){
-//			setTimeout("constructVis()",100); 
-//		})
-//		
-		
-//	graph.xAxisPanel.add(pv.Label)
-//		.text(function(){
-//			if (graph.xData == null)
-//				return "Drag data to x-axis"
-//			else
-//				return graph.xData;
-//		})
-//		.left(function(){return graph.xAxisPanel.width()/2})
-//		.top(function(){return graph.xAxisPanel.height()/2})
-//		.textAlign("center")
-//		.textBaseline("middle")
-//		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
-//		
-	//Y-axis drag feedback panel
-//	var yAxisDragFeedbackPanel = vis.add(pv.Label)
-//		.text(function(){
-//			if (graph.yData == null)
-//				return "No Data"
-//			else
-//				return graph.yData;
-//		})
-//		.left(function(){return graph.yAxisPanel.width()/2})
-//		.top(function(){return graph.yAxisPanel.height()/2})
-//		.textAlign("center")
-//		.textBaseline("middle")
-//		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
-//		.visible(false)
-//		
-	//Y-axis drag drop zone
-//	graph.yAxisPanel = graphPanel.add(pv.Panel)
-//		.data([{"x":0,"y":0}])
-//		.width(95)
-//		.height(function(){return graph.h})
-//		.left(-95)
-//		.visible(function(){return graph.twoDistView == false || graph.xData == null || graph.yData == null})
-//		.top(0)
-//		.lineWidth(1)
-//		.cursor("move")
-//		.events("all")
-//		.event("mouseover", function(d){
-//			this.fillStyle(pv.rgb(50,50,50,0.25));
-//			this.render();
-//		})
-//		.event("mouseout", function(d){ 
-//			this.fillStyle(pv.rgb(0,0,0,0));
-//			this.render();
-//		})
-//		.event("mousedown", pv.Behavior.drag())
-//		.event("dragstart", function(){
-//			var mouseY = vis.mouse().y;
-//			var mouseX = vis.mouse().x;
-//			yAxisDragFeedbackPanel.left(mouseX);
-//			yAxisDragFeedbackPanel.top(mouseY);
-//			yAxisDragFeedbackPanel.visible(true);
-//			document.body.style.cursor="move";
-//			yAxisDragFeedbackPanel.render();
-//		})
-//		.event("drag", function(event){
-//			var mouseY = vis.mouse().y;
-//			var mouseX = vis.mouse().x;
-//			yAxisDragFeedbackPanel.left(mouseX);
-//			yAxisDragFeedbackPanel.top(mouseY);
-//			yAxisDragFeedbackPanel.render();
-//		})
-//		.event("dragend", function(){
-//			var mouseY = vis.mouse().y;
-//			var mouseX = vis.mouse().x;
-//			var category = graph.yData;
-//			var thisGraphIndex = index;
-//			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
-//				graphCollection.graphs.forEach(function(g,i){
-//					if (g.xAxisPanel.mouse().x > 0 &&
-//							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
-//							g.xAxisPanel.mouse().y > 0 &&
-//							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
-//					{
-//						if (i == thisGraphIndex){
-//							g.assignY(g.xData);
-//							g.assignX(category);
-//						} else {
-//							g.assignX(category);
-//							graph.assignY(null);
-//						}
-//					}
-//				
-//					if (g.yAxisPanel.mouse().x > 0 &&
-//							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
-//							g.yAxisPanel.mouse().y > 0 &&
-//							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
-//					{
-//						if (i != thisGraphIndex){
-//							g.assignY(category);
-//							graph.assignY(null);
-//						}
-//					}
-//				});
-//			} else {
-//				graph.assignY(null);
-//			}
-//			
-//			graphCollection.updateMenuOptions();
-//			
-//			yAxisDragFeedbackPanel.visible(false);
-//			document.body.style.cursor="default";
-//			constructVis();
-//			//vis.render();
-//		})
-//		.event("touchstart", function(event){
-//			touch.dragType = "graphYCat";
-//			touch.draggedObj = yAxisDragFeedbackPanel;
-//			touch.dragging = true;
-//			touch.graphIndex = index;
-//		})
-//		.event('touchend', function(event){
-//			setTimeout("constructVis()",100); 
-//		})
-//		
-//		
-//	graph.yAxisPanel.add(pv.Label)
-//		.text(function(){
-//			if (graph.yData == null)
-//				return "Drag data to y-axis"
-//			else
-//				return graph.yData;
-//		})
-//		.left(30)
-//		.top(function(){return graph.yAxisPanel.height()/2})
-//		.textAngle(-Math.PI/2)
-//		.textAlign("center")
-//		.textBaseline("middle")
-//		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
-//		
 	
 	//Divider between graphs
 	graphPanel.add(pv.Rule)
@@ -1778,123 +1511,6 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.textAlign("center")
 		.text("0")
 	
-	/*
-	//Y-axis drag feedback panel
-	var yAxisDragFeedbackPanel = vis.add(pv.Label)
-		.text(function(){
-			if (graph.yData == null)
-				return "Drag data to y-axis"
-			else
-				return graph.yData;
-		})
-		.left(function(){return graph.yAxisPanel.width()/2})
-		.top(function(){return graph.yAxisPanel.height()/2})
-		.textAlign("center")
-		.textBaseline("middle")
-		.font("bold "+graphCollection.labelTextSize+"px sans-serif", graph.yData)
-		.visible(false)
-	
-	//Y-axis drag drop zone
-	graph.yAxisPanel = graphPanel.add(pv.Panel)
-		.data([{"x":0,"y":0}])
-		.height(52)
-		.width(function(){graph.w})
-		.left(function(){return 0})
-		.top(function(){return (graph.h-80)/2})
-		.lineWidth(1)
-		.cursor("move")
-		.events("all")
-		.event("mouseover", function(d){
-			this.fillStyle(pv.rgb(50,50,50,0.25));
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.fillStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-		.event("mousedown", pv.Behavior.drag())
-		.event("dragstart", function(){
-			var mouseY = vis.mouse().y;
-			var mouseX = vis.mouse().x;
-			yAxisDragFeedbackPanel.left(mouseX);
-			yAxisDragFeedbackPanel.top(mouseY);
-			yAxisDragFeedbackPanel.visible(true);
-			document.body.style.cursor="move";
-			yAxisDragFeedbackPanel.render();
-		})
-		.event("drag", function(event){
-			var mouseY = vis.mouse().y;
-			var mouseX = vis.mouse().x;
-			yAxisDragFeedbackPanel.left(mouseX);
-			yAxisDragFeedbackPanel.top(mouseY);
-			yAxisDragFeedbackPanel.render();
-		})
-		.event("dragend", function(){
-			var mouseY = vis.mouse().y;
-			var mouseX = vis.mouse().x;
-			var category = graph.yData;
-			var thisGraphIndex = index;
-			if(mouseX > -35 && mouseX < graphCollection.w && mouseY > 0 && mouseY < graphCollection.h + 70){
-				graphCollection.graphs.forEach(function(g,i){
-					if (g.xAxisPanel.mouse().x > 0 &&
-							g.xAxisPanel.mouse().x < g.xAxisPanel.width() &&
-							g.xAxisPanel.mouse().y > 0 &&
-							g.xAxisPanel.mouse().y < g.xAxisPanel.height())
-					{
-						if (i == thisGraphIndex){
-							g.assignY(g.xData);
-							g.assignX(category);
-						} else {
-							g.assignX(category);
-							graph.assignY(null);
-						}
-					}
-					
-					if (g.yAxisPanel.mouse().x > 0 &&
-							g.yAxisPanel.mouse().x < g.yAxisPanel.width() &&
-							g.yAxisPanel.mouse().y > 0 &&
-							g.yAxisPanel.mouse().y < g.yAxisPanel.height())
-					{
-						if (i != thisGraphIndex){
-							g.assignY(category);
-							graph.assignY(null);
-						}
-					}
-				});
-			} else {
-				graph.assignY(null);
-			}
-			
-			graphCollection.updateMenuOptions();
-			
-			yAxisDragFeedbackPanel.visible(false);
-			document.body.style.cursor="default";
-			constructVis();
-			//vis.render();
-		})
-		.event("touchstart", function(event){
-			touch.dragType = "graphYCat";
-			touch.draggedObj = yAxisDragFeedbackPanel;
-			touch.dragging = true;
-			touch.graphIndex = index;
-		})
-		.event('touchend', function(event){
-			setTimeout("constructVis()",100); 
-		})
-		
-	graph.yAxisPanel.add(pv.Label)
-		.text(function(){
-			if (graph.yData == null)
-				return "Drag here to assign a dataset to the y-axis."
-			else
-				return graph.yData;
-		})
-		.left(function(){return graph.yAxisPanel.width()/2})
-		.top(function(){return graph.yAxisPanel.height()/2 + 10})
-		.textAlign("center")
-		.textBaseline("middle")
-		.font(function(){return "bold "+graphCollection.labelTextSize+"px sans-serif"})
-	*/
 	
 	/* Y-axis (horizontal) ticks */
 	topDist.add(pv.Rule)
@@ -2600,10 +2216,6 @@ function constructYDistGraph(graph,index, graphPanel){
 }
 
 function constructLegendPanel(graph, index){	
-	$("#YAxisHorizontal"+index).remove();
-	$("#YAxis"+index).remove();
-	$("#XAxis"+index).remove();
-	
 	//Y-Axis Horizontal
 	if (graph.twoDistView){
 		$('body').prepend("<div class=\"axisDef\" id=\"YAxisHorizontal"+index+"\""+
@@ -2958,7 +2570,6 @@ function legPanDragStop(event){
 			}
 		}
 	} else {
-		console.log("outside delete");
 		if (dragObj.fromAxis == 'y')
 			graphCollection.graphs[dragObj.fromGraph].assignY(null);
 		else
@@ -2966,50 +2577,7 @@ function legPanDragStop(event){
 		constructVis();
 	}
 	
-	/*
-	var curX = event.pageX -
-						 $('span').offset().left -
-						 graphCollection.padLeft + 14;
-							
-	var curY = event.pageY - 
-						 $('span').offset().top - 
-						 graphCollection.padTop;
-						 
-	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
-		if (graphCollection.graphs.length > 4){
-			var which = parseInt(curY/graphCollection.defaultGraphHeight);
-			var toGraph = graphCollection.graphs[which];
-			var fromGraph = graphCollection.graphs[dragObj.index];
-			if (toGraph.addCategory(dragObj.category)){
-				fromGraph.removeCategory(dragObj.category);
-				if (fromGraph.selectedCategory == dragObj.category)
-					fromGraph.selectedCategory = null;
-			}
-			graphCollection.updateMenuOptions();
-		} else {
-			var which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-			var toGraph = graphCollection.graphs[which];
-			var fromGraph = graphCollection.graphs[dragObj.index];
-			if (toGraph.addCategory(dragObj.category)){
-				fromGraph.removeCategory(dragObj.category);
-				if (fromGraph.selectedCategory == dragObj.category)
-					fromGraph.selectedCategory = null;
-			}
-			graphCollection.updateMenuOptions();
-		}
-	} else {
-		var fromGraph = graphCollection.graphs[dragObj.index];
-		fromGraph.removeCategory(dragObj.category);
-		if (fromGraph.selectedCategory == dragObj.category)
-			fromGraph.selectedCategory = null;
-	}
-	constructVis();
-	*/
-	
 	document.body.style.cursor="default";
 	document.removeEventListener("mousemove", legPanDragGo,   true);
 	document.removeEventListener("mouseup",   legPanDragStop, true);
 }
-
-
-
