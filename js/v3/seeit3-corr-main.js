@@ -379,7 +379,6 @@ function constructVis() {
 	graphCollection.graphs.forEach(function(graph, index){
 		constructGraphPanel(graph, index);
 	});
-	//constructSidePanel();
 	constructDatasetPanel();
 	
 	vis.render();
@@ -658,7 +657,6 @@ function constructCorrGraph(graph, index, graphPanel){
 		}
 	});
 	
-	//graphPanel.height(
 	/* Y-axis ticks */
   graphPanel.add(pv.Rule)
 		.data(function() { return graph.y.ticks()})
@@ -804,7 +802,8 @@ function constructCorrGraph(graph, index, graphPanel){
 		.add(pv.Label)									//Line Equation
 			.visible(function () { return graph.lsEQ && graph.lsLine })
 			.text(function(d) {
-				if (this.index == 0) { return "Y = "+graph.lsSlope.toFixed(3)+"X + "+graph.lsIntercept.toFixed(3);}
+				if (this.index == 0) { return "Y = "+graph.lsSlope.toFixed(3)+
+																"X + "+graph.lsIntercept.toFixed(3);}
 				else {return ""}
 			})
 			.textAlign("left")
@@ -815,7 +814,10 @@ function constructCorrGraph(graph, index, graphPanel){
 		.add(pv.Label)									//R Value
 			.visible(function () { return graph.lsR && graph.lsLine })
 			.text(function(d) {
-				if (this.index == 0) { return "R = "+ getR(graph.getData()).toFixed(2)+ " -- Sum of Squares = "+ getSumOfLeastSquares(graph).toFixed(1);}
+				if (this.index == 0) { return "R = "+ 
+																getR(graph.getData()).toFixed(2)+ 
+																" -- Sum of Squares = "+ 
+																getSumOfLeastSquares(graph).toFixed(1);}
 				else {return ""}
 			})
 			.textAlign("left")
@@ -905,7 +907,9 @@ function constructCorrGraph(graph, index, graphPanel){
 			.bottom(function(d) { return graph.y(d.y) })
 			.visible(function () { return graph.udLine })
 			.text(function(d) {
-				if (this.index == 0) { return "Y = "+getUserLineSlope(graph).toFixed(3)+"X + "+getUserLineIntercept(graph).toFixed(3)}
+				if (this.index == 0) { return "Y = "+
+																getUserLineSlope(graph).toFixed(3)+
+																"X + "+getUserLineIntercept(graph).toFixed(3)}
 				else {return ""}
 			})
 			.textAlign("left")
@@ -948,7 +952,7 @@ function constructCorrGraph(graph, index, graphPanel){
 					panelX = graphPanel.mouse().x,
 					panelY = graphPanel.mouse().y;
 					
-				if (panelX > 0 && panelX < graph.w && panelY > 0 && panelY < graph.h){					
+				if (panelX > 0 && panelX < graph.w && panelY > 0 && panelY < graph.h){
 					graph.userDrawnLinePoints[0].x += mouseX - handle[0].x;
 					graph.userDrawnLinePoints[1].x += mouseX - handle[0].x;
 					graph.userDrawnLinePoints[0].y += mouseY - handle[0].y;

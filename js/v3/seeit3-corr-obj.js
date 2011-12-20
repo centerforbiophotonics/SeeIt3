@@ -59,7 +59,7 @@ function GraphCollection(){
 	this.padBot = 40;
 	this.padTop = 60;
 	this.padLeft = 35;
-	this.padRight = 25;
+	this.padRight = 50;
 	
 	this.numberOfCategories = 0;
 	this.nextDefaultCategory = 0;
@@ -133,15 +133,15 @@ GraphCollection.prototype = {
 	
 	calcGraphHeight: function (){
 		//return Math.max(this.numberOfCategories*40,
-									return	(window.innerHeight - jQuery('div#notGraph').height()) - 120
+									return	(window.innerHeight - jQuery('div#notGraph').height()) - 126
 									// );
 	},
 	
 	calcGraphWidth: function(){
 		if (this.datasetsMenuShowing)
-			return window.innerWidth - $('#datasets').width() - 111;
+			return window.innerWidth - $('#datasets').width() - 136;
 		else
-			return window.innerWidth - 90;
+			return window.innerWidth - 115;
 	},
 	
 	addGraph: function() {
@@ -680,25 +680,6 @@ function Worksheet(param) {
 			userCreatedWorksheet = this;
 			graphCollection.addWorksheet(this);
 		}
-		//if (param.hasOwnProperty('labelMasterlist') == false){
-			//this.URL = param.feed.link[1].href + "***";
-			//this.local = true;
-			//this.userCreated = false;
-			//this.fetchLocalData(param);
-			
-			//graphCollection.addWorksheet(this);
-		//} else {
-			//this.URL = param.title;
-			//this.local = true;
-			//this.title = param.title;
-			//this.labelMasterList = param.labelMasterlist;
-			//this.labelType = param.labelType;
-			//this.userCreated = true;
-			//this.data = {};
-			//this.edited = {};
-			//userCreatedWorksheet = this;
-			//graphCollection.addWorksheet(this);
-		//}
 	}
 }
 
@@ -805,69 +786,7 @@ Worksheet.prototype = {
 		});
 		return labels;
 	},
-	/*
-	transformFeedData: function(feedData) {
-		var data = {};
-		var worksheet = this;
-		
-		//Creates of map of column letters to data categories; 
-		//ALSO maps each category to an empty array of maps (in data obj)
-		var columnToCategory = {};
-		feedData.feed.entry.filter(function(e) { return parseInt(e.title.$t.replace(/[A-Z]/g,"")) == 1 })
-			.slice(1)
-			.forEach(function(e) { 
-				var re = new RegExp("dependent variable:","i");
-				var cat = trim(e.content.$t.replace(re,""));
-				if (e.content.$t.search(re) != -1)
-					worksheet.dependentVar = cat;
-				columnToCategory[e.title.$t.replace(/[0-9]/g,"")] = cat;//e.content.$t;
-				data[cat] = [];
-			});
-												
-		var rowToLabelVal = {};
-		feedData.feed.entry.filter(function(e) { 
-																return parseInt(e.title.$t.replace(/[A-Z]/g,"")) > 1 &&
-																	e.title.$t.replace(/[0-9]/g,"") == "A"
-															})
-												.forEach(function(e){
-													if (e.content.$t[0] != '*')
-														rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))] = e.content.$t;
-												});
-
-		feedData.feed.entry.filter(function(e) { 
-																return parseInt(e.title.$t.replace(/[A-Z]/g,"")) > 1 &&
-																	e.title.$t.replace(/[0-9]/g,"") != "A";
-															})
-												.forEach(function(e) {
-													data[columnToCategory[e.title.$t.replace(/[0-9]/g,"")]].push(
-														{"label": rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))],
-														 "value": parseFloat(e.content.$t)
-														}
-													);													
-												});		
-		return data;
-	},
 	
-	getDescription: function(feedData){
-		var lastCell = feedData.feed.entry.slice(-1)[0].content.$t;
-		
-		if (lastCell[0] == '*')
-			return lastCell.slice(1)
-		else
-			return "";
-	},
-	
-	getLabels: function(feedData){
-		var labels = [];
-		feedData.feed.entry.filter(function(e) { 
-						return parseInt(e.title.$t.replace(/[A-Z]/g,"")) > 1 &&
-							e.title.$t.replace(/[0-9]/g,"") == "A"
-					})
-		.forEach(function(e){
-			labels.push(e.content.$t);
-		});
-		return labels;
-	},*/
 	toString: function(){
 		var heading = "";
 		var dataStrings = [];
@@ -948,11 +867,6 @@ Spreadsheet.prototype = {
 		}
 		numWorksheets += local.length;  
 	},
-	
-//	constructBlankWorksheet: function(attr){
-//		this.worksheets.push(new Worksheet(attr));
-//		numWorksheets++;
-//	},
 	
 	constructUserDefinedWorksheet: function(attr){
 		this.worksheets.push(new Worksheet(attr));
