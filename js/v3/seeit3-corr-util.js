@@ -64,6 +64,7 @@ function resizeVis(){
 	
 	graphCollection.graphs.forEach(function(graph, index){
 		positionAndSizeAxisPanels(graph,index);
+		positionAndSizeGraphTitle(graph,index);
 	});
 	positionDisplayMenu();
 }
@@ -978,7 +979,7 @@ function trim(stringToTrim) {
 
 function positionGraphMenuOverGraph(index, graphCollection){
 	var yPos = $('span').offset().top +
-							graphCollection.padTop - 29;
+							graphCollection.padTop - 59;
 	
 	var xPos = $('span').offset().left +
 							graphCollection.padLeft - 35 +

@@ -57,7 +57,7 @@ function GraphCollection(){
 	this.w = this.calcGraphWidth();
 	this.h = this.calcGraphHeight();
 	this.padBot = 40;
-	this.padTop = 60;
+	this.padTop = 90;
 	this.padLeft = 35;
 	this.padRight = 50;
 	
@@ -133,7 +133,7 @@ GraphCollection.prototype = {
 	
 	calcGraphHeight: function (){
 		//return Math.max(this.numberOfCategories*40,
-									return	(window.innerHeight - jQuery('div#notGraph').height()) - 126
+									return	(window.innerHeight - jQuery('div#notGraph').height()) - 156
 									// );
 	},
 	

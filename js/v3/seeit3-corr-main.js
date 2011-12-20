@@ -48,7 +48,7 @@ function constructVis() {
 	vis.add(pv.Rule)
 		.left(-35)
 		.right(graphCollection.padRight * -1)
-		.top(-30)
+		.top(-60)
 	
 	
 	//Datasets
@@ -67,7 +67,7 @@ function constructVis() {
 			}
 		})
 		.left(-34)
-		.top(-60)
+		.top(-90)
 		.lineWidth(1)
 		.event("click", function(){
 			$('#datasets').css('top',$('span').offset().top);
@@ -90,6 +90,7 @@ function constructVis() {
 			}
 			for(var i=0; i<graphCollection.graphs.length;i++){
 				positionAndSizeAxisPanels(graphCollection.graphs[i],i);
+				positionAndSizeGraphTitle(graphCollection.graphs[i],i);
 			}
 		})
 		.event("mouseover", function(d){
@@ -156,7 +157,7 @@ function constructVis() {
 				return 0;
 			}
 		})
-		.top(-60)
+		.top(-90)
 		.lineWidth(1)
 		.event("click", function(){
 			hideMenus();
@@ -230,7 +231,7 @@ function constructVis() {
 				return 35;
 			}
 		})
-		.top(-60)
+		.top(-90)
 		.lineWidth(1)
 		.event("click", function(){
 			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
@@ -314,7 +315,7 @@ function constructVis() {
 				return 70;
 			}
 		})
-		.top(-60)
+		.top(-90)
 		.lineWidth(1)
 		.event("click", function(){
 			if (graphCollection.graphs.length == 1)
@@ -375,7 +376,8 @@ function constructVis() {
 					return false;
 			})
 		
-	
+	$('#graphTitle0').hide();
+	$('#graphTitle1').hide();
 	graphCollection.graphs.forEach(function(graph, index){
 		constructGraphPanel(graph, index);
 	});
@@ -397,6 +399,7 @@ function constructVis() {
 	
 	graphCollection.graphs.forEach(function(graph, index){
 		positionAndSizeAxisPanels(graph,index);
+		positionAndSizeGraphTitle(graph,index);
 	});
 	
 }
@@ -458,37 +461,51 @@ function constructGraphPanel(graph,index){
 	graph.graphPanel = graphPanel;
 		
 	
-	/*Graph Title*/		  
-	graphPanel.add(pv.Label)
-		.left(function(){return graph.w / 2})
-		.top(-15)
-		.textAlign("center")
-		.textAngle(0)
-		.text(function(){
-			var title = "";
-			if (graph.xData != null){
-				title += graph.xData;
-			}
-			if (graph.yData != null && graph.xData != null){
-				title += " vs. ";
-			} 
-			if (graph.yData != null){
-				title += graph.yData;
-			}
-			return title;
-		})
-		.font(function(){
-			if (graph.yData != null && graph.xData != null && 
-					graphCollection.graphs.length == 2)
-				return "bold 12px sans-serif";
-			else
-				return "bold 20px sans-serif";
-		});
+	/*Graph Title*/
+	var title = "<center>";
+	if (graph.xData != null){
+		title += graph.xData;
+	}
+	if (graph.yData != null && graph.xData != null){
+		title += " vs. ";
+	} 
+	if (graph.yData != null){
+		title += graph.yData;
+	}
+	title += "</center>";
+	$('#graphTitle'+index).html(title);	
+	$('#graphTitle'+index).show();
+	  
+	//graphPanel.add(pv.Label)
+		//.left(function(){return graph.w / 2})
+		//.top(-15)
+		//.textAlign("center")
+		//.textAngle(0)
+		//.text(function(){
+			//var title = "";
+			//if (graph.xData != null){
+				//title += graph.xData;
+			//}
+			//if (graph.yData != null && graph.xData != null){
+				//title += " vs. ";
+			//} 
+			//if (graph.yData != null){
+				//title += graph.yData;
+			//}
+			//return title;
+		//})
+		//.font(function(){
+			//if (graph.yData != null && graph.xData != null && 
+					//graphCollection.graphs.length == 2)
+				//return "bold 12px sans-serif";
+			//else
+				//return "bold 20px sans-serif";
+		//});
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
-		.right(0)
-		.top(-60)
+		.right(-10)
+		.top(-90)
 		.width(20)
 		.height(20)
 		.strokeStyle("black")
@@ -514,7 +531,7 @@ function constructGraphPanel(graph,index){
 	//Divider between graphs
 	graphPanel.add(pv.Rule)
 		.left(-95)
-		.top(-70)
+		.top(-100)
 		.bottom(-80)
 		.visible(function(){ return index == 1 })
 			
@@ -523,7 +540,7 @@ function constructGraphPanel(graph,index){
 		.url("http://centerforbiophotonics.github.com/SeeIt3/img/wrench.png")  //fix this
 		.width(30)
 		.height(30)
-		.top(-65)
+		.top(-95)
 		.left(-80)
 		.cursor("pointer")
 		.title("Show graph option menu")
@@ -2252,6 +2269,18 @@ function positionAndSizeAxisPanels(graph,index){
 										.css('height', 40+"px")
 										.css('width', graph.w+"px")
 										.css('z-index', 1)
+}
+
+function positionAndSizeGraphTitle(graph,index){
+	$('#graphTitle'+index).css('position', 'absolute')
+															.css('left', $('span').offset().left + 
+																						graphCollection.padLeft +
+																						60 + index * graph.w + index * 130 )
+															.css('top', $('span').offset().top + 
+																						graphCollection.padTop - 25)
+															.css('height', 40+"px")
+															.css('width', graph.w+"px")
+															.css('z-index', 1)
 }
 
 function positionAndSizeGraph(){

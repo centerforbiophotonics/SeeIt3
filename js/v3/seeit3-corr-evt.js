@@ -1103,6 +1103,7 @@ $(window).resize(function() {
 		positionAndSizeGraph();
 		graphCollection.graphs.forEach(function(graph, index){
 			positionAndSizeAxisPanels(graph,index);
+			positionAndSizeGraphTitle(graph,index);
 		});
 	}
 })
