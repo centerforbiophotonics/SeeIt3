@@ -475,32 +475,7 @@ function constructGraphPanel(graph,index){
 	title += "</center>";
 	$('#graphTitle'+index).html(title);	
 	$('#graphTitle'+index).show();
-	  
-	//graphPanel.add(pv.Label)
-		//.left(function(){return graph.w / 2})
-		//.top(-15)
-		//.textAlign("center")
-		//.textAngle(0)
-		//.text(function(){
-			//var title = "";
-			//if (graph.xData != null){
-				//title += graph.xData;
-			//}
-			//if (graph.yData != null && graph.xData != null){
-				//title += " vs. ";
-			//} 
-			//if (graph.yData != null){
-				//title += graph.yData;
-			//}
-			//return title;
-		//})
-		//.font(function(){
-			//if (graph.yData != null && graph.xData != null && 
-					//graphCollection.graphs.length == 2)
-				//return "bold 12px sans-serif";
-			//else
-				//return "bold 20px sans-serif";
-		//});
+	 
 	
 	//Remove Graph Button
 	graphPanel.add(pv.Panel)
