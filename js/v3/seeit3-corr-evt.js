@@ -178,15 +178,15 @@ function touchMove(event){
 		case "dataBothBottom":
 			dataBothBottomTouchMove(event);
 			break;
-		case "sideCat":
-			sideCatTouchMove(event);
-			break;
-		case "graphXCat":
-			graphXCatTouchMove(event);
-			break;
-		case "graphYCat":
-			graphYCatTouchMove(event);
-			break;
+//		case "sideCat":
+//			sideCatTouchMove(event);
+//			break;
+//		case "graphXCat":
+//			graphXCatTouchMove(event);
+//			break;
+//		case "graphYCat":
+//			graphYCatTouchMove(event);
+//			break;
 		case "ellipseMove":
 			ellipseMoveTouchMove(event);
 			break;
@@ -711,15 +711,15 @@ function touchEnd(event){
 		case "dataBothBottom":
 			dataBothBottomTouchEnd(event);
 			break;
-		case "sideCat":
-			sideCatTouchEnd(event);
-			break;
-		case "graphXCat":
-			graphXCatTouchEnd(event);
-			break;
-		case "graphYCat":
-			graphYCatTouchEnd(event);
-			break;
+//		case "sideCat":
+//			sideCatTouchEnd(event);
+//			break;
+//		case "graphXCat":
+//			graphXCatTouchEnd(event);
+//			break;
+//		case "graphYCat":
+//			graphYCatTouchEnd(event);
+//			break;
 		case "ellipseMove":
 			ellipseMoveTouchEnd(event);
 			break;
@@ -935,7 +935,7 @@ function sideCatTouchEnd(event, category){
 				curY - $('#XAxis'+i).offset().top >= 0 &&
 				curY - $('#XAxis'+i).offset().top <= 40)
 		{
-			graph.assignX(dragObj.category);
+			graph.assignX(category);
 			constructVis();
 		}
 		
@@ -945,7 +945,7 @@ function sideCatTouchEnd(event, category){
 					curY - ($('#YAxisHorizontal'+i).offset().top) >= 0 &&
 					curY - ($('#YAxisHorizontal'+i).offset().top) <= 40)
 			{
-				graph.assignY(dragObj.category);
+				graph.assignY(category);
 				constructVis();
 			}
 		} 
@@ -955,7 +955,7 @@ function sideCatTouchEnd(event, category){
 					curY - ($('#YAxis'+i).offset().top) >= 0 &&
 					curY - ($('#YAxis'+i).offset().top) <= graph.h)
 			{
-				graph.assignY(dragObj.category);
+				graph.assignY(category);
 				constructVis();
 			}
 		}
