@@ -1065,6 +1065,7 @@ function legPanTouchStart(event, category, index, axis){
 }
 
 function legPanTouchMove(event){
+	event.preventDefault();
 	var curX = event.targetTouches[0].clientX;
 	var curY = event.targetTouches[0].clientY;
 	
