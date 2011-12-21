@@ -918,13 +918,13 @@ function dataBothBottomTouchEnd(event){
 }
 
 function sideCatTouchEnd(event, category){
-	var curX = touch.finalX -
-							$('span').offset().left -
-							graphCollection.padLeft + 14;
+	var curX = touch.finalX;// -
+							//$('span').offset().left -
+							//graphCollection.padLeft + 14;
 							
-	var curY = touch.finalY - 
-							$('span').offset().top - 
-							graphCollection.padTop;
+	var curY = touch.finalY; //- 
+							//$('span').offset().top - 
+							//graphCollection.padTop;
 	
 	$('#dragFeedback').hide();
 	
