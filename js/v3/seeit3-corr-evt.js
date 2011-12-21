@@ -22,15 +22,15 @@ function touchStart(event){
 		case "dataBothBottom":
 			dataBothBottomTouchStart(event);
 			break;
-		case "sideCat":
-			sideCatTouchStart(event);
-			break;
-		case "graphXCat":
-			graphXCatTouchStart(event);
-			break;
-		case "graphYCat":
-			graphYCatTouchStart(event);
-			break;
+//		case "sideCat":
+//			sideCatTouchStart(event);
+//			break;
+//		case "graphXCat":
+//			graphXCatTouchStart(event);
+//			break;
+//		case "graphYCat":
+//			graphYCatTouchStart(event);
+//			break;
 		case "ellipseMove":
 			ellipseMoveTouchStart(event);
 			break;
@@ -101,18 +101,16 @@ function dataBothBottomTouchStart(event){
 	
 }
 
-function sideCatTouchStart(event){
-	var curX = event.targetTouches[0].pageX -
-							$('span').offset().left -
-							graphCollection.padLeft + 14;
+function sideCatTouchStart(event, category){
+	var curX = event.targetTouches[0].clientX;
+	var curY = event.targetTouches[0].clientY;
 							
-	var curY = event.targetTouches[0].pageY - 
-							$('span').offset().top - 
-							graphCollection.padTop;
-	touch.draggedObj.left(curX);
-	touch.draggedObj.top(curY);
-	touch.draggedObj.visible(true);
-	touch.draggedObj.render();
+	$('#dragFeedback').html(category);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+										 .css('left',curX)
+										 .css('top',curY)
+										 .css('z-index', 10);
 }
 
 function graphXCatTouchStart(event){
@@ -406,36 +404,57 @@ function dataBothBottomTouchMove(event){
 	}
 }
 
-function sideCatTouchMove(event){
-	var curX = event.targetTouches[0].pageX -
-							$('span').offset().left -
-							graphCollection.padLeft + 14;
+function sideCatTouchMove(event, category){
+	event.preventDefault();
+
+	var curX = event.targetTouches[0].clientX;
+	var curY = event.targetTouches[0].clientY;
 							
-	var curY = event.targetTouches[0].pageY - 
-							$('span').offset().top - 
-							graphCollection.padTop;
-							
-	var which = whichDropZone(curX,curY);
-	
-	graphCollection.graphs.forEach(function(g){
-		g.yAxisPanel.fillStyle(pv.rgb(0,0,0,0));
-		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
-	})
-	
-	if (which != false){
-		which.gPan.fillStyle(pv.rgb(50,50,50,0.25));
-	}
-	
-	graphCollection.graphs.forEach(function(g){
-		g.yAxisPanel.render();
-		g.xAxisPanel.render();
-	})
-	
-	touch.draggedObj.left(curX);
-	touch.draggedObj.top(curY);
-	touch.draggedObj.render();
 	touch.finalX = curX;
 	touch.finalY = curY;
+							
+	$('#dragFeedback').html(category);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',curX)
+								 .css('top',curY)
+								 .css('z-index', 10000);
+								 
+	for (var i=0; i<graphCollection.graphs.length; i++){
+		var graph = graphCollection.graphs[i]; 
+		if (curX - $('#XAxis'+i).offset().left >= 0 &&
+				curX - $('#XAxis'+i).offset().left <= graph.w &&
+				curY - $('#XAxis'+i).offset().top >= 0 &&
+				curY - $('#XAxis'+i).offset().top <= 40)
+		{
+			$('#XAxis'+i).attr('class','axisOver');
+		} else {
+			$('#XAxis'+i).attr('class','axisDef');
+		}
+		
+		if (graph.twoDistView && graph.xData != null && graph.yData != null){
+			if (curX - ($('#YAxisHorizontal'+i).offset().left) >= 0 &&
+					curX - ($('#YAxisHorizontal'+i).offset().left) <= graph.w &&
+					curY - ($('#YAxisHorizontal'+i).offset().top) >= 0 &&
+					curY - ($('#YAxisHorizontal'+i).offset().top) <= 40)
+			{
+				$('#YAxisHorizontal'+i).attr('class','axisOver');
+			} else {
+				$('#YAxisHorizontal'+i).attr('class','axisDef');
+			}
+		} 
+		else {
+			if (curX - ($('#YAxis'+i).offset().left) >= 0 &&
+					curX - ($('#YAxis'+i).offset().left) <= 40 &&
+					curY - ($('#YAxis'+i).offset().top) >= 0 &&
+					curY - ($('#YAxis'+i).offset().top) <= graph.h)
+			{
+				$('#YAxis'+i).attr('class','axisOver');
+			} else {
+				$('#YAxis'+i).attr('class','axisDef');
+			}
+		}
+	}
 }
 
 function graphXCatTouchMove(event){
@@ -898,29 +917,52 @@ function dataBothBottomTouchEnd(event){
 	}
 }
 
-function sideCatTouchEnd(event){
-	var curX = touch.finalX;
+function sideCatTouchEnd(event, category){
+	var curX = touch.finalX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
 							
-	var curY = touch.finalY;
-							
-	var which = whichDropZone(curX,curY);
+	var curY = touch.finalY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
 	
-	graphCollection.graphs.forEach(function(g){
-		g.yAxisPanel.fillStyle(pv.rgb(0,0,0,0));
-		g.xAxisPanel.fillStyle(pv.rgb(0,0,0,0));
-	});
+	$('#dragFeedback').hide();
 	
-	if (which != false){
-		if (which.gAxis == "y")
-			graphCollection.graphs[which.gInd].assignY(touch.dragCat);
-		else if (which.gAxis == "x")
-			graphCollection.graphs[which.gInd].assignX(touch.dragCat);
-			
-		graphCollection.updateMenuOptions();
+	for (var i=0; i<graphCollection.graphs.length; i++){	
+		var graph = graphCollection.graphs[i];			 
+		if (curX - $('#XAxis'+i).offset().left >= 0 &&
+				curX - $('#XAxis'+i).offset().left <= graph.w &&
+				curY - $('#XAxis'+i).offset().top >= 0 &&
+				curY - $('#XAxis'+i).offset().top <= 40)
+		{
+			graph.assignX(dragObj.category);
+			constructVis();
+		}
+		
+		if (graph.twoDistView && graph.xData != null && graph.yData != null){
+			if (curX - ($('#YAxisHorizontal'+i).offset().left) >= 0 &&
+					curX - ($('#YAxisHorizontal'+i).offset().left) <= graph.w &&
+					curY - ($('#YAxisHorizontal'+i).offset().top) >= 0 &&
+					curY - ($('#YAxisHorizontal'+i).offset().top) <= 40)
+			{
+				graph.assignY(dragObj.category);
+				constructVis();
+			}
+		} 
+		else {
+			if (curX - ($('#YAxis'+i).offset().left) >= 0 &&
+					curX - ($('#YAxis'+i).offset().left) <= 80 &&
+					curY - ($('#YAxis'+i).offset().top) >= 0 &&
+					curY - ($('#YAxis'+i).offset().top) <= graph.h)
+			{
+				graph.assignY(dragObj.category);
+				constructVis();
+			}
+		}
 	}
 	
-	
-	touch.draggedObj.visible(false);
+	touch.touch = true;
+	constructVis();
 	touch.reset();
 }
 
@@ -1013,83 +1055,83 @@ function udLineAdjustTouchEnd(event){
 }
 
 
-function whichDropZone(x,y){
-	if (graphCollection.graphs.length == 1){
-		var gpX = x-graphCollection.graphs[0].graphPanel.left();
-		var gpY = y-graphCollection.graphs[0].graphPanel.top();
+//function whichDropZone(x,y){
+	//if (graphCollection.graphs.length == 1){
+		//var gpX = x-graphCollection.graphs[0].graphPanel.left();
+		//var gpY = y-graphCollection.graphs[0].graphPanel.top();
 		
-		if (gpX > graphCollection.graphs[0].yAxisPanel.left() && 
-				gpX < graphCollection.graphs[0].yAxisPanel.left() + graphCollection.graphs[0].yAxisPanel.width() &&
-				gpY > graphCollection.graphs[0].yAxisPanel.top() &&
-				gpY < graphCollection.graphs[0].yAxisPanel.top() + graphCollection.graphs[0].yAxisPanel.height())
-		{
-			return {"gInd":0,
-							"gAxis":"y",
-							"gPan":graphCollection.graphs[0].yAxisPanel};
-		}
+		//if (gpX > graphCollection.graphs[0].yAxisPanel.left() && 
+				//gpX < graphCollection.graphs[0].yAxisPanel.left() + graphCollection.graphs[0].yAxisPanel.width() &&
+				//gpY > graphCollection.graphs[0].yAxisPanel.top() &&
+				//gpY < graphCollection.graphs[0].yAxisPanel.top() + graphCollection.graphs[0].yAxisPanel.height())
+		//{
+			//return {"gInd":0,
+							//"gAxis":"y",
+							//"gPan":graphCollection.graphs[0].yAxisPanel};
+		//}
 		
-		if (gpX > graphCollection.graphs[0].xAxisPanel.left() && 
-				gpX < graphCollection.graphs[0].xAxisPanel.left() + graphCollection.graphs[0].xAxisPanel.width() &&
-				gpY > graphCollection.graphs[0].xAxisPanel.top() &&
-				gpY < graphCollection.graphs[0].xAxisPanel.top() + graphCollection.graphs[0].xAxisPanel.height())
-		{
-			return {"gInd":0,
-							"gAxis":"x",
-							"gPan":graphCollection.graphs[0].xAxisPanel};
-		}
+		//if (gpX > graphCollection.graphs[0].xAxisPanel.left() && 
+				//gpX < graphCollection.graphs[0].xAxisPanel.left() + graphCollection.graphs[0].xAxisPanel.width() &&
+				//gpY > graphCollection.graphs[0].xAxisPanel.top() &&
+				//gpY < graphCollection.graphs[0].xAxisPanel.top() + graphCollection.graphs[0].xAxisPanel.height())
+		//{
+			//return {"gInd":0,
+							//"gAxis":"x",
+							//"gPan":graphCollection.graphs[0].xAxisPanel};
+		//}
 		
-		return false;
-	} else if (graphCollection.graphs.length > 1) {
-		var gp0X = x-graphCollection.graphs[0].graphPanel.left();
-		var gp0Y = y-graphCollection.graphs[0].graphPanel.top();
+		//return false;
+	//} else if (graphCollection.graphs.length > 1) {
+		//var gp0X = x-graphCollection.graphs[0].graphPanel.left();
+		//var gp0Y = y-graphCollection.graphs[0].graphPanel.top();
 		
-		if (gp0X > graphCollection.graphs[0].yAxisPanel.left() && 
-				gp0X < graphCollection.graphs[0].yAxisPanel.left() + graphCollection.graphs[0].yAxisPanel.width() &&
-				gp0Y > graphCollection.graphs[0].yAxisPanel.top() &&
-				gp0Y < graphCollection.graphs[0].yAxisPanel.top() + graphCollection.graphs[0].yAxisPanel.height())
-		{
-			return {"gInd":0,
-							"gAxis":"y",
-							"gPan":graphCollection.graphs[0].yAxisPanel};
-		}
+		//if (gp0X > graphCollection.graphs[0].yAxisPanel.left() && 
+				//gp0X < graphCollection.graphs[0].yAxisPanel.left() + graphCollection.graphs[0].yAxisPanel.width() &&
+				//gp0Y > graphCollection.graphs[0].yAxisPanel.top() &&
+				//gp0Y < graphCollection.graphs[0].yAxisPanel.top() + graphCollection.graphs[0].yAxisPanel.height())
+		//{
+			//return {"gInd":0,
+							//"gAxis":"y",
+							//"gPan":graphCollection.graphs[0].yAxisPanel};
+		//}
 		
-		if (gp0X > graphCollection.graphs[0].xAxisPanel.left() && 
-				gp0X < graphCollection.graphs[0].xAxisPanel.left() + graphCollection.graphs[0].xAxisPanel.width() &&
-				gp0Y > graphCollection.graphs[0].xAxisPanel.top() &&
-				gp0Y < graphCollection.graphs[0].xAxisPanel.top() + graphCollection.graphs[0].xAxisPanel.height())
-		{
-			return {"gInd":0,
-							"gAxis":"x",
-							"gPan":graphCollection.graphs[0].xAxisPanel};
-		}
+		//if (gp0X > graphCollection.graphs[0].xAxisPanel.left() && 
+				//gp0X < graphCollection.graphs[0].xAxisPanel.left() + graphCollection.graphs[0].xAxisPanel.width() &&
+				//gp0Y > graphCollection.graphs[0].xAxisPanel.top() &&
+				//gp0Y < graphCollection.graphs[0].xAxisPanel.top() + graphCollection.graphs[0].xAxisPanel.height())
+		//{
+			//return {"gInd":0,
+							//"gAxis":"x",
+							//"gPan":graphCollection.graphs[0].xAxisPanel};
+		//}
 		
-		var gp1X = x-graphCollection.graphs[1].graphPanel.left();
-		var gp1Y = y-graphCollection.graphs[1].graphPanel.top();
+		//var gp1X = x-graphCollection.graphs[1].graphPanel.left();
+		//var gp1Y = y-graphCollection.graphs[1].graphPanel.top();
 		
-		if (gp1X > graphCollection.graphs[1].yAxisPanel.left() && 
-				gp1X < graphCollection.graphs[1].yAxisPanel.left() + graphCollection.graphs[1].yAxisPanel.width() &&
-				gp1Y > graphCollection.graphs[1].yAxisPanel.top() &&
-				gp1Y < graphCollection.graphs[1].yAxisPanel.top() + graphCollection.graphs[1].yAxisPanel.height())
-		{
-			return {"gInd":1,
-							"gAxis":"y",
-							"gPan":graphCollection.graphs[1].yAxisPanel};
-		}
+		//if (gp1X > graphCollection.graphs[1].yAxisPanel.left() && 
+				//gp1X < graphCollection.graphs[1].yAxisPanel.left() + graphCollection.graphs[1].yAxisPanel.width() &&
+				//gp1Y > graphCollection.graphs[1].yAxisPanel.top() &&
+				//gp1Y < graphCollection.graphs[1].yAxisPanel.top() + graphCollection.graphs[1].yAxisPanel.height())
+		//{
+			//return {"gInd":1,
+							//"gAxis":"y",
+							//"gPan":graphCollection.graphs[1].yAxisPanel};
+		//}
 		
-		if (gp1X > graphCollection.graphs[1].xAxisPanel.left() && 
-				gp1X < graphCollection.graphs[1].xAxisPanel.left() + graphCollection.graphs[1].xAxisPanel.width() &&
-				gp1Y > graphCollection.graphs[1].xAxisPanel.top() &&
-				gp1Y < graphCollection.graphs[1].xAxisPanel.top() + graphCollection.graphs[1].xAxisPanel.height())
-		{
-			return {"gInd":1,
-							"gAxis":"x",
-							"gPan":graphCollection.graphs[1].xAxisPanel};
-		}
+		//if (gp1X > graphCollection.graphs[1].xAxisPanel.left() && 
+				//gp1X < graphCollection.graphs[1].xAxisPanel.left() + graphCollection.graphs[1].xAxisPanel.width() &&
+				//gp1Y > graphCollection.graphs[1].xAxisPanel.top() &&
+				//gp1Y < graphCollection.graphs[1].xAxisPanel.top() + graphCollection.graphs[1].xAxisPanel.height())
+		//{
+			//return {"gInd":1,
+							//"gAxis":"x",
+							//"gPan":graphCollection.graphs[1].xAxisPanel};
+		//}
 		
-		return false;
-	}
+		//return false;
+	//}
 	
-}
+//}
 
 
 /* Dynamic Graph Resizing */
@@ -1110,13 +1152,13 @@ $(window).resize(function() {
 
 
 //Top Bar
-jQuery('#newSpreadsheetURL').keyup(function(event) {
-  if (event.keyCode == '13') {
-	var key = parseSpreadsheetKeyFromURL($(this).val());
-	$(this).val('');
-	exampleSpreadsheets.push(new Spreadsheet(key));
-  }
-});
+//jQuery('#newSpreadsheetURL').keyup(function(event) {
+  //if (event.keyCode == '13') {
+	//var key = parseSpreadsheetKeyFromURL($(this).val());
+	//$(this).val('');
+	//exampleSpreadsheets.push(new Spreadsheet(key));
+  //}
+//});
 
 function editInGoogleDocs(title){
 	var URL = graphCollection.worksheets[title].URL;
