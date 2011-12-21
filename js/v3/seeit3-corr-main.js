@@ -2177,7 +2177,11 @@ function constructLegendPanel(graph, index){
 		$('body').prepend("<div class=\"axisDef\" id=\"YAxisHorizontal"+index+"\""+
 										"onmouseover=\"this.className='axisOver'\""+
 										"onmouseout=\"this.className='axisDef'\""+
-										"onmousedown=\"javascript:legPanDragStart(event,'"+graph.yData+"',"+index+",'y')\">"+
+										"onmousedown=\"javascript:legPanDragStart(event,'"+graph.yData+"',"+index+",'y')\""+
+										"ontouchstart=\"legPanTouchStart(event, '"+graph.yData+"',"+index+",'y')\""+
+										"ontouchend=\"legPanTouchEnd(event)\""+
+										"ontouchmove=\"legPanTouchMove(event)\""+
+										">"+
 										"<center><p style=\"margin-top:11px;\">"+
 										(graph.yData != null ? graph.yData : "Drag a dataset here to assign it to the Y-Axis.")+
 										"</p></center>"+
@@ -2188,7 +2192,11 @@ function constructLegendPanel(graph, index){
 		$('body').prepend("<div class=\"axisDef\" id=\"YAxis"+index+"\""+
 											"onmouseover=\"this.className='axisOver'\""+
 											"onmouseout=\"this.className='axisDef'\""+
-											"onmousedown=\"javascript:legPanDragStart(event,'"+graph.yData+"',"+index+",'y')\">"+
+											"onmousedown=\"javascript:legPanDragStart(event,'"+graph.yData+"',"+index+",'y')\""+
+											"ontouchstart=\"legPanTouchStart(event, '"+graph.yData+"',"+index+",'y')\""+
+											"ontouchmove=\"legPanTouchMove(event)\""+
+											"ontouchend=\"legPanTouchEnd(event)\""+
+											">"+
 											"<center><p style=\"margin-top:14px;\">"+
 											(graph.yData != null ? graph.yData : "Drag a dataset here to assign it to the Y-Axis.")+
 											"</p></center>"+
@@ -2198,7 +2206,11 @@ function constructLegendPanel(graph, index){
 	$('body').prepend("<div class=\"axisDef\" id=\"XAxis"+index+"\""+
 										"onmouseover=\"this.className='axisOver'\""+
 										"onmouseout=\"this.className='axisDef'\""+
-										"onmousedown=\"javascript:legPanDragStart(event,'"+graph.xData+"',"+index+",'x')\">"+
+										"onmousedown=\"javascript:legPanDragStart(event,'"+graph.xData+"',"+index+",'x')\""+
+										"ontouchstart=\"legPanTouchStart(event, '"+graph.xData+"',"+index+",'x')\""+
+										"ontouchmove=\"legPanTouchMove(event)\""+
+										"ontouchend=\"legPanTouchEnd(event)\""+
+										">"+
 										"<center><p style=\"margin-top:12px;\">"+
 										(graph.xData != null ? graph.xData : "Drag a dataset here to assign it to the X-Axis.")+
 										"</p></center>"+
