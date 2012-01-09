@@ -779,8 +779,8 @@ function	dataCorrTouchEnd(event){
 				worksheetY = graphCollection.worksheets[key];
 		}
 		
-		var newXData = graphCollection.worksheet.data[graph.xData];
-		var newYData = graphCollection.worksheet.data[graph.yData];
+		var newXData = worksheetX.data[graph.xData];
+		var newYData = worksheetY.data[graph.yData];
 		var remIndex = null;
 		newXData.forEach(function(data, index){
 			if (data.label == d.label && 
