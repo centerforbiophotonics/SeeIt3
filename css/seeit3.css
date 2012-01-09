@@ -103,6 +103,7 @@ p#loadingMsg {
 	background: rgba(255,255,255,0.0);
 	cursor: move;
 	margin-bottom:1px;
+	overflow:hidden;
 }
 
 .axisOver {
@@ -111,6 +112,7 @@ p#loadingMsg {
 	background: rgba(100,100,100,0.5); 
 	cursor: move;
 	margin-bottom:1px;
+	overflow:hidden;
 }
 
 .menuItemSel {
