@@ -690,8 +690,8 @@ function constructCorrGraph(graph, index, graphPanel){
 			
 	/* Number of datapoints N */
   graphPanel.add(pv.Label)
-		.right(function(){return graph.w/2})
-		.top(0)
+		.left(-40)
+		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
 		.text(function(){return "N = " + graph.getData().length})
@@ -1350,8 +1350,8 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	
 	/* Number of datapoints N */
 	topDist.add(pv.Label)
-		.left(function(){return graph.w / 2})
-		.top(0)
+		.left(-40)
+		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
 		.text(function(){return "N = " + graph.data[graph.yData].length})
@@ -1504,7 +1504,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	
 	//Divider Between graphs
 	topDist.add(pv.Rule)
-		.bottom(-52)
+		.bottom(-62)
 		.left(0)
 		.right(0)
 		.strokeStyle("#000");
@@ -1587,8 +1587,8 @@ function constructTwoDistGraph(graph,index, graphPanel){
 	
 	/* Number of datapoints N */
 	bottomDist.add(pv.Label)
-		.left(function(){return graph.w / 2})
-		.top(-5)
+		.left(-40)
+		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
 		.text(function(){return "N = " + graph.data[graph.xData].length})
@@ -1799,8 +1799,8 @@ function constructXDistGraph(graph, index, graphPanel){
 	
 	/* Number of datapoints N */
 	graphPanel.add(pv.Label)
-		.left(function(){return graph.w / 2})
-		.top(0)
+		.left(-40)
+		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
 		.text(function(){return "N = " + graph.data[graph.xData].length})
@@ -2025,8 +2025,8 @@ function constructYDistGraph(graph,index,graphPanel){
 	
 	/* Number of datapoints N */
 	graphPanel.add(pv.Label)
-		.left(function(){return graph.w / 2})
-		.top(0)
+		.left(-40)
+		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
 		.text(function(){return "N = " + graph.data[graph.yData].length})
