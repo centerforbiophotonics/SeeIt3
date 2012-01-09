@@ -291,7 +291,13 @@ function dataXTouchMove(event){
 			mouseY >= 0 &&
 			mouseY <= graph.h){
 		
-		graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(mouseX));
+		var worksheet = null;
+		for (key in graphCollection.worksheets){
+			if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+				worksheet = graphCollection.worksheets[key];
+		}
+		
+		graphCollection.editSinglePoint(worksheet, graph.xData, d.label, graph.x.invert(mouseX));
 		
 		dragLabel.text(graph.x.invert(mouseX).toFixed(1));
 		dragLabel.left(mouseX)
@@ -329,8 +335,14 @@ function dataYTouchMove(event){
 			mouseX <= graph.w &&
 			mouseY >= 0 &&
 			mouseY <= graph.h){
+				
+		var worksheet = null;
+		for (key in graphCollection.worksheets){
+			if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+				worksheet = graphCollection.worksheets[key];
+		}
 		
-		graphCollection.editSinglePoint(graph.yData, d.label, graph.y.invert(mouseY));
+		graphCollection.editSinglePoint(worksheet, graph.yData, d.label, graph.y.invert(mouseY));
 		
 		dragLabel.text(graph.y.invert(mouseY).toFixed(1));
 		dragLabel.left(mouseX)
@@ -370,7 +382,13 @@ function dataBothTopTouchMove(event){
 			mouseX <= graph.w &&
 			mouseY >= 0 &&
 			mouseY <= height){
-		graphCollection.editSinglePoint(graph.yData, d.label, graph.yHoriz.invert(mouseX));
+				
+		var worksheet = null;
+		for (key in graphCollection.worksheets){
+			if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+				worksheet = graphCollection.worksheets[key];
+		}
+		graphCollection.editSinglePoint(worksheet, graph.yData, d.label, graph.yHoriz.invert(mouseX));
 		
 		dragLabel.text(graph.yHoriz.invert(mouseX).toFixed(1));
 		dragLabel.left(mouseX)
@@ -411,8 +429,14 @@ function dataBothBottomTouchMove(event){
 			mouseX <= graph.w &&
 			mouseY >= 0 &&
 			mouseY <= touch.bottomSubgraph.height()){
+				
+		var worksheet = null;
+		for (key in graphCollection.worksheets){
+			if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+				worksheet = graphCollection.worksheets[key];
+		}
 		
-		graphCollection.editSinglePoint(graph.xData, d.label, graph.x.invert(mouseX));
+		graphCollection.editSinglePoint(worksheet, graph.xData, d.label, graph.x.invert(mouseX));
 		
 		dragLabel.text(graph.x.invert(mouseX).toFixed(1));
 		dragLabel.left(mouseX)
@@ -829,7 +853,13 @@ function dataXTouchEnd(event){
 		var d = touch.dataObj;
 		var dragLabel = touch.dragLabel;
 		
-		var newXData = graphCollection.worksheet.data[graph.xData];
+		var worksheet = null;
+		for (key in graphCollection.worksheets){
+			if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+				worksheet = graphCollection.worksheets[key];
+		}
+		
+		var newXData = worksheet.data[graph.xData];
 		var remIndex = null;
 		newXData.forEach(function(data, index){
 			if (data.label == d.label && 
@@ -843,7 +873,7 @@ function dataXTouchEnd(event){
 		});
 		if (remIndex != null)
 			newXData.splice(remIndex,1);
-		graphCollection.editData(graph.xData,graph.xData,newXData);
+		graphCollection.editData(worksheet, graph.xData,graph.xData,newXData);
 				
 		dragLabel.visible(false);
 		touch.reset();
@@ -862,7 +892,13 @@ function dataYTouchEnd(event){
 		var d = touch.dataObj;
 		var dragLabel = touch.dragLabel;
 		
-		var newYData = graphCollection.worksheet.data[graph.yData];
+		var worksheet = null;
+		for (key in graphCollection.worksheets){
+			if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+				worksheet = graphCollection.worksheets[key];
+		}
+		
+		var newYData = worksheet.data[graph.yData];
 		var remIndex = null;
 		newYData.forEach(function(data, index){
 			if (data.label == d.label && 
@@ -876,7 +912,7 @@ function dataYTouchEnd(event){
 		});
 		if (remIndex != null)
 			newYData.splice(remIndex,1);
-		graphCollection.editData(graph.yData,graph.yData,newYData);
+		graphCollection.editData(worksheet, graph.yData,graph.yData,newYData);
 		
 		dragLabel.visible(false);
 		touch.reset();
@@ -895,7 +931,13 @@ function dataBothTopTouchEnd(event){
 		var d = touch.dataObj;
 		var dragLabel = touch.dragLabel;
 		
-		var newYData = graphCollection.worksheet.data[graph.yData];
+		var worksheet = null;
+		for (key in graphCollection.worksheets){
+			if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+				worksheet = graphCollection.worksheets[key];
+		}
+		
+		var newYData = worksheet.data[graph.yData];
 		var remIndex = null;
 		newYData.forEach(function(data, index){
 			if (data.label == d.label && 
@@ -909,7 +951,7 @@ function dataBothTopTouchEnd(event){
 		});
 		if (remIndex != null)
 			newYData.splice(remIndex,1);
-		graphCollection.editData(graph.yData,graph.yData,newYData);
+		graphCollection.editData(worksheet, graph.yData,graph.yData,newYData);
 				
 		dragLabel.visible(false);
 		touch.reset();
@@ -928,7 +970,13 @@ function dataBothBottomTouchEnd(event){
 		var d = touch.dataObj;
 		var dragLabel = touch.dragLabel;
 		
-		var newXData = graphCollection.worksheet.data[graph.xData];
+		var worksheet = null;
+		for (key in graphCollection.worksheets){
+			if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+				worksheet = graphCollection.worksheets[key];
+		}
+		
+		var newXData = worksheet.data[graph.xData];
 		var remIndex = null;
 		newXData.forEach(function(data, index){
 			if (data.label == d.label && 
@@ -942,7 +990,7 @@ function dataBothBottomTouchEnd(event){
 		});
 		if (remIndex != null)
 			newXData.splice(remIndex,1);
-		graphCollection.editData(graph.xData,graph.xData,newXData);
+		graphCollection.editData(worksheet, graph.xData,graph.xData,newXData);
 				
 		dragLabel.visible(false);
 		touch.reset();
