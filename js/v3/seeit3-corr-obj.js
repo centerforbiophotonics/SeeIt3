@@ -65,6 +65,7 @@ function GraphCollection(){
 	this.nextDefaultCategory = 0;
 	this.editedCategories = {};
 	this.editModeEnabled = false;
+	this.advancedUser = false;
 	
 	//Colors
 	this.labelColors = {};

@@ -69,10 +69,14 @@
 				<label for="checkboxUDSquares">Least Squares</label><br>
 				<input type="checkbox" id="checkboxShowEllipse">
 				<label for="checkboxShowMMEllipse">Show ellipse?</label><br>
-				<input type="checkbox" id="checkboxShowData" checked>
-				<label for="checkboxShowData">Show data?</label><br>
-				<input type="checkbox" id="fitScalesToData"/>
-				<label for="fitScalesToData">Fit scales to data</label><br>
+				<div id="showDataDiv">
+					<input type="checkbox" id="checkboxShowData" checked>
+					<label for="checkboxShowData">Show data?</label><br>
+				</div>
+				<div id="fitScalesDiv">
+					<input type="checkbox" id="fitScalesToData"/>
+					<label for="fitScalesToData">Fit scales to data</label><br>
+				</div>
 				<input type="checkbox" id="showBothDist"/>
 				<label for="showBothDist">Show distribution of both axes</label>
 			</td>
@@ -100,7 +104,7 @@
 			</td>
 		</tr>
 	</table>
-	<table>
+	<table id="graphScaleInputs">
 		<tr>
 			<td><label for="textYMin">Y Axis Min:</label>
 			<input type="text" id="textYMin" size="5"><br></td>
@@ -124,19 +128,15 @@
 			<label for="promptForLabel">Prompt for data label on add</label>
 			</td>
 		</tr>
-		<tr>
-			<td>
-			<input type="button" value="Apply To All" id="applyToAll">
-			</td>
-		</tr>
 	</table>
+	<input type="button" value="Apply To All" id="applyToAll">
 </div>
 
 <div id="displayOptions">
 	<input type='image' src='img/close.png' id='displayOptClose' width='20' height='20' align='right'>
 	<table cellspacing="10">
 		<tr>
-			<td valign="top">
+			<td id="divisionsCell" valign="top">
 				<h3 style="margin-bottom:10px">Divisions</h3>
 				<center>
 					<input type="button" value="+" id="divisionsInc" style="width:30px; height:30px"><br>
@@ -169,7 +169,7 @@
 			</td>
 		</tr>
 	</table>
-	<table cellspacing="10">
+	<table id="stackAndButtonTable" cellspacing="10">
 		<tr>
 			<td>
 				<b>Point Stack Mode</b><br>

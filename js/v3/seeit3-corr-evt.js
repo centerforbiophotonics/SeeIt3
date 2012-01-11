@@ -1841,6 +1841,11 @@ $('#displayOptClose').click(function(){
 });
 
 $('#displayOptions').change(function(){
+	if ($('#drawMode option:selected').text() != "Gravity"){
+		$('#divisionsCell').show();
+	} else {
+		$('#divisionsCell').hide();
+	}
 	vis.render();
 })
 

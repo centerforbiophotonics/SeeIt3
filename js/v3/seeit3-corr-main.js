@@ -29,6 +29,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
   if (numWorksheetsLoaded >= numWorksheets){
 		jQuery('p#loadingMsg').hide();
 		constructVis();
+		showHideAdvancedOptions();
   }
 });
 
@@ -207,90 +208,6 @@ function constructVis() {
 					return false;
 			})
 	
-	/* Toggle Edit Mode Button */
-	var togEditPanel = vis.add(pv.Panel)
-		.events("all")
-		.cursor("pointer")
-		.title("Toggle edit mode")
-		.height(30)
-		.width(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 110;
-			}else if (!graphCollection.buttonIcon){
-				return 80;
-			}else if (!graphCollection.buttonText){
-				return 34;
-			}
-		})
-		.left(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 220;
-			}else if (!graphCollection.buttonIcon){
-				return 160;
-			}else if (!graphCollection.buttonText){
-				return 35;
-			}
-		})
-		.top(-90)
-		.lineWidth(1)
-		.event("click", function(){
-			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
-			vis.render();
-		})
-		.event("mouseover", function(d){
-			this.strokeStyle("black");
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-		
-	togEditPanel.add(pv.Image)
-		.url(function(){
-			if (graphCollection.editModeEnabled)
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/handON.png"
-			else
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/hand.png"
-		})
-		.width(30)
-		.height(26)
-		.top(2)
-		.left(0)
-		.cursor("pointer")
-		.title("Toggle edit mode")
-		.event("click", function(){
-			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
-			vis.render();
-		})
-		.visible(function() {
-			if (graphCollection.buttonIcon)
-				return true;
-			else
-				return false;
-		})
-		.anchor("left").add(pv.Label)
-			.left(function(){
-				if (graphCollection.buttonText && !graphCollection.buttonIcon)
-					return 2;
-				else
-				 return 32;
-			})
-			.text("Edit Mode")
-			.font(fontString)
-			.textStyle(function(){
-				if (graphCollection.editModeEnabled)
-					return "red"
-				else
-					return "black"
-			})
-			.visible(function() {
-				if (graphCollection.buttonText)
-					return true;
-				else
-					return false;
-			})
-		
 	/* Add New Graph Button */
 	var newGrphPanel = vis.add(pv.Panel)
 		.events("all")
@@ -308,11 +225,11 @@ function constructVis() {
 		})
 		.left(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 330;
+				return 220;
 			}else if (!graphCollection.buttonIcon){
-				return 240;
+				return 160;
 			}else if (!graphCollection.buttonText){
-				return 70;
+				return 35;
 			}
 		})
 		.top(-90)
@@ -369,6 +286,182 @@ function constructVis() {
 				else return "One Graph";
 			})
 			.font(fontString)
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
+	
+	
+	/*Toggle Basic/Advanced User Mode*/
+	var togUserModePanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Toggle advanced mode")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 150;
+			}else if (!graphCollection.buttonIcon){
+				return 122;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 340;
+			}else if (!graphCollection.buttonIcon){
+				return 250;
+			}else if (!graphCollection.buttonText){
+				return 75;
+			}
+		})
+		.top(-90)
+		.lineWidth(1)
+		.event("click", function(){
+			graphCollection.advancedUser = !(graphCollection.advancedUser);
+			showHideAdvancedOptions();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+		
+	togUserModePanel.add(pv.Image)
+		.url(function(){
+			if (graphCollection.advancedUser)
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeON.png"
+			else
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeOFF.png"
+		})
+		.width(30)
+		.height(26)
+		.top(2)
+		.left(0)
+		.cursor("pointer")
+		.title("Toggle basic/advanced mode")
+		.event("click", function(){
+			graphCollection.advancedUser = !(graphCollection.advancedUser);
+			showHideAdvancedOptions();
+		})
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text(function(){return "Advanced Mode"})
+			.textStyle(function(){
+				if (graphCollection.advancedUser)
+					return "red"
+				else
+					return "grey"
+			})
+			.font(fontString)
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
+	
+	
+	/* Toggle Edit Mode Button */
+	var togEditPanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Toggle edit mode")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 110;
+			}else if (!graphCollection.buttonIcon){
+				return 80;
+			}else if (!graphCollection.buttonText){
+				return 34;
+			}
+		})
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 490;
+			}else if (!graphCollection.buttonIcon){
+				return 372;
+			}else if (!graphCollection.buttonText){
+				return 109;
+			}
+		})
+		.top(-90)
+		.lineWidth(1)
+		.visible(function() {
+			if (graphCollection.advancedUser)
+				return true;
+			else
+				return false;
+		})
+		.event("click", function(){
+			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
+			vis.render();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+		
+	togEditPanel.add(pv.Image)
+		.url(function(){
+			if (graphCollection.editModeEnabled)
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/handON.png"
+			else
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/hand.png"
+		})
+		.width(30)
+		.height(26)
+		.top(2)
+		.left(0)
+		.cursor("pointer")
+		.title("Toggle edit mode")
+		.event("click", function(){
+			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
+			vis.render();
+		})
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text("Edit Mode")
+			.font(fontString)
+			.textStyle(function(){
+				if (graphCollection.editModeEnabled)
+					return "red"
+				else
+					return "black"
+			})
 			.visible(function() {
 				if (graphCollection.buttonText)
 					return true;
@@ -2242,7 +2335,7 @@ function positionAndSizeAxisPanels(graph,index){
 															
 	$('#YAxis'+index).css('position', 'absolute')
 										.css('left', $('span').offset().left - (graph.h-40)/2 +
-													index * graph.w + index * 132 + 2)
+													index * graph.w + index * 131 + 2)
 										.css('top', $('span').offset().top + graphCollection.padTop+40 + (graph.h-40)/2)
 										.css('height', 40+"px")
 										.css('width', graph.h+"px")

@@ -1,4 +1,34 @@
 /*HTML Element Manipulation*/
+function showHideAdvancedOptions(){
+	if (graphCollection.advancedUser){
+		$('#graphScaleInputs').show();
+		if ($('#drawMode option:selected').text() != "Gravity")
+			$('#divisionsCell').show();
+		$('#stackAndButtonTable').show();
+		$('#fitScalesDiv').show();
+		$('#showDataDiv').show();
+	} else {
+		$('#graphScaleInputs').hide();
+		$('#stackAndButtonTable').hide();
+		$('#fitScalesDiv').hide();
+		$('#showDataDiv').hide();
+		graphCollection.editModeEnabled = false;
+		graphCollection.buttonIcon = true;
+		graphCollection.buttonText = true;
+		$("#drawMode option[value='gravity']").attr('selected', 'selected');
+		$('#divisionsCell').hide();
+		graphCollection.buckets = 30;
+		$("#divisionsValue").html(graphCollection.buckets);
+		
+		graphCollection.graphs.forEach(function(g){
+			g.twoDistView = false;
+		});
+		graphCollection.updateMenuOptions();
+	}
+	vis.render();
+}
+
+
 function toggleNormalViewOptions(){
 	if (jQuery('#checkboxNormalView').is(':checked')) { 
 		$('#checkboxShowUserLine').removeAttr('disabled');
