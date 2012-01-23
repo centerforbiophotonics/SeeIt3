@@ -444,7 +444,8 @@ function Graph(graphCollection){
 	this.panel = {};
 	this.baseLine = 54;
 	
-	this.legendHidden = false;
+	this.twoLineLegend = false;
+	
 }
 
 Graph.prototype = {	
@@ -468,6 +469,14 @@ Graph.prototype = {
 		if (this.includedCategories.indexOf(category) == -1 && this.includedCategories.length < 4){
 			this.includedCategories.push(category);
 			
+			if (this.includedCategories.length > 2){
+				this.twoLineLegend = true;
+				this.baseLine = 89;
+			} else {
+				this.twoLineLegend = false;
+				this.baseLine = 54;
+			}
+			
 			this.xMax = pv.max(this.dataVals(), function(d) { return d });
 			this.xMin = pv.min(this.dataVals(), function(d) { return d });
 			this.n = this.dataVals().length;
@@ -482,9 +491,6 @@ Graph.prototype = {
 				else
 					g.partitionIntervalWidth = Math.pow(10, mag-1);
 			});
-			
-			
-			this.legendHidden = false;
 			
 			if (this.dataVals().length < 4)
 				this.insufDataForFour = true;
@@ -507,6 +513,14 @@ Graph.prototype = {
 		this.xMax = pv.max(this.dataVals(), function(d) { return d });
 		this.xMin = pv.min(this.dataVals(), function(d) { return d });
 		this.n = this.dataVals().length;
+		
+		if (this.includedCategories.length > 2){
+			this.twoLineLegend = true;
+			this.baseLine = 89;
+		} else {
+			this.twoLineLegend = false;
+			this.baseLine = 54;
+		}
 		
 		this.graphCollection.scaleAllGraphsToFit();
 		this.graphCollection.graphs.forEach(function(g){

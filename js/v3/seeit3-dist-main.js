@@ -1899,6 +1899,8 @@ function constructLegendPanel(graph, index){
 	
 	var string = "<center><table cellpadding='0' cellspacing='0' style='table-layout:fixed;' width='100%'><tr>";
 	graph.includedCategories.forEach(function(category, i){
+		if (i == 2)
+			string += "</tr><tr>"
 		var color = graphCollection.categoryColors[category];
 		string += "<td align='center'><div class='"+(category==selCat&&graphCollection.editModeEnabled?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+ 
 							"style=\"color:black; background-color:white;\""+
@@ -1923,6 +1925,9 @@ function positionAndSizeLegendPanel(graph,index){
 	var top = $('span').offset().top +
 						graphCollection.padTop +
 						graph.h * (index+1) - 34;
+						
+	if (graph.includedCategories.length > 2)
+		top -= 35;
 						
 	var left = $('span').offset().left +
 						 graphCollection.padLeft;
