@@ -96,6 +96,7 @@ function 	dataCorrTouchStart(event){
 		}
 	} else {
 		$('#dragFeedback').html(d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1));
+		console.log(d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1));
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 									 .css('left',event.targetTouches[0].pageX)
