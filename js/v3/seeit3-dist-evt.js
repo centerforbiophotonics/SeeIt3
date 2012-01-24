@@ -559,6 +559,7 @@ function dataTouchEnd(event){
 		vis.render();
 	}
 	$('#dragFeedback').hide();
+	touch.reset();
 }
 
 function sideCatTouchEnd(event, category){
