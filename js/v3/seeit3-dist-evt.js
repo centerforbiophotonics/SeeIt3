@@ -410,7 +410,12 @@ function dataTouchMove(event){
 			vis.render();
 		}
 	} else {
-		console.log(d.xReal);
+		$('#dragFeedback').html(d.xReal);
+		$('#dragFeedback').show();
+		$('#dragFeedback').css('position', 'absolute')
+									 .css('left',curX)
+									 .css('top',ecurY)
+									 .css('z-index', 10000);
 	}
 }
 
@@ -536,6 +541,7 @@ function dataTouchEnd(event){
 		
 		touch.dragLabel.visible(false);
 		touch.reset();
+		$('#dragFeedback').hide();
 		vis.render();
 	}
 }
