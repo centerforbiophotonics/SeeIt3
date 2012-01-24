@@ -124,6 +124,7 @@ function dataYTouchStart(event){
 		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
 		var curY = event.targetTouches[0].clientY-30;
 		var d = touch.dataObj;
+		var graph = graphCollection.graphs[touch.graphIndex];
 		
 		$('#dragFeedback').html(d.label + ", " + graph.y.invert(d.y).toFixed(1));
 		$('#dragFeedback').show();
