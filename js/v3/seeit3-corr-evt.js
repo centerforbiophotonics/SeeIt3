@@ -98,8 +98,8 @@ function 	dataCorrTouchStart(event){
 		$('#dragFeedback').html(d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1));
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
-									 .css('left',curX)
-									 .css('top',curY)
+									 .css('left',event.targetTouches[0].pageX)
+									 .css('top',event.targetTouches[0].pageY-20)
 									 .css('z-index', 10000);
 	}
 }
