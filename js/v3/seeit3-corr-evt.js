@@ -96,7 +96,7 @@ function 	dataCorrTouchStart(event){
 		}
 	} else {
 		$('#dragFeedback').html(d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1));
-		console.log(d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1));
+		//console.log(d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1));
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 									 .css('left',event.targetTouches[0].pageX-$('#dragFeedback').width()/2)
@@ -121,10 +121,11 @@ function dataXTouchStart(event){
 
 function dataYTouchStart(event){
 	if (!graphCollection.editModeEnabled){
-		var curX = event.targetTouches[0].clientX;
-		var curY = event.targetTouches[0].clientY;
-								
-		$('#dragFeedback').html(category);
+		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
+		var curY = event.targetTouches[0].clientY-30;
+		var d = touch.dataObj;
+		
+		$('#dragFeedback').html(d.label + ", " + graph.y.invert(d.y).toFixed(1));
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 											 .css('left',curX)
@@ -383,28 +384,39 @@ function dataYTouchMove(event){
 	var d = touch.dataObj;
 	var dragLabel = touch.dragLabel;
 	
-	if (graphCollection.editModeEnabled &&
-			mouseX >= 0 &&
-			mouseX <= graph.w &&
-			mouseY >= 0 &&
-			mouseY <= graph.h){
+	if (graphCollection.editModeEnabled){
+		if (mouseX >= 0 &&
+				mouseX <= graph.w &&
+				mouseY >= 0 &&
+				mouseY <= graph.h){
 				
-		var worksheet = null;
-		for (key in graphCollection.worksheets){
-			if (graphCollection.worksheets[key].data[graph.yData] != undefined)
-				worksheet = graphCollection.worksheets[key];
+			var worksheet = null;
+			for (key in graphCollection.worksheets){
+				if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+					worksheet = graphCollection.worksheets[key];
+			}
+			
+			graphCollection.editSinglePoint(worksheet, graph.yData, d.label, graph.y.invert(mouseY));
+			
+			dragLabel.text(graph.y.invert(mouseY).toFixed(1));
+			dragLabel.left(mouseX)
+			dragLabel.bottom(mouseY+20)
+			dragLabel.visible(true)
+			vis.render();
+		} else {
+			dragLabel.text("Delete");
+			vis.render();
 		}
-		
-		graphCollection.editSinglePoint(worksheet, graph.yData, d.label, graph.y.invert(mouseY));
-		
-		dragLabel.text(graph.y.invert(mouseY).toFixed(1));
-		dragLabel.left(mouseX)
-		dragLabel.bottom(mouseY+20)
-		dragLabel.visible(true)
-		vis.render();
 	} else {
-		dragLabel.text("Delete");
-		vis.render();
+		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
+		var curY = event.targetTouches[0].clientY-30;
+		
+		$('#dragFeedback').html(d.label + ", " + graph.y.invert(d.y).toFixed(1));
+		$('#dragFeedback').show();
+		$('#dragFeedback').css('position', 'absolute')
+											 .css('left',curX)
+											 .css('top',curY)
+											 .css('z-index', 10);
 	}
 }
 
@@ -973,6 +985,7 @@ function dataYTouchEnd(event){
 		touch.reset();
 		vis.render();
 	}
+	touch.reset();
 }
 
 function dataBothTopTouchEnd(event){
