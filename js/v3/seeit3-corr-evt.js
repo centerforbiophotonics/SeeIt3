@@ -107,10 +107,12 @@ function 	dataCorrTouchStart(event){
 
 function dataXTouchStart(event){
 	if (!graphCollection.editModeEnabled){
-		var curX = event.targetTouches[0].clientX;
-		var curY = event.targetTouches[0].clientY;
-								
-		$('#dragFeedback').html(category);
+		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
+		var curY = event.targetTouches[0].clientY-30;
+		var d = touch.dataObj;
+		var graph = graphCollection.graphs[touch.graphIndex];
+		
+		$('#dragFeedback').html(d.label + ", " + graph.x.invert(d.y).toFixed(1));
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 											 .css('left',curX)
@@ -340,29 +342,38 @@ function dataXTouchMove(event){
 	var d = touch.dataObj;
 	var dragLabel = touch.dragLabel;
 	
-	if (graphCollection.editModeEnabled &&
-			mouseX >= 0 &&
-			mouseX <= graph.w &&
-			mouseY >= 0 &&
-			mouseY <= graph.h){
+	if (graphCollection.editModeEnabled) {
+		if (mouseX >= 0 &&
+				mouseX <= graph.w &&
+				mouseY >= 0 &&
+				mouseY <= graph.h){
 		
-		var worksheet = null;
-		for (key in graphCollection.worksheets){
-			if (graphCollection.worksheets[key].data[graph.xData] != undefined)
-				worksheet = graphCollection.worksheets[key];
+			var worksheet = null;
+			for (key in graphCollection.worksheets){
+				if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+					worksheet = graphCollection.worksheets[key];
+			}
+			
+			graphCollection.editSinglePoint(worksheet, graph.xData, d.label, graph.x.invert(mouseX));
+			
+			dragLabel.text(graph.x.invert(mouseX).toFixed(1));
+			dragLabel.left(mouseX)
+			dragLabel.bottom(mouseY + 20)
+			dragLabel.visible(true)
+			
+			vis.render();
+		} else {
+			dragLabel.text("Delete");
+			vis.render();
 		}
-		
-		graphCollection.editSinglePoint(worksheet, graph.xData, d.label, graph.x.invert(mouseX));
-		
-		dragLabel.text(graph.x.invert(mouseX).toFixed(1));
-		dragLabel.left(mouseX)
-		dragLabel.bottom(mouseY + 20)
-		dragLabel.visible(true)
-		
-		vis.render();
 	} else {
-		dragLabel.text("Delete");
-		vis.render();
+		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
+		var curY = event.targetTouches[0].clientY-30;
+		
+		$('#dragFeedback').css('position', 'absolute')
+											 .css('left',curX)
+											 .css('top',curY)
+											 .css('z-index', 10);
 	}
 }
 
@@ -945,6 +956,8 @@ function dataXTouchEnd(event){
 		touch.reset();
 		vis.render();
 	}
+	$('#dragFeedback').hide();
+	touch.reset();
 }
 
 function dataYTouchEnd(event){
