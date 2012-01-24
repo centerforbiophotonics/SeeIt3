@@ -1324,14 +1324,14 @@ function constructCorrGraph(graph, index, graphPanel){
 			}
 		})
 		.event("touchstart", function(d){
-			if (graphCollection.editModeEnabled){
+			//if (graphCollection.editModeEnabled){
 				touch.dragType = "dataCorr";
 				touch.dataObj = d;
 				touch.dragging = true;
 				touch.graphIndex = index;
 				touch.graphPanel = graphPanel;
 				touch.dragLabel = dragLabel;
-			}
+			//}
 		})
 		
 	//Graph Overflow Warning Message
