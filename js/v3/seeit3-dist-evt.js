@@ -541,9 +541,9 @@ function dataTouchEnd(event){
 		
 		touch.dragLabel.visible(false);
 		touch.reset();
-		$('#dragFeedback').hide();
 		vis.render();
 	}
+	$('#dragFeedback').hide();
 }
 
 function sideCatTouchEnd(event, category){
