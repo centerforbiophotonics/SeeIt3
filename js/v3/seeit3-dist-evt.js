@@ -410,7 +410,7 @@ function dataTouchMove(event){
 			vis.render();
 		}
 	} else {
-		console.log(d);
+		console.log(d.xReal);
 	}
 }
 
