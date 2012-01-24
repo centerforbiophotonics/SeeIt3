@@ -388,27 +388,29 @@ function dataTouchMove(event){
 	var d = touch.dataObj;
 	var graph = graphCollection.graphs[touch.graphIndex];
 	
-	if (graphCollection.editModeEnabled &&
-			curX >= 0 &&
-			curY <= graph.w - 5){
-		var worksheet = "";
-		for (var key in graphCollection.worksheets){
-			if (graphCollection.worksheets[key].data[d.set] != undefined)
-				worksheet = key;
+	if (graphCollection.editModeEnabled){
+		if (curX >= 0 && curY <= graph.w - 5){
+			var worksheet = "";
+			for (var key in graphCollection.worksheets){
+				if (graphCollection.worksheets[key].data[d.set] != undefined)
+					worksheet = key;
+			}
+			
+			graphCollection.editSinglePoint(worksheet,d.set,d.label,graph.x.invert(curX));
+			graph.selectedCategory = d.set;
+		
+			touch.dragLabel.text(graph.x.invert(curX).toFixed(1));
+			touch.dragLabel.left(curX)
+			touch.dragLabel.top(curY - 20)
+			touch.dragLabel.visible(true)
+			
+			vis.render();
+		} else {
+			touch.dragLabel.text("Delete");
+			vis.render();
 		}
-		
-		graphCollection.editSinglePoint(worksheet,d.set,d.label,graph.x.invert(curX));
-		graph.selectedCategory = d.set;
-	
-		touch.dragLabel.text(graph.x.invert(curX).toFixed(1));
-		touch.dragLabel.left(curX)
-		touch.dragLabel.top(curY - 20)
-		touch.dragLabel.visible(true)
-		
-		vis.render();
 	} else {
-		touch.dragLabel.text("Delete");
-		vis.render();
+		console.log(d);
 	}
 }
 
