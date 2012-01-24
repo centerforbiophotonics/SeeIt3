@@ -107,12 +107,13 @@ function 	dataCorrTouchStart(event){
 
 function dataXTouchStart(event){
 	if (!graphCollection.editModeEnabled){
-		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
-		var curY = event.targetTouches[0].clientY-30;
 		var d = touch.dataObj;
 		var graph = graphCollection.graphs[touch.graphIndex];
 		
 		$('#dragFeedback').html(d.label + ", " + graph.x.invert(d.x).toFixed(1));
+		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
+		var curY = event.targetTouches[0].clientY-30;
+		
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 											 .css('left',curX)
@@ -123,12 +124,14 @@ function dataXTouchStart(event){
 
 function dataYTouchStart(event){
 	if (!graphCollection.editModeEnabled){
-		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
-		var curY = event.targetTouches[0].clientY-30;
+		
 		var d = touch.dataObj;
 		var graph = graphCollection.graphs[touch.graphIndex];
 		
 		$('#dragFeedback').html(d.label + ", " + graph.y.invert(d.y).toFixed(1));
+		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
+		var curY = event.targetTouches[0].clientY-30;
+		
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 											 .css('left',curX)
@@ -139,12 +142,13 @@ function dataYTouchStart(event){
 
 function dataBothTopTouchStart(event){
 	if (!graphCollection.editModeEnabled){
-		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
-		var curY = event.targetTouches[0].clientY-30;
 		var d = touch.dataObj;
 		var graph = graphCollection.graphs[touch.graphIndex];
 		
 		$('#dragFeedback').html(d.label + ", " + graph.y.invert(d.y).toFixed(1));
+		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
+		var curY = event.targetTouches[0].clientY-30;
+		
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 											 .css('left',curX)
