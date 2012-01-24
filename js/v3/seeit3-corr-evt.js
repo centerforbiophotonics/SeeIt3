@@ -100,7 +100,7 @@ function 	dataCorrTouchStart(event){
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 									 .css('left',event.targetTouches[0].pageX-$('#dragFeedback').width()/2)
-									 .css('top',event.targetTouches[0].pageY-50)
+									 .css('top',event.targetTouches[0].pageY-30)
 									 .css('z-index', 10000);
 	}
 }
@@ -314,8 +314,8 @@ function 	dataCorrTouchMove(event){
 		vis.render();
 	}
 	$('#dragFeedback').css('position', 'absolute')
-									 .css('left',event.targetTouches[0].pageX)
-									 .css('top',event.targetTouches[0].pageY - 20)
+									 .css('left',event.targetTouches[0].pageX - $('#dragFeedback').width()/2)
+									 .css('top',event.targetTouches[0].pageY - 30)
 									 .css('z-index', 10000);
 }
 
