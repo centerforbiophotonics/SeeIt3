@@ -313,8 +313,8 @@ function 	dataCorrTouchMove(event){
 		vis.render();
 	}
 	$('#dragFeedback').css('position', 'absolute')
-									 .css('left',curX)
-									 .css('top',curY)
+									 .css('left',event.targetTouches[0].pageX)
+									 .css('top',event.targetTouches[0].pageY - 20)
 									 .css('z-index', 10000);
 }
 
