@@ -429,8 +429,6 @@ function dataTouchMove(event){
 			vis.render();
 		}
 	} else {
-		$('#dragFeedback').html(d.xReal);
-		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 									 .css('left',curX)
 									 .css('top',curY)
