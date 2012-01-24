@@ -62,54 +62,102 @@ function 	dataCorrTouchStart(event){
 	var d = touch.dataObj;
 	var dragLabel = touch.dragLabel;
 	
-	if (graphCollection.editModeEnabled &&
-			mouseX >= 0 &&
-			mouseX <= graph.w &&
-			mouseY >= 0 &&
-			mouseY <= graph.h){
+	if (graphCollection.editModeEnabled) {
+		if(	mouseX >= 0 &&
+				mouseX <= graph.w &&
+				mouseY >= 0 &&
+				mouseY <= graph.h){
 		
-		var worksheetX = null;
-		for (key in graphCollection.worksheets){
-			if (graphCollection.worksheets[key].data[graph.xData] != undefined)
-				worksheetX = graphCollection.worksheets[key];
+			var worksheetX = null;
+			for (key in graphCollection.worksheets){
+				if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+					worksheetX = graphCollection.worksheets[key];
+			}
+			var worksheetY = null;
+			for (key in graphCollection.worksheets){
+				if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+					worksheetY = graphCollection.worksheets[key];
+			}
+			
+			graphCollection.editSinglePoint(worksheetX, graph.xData, d.label, graph.x.invert(mouseX));
+			graphCollection.editSinglePoint(worksheetY, graph.yData, d.label, graph.y.invert(mouseY));
+			
+			dragLabel.text(graph.x.invert(mouseX).toFixed(1) +
+											", " +
+										graph.y.invert(mouseY).toFixed(1));
+			dragLabel.left(mouseX)
+			dragLabel.bottom(mouseY)
+			dragLabel.visible(true)
+			
+			vis.render();
+		} else {
+			dragLabel.text("Delete");
+			vis.render();
 		}
-		var worksheetY = null;
-		for (key in graphCollection.worksheets){
-			if (graphCollection.worksheets[key].data[graph.yData] != undefined)
-				worksheetY = graphCollection.worksheets[key];
-		}
-		
-		graphCollection.editSinglePoint(worksheetX, graph.xData, d.label, graph.x.invert(mouseX));
-		graphCollection.editSinglePoint(worksheetY, graph.yData, d.label, graph.y.invert(mouseY));
-		
-		dragLabel.text(graph.x.invert(mouseX).toFixed(1) +
-										", " +
-									graph.y.invert(mouseY).toFixed(1));
-		dragLabel.left(mouseX)
-		dragLabel.bottom(mouseY)
-		dragLabel.visible(true)
-		
-		vis.render();
 	} else {
-		dragLabel.text("Delete");
-		vis.render();
+		$('#dragFeedback').html(d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1));
+		$('#dragFeedback').show();
+		$('#dragFeedback').css('position', 'absolute')
+									 .css('left',curX)
+									 .css('top',curY)
+									 .css('z-index', 10000);
 	}
 }
 
 function dataXTouchStart(event){
-	
+	if (!graphCollection.editModeEnabled){
+		var curX = event.targetTouches[0].clientX;
+		var curY = event.targetTouches[0].clientY;
+								
+		$('#dragFeedback').html(category);
+		$('#dragFeedback').show();
+		$('#dragFeedback').css('position', 'absolute')
+											 .css('left',curX)
+											 .css('top',curY)
+											 .css('z-index', 10);
+	}
 }
 
 function dataYTouchStart(event){
-	
+	if (!graphCollection.editModeEnabled){
+		var curX = event.targetTouches[0].clientX;
+		var curY = event.targetTouches[0].clientY;
+								
+		$('#dragFeedback').html(category);
+		$('#dragFeedback').show();
+		$('#dragFeedback').css('position', 'absolute')
+											 .css('left',curX)
+											 .css('top',curY)
+											 .css('z-index', 10);
+	}
 }
 
 function dataBothTopTouchStart(event){
-	
+	if (!graphCollection.editModeEnabled){
+		var curX = event.targetTouches[0].clientX;
+		var curY = event.targetTouches[0].clientY;
+								
+		$('#dragFeedback').html(category);
+		$('#dragFeedback').show();
+		$('#dragFeedback').css('position', 'absolute')
+											 .css('left',curX)
+											 .css('top',curY)
+											 .css('z-index', 10);
+	}
 }
 
 function dataBothBottomTouchStart(event){
-	
+	if (!graphCollection.editModeEnabled){
+		var curX = event.targetTouches[0].clientX;
+		var curY = event.targetTouches[0].clientY;
+								
+		$('#dragFeedback').html(category);
+		$('#dragFeedback').show();
+		$('#dragFeedback').css('position', 'absolute')
+											 .css('left',curX)
+											 .css('top',curY)
+											 .css('z-index', 10);
+	}
 }
 
 function sideCatTouchStart(event, category){
@@ -264,6 +312,10 @@ function 	dataCorrTouchMove(event){
 		dragLabel.text("Delete");
 		vis.render();
 	}
+	$('#dragFeedback').css('position', 'absolute')
+									 .css('left',curX)
+									 .css('top',curY)
+									 .css('z-index', 10000);
 }
 
 function dataXTouchMove(event){
@@ -840,6 +892,7 @@ function	dataCorrTouchEnd(event){
 		//vis.render();
 		constructVis();
 	}
+	$('#dragFeedback').hide();
 }
 
 function dataXTouchEnd(event){
