@@ -305,6 +305,24 @@ function touchStart(event){
 }
 
 function dataTouchStart(event){
+	if (!graphCollection.editModeEnabled){
+		var curX = event.targetTouches[0].pageX -
+							$('span').offset().left -
+							graphCollection.padLeft;
+							
+		var curY = event.targetTouches[0].pageY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
+							
+		var d = touch.dataObj;
+		
+		$('#dragFeedback').html(d.xReal);
+		$('#dragFeedback').show();
+		$('#dragFeedback').css('position', 'absolute')
+									 .css('left',curX)
+									 .css('top',curY)
+									 .css('z-index', 10000);
+	}
 	return;
 }
 
@@ -428,8 +446,6 @@ function sideCatTouchMove(event, category){
 	touch.finalX = curX;
 	touch.finalY = curY;
 							
-	$('#dragFeedback').html(category);
-	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
 								 .css('left',curX)
 								 .css('top',curY)
