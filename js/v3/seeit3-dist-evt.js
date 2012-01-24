@@ -317,7 +317,7 @@ function dataTouchStart(event){
 		var d = touch.dataObj;
 		var graph = graphCollection.graphs[touch.graphIndex];
 		
-		$('#dragFeedback').html(graph.x.invert(d.xReal).toFixed(1));
+		$('#dragFeedback').html(d.label+", "+graph.x.invert(d.xReal).toFixed(1));
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 									 .css('left',curX)
