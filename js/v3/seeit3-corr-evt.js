@@ -411,8 +411,6 @@ function dataYTouchMove(event){
 		var curX = event.targetTouches[0].clientX-$('#dragFeedback').width()/2;
 		var curY = event.targetTouches[0].clientY-30;
 		
-		$('#dragFeedback').html(d.label + ", " + graph.y.invert(d.y).toFixed(1));
-		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 											 .css('left',curX)
 											 .css('top',curY)
@@ -985,6 +983,7 @@ function dataYTouchEnd(event){
 		touch.reset();
 		vis.render();
 	}
+	$('#dragFeedback').hide();
 	touch.reset();
 }
 
