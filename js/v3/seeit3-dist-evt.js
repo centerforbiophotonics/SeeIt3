@@ -414,7 +414,7 @@ function dataTouchMove(event){
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 									 .css('left',curX)
-									 .css('top',ecurY)
+									 .css('top',curY)
 									 .css('z-index', 10000);
 	}
 }
