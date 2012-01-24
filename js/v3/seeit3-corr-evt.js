@@ -99,8 +99,8 @@ function 	dataCorrTouchStart(event){
 		console.log(d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1));
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
-									 .css('left',event.targetTouches[0].pageX)
-									 .css('top',event.targetTouches[0].pageY-20)
+									 .css('left',event.targetTouches[0].pageX-$('#dragFeedback').width()/2)
+									 .css('top',event.targetTouches[0].pageY-50)
 									 .css('z-index', 10000);
 	}
 }
