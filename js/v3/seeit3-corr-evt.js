@@ -5,7 +5,7 @@ document.addEventListener("touchstart", touchStart, false);
 
 function touchStart(event){
   if (!touch.dragging) return;
-	console.log("test");
+	//console.log("test");
 	switch (touch.dragType){
 		case "dataCorr":
 			dataCorrTouchStart(event);
@@ -894,6 +894,7 @@ function	dataCorrTouchEnd(event){
 		constructVis();
 	}
 	$('#dragFeedback').hide();
+	touch.reset();
 }
 
 function dataXTouchEnd(event){
