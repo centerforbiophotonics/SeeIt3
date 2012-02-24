@@ -871,6 +871,9 @@ function constructGraphPanel(graph, index){
 		.cursor("pointer")
 		.events("all")
 		.title("Remove graph")
+		.visible(function(){
+			return !graph.isSamplingGraph && !graph.isResamplingGraph;
+		})
 		.event("click", function(){
 			graphCollection.removeGraph(graph);
 			constructVis();
@@ -895,6 +898,9 @@ function constructGraphPanel(graph, index){
 		.left(-30)
 		.cursor("pointer")
 		.title("Show graph option menu")
+		.visible(function(){
+			return !graph.isSamplingGraph && !graph.isResamplingGraph;
+		})
 		.event("click", function(){
 			graphCollection.selectedGraphIndex = index;
 			graphCollection.updateMenuOptions();
@@ -1288,8 +1294,9 @@ function constructGraphPanel(graph, index){
 		
 		//Simple Box Plot Lines
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[0], graph.baseLine],
-						 [partitionDataInFour(graph)[0], graph.h * 0.80]]})
+			.data(function(){
+				return [[partitionDataInFour(graph)[0], graph.baseLine],
+								[partitionDataInFour(graph)[0], graph.h * 0.80]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1748,18 +1755,28 @@ function constructGraphPanel(graph, index){
 			.radius(function() {return graphCollection.bucketDotSize})
 			.fillStyle(function(d) {return pointFillStyle(d.set)})
 			.strokeStyle(function(d) {
-				if (d.label == graphCollection.selectedLabel)
+				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling")
 					return jQuery('#checkboxBWView').is(':checked') ? "grey": "red";
+				else if (containsData(graph.samplingData, d))
+					return jQuery('#checkboxBWView').is(':checked') ? "grey": "blue";
 				else
 					return pointStrokeStyle(d.set);
 			})
-			.lineWidth(function(d){if (d.label == graphCollection.selectedLabel) return 4;
-														 else return 2;
+			.lineWidth(function(d){
+				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling") return 4;
+				else if (containsData(graph.samplingData, d)) return 4;
+				else return 2;
 			})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
 			.event("click", function(d){
-				if (graphCollection.editModeEnabled == false)
-				graphCollection.selectedLabel = d.label;
+				if (graphCollection.editModeEnabled == false && graph.testMode != "sampling")
+					graphCollection.selectedLabel = d.label;
+				else if (graph.testMode == "sampling"){
+					if (!containsData(graph.samplingData, d))
+						graph.samplingData.push(d);
+					else
+						graph.samplingData.splice(indexOfData(graph.samplingData,d),1);
+				}
 				vis.render();
 			})
 			.event("mousedown", pv.Behavior.drag())
@@ -1866,7 +1883,7 @@ function constructGraphPanel(graph, index){
 				return retVal;
 			})
 			
-	} else {
+	} else if (!graph.isSamplingGraph && !graph.isResamplingGraph){
 		//Empty Graph Message
 		graphPanel.add(pv.Label)
 			.left(function(){return graph.w/2})
@@ -1889,6 +1906,64 @@ function constructGraphPanel(graph, index){
 			.textBaseline("center")
 			.text("Maximum 4 Datasets per Graph")
 			.font(fontString)
+	} else if (graph.isSamplingGraph){
+		//Sampling Graph 
+		
+		/* Number of datapoints N */
+		graphPanel.add(pv.Label)
+			.right(10)
+			.bottom(10)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text(function(){return "N = " + graph.n})
+			.font(fontString);
+			
+		/* X-axis ticks */
+		graphPanel.add(pv.Rule)
+			.data(function() { return graphCollection.graphs[graph.samplingFrom].x.ticks() })
+			.left(function(d) {return graphCollection.graphs[graph.samplingFrom].x(d)})
+			.bottom(graph.baseLine)
+			.strokeStyle("#aaa")
+			.height(5)
+			.anchor("bottom").add(pv.Label)
+				.text(function(d) {return d.toFixed(1)})
+				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			
+		/* X-axis line */
+		graphPanel.add(pv.Rule)
+			.bottom(graph.baseLine)
+			.strokeStyle("#000");
+			
+		/* X-axis label */
+		graphPanel.add(pv.Label)
+			.right(function(){return graph.w/2})
+			.bottom(10)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("Sample from Above Graph")
+			.font(fontString);
+		
+		//Dots
+		graphPanel.add(pv.Dot)
+			.data(function() {return graph.getSamplingDataDrawObjects()})
+			.left(function(d) { return d.x })
+			.bottom(function(d) { return d.y + graph.baseLine })
+			.radius(function() {return graphCollection.bucketDotSize})
+			.fillStyle(function(d) {return pointFillStyle(d.set)})
+			.strokeStyle(function(d) {
+				return pointStrokeStyle(d.set);
+			})
+			.lineWidth(function(d){
+				return 2;
+			})
+			.title(function(d) { return d.label+", "+graphCollection.graphs[graph.samplingFrom].x.invert(d.xReal).toFixed(1) })
+			
+		
+	} else if (graph.isResamplingGraph){
+		//Resampling Graph
+		
 	}
 }
 

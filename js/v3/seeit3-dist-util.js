@@ -15,7 +15,6 @@ function pointFillStyle(set){
 	}
 }
 
-
 function updateColor(category, color){
 	var r = parseInt(color.rgb[0]*255);
 	var g = parseInt(color.rgb[1]*255);
@@ -201,8 +200,27 @@ function partitionDataByIntervalWidth(graph){
 	return divs;
 }
 
-/*HTML Element Manipulation*/
+function containsData(array,d){
+	for (var i=0; i<array.length; i++){
+		if (array[i].set == d.set &&
+				array[i].label == d.label &&
+				array[i].x == d.x)
+			return true;
+	}
+	return false;
+}
 
+function indexOfData(array,d){
+	for (var i=0; i<array.length; i++){
+		if (array[i].set == d.set &&
+				array[i].label == d.label &&
+				array[i].x == d.x)
+			return i;
+	}
+	return -1;
+}
+
+/*HTML Element Manipulation*/
 function showHideAdvancedOptions(){
 	if (graphCollection.advancedUser){
 		$('#fixedSizeOptions').show();

@@ -82,6 +82,26 @@ jQuery('#groupingOptions').change(function(event) {
   event.stopPropagation();
 });
 
+jQuery('#testingOptions').change(function(event) {
+	var testMode = $('input:radio[name=test]:checked').attr('id');
+	graphCollection.graphs[graphCollection.selectedGraphIndex].testMode = testMode;
+	
+	if (graphCollection.graphs[graphCollection.selectedGraphIndex].testMode != "sampling")
+		graphCollection.graphs[graphCollection.selectedGraphIndex].samplingData = [];
+	
+	if (graphCollection.graphs[graphCollection.selectedGraphIndex+1] != undefined){
+		if (graphCollection.graphs[graphCollection.selectedGraphIndex+1].isSamplingGraph ||
+				graphCollection.graphs[graphCollection.selectedGraphIndex+1].isResamplingGraph)
+			graphCollection.removeGraph(graphCollection.graphs[graphCollection.selectedGraphIndex+1]);
+	}
+	
+	if (testMode == "sampling")
+		graphCollection.addSamplingGraph(graphCollection.selectedGraphIndex);
+	else if (testMode =="resampling")
+		graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+	constructVis();
+});
+
 $('#checkboxMMM').change(function(event){
 	$('#checkboxMean').attr('checked', $('#checkboxMMM').is(':checked'));
 	$('#checkboxMedian').attr('checked', $('#checkboxMMM').is(':checked'));
