@@ -79,6 +79,8 @@ function GraphCollection(){
 	//Add an empty graph and initialize menu
 	this.addGraph();
 	this.updateMenuOptions();
+	
+	this.nextSampleSetNumber = 0;
 }
 
 GraphCollection.prototype = {
@@ -157,7 +159,11 @@ GraphCollection.prototype = {
 		
 		//set variables to distinguish sample graph as special type
 		this.graphs[index+1].isSamplingGraph = true;
-		this.graphs[index+1].samplingFrom = index;
+		this.graphs[index+1].samplingFrom = this.graphs[index];
+		this.graphs[index].samplingTo = this.graphs[index+1];
+		this.graphs[index].sampleSet = "***sampleSet-"+graphCollection.nextSampleSetNumber++;
+		this.data[this.graphs[index].sampleSet] = [];
+		this.graphs[index+1].addSampleCategory(this.graphs[index].sampleSet);
 		
 		this.setH(this.calcGraphHeight());
 	},
@@ -173,8 +179,12 @@ GraphCollection.prototype = {
 	},
 	
 	removeGraph: function(graph){
-		if (graph.testMode == "sampling" || graph.testMode == "resampling")
+		if (graph.testMode != "noTest"){
 			this.graphs.splice(this.graphs.indexOf(graph)+1,1);
+			
+			if (graph.testMode == "sampling")
+				delete graphCollection.data[graph.sampleSet];
+		}
 			
 		this.graphs.splice(this.graphs.indexOf(graph),1);
 		
@@ -474,8 +484,9 @@ function Graph(graphCollection){
 	this.testMode = "noTest";
 	
 	this.isSamplingGraph = false;
-	this.samplingFrom = null;
-	this.samplingData = [];
+	this.samplingFrom = null;			//Graph Object
+	this.samplingTo = null;
+	this.sampleSet = null;				//String sample set name
 	
 	this.isResamplingGraph = false;
 	this.resamplingFrom = null;
@@ -528,20 +539,29 @@ Graph.prototype = {
 					g.partitionIntervalWidth = Math.pow(10, mag-1);
 			});
 			
-			if (this.dataVals().length < 4)
-				this.insufDataForFour = true;
-			else 
-				this.insufDataForFour = false;
-			
-			if (this.dataVals().length < 2)
-				this.insufDataForTwo = true;
-			else 
-				this.insufDataForTwo = false;
+			this.updateInsufDataFlags();
 			
 			return true;
 		} else {
 			return false;
 		}
+	},
+	
+	addSampleCategory: function(category){
+		this.includedCategories.push(category);
+		this.xMax = this.samplingFrom.xMax;//pv.max(this.samplingFrom.dataVals(), function(d) { return d });
+		this.xMin = this.samplingFrom.xMin;//pv.min(this.samplingFrom.dataVals(), function(d) { return d });
+		this.n = this.dataVals().length;
+		
+		this.graphCollection.scaleAllGraphsToFit();
+		
+		this.updateInsufDataFlags();
+		
+	},
+	
+	updateInsufDataFlags: function(){
+		this.insufDataForFour = this.dataVals().length < 4;
+		this.insufDataForTwo = this.dataVals().length < 2;
 	},
 	
 	removeCategory: function(name){
@@ -595,7 +615,10 @@ Graph.prototype = {
 		var fullData = this.data;
 		this.includedCategories.forEach(function(cat){
 			fullData[cat].forEach(function(d){
-				subset.push({"object":d, "set":cat});
+				if (d.hasOwnProperty("set"))
+					subset.push({"object":d, "set":d.set});
+				else
+					subset.push({"object":d, "set":cat});
 			});
 		});
 		return subset;
@@ -708,85 +731,85 @@ Graph.prototype = {
 		return points;
 	},
 	
-	getSamplingDataDrawObjects: function() {
-		var xDomain = graphCollection.graphs[this.samplingFrom].x.domain();
-		var bucketSize = (xDomain[1]-xDomain[0])/this.graphCollection.buckets;
-		var points = [];
-		var data = graphCollection.graphs[this.samplingFrom].samplingData;
-		var drawMode = jQuery("#drawMode option:selected").val();
+	//getSamplingDataDrawObjects: function() {
+		//var xDomain = graphCollection.graphs[this.samplingFrom].x.domain();
+		//var bucketSize = (xDomain[1]-xDomain[0])/this.graphCollection.buckets;
+		//var points = [];
+		//var data = graphCollection.graphs[this.samplingFrom].samplingData;
+		//var drawMode = jQuery("#drawMode option:selected").val();
 		
-		for (var i = 0; i < this.graphCollection.buckets; i++){
-			var bucketMin = xDomain[0] + (bucketSize * i);
-			var bucketMax = xDomain[0] + (bucketSize * (i+1));
-			var pointsInBucket = [];
+		//for (var i = 0; i < this.graphCollection.buckets; i++){
+			//var bucketMin = xDomain[0] + (bucketSize * i);
+			//var bucketMax = xDomain[0] + (bucketSize * (i+1));
+			//var pointsInBucket = [];
 			
-			for (var j = 0; j < data.length; j++){
-				//var dataObj = data[j],
-				var xVal = data[j].xReal,
-						label = data[j].label;
-						set = data[j].set;
+			//for (var j = 0; j < data.length; j++){
+				////var dataObj = data[j],
+				//var xVal = data[j].xReal,
+						//label = data[j].label;
+						//set = data[j].set;
 					
-				if ((xVal >= bucketMin && xVal < bucketMax) 
-						|| drawMode == "gravity")
-				{
-					pointsInBucket.push([xVal, label, set, 0]);
-				}
-			}
-			randomIndex = 20;
-			pointsInBucket = shuffle(pointsInBucket);
+				//if ((xVal >= bucketMin && xVal < bucketMax) 
+						//|| drawMode == "gravity")
+				//{
+					//pointsInBucket.push([xVal, label, set, 0]);
+				//}
+			//}
+			//randomIndex = 20;
+			//pointsInBucket = shuffle(pointsInBucket);
 			
-			switch (drawMode)
-			{
-			case "floating":
-				for (var j = 0; j < pointsInBucket.length; j++){
-					points.push({"x":pointsInBucket[j][0],
-											 "xReal":pointsInBucket[j][0],
-											 "y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
-											 "label":pointsInBucket[j][1],
-											 "set":pointsInBucket[j][2]
-										 });
-				}
-				break;
-			case "center":
-				for (var j = 0; j < pointsInBucket.length; j++){
-					points.push({"x":(this.x(bucketMin)+this.x(bucketMax))/2,
-											 "xReal":pointsInBucket[j][0],
-											 "y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
-											 "label":pointsInBucket[j][1],
-											 "set":pointsInBucket[j][2]
-										 });
-				}
-				break;
-			case "gravity":
-				if ( i == 0 ) {
-					for (var j = 0; j < pointsInBucket.length; j++){
-						var candidatePoint = {
-							"x":pointsInBucket[j][0],
-							"xReal":pointsInBucket[j][0],
-							"y":graphCollection.bucketDotSize,
-							"label":pointsInBucket[j][1],
-							"set":pointsInBucket[j][2]
-							};
+			//switch (drawMode)
+			//{
+			//case "floating":
+				//for (var j = 0; j < pointsInBucket.length; j++){
+					//points.push({"x":pointsInBucket[j][0],
+											 //"xReal":pointsInBucket[j][0],
+											 //"y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
+											 //"label":pointsInBucket[j][1],
+											 //"set":pointsInBucket[j][2]
+										 //});
+				//}
+				//break;
+			//case "center":
+				//for (var j = 0; j < pointsInBucket.length; j++){
+					//points.push({"x":(this.x(bucketMin)+this.x(bucketMax))/2,
+											 //"xReal":pointsInBucket[j][0],
+											 //"y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
+											 //"label":pointsInBucket[j][1],
+											 //"set":pointsInBucket[j][2]
+										 //});
+				//}
+				//break;
+			//case "gravity":
+				//if ( i == 0 ) {
+					//for (var j = 0; j < pointsInBucket.length; j++){
+						//var candidatePoint = {
+							//"x":pointsInBucket[j][0],
+							//"xReal":pointsInBucket[j][0],
+							//"y":graphCollection.bucketDotSize,
+							//"label":pointsInBucket[j][1],
+							//"set":pointsInBucket[j][2]
+							//};
 							
-						var collisionPoints = [];
-						for (var k = 0; k < points.length; k++){
-							if (Math.abs(points[k].x-candidatePoint.x) < graphCollection.bucketDotSize*2) {
-								collisionPoints.push(points[k]);
-							}
-						}
+						//var collisionPoints = [];
+						//for (var k = 0; k < points.length; k++){
+							//if (Math.abs(points[k].x-candidatePoint.x) < graphCollection.bucketDotSize*2) {
+								//collisionPoints.push(points[k]);
+							//}
+						//}
 						
-						if (collisionPoints.length > 0)
-							candidatePoint.y = fitPointInGraph(candidatePoint, collisionPoints, graphCollection.bucketDotSize);
+						//if (collisionPoints.length > 0)
+							//candidatePoint.y = fitPointInGraph(candidatePoint, collisionPoints, graphCollection.bucketDotSize);
 						
-						points.push(candidatePoint);
-					}
-				}
+						//points.push(candidatePoint);
+					//}
+				//}
 				
-				break;
-			}
-		}
-		return points;
-	},
+				//break;
+			//}
+		//}
+		//return points;
+	//},
 	
 	getMeanMedianMode: function(){
 		var data = this.dataVals();

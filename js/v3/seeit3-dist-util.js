@@ -200,21 +200,21 @@ function partitionDataByIntervalWidth(graph){
 	return divs;
 }
 
-function containsData(array,d){
+function sampleContainsData(array,d,graph){
 	for (var i=0; i<array.length; i++){
 		if (array[i].set == d.set &&
 				array[i].label == d.label &&
-				array[i].x == d.x)
+				array[i].value == graph.x.invert(d.xReal))
 			return true;
 	}
 	return false;
 }
 
-function indexOfData(array,d){
+function sampleIndexOfData(array,d, graph){
 	for (var i=0; i<array.length; i++){
 		if (array[i].set == d.set &&
 				array[i].label == d.label &&
-				array[i].x == d.x)
+				array[i].value ==  graph.x.invert(d.xReal))
 			return i;
 	}
 	return -1;
@@ -357,7 +357,11 @@ function countDataInPartitions(graph, partitions){
 }
 
 function countDataInUserDefPartitions(graph){
-	var udPartXVals = getSortedUDPartitionXVals(graph);
+	var udPartXVals;
+	if(graph.isSamplingGraph)
+		udPartXVals = getSortedUDPartitionXVals(graph.samplingFrom);
+	else 
+		udPartXVals = getSortedUDPartitionXVals(graph);
 	return countDataInPartitions(graph, udPartXVals);	
 }
 
@@ -377,7 +381,10 @@ function fiwHistogram(graph, partitions){
 	for (var i=0;i<counts.length;i++){
 		rectangles.push({"left": graph.x(partitions[i]),
 										 "width": graph.x(partitions[i+1])-graph.x(partitions[i]),
-										 "height": (graph.h-graph.baseLine) * 0.75 * counts[i]/maxCount});
+										 "height": (maxCount != 0 ? 
+																	(graph.h-graph.baseLine) * 0.75 * counts[i]/maxCount : 
+																	0)
+										});
 	}
 
 	return rectangles;
