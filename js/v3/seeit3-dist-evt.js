@@ -24,6 +24,7 @@ $(window).resize(function() {
 		positionWorksheetDescriptionPopup();
 		graphCollection.graphs.forEach(function(graph,i){
 			positionAndSizeLegendPanel(graph,i);
+			positionAndSizeSampleOptions(graph,i);
 		})
 	}
 });
@@ -95,8 +96,10 @@ jQuery('#testingOptions').change(function(event) {
 			graphCollection.removeGraph(graphCollection.graphs[graphCollection.selectedGraphIndex+1]);
 	}
 	
-	if (testMode == "sampling")
+	if (testMode == "sampling"){
 		graphCollection.addSamplingGraph(graphCollection.selectedGraphIndex);
+		graphCollection.graphs[graphCollection.selectedGraphIndex+1].updateSample(graphCollection.graphs[graphCollection.selectedGraphIndex+1].samplingHowMany);
+	}
 	else if (testMode =="resampling")
 		graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
 	constructVis();

@@ -162,6 +162,7 @@ GraphCollection.prototype = {
 		this.graphs[index+1].samplingFrom = this.graphs[index];
 		this.graphs[index].samplingTo = this.graphs[index+1];
 		this.graphs[index].sampleSet = "***sampleSet-"+graphCollection.nextSampleSetNumber++;
+		this.graphs[index+1].sampleSet = this.graphs[index].sampleSet;
 		this.data[this.graphs[index].sampleSet] = [];
 		this.graphs[index+1].addSampleCategory(this.graphs[index].sampleSet);
 		
@@ -213,6 +214,7 @@ GraphCollection.prototype = {
 			g.w = graphCollection.w;
 			g.setXScale();
 			positionAndSizeLegendPanel(g,i);
+			positionAndSizeSampleOptions(g,i);
 		});
 	},
 	
@@ -485,8 +487,10 @@ function Graph(graphCollection){
 	
 	this.isSamplingGraph = false;
 	this.samplingFrom = null;			//Graph Object
-	this.samplingTo = null;
+	this.samplingTo = null;				//Graph Object
 	this.sampleSet = null;				//String sample set name
+	this.samplingHowMany = 10;
+	
 	
 	this.isResamplingGraph = false;
 	this.resamplingFrom = null;
@@ -557,6 +561,40 @@ Graph.prototype = {
 		
 		this.updateInsufDataFlags();
 		
+	},
+	
+	updateSample: function(size){
+		graphCollection.data[this.sampleSet] = [];
+		
+		var populationSize = 0;
+		this.samplingFrom.includedCategories.forEach(function(cat){
+			populationSize += graphCollection.data[cat].length;
+		});
+		
+		if (size >= populationSize){
+			var graph = this;
+			this.samplingFrom.includedCategories.forEach(function(cat){
+				graphCollection.data[cat].forEach(function(d){
+					d.set = cat;
+					graphCollection.data[graph.sampleSet].push(d);
+				});
+			});
+			this.samplingHowMany = populationSize;
+			return populationSize;
+		} else {
+			var i = 0;
+			while(i<size){
+				var cat = this.samplingFrom.includedCategories[rand(0,this.samplingFrom.includedCategories.length)];
+				var dat = graphCollection.data[cat][rand(0,graphCollection.data[cat].length)];
+				dat.set = cat;
+				if (!sampleContainsData(graphCollection.data[this.sampleSet],dat,this.samplingFrom)){
+					graphCollection.data[this.sampleSet].push(dat);
+					i++;
+				}
+			}
+			this.samplingHowMany = size;
+			return size;
+		}
 	},
 	
 	updateInsufDataFlags: function(){

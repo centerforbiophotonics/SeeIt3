@@ -243,7 +243,13 @@ div.legend {
 	overflow-x:hidden;
 	top:0px;
 	left:0px;
+}
 
+div.sampleOptions {
+	position:absolute;
+	overflow-x:hidden;
+	top:0px;
+	left:0px;
 }
 
 

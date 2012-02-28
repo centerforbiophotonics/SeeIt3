@@ -203,8 +203,8 @@ function partitionDataByIntervalWidth(graph){
 function sampleContainsData(array,d,graph){
 	for (var i=0; i<array.length; i++){
 		if (array[i].set == d.set &&
-				array[i].label == d.label &&
-				array[i].value == graph.x.invert(d.xReal))
+				array[i].label == d.label )//&&
+				//array[i].value == graph.x.invert(d.xReal))
 			return true;
 	}
 	return false;
@@ -213,8 +213,8 @@ function sampleContainsData(array,d,graph){
 function sampleIndexOfData(array,d, graph){
 	for (var i=0; i<array.length; i++){
 		if (array[i].set == d.set &&
-				array[i].label == d.label &&
-				array[i].value ==  graph.x.invert(d.xReal))
+				array[i].label == d.label ) //&&
+				//array[i].value ==  graph.x.invert(d.xReal))
 			return i;
 	}
 	return -1;
@@ -457,4 +457,12 @@ function getSDLinePoints(graph){
 	var mean = getMean(graph.dataVals());
 	
 	return [mean-sd,mean+sd];
+}
+
+//int between lo(inclusive) and hi(exclusive)
+function rand(lo, hi){
+	if (hi >= lo)
+		return Math.floor(Math.random()*(hi-lo)+lo);
+	else 
+		return Math.random()*(lo-hi)+hi;
 }
