@@ -571,7 +571,7 @@ Graph.prototype = {
 			populationSize += graphCollection.data[cat].length;
 		});
 		
-		if (size >= populationSize){
+		if (size >= populationSize){  //sample all
 			var graph = this;
 			this.samplingFrom.includedCategories.forEach(function(cat){
 				graphCollection.data[cat].forEach(function(d){
@@ -581,12 +581,23 @@ Graph.prototype = {
 			});
 			this.samplingHowMany = populationSize;
 			return populationSize;
-		} else {
+		} else {											//sample randomly
 			var i = 0;
 			while(i<size){
-				var cat = this.samplingFrom.includedCategories[rand(0,this.samplingFrom.includedCategories.length)];
-				var dat = graphCollection.data[cat][rand(0,graphCollection.data[cat].length)];
-				dat.set = cat;
+				var catInd = 0;
+				var index = rand(0,populationSize);
+				for (var j=0;j< this.samplingFrom.includedCategories.length; j++){
+					index -= graphCollection.data[this.samplingFrom.includedCategories[j]].length;
+					if (index < 0){
+						index += graphCollection.data[this.samplingFrom.includedCategories[j]].length;
+						break;
+					}
+					catInd++;
+				}
+				
+				var dat = graphCollection.data[this.samplingFrom.includedCategories[catInd]][index];
+				
+				dat.set = this.samplingFrom.includedCategories[catInd];
 				if (!sampleContainsData(graphCollection.data[this.sampleSet],dat,this.samplingFrom)){
 					graphCollection.data[this.sampleSet].push(dat);
 					i++;

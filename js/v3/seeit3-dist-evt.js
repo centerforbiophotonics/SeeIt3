@@ -92,8 +92,13 @@ jQuery('#testingOptions').change(function(event) {
 	
 	if (graphCollection.graphs[graphCollection.selectedGraphIndex+1] != undefined){
 		if (graphCollection.graphs[graphCollection.selectedGraphIndex+1].isSamplingGraph ||
-				graphCollection.graphs[graphCollection.selectedGraphIndex+1].isResamplingGraph)
+				graphCollection.graphs[graphCollection.selectedGraphIndex+1].isResamplingGraph){
+			
+			delete graphCollection.data[graphCollection.graphs[graphCollection.selectedGraphIndex].sampleSet];
+			graphCollection.graphs[graphCollection.selectedGraphIndex].sampleSet = null;
+			graphCollection.graphs[graphCollection.selectedGraphIndex].samplingTo = null;
 			graphCollection.removeGraph(graphCollection.graphs[graphCollection.selectedGraphIndex+1]);
+		}
 	}
 	
 	if (testMode == "sampling"){
