@@ -97,7 +97,6 @@ function constructVis(){
 				graphCollection.setW(graphCollection.calcGraphWidth());
 				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 				positionDisplayMenu();
-				vis.render();
 			} else {
 				$('#datasets').hide();
 				graphCollection.datasetsMenuShowing = false;
@@ -108,12 +107,12 @@ function constructVis(){
 				graphCollection.setW(graphCollection.calcGraphWidth());
 				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 				positionDisplayMenu();
-				vis.render();
 			}
 			for(var i=0; i<graphCollection.graphs.length;i++){
 				positionAndSizeLegendPanel(graphCollection.graphs[i],i);
 				positionAndSizeSampleOptions(graphCollection.graphs[i],i);
 			}
+			vis.render();
 		})
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
