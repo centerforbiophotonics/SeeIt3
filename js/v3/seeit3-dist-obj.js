@@ -580,6 +580,7 @@ Graph.prototype = {
 				});
 			});
 			this.samplingHowMany = populationSize;
+			this.updateInsufDataFlags();
 			return populationSize;
 		} else {											//sample randomly
 			var i = 0;
@@ -604,6 +605,7 @@ Graph.prototype = {
 				}
 			}
 			this.samplingHowMany = size;
+			this.updateInsufDataFlags();
 			return size;
 		}
 	},
