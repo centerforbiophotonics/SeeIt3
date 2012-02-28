@@ -1799,13 +1799,19 @@ function constructGraphPanel(graph, index){
 				if (graphCollection.editModeEnabled == false && graph.testMode != "sampling")
 					graphCollection.selectedLabel = d.label;
 				else if (graph.testMode == "sampling"){
-					if (!sampleContainsData(graphCollection.data[graph.sampleSet], d, graph))
+					if (!sampleContainsData(graphCollection.data[graph.sampleSet], d, graph)) {
 						graphCollection.data[graph.sampleSet].push(
 																		{"set":d.set,
 																		 "label":d.label,
 																		 "value":graph.x.invert(d.xReal)});
-					else
+						graph.samplingTo.samplingHowMany++;
+						$("#sampleN"+(index+1)).val(graph.samplingTo.samplingHowMany);
+																	 
+					} else {
 						graphCollection.data[graph.sampleSet].splice(sampleIndexOfData(graphCollection.data[graph.sampleSet], d, graph),1);
+						graph.samplingTo.samplingHowMany--;
+						$("#sampleN"+(index+1)).val(graph.samplingTo.samplingHowMany);
+					}
 					graph.samplingTo.updateInsufDataFlags();
 				}
 				vis.render();
