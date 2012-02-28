@@ -1877,7 +1877,8 @@ function constructGraphPanel(graph, index){
 						graphCollection.data[graph.sampleSet]
 													 .splice(sampleIndexOfData(graphCollection.data[graph.sampleSet], d, graph),1);
 						graph.samplingTo.updateInsufDataFlags();
-						console.log("remove oldy");
+						graph.samplingTo.samplingHowMany--;
+						$("#sampleN"+(index+1)).val(graph.samplingTo.samplingHowMany);
 					}
 					
 					
