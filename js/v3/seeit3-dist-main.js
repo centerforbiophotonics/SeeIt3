@@ -595,7 +595,7 @@ function constructVis(){
 	var resamplingPanel = vis.add(pv.Panel)
 		.events("all")
 		.cursor("pointer")
-		.title("Add a Resampling Graph")
+		.title("Toggle Resampling")
 		.height(30)
 		.width(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
@@ -624,7 +624,14 @@ function constructVis(){
 				return false;
 		})
 		.event("click", function(){
-			graphCollection.addResamplingGraph();
+			if (!graphCollection.resamplingEnabled){
+				graphCollection.resamplingEnabled = true;
+				graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+			}else{
+				graphCollection.resamplingEnabled = false;
+				graphCollection.removeGraph(graphCollection.graphs[0]);
+			}
+			
 			constructVis();
 		})
 		.event("mouseover", function(d){
@@ -638,16 +645,27 @@ function constructVis(){
 		
 	resamplingPanel.add(pv.Image)
 		.url(function(){
-			return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle.png"
+			if (graphCollection.resamplingEnabled)
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle-OFF.png"
+			else
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle.png"
+			
 		})
 		.width(30)
 		.height(30)
 		.top(1)
 		.left(0)
 		.cursor("pointer")
-		.title("Toggle Resampling Testing")
+		.title("Toggle Resampling")
 		.event("click", function(){
-			graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+			if (!graphCollection.resamplingEnabled){
+				graphCollection.resamplingEnabled = true;
+				graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+			}else{
+				graphCollection.resamplingEnabled = false;
+				graphCollection.removeGraph(graphCollection.graphs[0]);
+			}
+			
 			constructVis();
 		})
 		.visible(function() {
@@ -665,7 +683,12 @@ function constructVis(){
 			})
 			.text("Resampling")
 			.font(fontString)
-			.textStyle(function(){return "black"})
+			.textStyle(function(){
+				if (graphCollection.resamplingEnabled)
+					return "red"
+				else
+					return "black"
+			})
 			.visible(function() {
 				if (graphCollection.buttonText)
 					return true;
@@ -966,7 +989,7 @@ function constructGraphPanel(graph, index){
 		.events("all")
 		.title("Remove graph")
 		.visible(function(){
-			return !graph.isSamplingGraph;
+			return !graph.isSamplingGraph && !graph.isResamplingGraph;
 		})
 		.event("click", function(){
 			graphCollection.removeGraph(graph);
@@ -1058,9 +1081,779 @@ function constructGraphPanel(graph, index){
 				return "black"
 		})
 	
-	if (graph.includedCategories.length > 0 &&
-			!graph.isSamplingGraph && !graph.isResamplingGraph){
-		/* Number of datapoints N */
+	if (!graph.isSamplingGraph && !graph.isResamplingGraph){
+		constructRegularGraph(graphPanel,graph,index);
+	} else if (graph.isSamplingGraph){
+		constructSamplingGraph(graphPanel,graph,index);
+	} else if (graph.isResamplingGraph){
+		constructResamplingGraph(graphPanel,graph,index);
+	}
+}
+
+function constructResamplingGraph(graphPanel, graph, index){
+	/* X-axis label */
+	graphPanel.add(pv.Label)
+		.right(function(){return graph.w/2})
+		.bottom(10)
+		.textAlign("center")
+		.textAngle(0)
+		.textBaseline("bottom")
+		.text("Difference between the Means of Samples from Population 1 and Population 2")
+		.font(fontString)
+}
+
+function constructSamplingGraph(graphPanel, graph, index){	
+	/* X-axis label */
+	graphPanel.add(pv.Label)
+		.right(function(){return graph.w/2})
+		.bottom(10)
+		.textAlign("center")
+		.textAngle(0)
+		.textBaseline("bottom")
+		.text("Sample from Above Graph")
+		.font(fontString)
+	
+	if (graph.samplingFrom.includedCategories.length > 0){
+		/* X-axis ticks */
+		graphPanel.add(pv.Rule)
+			.data(function() { return graph.x.ticks() })
+			.left(function(d) {return graph.x(d)})
+			.bottom(graph.baseLine)
+			.strokeStyle("#aaa")
+			.height(5)
+			.anchor("bottom").add(pv.Label)
+				.text(function(d) {return d.toFixed(1)})
+				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			
+		/* X-axis line */
+		graphPanel.add(pv.Rule)
+			.bottom(graph.baseLine)
+			.strokeStyle("#000")
+			
+		
+			
+		
+		/* UD Edge of the graph partition lines*/
+		graphPanel.add(pv.Rule)
+			.data([{"x":0,"y":0}])
+			.left(0)
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.strokeStyle("green")
+			.visible(function(){return graph.samplingFrom.groupingMode == "UserDefGroups"})
+			.anchor("top").add(pv.Dot)
+				.left(8)
+				.title("Drag to create a new partition.")
+				.events("all")
+				.shape("square")
+				.fillStyle("green")
+				.strokeStyle("green")
+				.radius(8)
+				
+		/* User Defined Partitions */
+		graphPanel.add(pv.Rule)
+			.data(function(){return graph.samplingFrom.udPartitions})
+			.left(function(d){return d.x})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.strokeStyle("green")
+			.visible(function(){return graph.samplingFrom.groupingMode == "UserDefGroups"})
+			.anchor("top").add(pv.Dot)
+				.left(function(d){return d.x + 8})
+				.title(function(d){return graph.x.invert(d.x).toFixed(1)})
+				.events("all")
+				.shape("square")
+				.fillStyle(function() {
+					if (graph.samplingFrom.selectedUDPart == this.index)  return "yellow";
+					else return "green";
+				})
+				.strokeStyle("green")
+				.radius(8)
+				
+		graphPanel.add(pv.Rule)
+			.right(0)
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.strokeStyle("green")
+			.visible(function(){return graph.samplingFrom.groupingMode == "UserDefGroups"})
+			
+			
+		/* UD Partition Data Count Label */
+		graphPanel.add(pv.Label)
+			.data(function(){return countDataInUserDefPartitions(graph)})
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
+			.left(function(d){
+				var udPartXVals = getSortedUDPartitionXVals(graph.samplingFrom);
+				if (this.index != udPartXVals.length-1){
+					return graph.x((udPartXVals[this.index]+udPartXVals[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				var udPartXVals = getSortedUDPartitionXVals(graph.samplingFrom);
+				return this.index != udPartXVals.length-1 &&
+							 graph.samplingFrom.groupingMode == "UserDefGroups";
+			});
+		
+		/* Fixed Interval Width Partitions */
+		graphPanel.add(pv.Rule)
+			.data(function(){return partitionDataByIntervalWidth(graph.samplingFrom)})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.visible(function(){return graph.samplingFrom.groupingMode == "FixedIntervalGroups"})
+			.strokeStyle("green")
+			.title(function(d){return d})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){return d.toFixed(1)})
+				.shape("square")
+				.fillStyle("green")
+				.strokeStyle("green")
+				.size(4);
+			
+		/*Fixed Interval Width Partitions Size Labels*/
+		graphPanel.add(pv.Label)
+			.data(function(){return countDataInPartitions(graph,partitionDataByIntervalWidth(graph.samplingFrom))})
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
+			.left(function(){
+				if (this.index != partitionDataByIntervalWidth(graph.samplingFrom).length-1){
+					return graph.x((partitionDataByIntervalWidth(graph.samplingFrom)[this.index]+partitionDataByIntervalWidth(graph.samplingFrom)[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != partitionDataByIntervalWidth(graph.samplingFrom).length-1 &&
+							 graph.samplingFrom.groupingMode == "FixedIntervalGroups";
+			});
+			
+		/* Fixed Interval Width Histogram */
+		graphPanel.add(pv.Bar)
+			.data(function(){return fiwHistogram(graph,partitionDataByIntervalWidth(graph.samplingFrom))})
+			.visible(function(d) { 
+				return ( graph.samplingFrom.groupingMode == "FixedIntervalGroups" &&
+								 graph.samplingFrom.histogram
+								) 
+			})
+			.left(function(d){return d.left})
+			.bottom(graph.baseLine)
+			.height(function(d){return d.height})
+			.width(function(d){return d.width})
+			.lineWidth(0.5)
+			.strokeStyle("green")
+			.fillStyle(pv.rgb(0,225,0,0.25));
+			
+		/* Fixed Group Size Partitions */
+		graphPanel.add(pv.Rule)
+			.data(function(){return partitionDataInFixedSizeGroups(graph)})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.visible(function(){return graph.samplingFrom.groupingMode == "FixedSizeGroups"})
+			.strokeStyle("green")
+			.title(function(d){return d.toFixed(1)})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){return d.toFixed(1)})
+				.shape("square")
+				.fillStyle("green")
+				.strokeStyle("green")
+				.size(4);
+			
+		/*Fixed Group Size Partition Labels*/
+		graphPanel.add(pv.Label)
+			.data(function(){return partitionDataInFixedSizeGroups(graph)})
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
+			.left(function(){
+				if (this.index != partitionDataInFixedSizeGroups(graph).length-1){
+					return graph.x((partitionDataInFixedSizeGroups(graph)[this.index]+partitionDataInFixedSizeGroups(graph)[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != partitionDataInFixedSizeGroups(graph).length-1 &&
+							 graph.samplingFrom.groupingMode == "FixedSizeGroups";
+			})
+			.text(function(){
+				if (graph.dataVals().length % graph.partitionGroupSize == 0 ||
+						this.index != partitionDataInFixedSizeGroups(graph).length-2)
+					return graph.samplingFrom.partitionGroupSize;
+				
+				else return graph.dataVals().length % graph.samplingFrom.partitionGroupSize;
+			})
+
+		/* Two Equal Partitions */
+		graphPanel.add(pv.Rule)
+			.data(function(){return partitionDataInTwo(graph)})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.visible(function(){
+				return graph.samplingFrom.groupingMode == "TwoEqualGroups" &&
+							 !graph.insufDataForTwo;
+			})
+			.strokeStyle("green")
+			.title(function(d){return d.toFixed(1)})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){return d.toFixed(1)})
+				.shape("square")
+				.fillStyle("green")
+				.strokeStyle("green")
+				.size(4);
+				
+		/*Two Partition Size Labels*/
+		graphPanel.add(pv.Label)
+			.data(function(){return partitionDataInTwo(graph)})
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
+			.left(function(){
+				if (this.index != partitionDataInTwo(graph).length-1){
+					return graph.x((partitionDataInTwo(graph)[this.index]+partitionDataInTwo(graph)[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != partitionDataInTwo(graph).length-1 &&
+							 graph.samplingFrom.groupingMode == "TwoEqualGroups" &&
+							 !graph.insufDataForTwo;
+			})
+			.text(function(){
+				if (graph.dataVals().length % 2 == 0)
+					return graph.dataVals().length/2;
+				else if(this.index != partitionDataInTwo(graph).length-2)
+					return Math.ceil(graph.dataVals().length/2);
+				else
+					return Math.floor(graph.dataVals().length/2);
+				
+			})
+		
+		/*Insufficient Data for Two Warning */	
+		graphPanel.add(pv.Label)
+			.text("Insufficient data.")
+			.textStyle("red")
+			.visible(function(){
+				return graph.samplingFrom.groupingMode == "TwoEqualGroups" &&
+							 graph.insufDataForTwo;
+			})
+			.font(fontString)
+			.top(35)
+			.left(graph.w/2)
+			.textAlign("center")
+		
+		/* Four Equal Partitions */
+		graphPanel.add(pv.Rule)
+			.data(function(){return partitionDataInFour(graph)})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.visible(function(){return graph.samplingFrom.groupingMode == "FourEqualGroups" &&
+																 !graph.insufDataForFour;
+			})
+			.strokeStyle("green")
+			.title(function(d){return d.toFixed(1)})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){return d.toFixed(1)})
+				.shape("square")
+				.fillStyle("green")
+				.strokeStyle("green")
+				.visible(function(){return graph.samplingFrom.groupingMode == "FourEqualGroups" &&
+																	 !graph.insufDataForFour; 
+				})
+				.size(4);
+				
+		/*Four Partition Size Labels*/
+		graphPanel.add(pv.Label)
+			.data(function(){return countDataInPartitions(graph, partitionDataInFour(graph))})
+			.textAlign("center")
+			.textStyle("green")
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
+			.left(function(){
+				if (this.index != partitionDataInFour(graph).length-1){
+					return graph.x((partitionDataInFour(graph)[this.index]+partitionDataInFour(graph)[this.index+1])/2);
+				} else return 0;
+			})
+			.visible(function(){
+				return this.index != partitionDataInFour(graph).length-1 &&
+							graph.samplingFrom.groupingMode == "FourEqualGroups" &&
+							!graph.insufDataForFour;
+			})
+			.text(function(d){
+				if (this.index != partitionDataInFour(graph).length-1){
+					return d;
+				} else return 0;
+			})
+			
+		//Simple Box Plot Lines
+		graphPanel.add(pv.Line)
+			.data(function(){
+				return [[partitionDataInFour(graph)[0], graph.baseLine],
+								[partitionDataInFour(graph)[0], graph.h * 0.80]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[4], graph.baseLine],
+						 [partitionDataInFour(graph)[4], graph.h * 0.80]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+		})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})						
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [partitionDataInFour(graph)[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+			
+		/* Advanced Box Plot Lines */
+		graphPanel.add(pv.Line)
+			.data(function(){
+				var min = removeOutliers(graph)[0];
+				return [[min, graph.baseLine],
+						 [min, graph.h * 0.80]]
+			})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																		graph.samplingFrom.advBoxPlot && 
+																	 !graph.insufDataForFour; 
+			})
+																	 
+		graphPanel.add(pv.Line)
+			.data(function(){
+				var max = removeOutliers(graph)[removeOutliers(graph).length-1];
+				return [[max, graph.baseLine],
+						 [max, graph.h * 0.80]]
+			})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																		graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+																	 
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																		graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+		})
+																	 
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																		graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+																	 
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																		graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})						
+																							
+		graphPanel.add(pv.Line)
+			.data(function(){
+				var min = removeOutliers(graph)[0];
+				return [[min, (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
+			})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																		graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+			
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																		graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+			
+		graphPanel.add(pv.Line)
+			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																		graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour; 
+			})
+			
+		graphPanel.add(pv.Line)
+			.data(function(){
+				var max = removeOutliers(graph)[removeOutliers(graph).length-1];
+				return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [max, (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
+			})
+			.left(function(d) { return graph.x(d[0]) })
+			.bottom(function(d) { return d[1] })
+			.lineWidth(1)
+			.strokeStyle("darkgreen")
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																 graph.samplingFrom.advBoxPlot &&
+																 !graph.insufDataForFour; 
+			})
+		
+		//Box Plot Mean
+		graphPanel.add(pv.Dot)
+			.data(function(){return [graph.getMeanMedianMode()[0]]})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.insufDataForFour; 
+			})
+			.shape("cross")
+			.strokeStyle("darkgreen")
+		
+		graphPanel.add(pv.Dot)
+			.data(function(){return [graph.getMeanMedianMode()[0]]})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 !graph.insufDataForFour; 
+			})
+			.shape("cross")
+			.angle(Math.PI/4)
+			.strokeStyle("darkgreen")
+			
+		//Box Plot SD Line
+		graphPanel.add(pv.Line)
+			.data(function(){return getSDLinePoints(graph)})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 graph.samplingFrom.sdLine &&
+																	 !graph.insufDataForFour; 
+			})
+			.lineWidth(1)
+			.strokeStyle("orange")
+			
+		graphPanel.add(pv.Label)
+			.data(function(){return [graph.getMeanMedianMode()[0]]})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine +20})
+			.text(function(){return "SD = "+getSD(graph.dataVals()).toFixed(1)})
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 graph.samplingFrom.sdLine &&
+																	 !graph.insufDataForFour; 
+			})
+			.textAlign("center")
+			.textStyle("orange")
+			
+			
+		graphPanel.add(pv.Line)
+			.data(function(){return [getSDLinePoints(graph)[0], getSDLinePoints(graph)[0]]})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){ 
+				if (this.index==0)
+					return (graph.h-graph.baseLine) * 0.43 + graph.baseLine;
+				else
+					return (graph.h-graph.baseLine) * 0.41 + graph.baseLine;
+			})
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 graph.samplingFrom.sdLine &&
+																	 !graph.insufDataForFour; 
+			})
+			.lineWidth(1)
+			.strokeStyle("orange")
+			
+		graphPanel.add(pv.Line)
+			.data(function(){return [getSDLinePoints(graph)[1], getSDLinePoints(graph)[1]]})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){ 
+				if (this.index==0)
+					return (graph.h-graph.baseLine) * 0.43 + graph.baseLine;
+				else
+					return (graph.h-graph.baseLine) * 0.41 + graph.baseLine;
+			})
+			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																	 graph.samplingFrom.sdLine &&
+																	 !graph.insufDataForFour; 
+			})
+			.lineWidth(1)
+			.strokeStyle("orange")
+		
+		/*Mean Median Mode Lines */
+		graphPanel.add(pv.Rule)
+			.data(function(){
+				graph.getMeanMedianMode().forEach(function(m,i){
+					if (i > graph.MMMLabelVis.length-1)
+						graph.MMMLabelVis[i] = false;
+				});
+				return graph.getMeanMedianMode()
+			})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.visible(function(){
+				if (this.index == 0)
+					return graph.samplingFrom.showMMM || graph.samplingFrom.showMean;
+				else if (this.index == 1)
+					return graph.samplingFrom.showMMM || graph.samplingFrom.showMedian;
+				else
+					return graph.samplingFrom.showMMM || graph.samplingFrom.showMode;
+			})
+			.strokeStyle(function(d){
+				if(this.index == 0)
+					return pv.rgb(255,0,0,0.5);
+				else if (this.index == 1)
+					return pv.rgb(0,0,255,0.5);
+				else
+					return pv.rgb(0,255,0,0.5);
+			})
+			.title(function(d){
+				if(this.index == 0)
+					return "Mean: " + d.toFixed(1);
+				else if (this.index == 1)
+					return "Median: " + d.toFixed(1);
+				else
+					return "Mode: " + d.toFixed(1);
+			})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){
+					if(this.index == 0)
+						return "Mean: " + d.toFixed(1);
+					else if (this.index == 1)
+						return "Median: " + d.toFixed(1);
+					else
+						return "Mode: " + d.toFixed(1);
+				})
+				.shape("square")
+				.fillStyle(function(d){
+					if(this.index == 0)
+						return pv.rgb(255,0,0,1);
+					else if (this.index == 1)
+						return pv.rgb(0,0,255,1);
+					else
+						return pv.rgb(0,255,0,1);
+				})
+				.strokeStyle(function(d){
+					if(this.index == 0)
+						return pv.rgb(255,0,0,0.5);
+					else if (this.index == 1)
+						return pv.rgb(0,0,255,0.5);
+					else
+						return pv.rgb(0,255,0,0.5);
+				})
+				.visible(function(){
+					if (this.index == 0)
+						return graph.samplingFrom.showMMM || graph.samplingFrom.showMean;
+					else if (this.index == 1)
+						return graph.samplingFrom.showMMM || graph.samplingFrom.showMedian;
+					else
+						return graph.samplingFrom.showMMM || graph.samplingFrom.showMode;
+				})
+				.size(40)
+				.event('click', function(){
+					graph.MMMLabelVis[this.index] = !(graph.MMMLabelVis[this.index]);
+					vis.render();
+				})
+				
+		// Mean, Median, Mode Labels
+		graphPanel.add(pv.Label)
+			.data(function(){return graph.getMeanMedianMode()})
+			.text(function(d){
+				if(this.index == 0)
+					return "Mean = " + d.toFixed(1);
+				else if (this.index == 1)
+					return "Median = " + d.toFixed(1);
+				else
+					return "Mode = " + d.toFixed(1);
+			})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(d){
+				return graph.baseLine + (graph.h-graph.baseLine) * 0.75 + 5;
+			})
+			.textStyle(function(d){
+				if(this.index == 0)
+					return pv.rgb(255,0,0,0.5);
+				else if (this.index == 1)
+					return pv.rgb(0,0,255,0.5);
+				else
+					return pv.rgb(0,255,0,0.5);
+			})
+			.font(fontString)
+			.textAlign("center")
+			.visible(function(){
+				return graph.MMMLabelVis[this.index] && //graph.showMMM &&
+					((this.index == 0) ? graph.samplingFrom.showMean : true) &&
+					((this.index == 1) ? graph.samplingFrom.showMedian : true) &&
+					((this.index >= 2) ? graph.samplingFrom.showMode : true);
+			})
+		
+		
+		/*Insufficient Data for Four Warning */	
+		graphPanel.add(pv.Label)
+			.text("Insufficient data.")
+			.textStyle("red")
+			.visible(function(){
+				return graph.samplingFrom.groupingMode == "FourEqualGroups" &&
+							 graph.insufDataForFour;
+			})
+			.font(fontString)
+			.top(35)
+			.left(graph.w/2)
+			.textAlign("center")
+		
+		//Dots
+		graphPanel.add(pv.Dot)
+			.data(function() {return graph.getDataDrawObjects()})
+			.left(function(d) {return d.x })
+			.bottom(function(d) { return d.y + graph.baseLine })
+			.radius(function() { return graphCollection.bucketDotSize})
+			.fillStyle(function(d) { return pointFillStyle(d.set)})
+			.strokeStyle(function(d) {
+				return pointStrokeStyle(d.set);
+			})
+			.lineWidth(function(d){
+				return 2;
+			})
+			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
+			
+		//Advanced Box Plot Outlier Marks
+		graphPanel.add(pv.Dot)
+			.data(function(){return getOutlierDrawPositions(graph)})
+			.visible(function(d){return graph.samplingFrom.groupingMode == "BoxPlot" &&
+																		graph.samplingFrom.advBoxPlot && 
+																	 !graph.insufDataForFour &&
+																	 (d.y+graph.baseLine) < graph.h &&
+																		d.x >= 0 &&
+																		d.x <= graph.w;
+			})
+			.left(function(d) { return d.x })
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
+			.shape("cross")
+			.strokeStyle("darkgreen")
+			.size(60)
+			.angle(Math.PI/4)
+			
+	} 
+}
+
+function constructRegularGraph(graphPanel, graph, index){
+	if (graph.includedCategories.length > 0){
+	/* Number of datapoints N */
 		graphPanel.add(pv.Label)
 			.right(10)
 			.bottom(10)
@@ -2010,7 +2803,7 @@ function constructGraphPanel(graph, index){
 				});
 				return retVal;
 			})
-	} else if (!graph.isSamplingGraph && !graph.isResamplingGraph){
+	} else {
 		//Empty Graph Message
 		graphPanel.add(pv.Label)
 			.left(function(){return graph.w/2})
@@ -2033,771 +2826,8 @@ function constructGraphPanel(graph, index){
 			.textBaseline("center")
 			.text("Maximum 4 Datasets per Graph")
 			.font(fontString)
-	} else if (graph.isSamplingGraph){
-		//Sampling Graph 
-		
-		/* X-axis label */
-		graphPanel.add(pv.Label)
-			.right(function(){return graph.w/2})
-			.bottom(10)
-			.textAlign("center")
-			.textAngle(0)
-			.textBaseline("bottom")
-			.text("Sample from Above Graph")
-			.font(fontString)
-		
-		if (graph.samplingFrom.includedCategories.length > 0){
-			
-			/* Number of datapoints N */
-			//graphPanel.add(pv.Label)
-				//.right(10)
-				//.bottom(10)
-				//.textAlign("center")
-				//.textAngle(0)
-				//.textBaseline("bottom")
-				//.text(function(){return "N = " + graphCollection.data[graph.samplingFrom.sampleSet].length})
-				//.font(fontString)
-				
-			/* X-axis ticks */
-			graphPanel.add(pv.Rule)
-				.data(function() { return graph.x.ticks() })
-				.left(function(d) {return graph.x(d)})
-				.bottom(graph.baseLine)
-				.strokeStyle("#aaa")
-				.height(5)
-				.anchor("bottom").add(pv.Label)
-					.text(function(d) {return d.toFixed(1)})
-					.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-				
-			/* X-axis line */
-			graphPanel.add(pv.Rule)
-				.bottom(graph.baseLine)
-				.strokeStyle("#000")
-				
-			
-				
-			
-			/* UD Edge of the graph partition lines*/
-			graphPanel.add(pv.Rule)
-				.data([{"x":0,"y":0}])
-				.left(0)
-				.bottom(function(){return graph.baseLine})
-				.height(function(){return (graph.h-graph.baseLine) * 0.75})
-				.strokeStyle("green")
-				.visible(function(){return graph.samplingFrom.groupingMode == "UserDefGroups"})
-				.anchor("top").add(pv.Dot)
-					.left(8)
-					.title("Drag to create a new partition.")
-					.events("all")
-					.shape("square")
-					.fillStyle("green")
-					.strokeStyle("green")
-					.radius(8)
-					
-			/* User Defined Partitions */
-			graphPanel.add(pv.Rule)
-				.data(function(){return graph.samplingFrom.udPartitions})
-				.left(function(d){return d.x})
-				.bottom(function(){return graph.baseLine})
-				.height(function(){return (graph.h-graph.baseLine) * 0.75})
-				.strokeStyle("green")
-				.visible(function(){return graph.samplingFrom.groupingMode == "UserDefGroups"})
-				.anchor("top").add(pv.Dot)
-					.left(function(d){return d.x + 8})
-					.title(function(d){return graph.x.invert(d.x).toFixed(1)})
-					.events("all")
-					.shape("square")
-					.fillStyle(function() {
-						if (graph.samplingFrom.selectedUDPart == this.index)  return "yellow";
-						else return "green";
-					})
-					.strokeStyle("green")
-					.radius(8)
-					
-			graphPanel.add(pv.Rule)
-				.right(0)
-				.bottom(function(){return graph.baseLine})
-				.height(function(){return (graph.h-graph.baseLine) * 0.75})
-				.strokeStyle("green")
-				.visible(function(){return graph.samplingFrom.groupingMode == "UserDefGroups"})
-				
-				
-			/* UD Partition Data Count Label */
-			graphPanel.add(pv.Label)
-				.data(function(){return countDataInUserDefPartitions(graph)})
-				.textAlign("center")
-				.textStyle("green")
-				.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
-				.left(function(d){
-					var udPartXVals = getSortedUDPartitionXVals(graph.samplingFrom);
-					if (this.index != udPartXVals.length-1){
-						return graph.x((udPartXVals[this.index]+udPartXVals[this.index+1])/2);
-					} else return 0;
-				})
-				.visible(function(){
-					var udPartXVals = getSortedUDPartitionXVals(graph.samplingFrom);
-					return this.index != udPartXVals.length-1 &&
-								 graph.samplingFrom.groupingMode == "UserDefGroups";
-				});
-			
-			/* Fixed Interval Width Partitions */
-			graphPanel.add(pv.Rule)
-				.data(function(){return partitionDataByIntervalWidth(graph.samplingFrom)})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){return graph.baseLine})
-				.height(function(){return (graph.h-graph.baseLine) * 0.75})
-				.visible(function(){return graph.samplingFrom.groupingMode == "FixedIntervalGroups"})
-				.strokeStyle("green")
-				.title(function(d){return d})
-				.anchor("top").add(pv.Dot)
-					.title(function(d){return d.toFixed(1)})
-					.shape("square")
-					.fillStyle("green")
-					.strokeStyle("green")
-					.size(4);
-				
-			/*Fixed Interval Width Partitions Size Labels*/
-			graphPanel.add(pv.Label)
-				.data(function(){return countDataInPartitions(graph,partitionDataByIntervalWidth(graph.samplingFrom))})
-				.textAlign("center")
-				.textStyle("green")
-				.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
-				.left(function(){
-					if (this.index != partitionDataByIntervalWidth(graph.samplingFrom).length-1){
-						return graph.x((partitionDataByIntervalWidth(graph.samplingFrom)[this.index]+partitionDataByIntervalWidth(graph.samplingFrom)[this.index+1])/2);
-					} else return 0;
-				})
-				.visible(function(){
-					return this.index != partitionDataByIntervalWidth(graph.samplingFrom).length-1 &&
-								 graph.samplingFrom.groupingMode == "FixedIntervalGroups";
-				});
-				
-			/* Fixed Interval Width Histogram */
-			graphPanel.add(pv.Bar)
-				.data(function(){return fiwHistogram(graph,partitionDataByIntervalWidth(graph.samplingFrom))})
-				.visible(function(d) { 
-					return ( graph.samplingFrom.groupingMode == "FixedIntervalGroups" &&
-									 graph.samplingFrom.histogram
-									) 
-				})
-				.left(function(d){return d.left})
-				.bottom(graph.baseLine)
-				.height(function(d){return d.height})
-				.width(function(d){return d.width})
-				.lineWidth(0.5)
-				.strokeStyle("green")
-				.fillStyle(pv.rgb(0,225,0,0.25));
-				
-			/* Fixed Group Size Partitions */
-			graphPanel.add(pv.Rule)
-				.data(function(){return partitionDataInFixedSizeGroups(graph)})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){return graph.baseLine})
-				.height(function(){return (graph.h-graph.baseLine) * 0.75})
-				.visible(function(){return graph.samplingFrom.groupingMode == "FixedSizeGroups"})
-				.strokeStyle("green")
-				.title(function(d){return d.toFixed(1)})
-				.anchor("top").add(pv.Dot)
-					.title(function(d){return d.toFixed(1)})
-					.shape("square")
-					.fillStyle("green")
-					.strokeStyle("green")
-					.size(4);
-				
-			/*Fixed Group Size Partition Labels*/
-			graphPanel.add(pv.Label)
-				.data(function(){return partitionDataInFixedSizeGroups(graph)})
-				.textAlign("center")
-				.textStyle("green")
-				.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
-				.left(function(){
-					if (this.index != partitionDataInFixedSizeGroups(graph).length-1){
-						return graph.x((partitionDataInFixedSizeGroups(graph)[this.index]+partitionDataInFixedSizeGroups(graph)[this.index+1])/2);
-					} else return 0;
-				})
-				.visible(function(){
-					return this.index != partitionDataInFixedSizeGroups(graph).length-1 &&
-								 graph.samplingFrom.groupingMode == "FixedSizeGroups";
-				})
-				.text(function(){
-					if (graph.dataVals().length % graph.partitionGroupSize == 0 ||
-							this.index != partitionDataInFixedSizeGroups(graph).length-2)
-						return graph.samplingFrom.partitionGroupSize;
-					
-					else return graph.dataVals().length % graph.samplingFrom.partitionGroupSize;
-				})
-
-			/* Two Equal Partitions */
-			graphPanel.add(pv.Rule)
-				.data(function(){return partitionDataInTwo(graph)})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){return graph.baseLine})
-				.height(function(){return (graph.h-graph.baseLine) * 0.75})
-				.visible(function(){
-					return graph.samplingFrom.groupingMode == "TwoEqualGroups" &&
-								 !graph.insufDataForTwo;
-				})
-				.strokeStyle("green")
-				.title(function(d){return d.toFixed(1)})
-				.anchor("top").add(pv.Dot)
-					.title(function(d){return d.toFixed(1)})
-					.shape("square")
-					.fillStyle("green")
-					.strokeStyle("green")
-					.size(4);
-					
-			/*Two Partition Size Labels*/
-			graphPanel.add(pv.Label)
-				.data(function(){return partitionDataInTwo(graph)})
-				.textAlign("center")
-				.textStyle("green")
-				.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
-				.left(function(){
-					if (this.index != partitionDataInTwo(graph).length-1){
-						return graph.x((partitionDataInTwo(graph)[this.index]+partitionDataInTwo(graph)[this.index+1])/2);
-					} else return 0;
-				})
-				.visible(function(){
-					return this.index != partitionDataInTwo(graph).length-1 &&
-								 graph.samplingFrom.groupingMode == "TwoEqualGroups" &&
-								 !graph.insufDataForTwo;
-				})
-				.text(function(){
-					if (graph.dataVals().length % 2 == 0)
-						return graph.dataVals().length/2;
-					else if(this.index != partitionDataInTwo(graph).length-2)
-						return Math.ceil(graph.dataVals().length/2);
-					else
-						return Math.floor(graph.dataVals().length/2);
-					
-				})
-			
-			/*Insufficient Data for Two Warning */	
-			graphPanel.add(pv.Label)
-				.text("Insufficient data.")
-				.textStyle("red")
-				.visible(function(){
-					return graph.samplingFrom.groupingMode == "TwoEqualGroups" &&
-								 graph.insufDataForTwo;
-				})
-				.font(fontString)
-				.top(35)
-				.left(graph.w/2)
-				.textAlign("center")
-			
-			/* Four Equal Partitions */
-			graphPanel.add(pv.Rule)
-				.data(function(){return partitionDataInFour(graph)})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){return graph.baseLine})
-				.height(function(){return (graph.h-graph.baseLine) * 0.75})
-				.visible(function(){return graph.samplingFrom.groupingMode == "FourEqualGroups" &&
-																	 !graph.insufDataForFour;
-				})
-				.strokeStyle("green")
-				.title(function(d){return d.toFixed(1)})
-				.anchor("top").add(pv.Dot)
-					.title(function(d){return d.toFixed(1)})
-					.shape("square")
-					.fillStyle("green")
-					.strokeStyle("green")
-					.visible(function(){return graph.samplingFrom.groupingMode == "FourEqualGroups" &&
-																		 !graph.insufDataForFour; 
-					})
-					.size(4);
-					
-			/*Four Partition Size Labels*/
-			graphPanel.add(pv.Label)
-				.data(function(){return countDataInPartitions(graph, partitionDataInFour(graph))})
-				.textAlign("center")
-				.textStyle("green")
-				.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine})
-				.left(function(){
-					if (this.index != partitionDataInFour(graph).length-1){
-						return graph.x((partitionDataInFour(graph)[this.index]+partitionDataInFour(graph)[this.index+1])/2);
-					} else return 0;
-				})
-				.visible(function(){
-					return this.index != partitionDataInFour(graph).length-1 &&
-								graph.samplingFrom.groupingMode == "FourEqualGroups" &&
-								!graph.insufDataForFour;
-				})
-				.text(function(d){
-					if (this.index != partitionDataInFour(graph).length-1){
-						return d;
-					} else return 0;
-				})
-				
-			//Simple Box Plot Lines
-			graphPanel.add(pv.Line)
-				.data(function(){
-					return [[partitionDataInFour(graph)[0], graph.baseLine],
-									[partitionDataInFour(graph)[0], graph.h * 0.80]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[4], graph.baseLine],
-							 [partitionDataInFour(graph)[4], graph.h * 0.80]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-							 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-			})
-
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-							 [partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-							 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})						
-
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-							 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
-							 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-							 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-							 [partitionDataInFour(graph)[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-				
-			/* Advanced Box Plot Lines */
-			graphPanel.add(pv.Line)
-				.data(function(){
-					var min = removeOutliers(graph)[0];
-					return [[min, graph.baseLine],
-							 [min, graph.h * 0.80]]
-				})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																			graph.samplingFrom.advBoxPlot && 
-																		 !graph.insufDataForFour; 
-				})
-																		 
-			graphPanel.add(pv.Line)
-				.data(function(){
-					var max = removeOutliers(graph)[removeOutliers(graph).length-1];
-					return [[max, graph.baseLine],
-							 [max, graph.h * 0.80]]
-				})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																			graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-																		 
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-							 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																			graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-			})
-																		 
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-							 [partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																			graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-																		 
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-							 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																			graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})						
-																								
-			graphPanel.add(pv.Line)
-				.data(function(){
-					var min = removeOutliers(graph)[0];
-					return [[min, (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-							 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
-				})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																			graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-				
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
-							 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																			graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-				
-			graphPanel.add(pv.Line)
-				.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-							 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																			graph.samplingFrom.advBoxPlot &&
-																		 !graph.insufDataForFour; 
-				})
-				
-			graphPanel.add(pv.Line)
-				.data(function(){
-					var max = removeOutliers(graph)[removeOutliers(graph).length-1];
-					return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-							 [max, (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
-				})
-				.left(function(d) { return graph.x(d[0]) })
-				.bottom(function(d) { return d[1] })
-				.lineWidth(1)
-				.strokeStyle("darkgreen")
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																	 graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
-				})
-			
-			//Box Plot Mean
-			graphPanel.add(pv.Dot)
-				.data(function(){return [graph.getMeanMedianMode()[0]]})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.insufDataForFour; 
-				})
-				.shape("cross")
-				.strokeStyle("darkgreen")
-			
-			graphPanel.add(pv.Dot)
-				.data(function(){return [graph.getMeanMedianMode()[0]]})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 !graph.insufDataForFour; 
-				})
-				.shape("cross")
-				.angle(Math.PI/4)
-				.strokeStyle("darkgreen")
-				
-			//Box Plot SD Line
-			graphPanel.add(pv.Line)
-				.data(function(){return getSDLinePoints(graph)})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 graph.samplingFrom.sdLine &&
-																		 !graph.insufDataForFour; 
-				})
-				.lineWidth(1)
-				.strokeStyle("orange")
-				
-			graphPanel.add(pv.Label)
-				.data(function(){return [graph.getMeanMedianMode()[0]]})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine +20})
-				.text(function(){return "SD = "+getSD(graph.dataVals()).toFixed(1)})
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 graph.samplingFrom.sdLine &&
-																		 !graph.insufDataForFour; 
-				})
-				.textAlign("center")
-				.textStyle("orange")
-				
-				
-			graphPanel.add(pv.Line)
-				.data(function(){return [getSDLinePoints(graph)[0], getSDLinePoints(graph)[0]]})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){ 
-					if (this.index==0)
-						return (graph.h-graph.baseLine) * 0.43 + graph.baseLine;
-					else
-						return (graph.h-graph.baseLine) * 0.41 + graph.baseLine;
-				})
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 graph.samplingFrom.sdLine &&
-																		 !graph.insufDataForFour; 
-				})
-				.lineWidth(1)
-				.strokeStyle("orange")
-				
-			graphPanel.add(pv.Line)
-				.data(function(){return [getSDLinePoints(graph)[1], getSDLinePoints(graph)[1]]})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){ 
-					if (this.index==0)
-						return (graph.h-graph.baseLine) * 0.43 + graph.baseLine;
-					else
-						return (graph.h-graph.baseLine) * 0.41 + graph.baseLine;
-				})
-				.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		 graph.samplingFrom.sdLine &&
-																		 !graph.insufDataForFour; 
-				})
-				.lineWidth(1)
-				.strokeStyle("orange")
-			
-			/*Mean Median Mode Lines */
-			graphPanel.add(pv.Rule)
-				.data(function(){
-					graph.getMeanMedianMode().forEach(function(m,i){
-						if (i > graph.MMMLabelVis.length-1)
-							graph.MMMLabelVis[i] = false;
-					});
-					return graph.getMeanMedianMode()
-				})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(){return graph.baseLine})
-				.height(function(){return (graph.h-graph.baseLine) * 0.75})
-				.visible(function(){
-					if (this.index == 0)
-						return graph.samplingFrom.showMMM || graph.samplingFrom.showMean;
-					else if (this.index == 1)
-						return graph.samplingFrom.showMMM || graph.samplingFrom.showMedian;
-					else
-						return graph.samplingFrom.showMMM || graph.samplingFrom.showMode;
-				})
-				.strokeStyle(function(d){
-					if(this.index == 0)
-						return pv.rgb(255,0,0,0.5);
-					else if (this.index == 1)
-						return pv.rgb(0,0,255,0.5);
-					else
-						return pv.rgb(0,255,0,0.5);
-				})
-				.title(function(d){
-					if(this.index == 0)
-						return "Mean: " + d.toFixed(1);
-					else if (this.index == 1)
-						return "Median: " + d.toFixed(1);
-					else
-						return "Mode: " + d.toFixed(1);
-				})
-				.anchor("top").add(pv.Dot)
-					.title(function(d){
-						if(this.index == 0)
-							return "Mean: " + d.toFixed(1);
-						else if (this.index == 1)
-							return "Median: " + d.toFixed(1);
-						else
-							return "Mode: " + d.toFixed(1);
-					})
-					.shape("square")
-					.fillStyle(function(d){
-						if(this.index == 0)
-							return pv.rgb(255,0,0,1);
-						else if (this.index == 1)
-							return pv.rgb(0,0,255,1);
-						else
-							return pv.rgb(0,255,0,1);
-					})
-					.strokeStyle(function(d){
-						if(this.index == 0)
-							return pv.rgb(255,0,0,0.5);
-						else if (this.index == 1)
-							return pv.rgb(0,0,255,0.5);
-						else
-							return pv.rgb(0,255,0,0.5);
-					})
-					.visible(function(){
-						if (this.index == 0)
-							return graph.samplingFrom.showMMM || graph.samplingFrom.showMean;
-						else if (this.index == 1)
-							return graph.samplingFrom.showMMM || graph.samplingFrom.showMedian;
-						else
-							return graph.samplingFrom.showMMM || graph.samplingFrom.showMode;
-					})
-					.size(40)
-					.event('click', function(){
-						graph.MMMLabelVis[this.index] = !(graph.MMMLabelVis[this.index]);
-						vis.render();
-					})
-					
-			// Mean, Median, Mode Labels
-			graphPanel.add(pv.Label)
-				.data(function(){return graph.getMeanMedianMode()})
-				.text(function(d){
-					if(this.index == 0)
-						return "Mean = " + d.toFixed(1);
-					else if (this.index == 1)
-						return "Median = " + d.toFixed(1);
-					else
-						return "Mode = " + d.toFixed(1);
-				})
-				.left(function(d){return graph.x(d)})
-				.bottom(function(d){
-					return graph.baseLine + (graph.h-graph.baseLine) * 0.75 + 5;
-				})
-				.textStyle(function(d){
-					if(this.index == 0)
-						return pv.rgb(255,0,0,0.5);
-					else if (this.index == 1)
-						return pv.rgb(0,0,255,0.5);
-					else
-						return pv.rgb(0,255,0,0.5);
-				})
-				.font(fontString)
-				.textAlign("center")
-				.visible(function(){
-					return graph.MMMLabelVis[this.index] && //graph.showMMM &&
-						((this.index == 0) ? graph.samplingFrom.showMean : true) &&
-						((this.index == 1) ? graph.samplingFrom.showMedian : true) &&
-						((this.index >= 2) ? graph.samplingFrom.showMode : true);
-				})
-			
-			
-			/*Insufficient Data for Four Warning */	
-			graphPanel.add(pv.Label)
-				.text("Insufficient data.")
-				.textStyle("red")
-				.visible(function(){
-					return graph.samplingFrom.groupingMode == "FourEqualGroups" &&
-								 graph.insufDataForFour;
-				})
-				.font(fontString)
-				.top(35)
-				.left(graph.w/2)
-				.textAlign("center")
-			
-			//Dots
-			graphPanel.add(pv.Dot)
-				.data(function() {return graph.getDataDrawObjects()})
-				.left(function(d) {return d.x })
-				.bottom(function(d) { return d.y + graph.baseLine })
-				.radius(function() { return graphCollection.bucketDotSize})
-				.fillStyle(function(d) { return pointFillStyle(d.set)})
-				.strokeStyle(function(d) {
-					return pointStrokeStyle(d.set);
-				})
-				.lineWidth(function(d){
-					return 2;
-				})
-				.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
-				
-			//Advanced Box Plot Outlier Marks
-			graphPanel.add(pv.Dot)
-				.data(function(){return getOutlierDrawPositions(graph)})
-				.visible(function(d){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																			graph.samplingFrom.advBoxPlot && 
-																		 !graph.insufDataForFour &&
-																		 (d.y+graph.baseLine) < graph.h &&
-																			d.x >= 0 &&
-																			d.x <= graph.w;
-				})
-				.left(function(d) { return d.x })
-				.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
-				.shape("cross")
-				.strokeStyle("darkgreen")
-				.size(60)
-				.angle(Math.PI/4)
-				
-		} 
-			
-	} else if (graph.isResamplingGraph){
-		//Resampling Graph
-		
 	}
+	
 }
 
 function constructSampleOptionsMenu(graph, index){

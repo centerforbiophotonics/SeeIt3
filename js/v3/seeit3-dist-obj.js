@@ -81,6 +81,9 @@ function GraphCollection(){
 	this.updateMenuOptions();
 	
 	this.nextSampleSetNumber = 0;
+	this.nextResampleSetNumber = 0;
+	
+	this.resamplingEnabled = false;
 }
 
 GraphCollection.prototype = {
@@ -182,11 +185,12 @@ GraphCollection.prototype = {
 	},
 	
 	removeGraph: function(graph){
-		if (graph.testMode != "noTest"){
+		if (graph.testMode == "sampling"){
 			this.graphs.splice(this.graphs.indexOf(graph)+1,1);
-			
-			if (graph.testMode == "sampling")
-				delete graphCollection.data[graph.sampleSet];
+			delete graphCollection.data[graph.sampleSet];
+		} else if (graph.testMode == "resampling") {
+			this.graphs.splice(0,1);
+			delete graphCollection.data[graph.resampleSet];
 		}
 			
 		this.graphs.splice(this.graphs.indexOf(graph),1);

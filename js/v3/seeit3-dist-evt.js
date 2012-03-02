@@ -105,8 +105,7 @@ jQuery('#sampling').change(function(event) {
 		graphCollection.addSamplingGraph(graphCollection.selectedGraphIndex);
 		graphCollection.graphs[graphCollection.selectedGraphIndex+1].updateSample(graphCollection.graphs[graphCollection.selectedGraphIndex+1].samplingHowMany);
 	}
-	//else if (testMode =="resampling")
-	//	graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+
 	constructVis();
 });
 
