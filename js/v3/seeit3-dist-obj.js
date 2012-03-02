@@ -169,18 +169,14 @@ GraphCollection.prototype = {
 		this.setH(this.calcGraphHeight());
 	},
 	
-	addResamplingGraph: function(index){
-		this.graphs.splice(index+1,0,new Graph(this));
+	addResamplingGraph: function(){
+		this.graphs.splice(0,0,new Graph(this));
 		
-		//set variables to distinguish sample graph as special type
-		//set variables to distinguish sample graph as special type
-		this.graphs[index+1].isResamplingGraph = true;
-		this.graphs[index+1].resamplingFrom = this.graphs[index];
-		this.graphs[index].resamplingTo = this.graphs[index+1];
-		this.graphs[index].resampleSet = "***resampleSet-"+graphCollection.nextResampleSetNumber++;
-		this.graphs[index+1].resampleSet = this.graphs[index].resampleSet;
-		this.data[this.graphs[index].resampleSet] = [];
-		this.graphs[index+1].addResampleCategory(this.graphs[index].resampleSet);
+		//set variables to distinguish resampling graph as special type
+		this.graphs[0].isResamplingGraph = true;
+		this.graphs[0].resampleSet = "***resampleSet-"+graphCollection.nextResampleSetNumber++;
+		this.data[this.graphs[0].resampleSet] = [];
+		this.graphs[0].addCategory(this.graphs[0].resampleSet);
 		
 		this.setH(this.calcGraphHeight());
 	},
@@ -275,15 +271,19 @@ GraphCollection.prototype = {
 		var max = -Infinity, 
 				min = Infinity;
 		this.graphs.forEach(function(graph){
-			if (graph.xMax > max) max = graph.xMax
-			if (graph.xMin < min) min = graph.xMin
+			if(!graph.isResamplingGraph){
+				if (graph.xMax > max) max = graph.xMax
+				if (graph.xMin < min) min = graph.xMin
+			}
 		});
 		this.graphs.forEach(function(graph){
-			if (min > 1000)
-				min = Math.floor(min/1000)*1000;
-			
-			if (!graph.customScale || graph.xMin < graph.scaleMin || graph.xMax > graph.scaleMax)
-				graph.setXScale(Math.floor(min), Math.ceil(max)+0.1);
+			if(!graph.isResamplingGraph){
+				if (min > 1000)
+					min = Math.floor(min/1000)*1000;
+				
+				if (!graph.customScale || graph.xMin < graph.scaleMin || graph.xMax > graph.scaleMax)
+					graph.setXScale(Math.floor(min), Math.ceil(max)+0.1);
+			}
 		});
 	},
 	
@@ -499,10 +499,10 @@ function Graph(graphCollection){
 	
 	
 	this.isResamplingGraph = false;
-	this.resamplingFrom = null;
-	this.resamplingTo = null;
+	this.population1 = null;
+	this.population2 = null;
 	this.resampleSet = null;
-	this.resamplingHowMany = 1000;
+	this.resamplingIterations = 1000;
 }
 
 Graph.prototype = {	

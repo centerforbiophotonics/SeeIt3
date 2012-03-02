@@ -591,11 +591,11 @@ function constructVis(){
 					return false;
 			})
 			
-	//Enable Resampling Mode
+	//Add a Resampling Graph
 	var resamplingPanel = vis.add(pv.Panel)
 		.events("all")
 		.cursor("pointer")
-		.title("Toggle Resampling Testing")
+		.title("Add a Resampling Graph")
 		.height(30)
 		.width(function() {
 			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
@@ -624,12 +624,8 @@ function constructVis(){
 				return false;
 		})
 		.event("click", function(){
-			//graphCollection.graphs.forEach(function(graph){
-				//graph.customScale = false;
-				//graph.fitScaleToData = false;
-			//});
-			//graphCollection.scaleAllGraphsToFit();
-			//vis.render();
+			graphCollection.addResamplingGraph();
+			constructVis();
 		})
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
@@ -651,12 +647,8 @@ function constructVis(){
 		.cursor("pointer")
 		.title("Toggle Resampling Testing")
 		.event("click", function(){
-			//graphCollection.graphs.forEach(function(graph){
-				//graph.customScale = false;
-				//graph.fitScaleToData = false;
-			//});
-			//graphCollection.scaleAllGraphsToFit();
-			//vis.render();
+			graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+			constructVis();
 		})
 		.visible(function() {
 			if (graphCollection.buttonIcon)
@@ -912,8 +904,7 @@ function closeColorPickers(){
 	} 
 }
 
-		  
-		  
+
 function constructGraphPanel(graph, index){
 	var graphPanel = vis.add(pv.Panel)
 		.top(function(){return graph.h*index})
@@ -975,7 +966,7 @@ function constructGraphPanel(graph, index){
 		.events("all")
 		.title("Remove graph")
 		.visible(function(){
-			return !graph.isSamplingGraph && !graph.isResamplingGraph;
+			return !graph.isSamplingGraph;
 		})
 		.event("click", function(){
 			graphCollection.removeGraph(graph);
