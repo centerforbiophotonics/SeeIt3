@@ -173,8 +173,14 @@ GraphCollection.prototype = {
 		this.graphs.splice(index+1,0,new Graph(this));
 		
 		//set variables to distinguish sample graph as special type
+		//set variables to distinguish sample graph as special type
 		this.graphs[index+1].isResamplingGraph = true;
-		this.graphs[index+1].resamplingFrom = index;
+		this.graphs[index+1].resamplingFrom = this.graphs[index];
+		this.graphs[index].resamplingTo = this.graphs[index+1];
+		this.graphs[index].resampleSet = "***resampleSet-"+graphCollection.nextResampleSetNumber++;
+		this.graphs[index+1].resampleSet = this.graphs[index].resampleSet;
+		this.data[this.graphs[index].resampleSet] = [];
+		this.graphs[index+1].addResampleCategory(this.graphs[index].resampleSet);
 		
 		this.setH(this.calcGraphHeight());
 	},
@@ -234,7 +240,7 @@ GraphCollection.prototype = {
 	
 	updateMenuOptions: function(){
 		$('#radio'+this.graphs[this.selectedGraphIndex].groupingMode).attr('checked',true);
-		$("#"+this.graphs[this.selectedGraphIndex].testMode).attr('checked',true);
+		$("#sampling").attr('checked', this.graphs[this.selectedGraphIndex].testMode == "sampling");
 		$('#checkboxHistogram').attr('checked',this.graphs[this.selectedGraphIndex].histogram);
 		$('#checkboxAdvBP').attr('checked',this.graphs[this.selectedGraphIndex].advBoxPlot);
 		$('#checkboxSDLine').attr('checked',this.graphs[this.selectedGraphIndex].sdLine);
@@ -494,6 +500,9 @@ function Graph(graphCollection){
 	
 	this.isResamplingGraph = false;
 	this.resamplingFrom = null;
+	this.resamplingTo = null;
+	this.resampleSet = null;
+	this.resamplingHowMany = 1000;
 }
 
 Graph.prototype = {	

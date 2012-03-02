@@ -590,6 +590,96 @@ function constructVis(){
 				else
 					return false;
 			})
+			
+	//Enable Resampling Mode
+	var resamplingPanel = vis.add(pv.Panel)
+		.events("all")
+		.cursor("pointer")
+		.title("Toggle Resampling Testing")
+		.height(30)
+		.width(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 120;
+			}else if (!graphCollection.buttonIcon){
+				return 90;
+			}else if (!graphCollection.buttonText){
+				return 32;
+			}
+		})
+		.left(function() {
+			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				return 705;
+			}else if (!graphCollection.buttonIcon){
+				return 522;
+			}else if (!graphCollection.buttonText){
+				return 185;
+			}
+		})
+		.top(-31)
+		.lineWidth(1)
+		.visible(function() {
+			if (graphCollection.advancedUser)
+				return true;
+			else
+				return false;
+		})
+		.event("click", function(){
+			//graphCollection.graphs.forEach(function(graph){
+				//graph.customScale = false;
+				//graph.fitScaleToData = false;
+			//});
+			//graphCollection.scaleAllGraphsToFit();
+			//vis.render();
+		})
+		.event("mouseover", function(d){
+			this.strokeStyle("black");
+			this.render();
+		})
+		.event("mouseout", function(d){ 
+			this.strokeStyle(pv.rgb(0,0,0,0));
+			this.render();
+		})
+		
+	resamplingPanel.add(pv.Image)
+		.url(function(){
+			return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle.png"
+		})
+		.width(30)
+		.height(30)
+		.top(1)
+		.left(0)
+		.cursor("pointer")
+		.title("Toggle Resampling Testing")
+		.event("click", function(){
+			//graphCollection.graphs.forEach(function(graph){
+				//graph.customScale = false;
+				//graph.fitScaleToData = false;
+			//});
+			//graphCollection.scaleAllGraphsToFit();
+			//vis.render();
+		})
+		.visible(function() {
+			if (graphCollection.buttonIcon)
+				return true;
+			else
+				return false;
+		})
+		.anchor("left").add(pv.Label)
+			.left(function(){
+				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+					return 2;
+				else
+				 return 32;
+			})
+			.text("Resampling")
+			.font(fontString)
+			.textStyle(function(){return "black"})
+			.visible(function() {
+				if (graphCollection.buttonText)
+					return true;
+				else
+					return false;
+			})
 	
 	constructDatasetPanel();
 	

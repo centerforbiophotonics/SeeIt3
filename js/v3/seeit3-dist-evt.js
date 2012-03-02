@@ -83,8 +83,8 @@ jQuery('#groupingOptions').change(function(event) {
   event.stopPropagation();
 });
 
-jQuery('#testingOptions').change(function(event) {
-	var testMode = $('input:radio[name=test]:checked').attr('id');
+jQuery('#sampling').change(function(event) {
+	var testMode = $('#sampling').attr('checked') ? "sampling" : "noTest";
 	graphCollection.graphs[graphCollection.selectedGraphIndex].testMode = testMode;
 	
 	if (graphCollection.graphs[graphCollection.selectedGraphIndex].testMode != "sampling")
@@ -105,8 +105,8 @@ jQuery('#testingOptions').change(function(event) {
 		graphCollection.addSamplingGraph(graphCollection.selectedGraphIndex);
 		graphCollection.graphs[graphCollection.selectedGraphIndex+1].updateSample(graphCollection.graphs[graphCollection.selectedGraphIndex+1].samplingHowMany);
 	}
-	else if (testMode =="resampling")
-		graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+	//else if (testMode =="resampling")
+	//	graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
 	constructVis();
 });
 
