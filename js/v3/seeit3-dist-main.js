@@ -646,9 +646,9 @@ function constructVis(){
 	resamplingPanel.add(pv.Image)
 		.url(function(){
 			if (graphCollection.resamplingEnabled)
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle-OFF.png"
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle-ON.png"
 			else
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle.png"
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle-OFF.png"
 			
 		})
 		.width(30)
