@@ -110,6 +110,7 @@ function constructVis(){
 			}
 			for(var i=0; i<graphCollection.graphs.length;i++){
 				positionAndSizeLegendPanel(graphCollection.graphs[i],i);
+				positionPopulationLabels();
 				positionAndSizeSampleOptions(graphCollection.graphs[i],i);
 			}
 			vis.render();
@@ -724,6 +725,13 @@ function constructVis(){
 				$('#sampleOptions'+i).hide();
 		}
 	})
+	
+	//resampling population labels
+	$('.populationLabels').remove();
+	if(graphCollection.resamplingEnabled){
+		constructPopulationLabels();
+		positionPopulationLabels();
+	}
 }
 
 function constructDatasetPanel(){
@@ -914,6 +922,65 @@ function legPanDragStop(event){
 	document.removeEventListener("mouseup",   legPanDragStop, true);
 }
 
+function popLabDragStart(event, popNum){
+	if (touch.touch){
+		touch.touch = false;
+		return;
+	}
+	
+	event.preventDefault();
+	
+	dragObj = new Object();
+	dragObj.popNum = popNum;
+	
+	$('#dragFeedback').html("Population "+popNum);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.pageX)
+								 .css('top',event.pageY)
+								 .css('z-index', 10000);
+	
+	document.body.style.cursor="move";
+	document.addEventListener("mousemove", popLabDragGo,   true);
+	document.addEventListener("mouseup",   popLabDragStop, true);
+}
+
+function popLabDragGo(event){
+	event.preventDefault();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.pageX)
+								 .css('top',event.pageY)
+								 .css('z-index', 10000);
+}
+
+function popLabDragStop(event){
+	$('#dragFeedback').hide();
+	
+	var curX = event.pageX -
+						 $('span').offset().left -
+						 graphCollection.padLeft + 14;
+							
+	var curY = event.pageY - 
+						 $('span').offset().top - 
+						 graphCollection.padTop;
+						 
+	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
+		var which;
+		if (graphCollection.graphs.length > 4)
+			which = parseInt(curY/graphCollection.defaultGraphHeight);
+		else
+			which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
+			
+			graphCollection.graphs[0]["population"+dragObj.popNum] = graphCollection.graphs[which];
+	} 
+	constructVis();
+	
+	document.body.style.cursor="default";
+	document.removeEventListener("mousemove", popLabDragGo,   true);
+	document.removeEventListener("mouseup",   popLabDragStop, true);
+}
+
+
 function closeColorPickers(){
 	var picker = 0;
 	for (var i=0; i<exampleSpreadsheets.length; i++){
@@ -1091,15 +1158,28 @@ function constructGraphPanel(graph, index){
 }
 
 function constructResamplingGraph(graphPanel, graph, index){
-	/* X-axis label */
-	graphPanel.add(pv.Label)
-		.right(function(){return graph.w/2})
-		.bottom(10)
-		.textAlign("center")
-		.textAngle(0)
-		.textBaseline("bottom")
-		.text("Difference between the Means of Samples from Population 1 and Population 2")
-		.font(fontString)
+	
+	if (graphCollection.graphs.indexOf(graph.population1) == 0 || graphCollection.graphs.indexOf(graph.population2) == 0){
+		/* Assignment Instructons*/
+		graphPanel.add(pv.Label)
+			.left(function(){return -20})
+			.top(50)
+			.textAlign("left")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("Drag the labels above to the graphs you wish to represent your populations.")
+			.font(fontString)
+	} else {
+		/* X-axis label */
+		graphPanel.add(pv.Label)
+			.right(function(){return graph.w/2})
+			.bottom(10)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("Difference between the Means of Samples from Population 1 and Population 2")
+			.font(fontString)
+	}
 }
 
 function constructSamplingGraph(graphPanel, graph, index){	
@@ -2923,5 +3003,63 @@ function positionAndSizeLegendPanel(graph,index){
 										.css('left',left+"px")
 										.css('width',graphCollection.w-50)
 										.css('max-width',graphCollection.w-40)
+										.css('z-index', 1);
+}
+
+function constructPopulationLabels(){
+	var popLab1 = "<div class=\"populationLabels\" id=\"population1\""+
+								"style=\"color:black; background-color:white;\""+
+								"onmouseover=\"javascript: this.className='populationLabelsHilight'\""+
+								"onmouseout=\"javascript: this.className='populationLabels'\""+
+								"onmousedown=\"javascript:popLabDragStart(event, 1)\""+
+								"ontouchstart=\"popLabTouchStart(event, 1)\""+
+								"ontouchmove=\"popLabTouchMove(event, 1)\""+
+								"ontouchend=\"popLabTouchEnd(event, 1)\""+
+								">Population 1</div>"
+		
+	var popLab2 = "<div class=\"populationLabels\" id=\"population2\""+
+								"style=\"color:black; background-color:white;\""+
+								"onmouseover=\"javascript: this.className='populationLabelsHilight'\""+
+								"onmouseout=\"javascript: this.className='populationLabels'\""+
+								"onmousedown=\"javascript:popLabDragStart(event, 2)\""+
+								"ontouchstart=\"popLabTouchStart(event, 2)\""+
+								"ontouchmove=\"popLabTouchMove(event, 2)\""+
+								"ontouchend=\"popLabTouchEnd(event, 2)\""+
+								">Population 2</div>"
+		
+	$('body').prepend(popLab1);
+	$('body').prepend(popLab2);
+}
+
+function positionPopulationLabels(){
+	var graph1 = graphCollection.graphs[0].population1;
+
+	var top1 = $('span').offset().top +
+						graphCollection.padTop +
+						graph1.h * (graphCollection.graphs.indexOf(graph1)) +
+						10;
+						
+	var left1 = $('span').offset().left +
+						 graphCollection.padLeft + 20;
+	
+	$('#population1').css('top', top1+"px")
+										.css('left',left1+"px")
+										.css('z-index', 1);
+										
+	var graph2 = graphCollection.graphs[0].population2;
+
+	var top2 = $('span').offset().top +
+						graphCollection.padTop +
+						graph2.h * (graphCollection.graphs.indexOf(graph2)) +
+						10;
+						
+	var left2 = $('span').offset().left +
+						 graphCollection.padLeft + 20 +
+						 (graphCollection.graphs.indexOf(graph1) == graphCollection.graphs.indexOf(graph2) ?
+								100 : 
+								0);
+	
+	$('#population2').css('top', top2+"px")
+										.css('left',left2+"px")
 										.css('z-index', 1);
 }

@@ -176,6 +176,7 @@ GraphCollection.prototype = {
 		this.graphs.splice(0,0,new Graph(this));
 		
 		//set variables to distinguish resampling graph as special type
+		this.graphs[0].testMode = "resampling";
 		this.graphs[0].isResamplingGraph = true;
 		this.graphs[0].resampleSet = "***resampleSet-"+graphCollection.nextResampleSetNumber++;
 		this.data[this.graphs[0].resampleSet] = [];
@@ -186,13 +187,26 @@ GraphCollection.prototype = {
 	
 	removeGraph: function(graph){
 		if (graph.testMode == "sampling"){
+			if (this.resamplingEnabled){
+				if (this.graphs.indexOf(graph)+1 == this.graphs.indexOf(this.graphs[0].population1))
+					this.graphs[0].population1 = this.graphs[0];
+				if (this.graphs.indexOf(graph)+1 == this.graphs.indexOf(this.graphs[0].population2))
+					this.graphs[0].population2 = this.graphs[0];
+			}
 			this.graphs.splice(this.graphs.indexOf(graph)+1,1);
 			delete graphCollection.data[graph.sampleSet];
 		} else if (graph.testMode == "resampling") {
-			this.graphs.splice(0,1);
 			delete graphCollection.data[graph.resampleSet];
 		}
-			
+		
+		//reassign population for resampling if graph being removed was assigned as a population
+		if (this.resamplingEnabled){
+			if (this.graphs.indexOf(graph) == this.graphs.indexOf(this.graphs[0].population1))
+				this.graphs[0].population1 = this.graphs[0];
+			if (this.graphs.indexOf(graph) == this.graphs.indexOf(this.graphs[0].population2))
+				this.graphs[0].population2 = this.graphs[0];
+		}
+		
 		this.graphs.splice(this.graphs.indexOf(graph),1);
 		
 		this.setH(this.calcGraphHeight());
@@ -220,6 +234,7 @@ GraphCollection.prototype = {
 			g.w = graphCollection.w;
 			g.setXScale();
 			positionAndSizeLegendPanel(g,i);
+			positionPopulationLabels();
 			positionAndSizeSampleOptions(g,i);
 		});
 	},
@@ -503,8 +518,8 @@ function Graph(graphCollection){
 	
 	
 	this.isResamplingGraph = false;
-	this.population1 = null;
-	this.population2 = null;
+	this.population1 = this;			//Graph Object
+	this.population2 = this;			//Graph Object
 	this.resampleSet = null;
 	this.resamplingIterations = 1000;
 }

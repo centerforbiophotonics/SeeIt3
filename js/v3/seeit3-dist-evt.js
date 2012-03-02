@@ -24,6 +24,7 @@ $(window).resize(function() {
 		positionWorksheetDescriptionPopup();
 		graphCollection.graphs.forEach(function(graph,i){
 			positionAndSizeLegendPanel(graph,i);
+			positionPopulationLabels();
 			positionAndSizeSampleOptions(graph,i);
 		})
 	}
@@ -91,9 +92,7 @@ jQuery('#sampling').change(function(event) {
 		graphCollection.graphs[graphCollection.selectedGraphIndex].samplingData = [];
 	
 	if (graphCollection.graphs[graphCollection.selectedGraphIndex+1] != undefined){
-		if (graphCollection.graphs[graphCollection.selectedGraphIndex+1].isSamplingGraph ||
-				graphCollection.graphs[graphCollection.selectedGraphIndex+1].isResamplingGraph){
-			
+		if (graphCollection.graphs[graphCollection.selectedGraphIndex+1].isSamplingGraph){
 			delete graphCollection.data[graphCollection.graphs[graphCollection.selectedGraphIndex].sampleSet];
 			graphCollection.graphs[graphCollection.selectedGraphIndex].sampleSet = null;
 			graphCollection.graphs[graphCollection.selectedGraphIndex].samplingTo = null;

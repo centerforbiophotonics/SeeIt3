@@ -123,6 +123,22 @@ p#loadingMsg {
 	margin-bottom:1px;
 }
 
+.populationLabels {
+	position: absolute;
+	padding: 1px;
+	border: 2px transparent solid;
+	cursor: move;
+	margin-bottom:1px;
+}
+
+.populationLabelsHilight {
+	position: absolute;
+	padding: 1px;
+	border: 2px #000000 solid;
+	cursor: move;
+	margin-bottom:1px;
+}
+
 #displayOptions {
 	background: #ffffff;
 	border:1px solid black;
