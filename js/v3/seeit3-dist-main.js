@@ -4,6 +4,7 @@ var vis = {};
 var touch = new Touch();
 var fontString = "bold 14px arial";
 var dragging = false;
+var updateTimer = null;
 
 var exampleSpreadsheets = [
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
@@ -112,6 +113,7 @@ function constructVis(){
 				positionAndSizeLegendPanel(graphCollection.graphs[i],i);
 				positionPopulationLabels();
 				positionAndSizeSampleOptions(graphCollection.graphs[i],i);
+				positionSampleButton(graphCollection.graphs[i],i);
 			}
 			vis.render();
 		})
@@ -724,6 +726,10 @@ function constructVis(){
 			else
 				$('#sampleOptions'+i).hide();
 		}
+		if (graph.testMode == "sampling"){
+			constructSampleButton(graph,i);
+			positionSampleButton(graph,i);
+		}
 	})
 	
 	//resampling population labels
@@ -1107,11 +1113,13 @@ function constructGraphPanel(graph, index){
 		})
 		.strokeStyle(function(){
 			if (graphCollection.editModeEnabled)
-				return "red"
-			else if (graph.testMode == "sampling" || graph.testMode == "resampling")
-				return "lightgrey"
+				return "red";
+			else if (graph.testMode == "sampling" || 
+							 graph.testMode == "resampling" || 
+							 (graph.isSamplingGraph && graph.sampleNumber < graph.samplingFrom.samplingToHowMany))
+				return "lightgrey";
 			else
-				return "black"
+				return "black";
 		})
 		
 	graphPanel.add(pv.Rule)
@@ -2737,7 +2745,7 @@ function constructRegularGraph(graphPanel, graph, index){
 				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling")
 					return jQuery('#checkboxBWView').is(':checked') ? "grey": "red";
 				else if (graph.testMode == "sampling" &&
-								 sampleContainsData(graphCollection.data[graph.sampleSet], d, graph))
+								 sampleContainsData(graphCollection.data[graph.selectedSample], d, graph))
 					return jQuery('#checkboxBWView').is(':checked') ? "grey": "blue";
 				else
 					return pointStrokeStyle(d.set);
@@ -2745,7 +2753,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.lineWidth(function(d){
 				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling") return 4;
 				else if (graph.testMode == "sampling" &&
-								 sampleContainsData(graphCollection.data[graph.sampleSet], d, graph)) return 4;
+								 sampleContainsData(graphCollection.data[graph.selectedSample], d, graph)) return 4;
 				else return 2;
 			})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
@@ -2753,20 +2761,20 @@ function constructRegularGraph(graphPanel, graph, index){
 				if (graphCollection.editModeEnabled == false && graph.testMode != "sampling")
 					graphCollection.selectedLabel = d.label;
 				else if (graph.testMode == "sampling"){
-					if (!sampleContainsData(graphCollection.data[graph.sampleSet], d, graph)) {
-						graphCollection.data[graph.sampleSet].push(
+					if (!sampleContainsData(graphCollection.data[graph.selectedSample], d, graph)) {
+						graphCollection.data[graph.selectedSample].push(
 																		{"set":d.set,
 																		 "label":d.label,
 																		 "value":graph.x.invert(d.xReal)});
-						graph.samplingTo.samplingHowMany++;
-						$("#sampleN"+(index+1)).val(graph.samplingTo.samplingHowMany);
+						graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany++;
+						$("#sampleN"+(index+1)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
 																	 
 					} else {
-						graphCollection.data[graph.sampleSet].splice(sampleIndexOfData(graphCollection.data[graph.sampleSet], d, graph),1);
-						graph.samplingTo.samplingHowMany--;
-						$("#sampleN"+(index+1)).val(graph.samplingTo.samplingHowMany);
+						graphCollection.data[graph.selectedSample].splice(sampleIndexOfData(graphCollection.data[graph.selectedSample], d, graph),1);
+						graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany--;
+						$("#sampleN"+(index+1)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
 					}
-					graph.samplingTo.updateInsufDataFlags();
+					graph.samplingTo[graph.selectedSampleNumber-1].updateInsufDataFlags();
 				}
 				vis.render();
 			})
@@ -2827,12 +2835,12 @@ function constructRegularGraph(graphPanel, graph, index){
 					dragLabel.visible(false);
 					
 					if (graph.testMode == "sampling" &&
-							sampleContainsData(graphCollection.data[graph.sampleSet], d, graph)){
-						graphCollection.data[graph.sampleSet]
-													 .splice(sampleIndexOfData(graphCollection.data[graph.sampleSet], d, graph),1);
-						graph.samplingTo.updateInsufDataFlags();
-						graph.samplingTo.samplingHowMany--;
-						$("#sampleN"+(index+1)).val(graph.samplingTo.samplingHowMany);
+							sampleContainsData(graphCollection.data[graph.selectedSample], d, graph)){
+						graphCollection.data[graph.selectedSample]
+													 .splice(sampleIndexOfData(graphCollection.data[graph.selectedSample], d, graph),1);
+						graph.samplingTo[graph.selectedSampleNumber-1].updateInsufDataFlags();
+						graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany--;
+						$("#sampleN"+(index+1)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
 					}
 					
 					
@@ -2908,15 +2916,69 @@ function constructRegularGraph(graphPanel, graph, index){
 			.font(fontString)
 	}
 	
+	
+	
+}
+
+function constructSampleButton(graph, index){
+	console.log("contructing Sample Button");
+	$('body').prepend("<div class=\"sampleOptions\" id=\"sampleButton"+index+"\"></div>");
+	
+	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
+							 "<td><input type=\"button\" value=\"Sample\""+
+							 "onmousedown=\"javascript:enterUpdateLoop("+index+")\"></td></tr></table>";//+
+							 //"onmouseup=\"javascript:exitUpdateLoop()\"></td></tr></table>";
+							 //"onclick=\"javascript:updateMultipleSamples("+index+")\">";
+							 
+	$('#sampleButton'+index).html(string);
+	
+	if (graph.testMode != "sampling")
+		$('#sampleButton'+index).hide();
+}
+
+function positionSampleButton(graph, index){
+	var top = $('span').offset().top +
+						graphCollection.padTop +
+						graph.h * (index+1) - 34;
+						
+	var left = $('span').offset().left +
+						 graphCollection.padLeft +
+						 graph.w - $('#sampleButton'+index).width() - 30;
+	
+	$('#sampleButton'+index).css('top', top+"px")
+										.css('left',left+"px")
+										//.css('width',graphCollection.w-50)
+										//.css('max-width',graphCollection.w-40)
+										.css('z-index', 1);
+}
+
+function enterUpdateLoop(index){
+	console.log("enter");
+	updateMultipleSamples(index);
+	document.addEventListener("mouseup", exitUpdateLoop, true);
+}
+
+function updateMultipleSamples(sourceIndex){
+	for (var i =1; i <= graphCollection.graphs[sourceIndex].samplingToHowMany; i++)
+		updateSample("sampleN"+(sourceIndex+i),sourceIndex+i);
+	updateTimer = setTimeout("updateMultipleSamples("+sourceIndex+")", 1000);
+}
+
+function exitUpdateLoop(){
+	console.log("exit");
+	clearTimeout(updateTimer);
+	document.removeEventListener("mouseup", exitUpdateLoop, true);
 }
 
 function constructSampleOptionsMenu(graph, index){
 	$('body').prepend("<div class=\"sampleOptions\" id=\"sampleOptions"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
-							 "<td><input type=\"button\" value=\"Sample\""+
-							 "onclick=\"javascript:updateSample('sampleN"+index+"',"+index+")\"></td>"+
-							 "<td><label for=\"sampleN"+index+"\">N = </label>"+
+							 "<td><input type=\"button\" value=\"Show\""+
+							 "onclick=\"javascript:setHighLightedSample("+index+")\"></td>"+
+							// "<td><input type=\"button\" value=\"Sample\""+
+							// "onclick=\"javascript:updateSample('sampleN"+index+"',"+index+")\"></td>"+
+							 "<td nowrap><label for=\"sampleN"+index+"\">N = </label>"+
 							 "<input align=\"right\" type=\"text\" id=\"sampleN"+index+"\""+
 								"size=\"2\""+
 								"onchange=\"javascript:updateSample('sampleN"+index+"',"+index+")\""+
@@ -2955,6 +3017,13 @@ function updateSample(textbox, index){
 	
 	vis.render();
 
+}
+
+function setHighLightedSample(index){
+	graphCollection.graphs[index].samplingFrom.selectedSample = graphCollection.graphs[index].sampleSet;
+	graphCollection.graphs[index].samplingFrom.selectedSampleNumber = graphCollection.graphs[index].sampleNumber;
+	
+	vis.render();
 }
 
 function constructLegendPanel(graph, index){
@@ -3001,7 +3070,7 @@ function positionAndSizeLegendPanel(graph,index){
 	
 	$('#legend'+index).css('top', top+"px")
 										.css('left',left+"px")
-										.css('width',graphCollection.w-50)
+										.css('width',graphCollection.w-50 -(graph.testMode=="sampling"?50:0))
 										.css('max-width',graphCollection.w-40)
 										.css('z-index', 1);
 }

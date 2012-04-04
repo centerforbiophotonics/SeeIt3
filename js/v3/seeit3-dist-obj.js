@@ -157,17 +157,19 @@ GraphCollection.prototype = {
 		this.setH(this.calcGraphHeight());
 	},
 	
-	addSamplingGraph: function(index){
-		this.graphs.splice(index+1,0,new Graph(this));
+	addSamplingGraph: function(index, number){
+		this.graphs.splice(index+number,0,new Graph(this));
 		
 		//set variables to distinguish sample graph as special type
-		this.graphs[index+1].isSamplingGraph = true;
-		this.graphs[index+1].samplingFrom = this.graphs[index];
-		this.graphs[index].samplingTo = this.graphs[index+1];
-		this.graphs[index].sampleSet = "***sampleSet-"+graphCollection.nextSampleSetNumber++;
-		this.graphs[index+1].sampleSet = this.graphs[index].sampleSet;
-		this.data[this.graphs[index].sampleSet] = [];
-		this.graphs[index+1].addSampleCategory(this.graphs[index].sampleSet);
+		this.graphs[index+number].isSamplingGraph = true;
+		this.graphs[index+number].samplingFrom = this.graphs[index];
+		
+		this.graphs[index].samplingTo[number-1] = this.graphs[index+number];
+		this.graphs[index].sampleSet[number-1] = "***sampleSet-"+graphCollection.nextSampleSetNumber++;
+		this.graphs[index+number].sampleSet = this.graphs[index].sampleSet[number-1];
+		this.data[this.graphs[index].sampleSet[number-1]] = [];
+		this.graphs[index+number].addSampleCategory(this.graphs[index].sampleSet[number-1]);
+		this.graphs[index+number].sampleNumber = number;
 		
 		this.setH(this.calcGraphHeight());
 	},
@@ -236,6 +238,7 @@ GraphCollection.prototype = {
 			positionAndSizeLegendPanel(g,i);
 			positionPopulationLabels();
 			positionAndSizeSampleOptions(g,i);
+			positionSampleButton(g,i);
 		});
 	},
 	
@@ -276,6 +279,9 @@ GraphCollection.prototype = {
 		$('#checkboxMean').attr('checked', this.graphs[this.selectedGraphIndex].showMean);
 		$('#checkboxMedian').attr('checked', this.graphs[this.selectedGraphIndex].showMedian);
 		$('#checkboxMode').attr('checked', this.graphs[this.selectedGraphIndex].showMode);
+		
+		$('#sampling').attr('checked', this.graphs[this.selectedGraphIndex].testMode == "sampling");
+		$('#numSamples').val(this.graphs[this.selectedGraphIndex].samplingToHowMany+"");
 	},
 	
 	selectAUserDefPartition: function(graphIndex, partIndex){
@@ -511,10 +517,15 @@ function Graph(graphCollection){
 	this.testMode = "noTest";
 	
 	this.isSamplingGraph = false;
-	this.samplingFrom = null;			//Graph Object
-	this.samplingTo = null;				//Graph Object
-	this.sampleSet = null;				//String sample set name
-	this.samplingHowMany = 10;
+	this.samplingFrom = null;			//Graph Object, used by sample graph
+	this.samplingTo = [];				//Graph Object Array, used by source graph
+	this.samplingToHowMany = 1;		//Used by source graph
+	this.sampleSet = [];					//String Array in source graph, String in sample graph
+	this.samplingHowMany = 10;		//Used by sample graph
+	this.sampleNumber = 1;
+	this.selectedSample  = null;
+	this.selectedSampleNumber = 1;
+	
 	
 	
 	this.isResamplingGraph = false;
@@ -533,12 +544,22 @@ Graph.prototype = {
 			newMin = min;
 		
 		if (this.fitScaleToData) {
-			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
+			if (this.isSamplingGraph == false)
+				this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
+			else 
+				this.x = pv.Scale.linear(Math.floor(this.samplingFrom.xMin), Math.ceil(this.samplingFrom.xMax)).range(0, this.w);	
 		} else {
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
 			this.scaleMin = newMin;
 			this.scaleMax = newMax;
 		}
+		
+		if (this.testMode == "sampling")
+			for (var i=0; i<this.samplingToHowMany; i++){
+				this.samplingTo[i].fitScaleToData = this.fitScaleToData;
+				this.samplingTo[i].setXScale(min,max);
+				
+			}
 	},
 	
 	addCategory: function(category){
