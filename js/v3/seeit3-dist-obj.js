@@ -237,8 +237,9 @@ GraphCollection.prototype = {
 			g.setXScale();
 			positionAndSizeLegendPanel(g,i);
 			positionPopulationLabels();
-			positionAndSizeSampleOptions(g,i);
+			positionSampleOptions(g,i);
 			positionSampleButton(g,i);
+			positionResampleControlPanel(g,i);
 		});
 	},
 	

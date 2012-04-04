@@ -112,8 +112,9 @@ function constructVis(){
 			for(var i=0; i<graphCollection.graphs.length;i++){
 				positionAndSizeLegendPanel(graphCollection.graphs[i],i);
 				positionPopulationLabels();
-				positionAndSizeSampleOptions(graphCollection.graphs[i],i);
+				positionSampleOptions(graphCollection.graphs[i],i);
 				positionSampleButton(graphCollection.graphs[i],i);
+				positionResampleControlPanel(graphCollection.graphs[i],i);
 			}
 			vis.render();
 		})
@@ -717,10 +718,11 @@ function constructVis(){
 	
 	//remove and redraw sample options
 	$('.sampleOptions').remove();
+	$('.resampleOptions').remove();
 	graphCollection.graphs.forEach(function(graph,i){
 		if (graph.isSamplingGraph){
 			constructSampleOptionsMenu(graph,i);
-			positionAndSizeSampleOptions(graph,i);
+			positionSampleOptions(graph,i);
 			if (graph.samplingFrom.includedCategories.length > 0)
 				$('#sampleOptions'+i).show();
 			else
@@ -730,6 +732,11 @@ function constructVis(){
 			constructSampleButton(graph,i);
 			positionSampleButton(graph,i);
 		}
+		if (graph.testMode == "resampling"){
+			constructResampleControlPanel(graph,i);
+			positionResampleControlPanel(graph,i);
+		}
+		
 	})
 	
 	//resampling population labels
@@ -1115,7 +1122,7 @@ function constructGraphPanel(graph, index){
 			if (graphCollection.editModeEnabled)
 				return "red";
 			else if (graph.testMode == "sampling" || 
-							 graph.testMode == "resampling" || 
+							 //graph.testMode == "resampling" || 
 							 (graph.isSamplingGraph && graph.sampleNumber < graph.samplingFrom.samplingToHowMany))
 				return "lightgrey";
 			else
@@ -2991,7 +2998,7 @@ function constructSampleOptionsMenu(graph, index){
 	
 }
 
-function positionAndSizeSampleOptions(graph,index){
+function positionSampleOptions(graph,index){
 		var top = $('span').offset().top +
 							graphCollection.padTop +
 							graph.h * (index+1) - 34;
@@ -3024,6 +3031,49 @@ function setHighLightedSample(index){
 	graphCollection.graphs[index].samplingFrom.selectedSampleNumber = graphCollection.graphs[index].sampleNumber;
 	
 	vis.render();
+}
+
+function constructResampleControlPanel(graph, index){
+	$('body').prepend("<div class=\"resampleOptions\" id=\"resampleOptions"+index+"\"></div>");
+	
+	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
+							 "<td><input type=\"button\" value=\"Start\" id=\"resampleStartButton"+index+"\""+
+							 "onclick=\"javascript:toggleResampling()\"></td>"+
+							 "<td nowrap><label for=\"resampleN"+index+"\">Iterations = </label>"+
+							 "<input align=\"right\" type=\"text\" id=\"resampleN"+index+"\""+
+								"size=\"4\""+
+								"onchange=\"javascript:updateResample('resampleN"+index+"',"+index+")\""+
+								"value='"+graph.resamplingIterations+"'></td>"+
+							 "</tr></table>";
+							
+							 
+	$('#resampleOptions'+index).html(string);
+	
+	if (graph.population1 == graph ||
+		  graph.population2 == graph)
+		$('#resampleOptions'+index).hide();
+}
+
+function positionResampleControlPanel(graph, index){
+	var top = $('span').offset().top +
+						graphCollection.padTop +
+						graph.h * (index+1) - 34;
+						
+	var left = $('span').offset().left +
+						 graphCollection.padLeft +
+						 graph.w - $('#resampleOptions'+index).width() + 15;
+	
+	$('#resampleOptions'+index).css('top', top+"px")
+										.css('left',left+"px")
+										.css('z-index', 1);
+}
+
+function toggleResampling(){
+	
+}
+
+function updateResample(textbox, index){
+	
 }
 
 function constructLegendPanel(graph, index){

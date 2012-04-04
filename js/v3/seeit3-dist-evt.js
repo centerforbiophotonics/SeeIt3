@@ -25,8 +25,9 @@ $(window).resize(function() {
 		graphCollection.graphs.forEach(function(graph,i){
 			positionAndSizeLegendPanel(graph,i);
 			positionPopulationLabels();
-			positionAndSizeSampleOptions(graph,i);
+			positionSampleOptions(graph,i);
 			positionSampleButton(graph,i);
+			positionResampleControlPanel(graph,i);
 		})
 	}
 });

@@ -268,4 +268,11 @@ div.sampleOptions {
 	left:0px;
 }
 
+div.resampleOptions {
+	position:absolute;
+	overflow-x:hidden;
+	top:0px;
+	left:0px;
+}
+
 
