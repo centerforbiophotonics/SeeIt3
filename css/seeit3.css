@@ -6,6 +6,18 @@ body {
 	font: bold 14px arial;
 }
 
+.button{
+	border: 2px solid #000000;
+	background: #ffffff;
+	font : bold 14px arial;
+	cursor: pointer;
+}
+
+.textbox {
+	border: 2px solid #000000;
+	font : bold 14px arial;
+}
+
 #ellipseSliders {
   float:right;
   display:none;

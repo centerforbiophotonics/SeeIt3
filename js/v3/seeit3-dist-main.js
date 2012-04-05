@@ -709,12 +709,7 @@ function constructVis(){
 	
 	if (graphCollection.datasetsMenuShowing) resizeVis();
 	
-	//remove and redraw legends
-	$('.legend').remove();
-	graphCollection.graphs.forEach(function(graph,i){
-		constructLegendPanel(graph,i);
-		positionAndSizeLegendPanel(graph,i);
-	})
+	
 	
 	//remove and redraw sample options
 	$('.sampleOptions').remove();
@@ -745,6 +740,13 @@ function constructVis(){
 		constructPopulationLabels();
 		positionPopulationLabels();
 	}
+	
+	//remove and redraw legends
+	$('.legend').remove();
+	graphCollection.graphs.forEach(function(graph,i){
+		constructLegendPanel(graph,i);
+		positionAndSizeLegendPanel(graph,i);
+	})
 }
 
 function constructDatasetPanel(){
@@ -2932,14 +2934,14 @@ function constructSampleButton(graph, index){
 	$('body').prepend("<div class=\"sampleOptions\" id=\"sampleButton"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
-							 "<td><input type=\"button\" value=\"Sample\""+
+							 "<td><input type=\"button\" class=\"button\" value=\"Sample\""+
 							 "onmousedown=\"javascript:enterUpdateLoop("+index+")\"></td></tr></table>";//+
 							 //"onmouseup=\"javascript:exitUpdateLoop()\"></td></tr></table>";
 							 //"onclick=\"javascript:updateMultipleSamples("+index+")\">";
 							 
 	$('#sampleButton'+index).html(string);
 	
-	if (graph.testMode != "sampling")
+	if (graph.testMode != "sampling" || graph.includedCategories == 0)
 		$('#sampleButton'+index).hide();
 }
 
@@ -2968,7 +2970,7 @@ function enterUpdateLoop(index){
 function updateMultipleSamples(sourceIndex){
 	for (var i =1; i <= graphCollection.graphs[sourceIndex].samplingToHowMany; i++)
 		updateSample("sampleN"+(sourceIndex+i),sourceIndex+i);
-	updateTimer = setTimeout("updateMultipleSamples("+sourceIndex+")", 1000);
+	updateTimer = setTimeout("updateMultipleSamples("+sourceIndex+")", 1);
 }
 
 function exitUpdateLoop(){
@@ -2981,12 +2983,12 @@ function constructSampleOptionsMenu(graph, index){
 	$('body').prepend("<div class=\"sampleOptions\" id=\"sampleOptions"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
-							 "<td><input type=\"button\" value=\"Show\""+
+							 "<td><input type=\"button\" class=\"button\" value=\"Show Points\""+
 							 "onclick=\"javascript:setHighLightedSample("+index+")\"></td>"+
 							// "<td><input type=\"button\" value=\"Sample\""+
 							// "onclick=\"javascript:updateSample('sampleN"+index+"',"+index+")\"></td>"+
 							 "<td nowrap><label for=\"sampleN"+index+"\">N = </label>"+
-							 "<input align=\"right\" type=\"text\" id=\"sampleN"+index+"\""+
+							 "<input align=\"right\" type=\"text\" class =\"textbox\" id=\"sampleN"+index+"\""+
 								"size=\"2\""+
 								"onchange=\"javascript:updateSample('sampleN"+index+"',"+index+")\""+
 								"value='"+graph.samplingHowMany+"'></td>"+
@@ -3120,7 +3122,11 @@ function positionAndSizeLegendPanel(graph,index){
 	
 	$('#legend'+index).css('top', top+"px")
 										.css('left',left+"px")
-										.css('width',graphCollection.w-50 -(graph.testMode=="sampling"?50:0))
+										.css('width',graphCollection.w-40 -
+													(graph.testMode=="sampling"?
+														$('#sampleButton'+index).width() :
+														0
+													))
 										.css('max-width',graphCollection.w-40)
 										.css('z-index', 1);
 }
