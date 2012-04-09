@@ -47,7 +47,7 @@
 <div id="groupingOptions">
 	<input type='image' src='img/close.png' id='groupOptClose' width='20' height='20' align='right'>
 	<b>Groups:</b><br>
-	<input type="radio" id="radioNoGroups" name="mode" style="margin-left:10px;" checked>
+	<input type="radio" class="radio" id="radioNoGroups" name="mode" style="margin-left:10px;" checked>
 	<label for="radioNoGroups">None</label><br>
 	
 	<input type="radio" id="radioUserDefGroups" name="mode" style="margin-left:10px;">
@@ -56,13 +56,13 @@
 	<div id="fixedSizeOptions">
 	<input type="radio" id="radioFixedSizeGroups" name="mode" style="margin-left:10px;">
 	<label for="radioFixedSizeGroups">Fixed Size:</label>
-	<input type="text" id="fixedGroupSize"  style="width:50px" value="4">
+	<input type="text" class="textbox" id="fixedGroupSize"  style="width:50px" value="4">
 	</div>
 	
 	<div id="fixedIntervalOptions">
 	<input type="radio" id="radioFixedIntervalGroups" name="mode" style="margin-left:10px;">
 	<label for="radioFixedIntervalGroups">Fixed Interval Width:</label>
-	<input type="text" id="fixedIntervalWidth"  style="width:50px" value="10"><br>
+	<input type="text" class="textbox" id="fixedIntervalWidth"  style="width:50px" value="10"><br>
 	<input type="checkbox" id="checkboxHistogram" name="histogram" style="margin-left:25px;">
 	<label for="checkboxHistogram">Histogram</label>
 	</div>
@@ -94,9 +94,9 @@
 	
 	<div id="scaleOptions"><b>Graph Scale:</b>
 	<label for="textXMin" style="margin-left:10px;">Min: </label>
-	<input type="text" id="textXMin" style="width:50px;">
+	<input type="text" class="textbox" id="textXMin" style="width:50px;">
 	<label for="textXMax" style="margin-left:10px;">Max:</label>
-	<input type="text" id="textXMax" style="width:50px;"><br>
+	<input type="text" class="textbox" id="textXMax" style="width:50px;"><br>
 	
 	<input type="checkbox" id="fitScaleToData" style="margin-left:10px;">
 	<label for="fitScaleToData">Fit Scale Individually</label>
@@ -105,12 +105,12 @@
 	<input type="checkbox" id="sampling" name="test" style="margin-left:10px;">
 	<label for="sampling">Sampling Engine</label>
 	<label for="numSamples" style="margin-left:10px;">#: </label>
-	<select id="numSamples">
+	<select id="numSamples" class="textbox" >
 		<option value="1">1</option>
 		<option value="2">2</option>
 	</select><br>
 	
-	<input type="button" value="Apply to All" id="applyOptionsToAll">
+	<input type="button" class="button" value="Apply to All" id="applyOptionsToAll">
 </div>
 
 <div id="displayOptions">
@@ -120,25 +120,25 @@
 			<td id="divisionsCell" valign="top" nowrap>
 				<h3 style="margin-bottom:10px">Buckets</h3>
 				<center>
-					<input type="button" value="+" id="divisionsInc" style="width:30px; height:30px"><br>
+					<input type="button" class="button" value="+" id="divisionsInc" style="width:30px; height:30px"><br>
 					<p id="divisionsValue">30</p>
-					<input type="button" value="-" id="divisionsDec" style="width:30px; height:30px"><br>
+					<input type="button" class="button" value="-" id="divisionsDec" style="width:30px; height:30px"><br>
 				</center>
 			</td>
 			<td valign="top" nowrap>
 				<h3 style="margin-bottom:10px">Dot Size</h3>
 				<center>
-					<input type="button" value="+" id="dotSizeInc" style="width:30px; height:30px"><br>
+					<input type="button" class="button" value="+" id="dotSizeInc" style="width:30px; height:30px"><br>
 					<p id="dotSizeValue">5</p>
-					<input type="button" value="-" id="dotSizeDec" style="width:30px; height:30px"><br>
+					<input type="button" class="button" value="-" id="dotSizeDec" style="width:30px; height:30px"><br>
 				</center>
 			</td>
 			<td valign="top" nowrap>
 				<h3 style="margin-bottom:10px">Text Size</h3>
 				<center>
-					<input type="button" value="+" id="textSizeInc" style="width:30px; height:30px"><br>
+					<input type="button" class="button" value="+" id="textSizeInc" style="width:30px; height:30px"><br>
 					<p id="textSizeValue">12</p>
-					<input type="button" value="-" id="textSizeDec" style="width:30px; height:30px"><br>
+					<input type="button" class="button" value="-" id="textSizeDec" style="width:30px; height:30px"><br>
 				</center>
 			</td>					
 			<td valign="top" nowrap>
@@ -156,7 +156,7 @@
 		<tr>
 			<td>
 				<b>Point Stack Mode</b></br>
-				<select id="drawMode">
+				<select id="drawMode" class="textbox" >
 					<option value="floating">Floating</option>
 					<option value="center">Center</option>
 					<option value="gravity" selected>Gravity</option>
@@ -164,7 +164,7 @@
 			</td>
 			<td>
 				<b>Button Appearance</b><br>
-				<select id="buttonMode">
+				<select id="buttonMode" class="textbox" >
 					<option value="both" selected>Text and Icons</option>
 					<option value="icon">Icons Only</option>
 					<option value="text">Text Only</option>
@@ -175,20 +175,20 @@
 </div>
 
 <div id="worksheetMenu">
-	<input type="button" value="Load Worksheet From Form" id="loadFromForm">
-	<input type="button" value="Load Worksheet From URL" id="loadFromURL">
-	<input type="button" value="Delete" id="deleteWorksheet">
+	<input type="button" class="button" value="Load Worksheet From Form" id="loadFromForm">
+	<input type="button" class="button" value="Load Worksheet From URL" id="loadFromURL">
+	<input type="button" class="button" value="Delete" id="deleteWorksheet">
 	<input type='image' src='img/close.png' id='worksheetMenuClose' width='20' height='20' align='right'><br>
 	<hr>
-	Title: <input type="text" id="worksheetTitle" style="width: 25%;"><br><br>
+	Title: <input type="text" class="textbox" id="worksheetTitle" style="width: 25%;"><br><br>
 	Data:<br>
-	<textarea id="worksheetText"></textarea><br>
+	<textarea id="worksheetText" class="textbox" ></textarea><br>
 </div>
 
 <div id="worksheetURLMenu">
-	Worksheet URL: <input type="text" id="worksheetURL" style="width: 300px"><br>
-	<input type="button" value="Submit" id="submitURL">
-	<input type="button" value="Back" id="backToWorksheetMenu">
+	Worksheet URL: <input type="text" class="textbox" id="worksheetURL" style="width: 300px"><br>
+	<input type="button" class="button" value="Submit" id="submitURL">
+	<input type="button" class="button" value="Back" id="backToWorksheetMenu">
 </div>
 
 <div id="aboutPopup">

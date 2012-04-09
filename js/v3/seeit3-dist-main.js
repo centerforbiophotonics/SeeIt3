@@ -1196,6 +1196,22 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.textBaseline("bottom")
 			.text("Difference between the Means of Samples from Population 1 and Population 2")
 			.font(fontString)
+		
+		/* X-axis ticks */
+		graphPanel.add(pv.Rule)
+			.data(function() { return graph.x.ticks() })
+			.left(function(d) {return graph.x(d)})
+			.bottom(graph.baseLine)
+			.strokeStyle("#aaa")
+			.height(5)
+			.anchor("bottom").add(pv.Label)
+				.text(function(d) {return d.toFixed(1)})
+				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			
+		/* X-axis line */
+		graphPanel.add(pv.Rule)
+			.bottom(graph.baseLine)
+			.strokeStyle("#000")
 	}
 }
 
@@ -2930,7 +2946,7 @@ function constructRegularGraph(graphPanel, graph, index){
 }
 
 function constructSampleButton(graph, index){
-	console.log("contructing Sample Button");
+	//console.log("contructing Sample Button");
 	$('body').prepend("<div class=\"sampleOptions\" id=\"sampleButton"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+

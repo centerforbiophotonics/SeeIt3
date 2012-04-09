@@ -97,10 +97,10 @@ jQuery('#sampling').change(function(event) {
 	graphCollection.graphs[graphCollection.selectedGraphIndex].sampleSet = [];
 	graphCollection.graphs[graphCollection.selectedGraphIndex].samplingTo = [];
 	for (var i=1; i<= graphCollection.graphs[graphCollection.selectedGraphIndex].samplingToHowMany; i++){
-		if (graphCollection.graphs[graphCollection.selectedGraphIndex+i] != undefined){
-			if (graphCollection.graphs[graphCollection.selectedGraphIndex+i].isSamplingGraph){
+		if (graphCollection.graphs[graphCollection.selectedGraphIndex+1] != undefined){
+			if (graphCollection.graphs[graphCollection.selectedGraphIndex+1].isSamplingGraph){
 				delete graphCollection.data[graphCollection.graphs[graphCollection.selectedGraphIndex].sampleSet[i-1]];
-				graphCollection.removeGraph(graphCollection.graphs[graphCollection.selectedGraphIndex+i]);
+				graphCollection.removeGraph(graphCollection.graphs[graphCollection.selectedGraphIndex+1]);
 			}
 		}
 	}
@@ -110,10 +110,9 @@ jQuery('#sampling').change(function(event) {
 			graphCollection.addSamplingGraph(graphCollection.selectedGraphIndex, i);
 			graphCollection.graphs[graphCollection.selectedGraphIndex+i].updateSample(graphCollection.graphs[graphCollection.selectedGraphIndex+i].samplingHowMany);
 		}
+		setHighLightedSample(graphCollection.selectedGraphIndex+1);
 	}
 	
-	setHighLightedSample(graphCollection.selectedGraphIndex+1);
-
 	constructVis();
 });
 

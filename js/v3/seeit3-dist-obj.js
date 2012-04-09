@@ -168,8 +168,12 @@ GraphCollection.prototype = {
 		this.graphs[index].sampleSet[number-1] = "***sampleSet-"+graphCollection.nextSampleSetNumber++;
 		this.graphs[index+number].sampleSet = this.graphs[index].sampleSet[number-1];
 		this.data[this.graphs[index].sampleSet[number-1]] = [];
-		this.graphs[index+number].addSampleCategory(this.graphs[index].sampleSet[number-1]);
+		
 		this.graphs[index+number].sampleNumber = number;
+		
+		if (number == this.graphs[index].samplingToHowMany)
+			for (var i = number; i>0; i--)
+				this.graphs[index+i].addSampleCategory(this.graphs[index].sampleSet[number-i]);
 		
 		this.setH(this.calcGraphHeight());
 	},
@@ -555,12 +559,13 @@ Graph.prototype = {
 			this.scaleMax = newMax;
 		}
 		
-		if (this.testMode == "sampling")
+		if (this.testMode == "sampling"){
 			for (var i=0; i<this.samplingToHowMany; i++){
 				this.samplingTo[i].fitScaleToData = this.fitScaleToData;
 				this.samplingTo[i].setXScale(min,max);
 				
 			}
+		}
 	},
 	
 	addCategory: function(category){
