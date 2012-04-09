@@ -88,7 +88,7 @@ jQuery('#groupingOptions').change(function(event) {
 
 //sampling engine checkbox
 jQuery('#sampling').change(function(event) {
-	var testMode = $('#sampling').attr('checked') ? "sampling" : "noTest";
+	var testMode = $('#sampling').attr('checked') == 'checked' ? "sampling" : "noTest";
 	graphCollection.graphs[graphCollection.selectedGraphIndex].testMode = testMode;
 	
 	if (graphCollection.graphs[graphCollection.selectedGraphIndex].testMode != "sampling")
@@ -121,11 +121,13 @@ jQuery('#numSamples').change(function(event){
 	var newNumSamples = parseInt($('#numSamples').val());
 	var selectedGraph = graphCollection.graphs[graphCollection.selectedGraphIndex];
 	
-	if ($('#sampling').attr('checked')){
+	if ($('#sampling').attr('checked') == 'checked'){
 		if (newNumSamples > selectedGraph.samplingToHowMany){
+			selectedGraph.samplingToHowMany = newNumSamples;
 			graphCollection.addSamplingGraph(graphCollection.selectedGraphIndex, 2);
 			graphCollection.graphs[graphCollection.selectedGraphIndex+2].updateSample(graphCollection.graphs[graphCollection.selectedGraphIndex+2].samplingHowMany);
 		} else if (newNumSamples < selectedGraph.samplingToHowMany){
+			selectedGraph.samplingToHowMany = newNumSamples;
 			delete graphCollection.data[graphCollection.graphs[graphCollection.selectedGraphIndex].sampleSet[1]];
 			graphCollection.graphs[graphCollection.selectedGraphIndex].sampleSet[1] = null;
 			graphCollection.graphs[graphCollection.selectedGraphIndex].samplingTo[1] = null;
@@ -133,7 +135,7 @@ jQuery('#numSamples').change(function(event){
 			graphCollection.graphs[graphCollection.selectedGraphIndex].selectedSampleNumber = 1;
 			graphCollection.removeGraph(graphCollection.graphs[graphCollection.selectedGraphIndex+2]);
 		}
-		selectedGraph.samplingToHowMany = newNumSamples;
+		
 		constructVis();
 	} else {
 		selectedGraph.samplingToHowMany = newNumSamples;

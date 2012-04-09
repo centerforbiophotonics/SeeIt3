@@ -1963,8 +1963,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			
 	} 
 }
-
 function constructRegularGraph(graphPanel, graph, index){
+
 	if (graph.includedCategories.length > 0){
 	/* Number of datapoints N */
 		graphPanel.add(pv.Label)
@@ -2751,7 +2751,7 @@ function constructRegularGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
 			.visible(function(d) {
-				return $('#checkboxHideData').attr('checked') == false  && 
+				return $('#checkboxHideData').attr('checked') != "checked"  && 
 					(d.y+graph.baseLine) < graph.h &&
 					d.x >= 0 &&
 					d.x <= graph.w;
@@ -2972,25 +2972,24 @@ function positionSampleButton(graph, index){
 	
 	$('#sampleButton'+index).css('top', top+"px")
 										.css('left',left+"px")
-										//.css('width',graphCollection.w-50)
-										//.css('max-width',graphCollection.w-40)
 										.css('z-index', 1);
 }
 
 function enterUpdateLoop(index){
-	console.log("enter");
-	updateMultipleSamples(index);
+	updateMultipleSamples(index, true);
 	document.addEventListener("mouseup", exitUpdateLoop, true);
 }
 
-function updateMultipleSamples(sourceIndex){
+function updateMultipleSamples(sourceIndex, firstTime){
 	for (var i =1; i <= graphCollection.graphs[sourceIndex].samplingToHowMany; i++)
 		updateSample("sampleN"+(sourceIndex+i),sourceIndex+i);
-	updateTimer = setTimeout("updateMultipleSamples("+sourceIndex+")", 1);
+	if (firstTime)
+		updateTimer = setTimeout("updateMultipleSamples("+sourceIndex+", false)", 1000);
+	else
+		updateTimer = setTimeout("updateMultipleSamples("+sourceIndex+", false)", 1);
 }
 
 function exitUpdateLoop(){
-	console.log("exit");
 	clearTimeout(updateTimer);
 	document.removeEventListener("mouseup", exitUpdateLoop, true);
 }
