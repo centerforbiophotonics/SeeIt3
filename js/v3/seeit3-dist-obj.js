@@ -173,7 +173,7 @@ GraphCollection.prototype = {
 		
 		if (number == this.graphs[index].samplingToHowMany)
 			for (var i = number; i>0; i--)
-				this.graphs[index+i].addSampleCategory(this.graphs[index].sampleSet[number-i]);
+				this.graphs[index+i].addSampleCategory(this.graphs[index].sampleSet[i-1]);
 		
 		this.setH(this.calcGraphHeight());
 	},
@@ -600,6 +600,10 @@ Graph.prototype = {
 			
 			this.updateInsufDataFlags();
 			
+			if (this.testMode == "sampling")
+				for (var i=0; i<this.samplingTo.length; i++)
+					this.samplingTo[i].updateSample(this.samplingTo[i].samplingHowMany);
+			
 			return true;
 		} else {
 			return false;
@@ -619,6 +623,7 @@ Graph.prototype = {
 	},
 	
 	updateSample: function(size){
+		console.log(size);
 		graphCollection.data[this.sampleSet] = [];
 		
 		var populationSize = 0;
@@ -702,6 +707,13 @@ Graph.prototype = {
 			this.insufDataForTwo = true;
 		else 
 			this.insufDataForTwo = false;
+			
+		if (this.testMode == "sampling")
+			for (var i=0; i<this.samplingTo.length; i++){
+				if (this.n < this.samplingTo[i].samplingHowMany)
+					this.samplingTo[i].samplingHowMany = this.n;
+				this.samplingTo[i].updateSample(this.samplingTo[i].samplingHowMany);
+			}
 	},
 	
 	dataVals: function(){
@@ -836,86 +848,6 @@ Graph.prototype = {
 		}
 		return points;
 	},
-	
-	//getSamplingDataDrawObjects: function() {
-		//var xDomain = graphCollection.graphs[this.samplingFrom].x.domain();
-		//var bucketSize = (xDomain[1]-xDomain[0])/this.graphCollection.buckets;
-		//var points = [];
-		//var data = graphCollection.graphs[this.samplingFrom].samplingData;
-		//var drawMode = jQuery("#drawMode option:selected").val();
-		
-		//for (var i = 0; i < this.graphCollection.buckets; i++){
-			//var bucketMin = xDomain[0] + (bucketSize * i);
-			//var bucketMax = xDomain[0] + (bucketSize * (i+1));
-			//var pointsInBucket = [];
-			
-			//for (var j = 0; j < data.length; j++){
-				////var dataObj = data[j],
-				//var xVal = data[j].xReal,
-						//label = data[j].label;
-						//set = data[j].set;
-					
-				//if ((xVal >= bucketMin && xVal < bucketMax) 
-						//|| drawMode == "gravity")
-				//{
-					//pointsInBucket.push([xVal, label, set, 0]);
-				//}
-			//}
-			//randomIndex = 20;
-			//pointsInBucket = shuffle(pointsInBucket);
-			
-			//switch (drawMode)
-			//{
-			//case "floating":
-				//for (var j = 0; j < pointsInBucket.length; j++){
-					//points.push({"x":pointsInBucket[j][0],
-											 //"xReal":pointsInBucket[j][0],
-											 //"y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
-											 //"label":pointsInBucket[j][1],
-											 //"set":pointsInBucket[j][2]
-										 //});
-				//}
-				//break;
-			//case "center":
-				//for (var j = 0; j < pointsInBucket.length; j++){
-					//points.push({"x":(this.x(bucketMin)+this.x(bucketMax))/2,
-											 //"xReal":pointsInBucket[j][0],
-											 //"y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
-											 //"label":pointsInBucket[j][1],
-											 //"set":pointsInBucket[j][2]
-										 //});
-				//}
-				//break;
-			//case "gravity":
-				//if ( i == 0 ) {
-					//for (var j = 0; j < pointsInBucket.length; j++){
-						//var candidatePoint = {
-							//"x":pointsInBucket[j][0],
-							//"xReal":pointsInBucket[j][0],
-							//"y":graphCollection.bucketDotSize,
-							//"label":pointsInBucket[j][1],
-							//"set":pointsInBucket[j][2]
-							//};
-							
-						//var collisionPoints = [];
-						//for (var k = 0; k < points.length; k++){
-							//if (Math.abs(points[k].x-candidatePoint.x) < graphCollection.bucketDotSize*2) {
-								//collisionPoints.push(points[k]);
-							//}
-						//}
-						
-						//if (collisionPoints.length > 0)
-							//candidatePoint.y = fitPointInGraph(candidatePoint, collisionPoints, graphCollection.bucketDotSize);
-						
-						//points.push(candidatePoint);
-					//}
-				//}
-				
-				//break;
-			//}
-		//}
-		//return points;
-	//},
 	
 	getMeanMedianMode: function(){
 		var data = this.dataVals();

@@ -1215,7 +1215,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 	}
 }
 
-function constructSamplingGraph(graphPanel, graph, index){	
+function constructSamplingGraph(graphPanel, graph, index){
 	/* X-axis label */
 	graphPanel.add(pv.Label)
 		.right(function(){return graph.w/2})
@@ -3026,8 +3026,6 @@ function positionSampleOptions(graph,index){
 		
 		$('#sampleOptions'+index).css('top', top+"px")
 											.css('left',left+"px")
-											//.css('width',graphCollection.w-50)
-											//.css('max-width',graphCollection.w-40)
 											.css('z-index', 1);
 }
 
