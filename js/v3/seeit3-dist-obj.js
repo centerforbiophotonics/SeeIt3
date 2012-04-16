@@ -149,7 +149,7 @@ GraphCollection.prototype = {
 											(window.innerHeight - jQuery('div#notGraph').height()) - 60
 										 );
 		else
-			return (window.innerHeight - jQuery('div#notGraph').height()) - 60;
+			return (window.innerHeight - jQuery('div#notGraph').height()) - 55;
 	},
 	
 	addGraph: function() {
@@ -189,6 +189,7 @@ GraphCollection.prototype = {
 		this.graphs[0].resampleSet = "***resampleSet-"+graphCollection.nextResampleSetNumber++;
 		this.data[this.graphs[0].resampleSet] = [];
 		this.graphs[0].addCategory(this.graphs[0].resampleSet);
+		this.graphs[0].fitScalesToData = true;
 		
 		this.setH(this.calcGraphHeight());
 	},
@@ -579,40 +580,44 @@ Graph.prototype = {
 	addCategory: function(category){
 		if (this.includedCategories.indexOf(category) == -1 && 
 				this.includedCategories.length < 4 &&
-				!this.isSamplingGraph && !this.isResamplingGraph){
+				!this.isSamplingGraph){
 			
-			this.includedCategories.push(category);
-			
-			if (this.includedCategories.length > 2){
-				this.twoLineLegend = true;
-				this.baseLine = 89;
+			if ((this.isResamplingGraph && this.includedCategories.length < 1) || !this.isResamplingGraph){
+				this.includedCategories.push(category);
+				
+				if (this.includedCategories.length > 2){
+					this.twoLineLegend = true;
+					this.baseLine = 89;
+				} else {
+					this.twoLineLegend = false;
+					this.baseLine = 54;
+				}
+				
+				this.xMax = pv.max(this.dataVals(), function(d) { return d });
+				this.xMin = pv.min(this.dataVals(), function(d) { return d });
+				this.n = this.dataVals().length;
+				
+				this.graphCollection.scaleAllGraphsToFit();
+				
+				//Adjust fixed interval partition width to avoid hanging on large domains
+				this.graphCollection.graphs.forEach(function(g){
+					var mag = magnitude(g.scaleMax - g.scaleMin);
+					if (Math.pow(10, mag)*4 < g.scaleMax)
+						g.partitionIntervalWidth = Math.pow(10, mag);
+					else
+						g.partitionIntervalWidth = Math.pow(10, mag-1);
+				});
+				
+				this.updateInsufDataFlags();
+				
+				if (this.testMode == "sampling")
+					for (var i=0; i<this.samplingTo.length; i++)
+						this.samplingTo[i].updateSample(this.samplingTo[i].samplingHowMany);
+				
+				return true;
 			} else {
-				this.twoLineLegend = false;
-				this.baseLine = 54;
+				return false;
 			}
-			
-			this.xMax = pv.max(this.dataVals(), function(d) { return d });
-			this.xMin = pv.min(this.dataVals(), function(d) { return d });
-			this.n = this.dataVals().length;
-			
-			this.graphCollection.scaleAllGraphsToFit();
-			
-			//Adjust fixed interval partition width to avoid hanging on large domains
-			this.graphCollection.graphs.forEach(function(g){
-				var mag = magnitude(g.scaleMax - g.scaleMin);
-				if (Math.pow(10, mag)*4 < g.scaleMax)
-					g.partitionIntervalWidth = Math.pow(10, mag);
-				else
-					g.partitionIntervalWidth = Math.pow(10, mag-1);
-			});
-			
-			this.updateInsufDataFlags();
-			
-			if (this.testMode == "sampling")
-				for (var i=0; i<this.samplingTo.length; i++)
-					this.samplingTo[i].updateSample(this.samplingTo[i].samplingHowMany);
-			
-			return true;
 		} else {
 			return false;
 		}

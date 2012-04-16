@@ -1179,7 +1179,8 @@ function constructGraphPanel(graph, index){
 
 function constructResamplingGraph(graphPanel, graph, index){
 	
-	if (graphCollection.graphs.indexOf(graph.population1) == 0 || graphCollection.graphs.indexOf(graph.population2) == 0){
+	if (graphCollection.graphs.indexOf(graph.population1) == 0 || 
+			graphCollection.graphs.indexOf(graph.population2) == 0){
 		/* Assignment Instructons*/
 		graphPanel.add(pv.Label)
 			.left(function(){return -20})
@@ -1188,6 +1189,16 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text("Drag the labels above to the graphs you wish to represent your populations.")
+			.font(fontString)
+	} else if (graph.data[graph.resampleSet].length == 0) {
+		/* Instructons*/
+		graphPanel.add(pv.Label)
+			.right(100)
+			.bottom(50)
+			.textAlign("left")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("Press start.")
 			.font(fontString)
 	} else {
 		/* X-axis label */
@@ -1215,6 +1226,23 @@ function constructResamplingGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Rule)
 			.bottom(graph.baseLine)
 			.strokeStyle("#000")
+		
+		/* Lines */
+		graphPanel.add(pv.Rule)
+			.data(function() {return graph.dataVals()})
+			.left(function(d) {return graph.x(d) })
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.strokeStyle("blue")
+			
+		graphPanel.add(pv.Rule)
+			.data(function() {return [Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]),
+																-1*Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0])]
+			})
+			.left(function(d) {return graph.x(d) })
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.strokeStyle("red")
 	}
 }
 
@@ -3055,7 +3083,7 @@ function constructResampleControlPanel(graph, index){
 	$('body').prepend("<div class=\"resampleOptions\" id=\"resampleOptions"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
-							 "<td><input type=\"button\" value=\"Start\" id=\"resampleToggleButton"+index+"\""+
+							 "<td><input type=\"button\" value=\""+(resamplingInProgress?"Stop":"Start")+"\" id=\"resampleToggleButton"+index+"\""+
 							 "onclick=\"javascript:toggleResampling("+index+")\"></td>"+
 							 "<td><input type=\"button\" value=\"Reset\" id=\"resampleResetButton"+index+"\""+
 							 "onclick=\"javascript:resetResampling("+index+")\"></td>"+
@@ -3103,10 +3131,10 @@ function resample(index){
 	var graph = graphCollection.graphs[index];
 	
 	if (graph.data[graph.resampleSet].length >= graph.resamplingIterations){
-		clearTimeout(resampleTimer);
+		//clearTimeout(resampleTimer);
 	} else {
 		var graph = graphCollection.graphs[index];
-		var group1 = [], group2 = [];
+		var group1 = []; //boolean
 		var population = [];
 		
 		for (var i=0; i<graph.population1.includedCategories.length; i++)
@@ -3114,7 +3142,54 @@ function resample(index){
 			
 		for (i=0; i<graph.population2.includedCategories.length; i++)
 			population = population.concat(graph.data[graph.population2.includedCategories[i]]);
+			
+		for (i=0; i<population.length; i++)
+			group1[i] = false;
 		
+		group1Counter = Math.floor(population.length/2);
+		
+		while (group1Counter > 0){
+			var r = rand(0, population.length);
+			if (group1[r] == false){
+				group1[r] = true;
+				group1Counter--;
+			}
+		}
+		
+		var group1Sum = 0;
+		var group2Sum = 0;
+		for (i=0; i<population.length; i++){
+			if(group1[i])
+				group1Sum += population[i].value;
+			else
+				group2Sum += population[i].value;
+		}
+		
+		var group1Mean = group1Sum / Math.floor(population.length/2);
+		var group2Mean = group2Sum / (population.length - Math.floor(population.length/2));
+		
+		//console.log(group1Mean+"..."+group2Mean);
+		
+		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
+																				"value":group1Mean-group2Mean});
+																				
+		var min = -1*Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]) - 1;
+		var max = Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]) + 1;
+		for (i=0;i<graph.data[graph.resampleSet].length;i++){
+			if(min > graph.data[graph.resampleSet][i].value)
+				min = graph.data[graph.resampleSet][i].value;
+			
+			if(max < graph.data[graph.resampleSet][i].value)
+				max = graph.data[graph.resampleSet][i].value;
+				
+		}
+		
+		graph.setXScale(min,max);
+		
+		if (graph.data[graph.resampleSet].length == 1)
+			constructVis();
+		
+		vis.render();
 		resampleTimer = setTimeout("resample("+index+")", 100);
 	}
 }
@@ -3128,7 +3203,7 @@ function changeResampleIterations(textbox, index){
 }
 
 function constructLegendPanel(graph, index){
-	if (!graph.isSamplingGraph){
+	if (!graph.isSamplingGraph && !graph.isResamplingGraph){
 		$('body').prepend("<div class=\"legend\" id=\"legend"+index+"\"></div>");
 		
 		var selCat = graphCollection.graphs[index].selectedCategory;
