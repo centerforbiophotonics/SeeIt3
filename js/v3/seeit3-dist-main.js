@@ -1226,6 +1226,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Rule)
 			.bottom(graph.baseLine)
 			.strokeStyle("#000")
+			
 		
 		/* Lines */
 		graphPanel.add(pv.Rule)
@@ -1234,7 +1235,22 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle("blue")
-			
+			.visible(function(){return $('#resampleDispType').is(':checked')})
+		
+		//Dots
+		graphPanel.add(pv.Dot)
+			.data(function() {return graph.getDataDrawObjects()})
+			.left(function(d) {return d.x })
+			.bottom(function(d) { return d.y + graph.baseLine })
+			.radius(function() { return graphCollection.bucketDotSize})
+			.fillStyle(function(d) { return "black" })
+			.strokeStyle(function(d) { return "black" })
+			.lineWidth(function(d){
+				return 2;
+			})
+			.visible(function(){return $('#resampleDispType').is(':checked') == false})
+		
+		/* Source Populations Mean Differences */
 		graphPanel.add(pv.Rule)
 			.data(function() {return [Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]),
 																-1*Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0])]
@@ -1273,8 +1289,6 @@ function constructSamplingGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Rule)
 			.bottom(graph.baseLine)
 			.strokeStyle("#000")
-			
-		
 			
 		
 		/* UD Edge of the graph partition lines*/
@@ -2971,9 +2985,6 @@ function constructRegularGraph(graphPanel, graph, index){
 			.text("Maximum 4 Datasets per Graph")
 			.font(fontString)
 	}
-	
-	
-	
 }
 
 function constructSampleButton(graph, index){
@@ -3092,6 +3103,7 @@ function constructResampleControlPanel(graph, index){
 								"size=\"4\""+
 								"onchange=\"javascript:changeResampleIterations('resampleN"+index+"',"+index+")\""+
 								"value='"+graph.resamplingIterations+"'></td>"+
+								"<td><label for=\"resampleDispType\">Lines</label><input type=\"checkbox\" id=\"resampleDispType\" checked></td>"
 							 "</tr></table>";
 							 
 	$('#resampleOptions'+index).html(string);
