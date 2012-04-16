@@ -6,6 +6,9 @@ var fontString = "bold 14px arial";
 var dragging = false;
 var updateTimer = null;
 
+var resamplingInProgress = false;
+var resampleTimer = null;
+
 var exampleSpreadsheets = [
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
 	new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'),
@@ -1189,7 +1192,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 	} else {
 		/* X-axis label */
 		graphPanel.add(pv.Label)
-			.right(function(){return graph.w/2})
+			.right(function(){return graph.w/2 + 100})
 			.bottom(10)
 			.textAlign("center")
 			.textAngle(0)
@@ -3052,15 +3055,16 @@ function constructResampleControlPanel(graph, index){
 	$('body').prepend("<div class=\"resampleOptions\" id=\"resampleOptions"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
-							 "<td><input type=\"button\" value=\"Start\" id=\"resampleStartButton"+index+"\""+
-							 "onclick=\"javascript:toggleResampling()\"></td>"+
+							 "<td><input type=\"button\" value=\"Start\" id=\"resampleToggleButton"+index+"\""+
+							 "onclick=\"javascript:toggleResampling("+index+")\"></td>"+
+							 "<td><input type=\"button\" value=\"Reset\" id=\"resampleResetButton"+index+"\""+
+							 "onclick=\"javascript:resetResampling("+index+")\"></td>"+
 							 "<td nowrap><label for=\"resampleN"+index+"\">Iterations = </label>"+
 							 "<input align=\"right\" type=\"text\" id=\"resampleN"+index+"\""+
 								"size=\"4\""+
-								"onchange=\"javascript:updateResample('resampleN"+index+"',"+index+")\""+
+								"onchange=\"javascript:changeResampleIterations('resampleN"+index+"',"+index+")\""+
 								"value='"+graph.resamplingIterations+"'></td>"+
 							 "</tr></table>";
-							
 							 
 	$('#resampleOptions'+index).html(string);
 	
@@ -3083,11 +3087,43 @@ function positionResampleControlPanel(graph, index){
 										.css('z-index', 1);
 }
 
-function toggleResampling(){
+function toggleResampling(index){
+	if (resamplingInProgress){
+		resamplingInProgress = false;
+		$('#resampleToggleButton'+index).val("Start");
+		clearTimeout(resampleTimer);
+	} else {
+		resamplingInProgress = true;
+		$('#resampleToggleButton'+index).val("Stop");
+		resampleTimer = setTimeout("resample("+index+")", 1);
+	}
+}
+
+function resample(index){
+	var graph = graphCollection.graphs[index];
+	
+	if (graph.data[graph.resampleSet].length >= graph.resamplingIterations){
+		clearTimeout(resampleTimer);
+	} else {
+		var graph = graphCollection.graphs[index];
+		var group1 = [], group2 = [];
+		var population = [];
+		
+		for (var i=0; i<graph.population1.includedCategories.length; i++)
+			population = population.concat(graph.data[graph.population1.includedCategories[i]]);
+			
+		for (i=0; i<graph.population2.includedCategories.length; i++)
+			population = population.concat(graph.data[graph.population2.includedCategories[i]]);
+		
+		resampleTimer = setTimeout("resample("+index+")", 100);
+	}
+}
+
+function resetResample(index){
 	
 }
 
-function updateResample(textbox, index){
+function changeResampleIterations(textbox, index){
 	
 }
 

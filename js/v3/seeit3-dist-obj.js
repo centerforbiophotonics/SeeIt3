@@ -172,8 +172,10 @@ GraphCollection.prototype = {
 		this.graphs[index+number].sampleNumber = number;
 		
 		if (number == this.graphs[index].samplingToHowMany)
-			for (var i = number; i>0; i--)
+			for (var i = number; i>0; i--){
+				this.graphs[index+i].includedCategories = [];
 				this.graphs[index+i].addSampleCategory(this.graphs[index].sampleSet[i-1]);
+			}
 		
 		this.setH(this.calcGraphHeight());
 	},
@@ -199,8 +201,14 @@ GraphCollection.prototype = {
 				if (this.graphs.indexOf(graph)+1 == this.graphs.indexOf(this.graphs[0].population2))
 					this.graphs[0].population2 = this.graphs[0];
 			}
-			this.graphs.splice(this.graphs.indexOf(graph)+1,1);
-			delete graphCollection.data[graph.sampleSet];
+			
+			for (i=0; i<graph.sampleSet.length; i++)
+				delete graphCollection.data[graph.sampleSet[i]];
+			
+			for (var i=1; i<=graph.samplingToHowMany; i++)
+				this.graphs.splice(this.graphs.indexOf(graph)+1,1);
+			
+				
 		} else if (graph.testMode == "resampling") {
 			delete graphCollection.data[graph.resampleSet];
 		}
@@ -623,7 +631,6 @@ Graph.prototype = {
 	},
 	
 	updateSample: function(size){
-		console.log(size);
 		graphCollection.data[this.sampleSet] = [];
 		
 		var populationSize = 0;
