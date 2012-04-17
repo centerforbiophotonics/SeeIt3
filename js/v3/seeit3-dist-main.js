@@ -1213,6 +1213,55 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle("red")
 			.lineWidth(2)
+			
+		/* Number of points between lines */
+		graphPanel.add(pv.Label)
+			.data(function(){
+				var inside = 0;
+				graph.data[graph.resampleSet].forEach(function(d){
+					if (Math.abs(d.value) < Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))
+						inside++;
+				});
+					
+				return [inside];	
+			})
+			.textAlign("center")
+			.textStyle("blue")
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine + 5})
+			.left(function(){return graph.x(0)})
+			
+		/* Number of points to the right */
+		graphPanel.add(pv.Label)
+			.data(function(){
+				var right = 0;
+				graph.data[graph.resampleSet].forEach(function(d){
+					if (d.value >= Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))
+						right++;
+				});
+					
+				return [right + " ==>"];	
+			})
+			.textAlign("left")
+			.textStyle("red")
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine + 5})
+			.left(function(){return graph.x(Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))})
+		
+		/* Number of points to the left*/
+		graphPanel.add(pv.Label)
+			.data(function(){
+				var left = 0;
+				graph.data[graph.resampleSet].forEach(function(d){
+					if (d.value <= -1*Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))
+						left++;
+				});
+					
+				return ["<== " + left];	
+			})
+			.textAlign("right")
+			.textStyle("red")
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine + 5})
+			.left(function(){return graph.x(-1*Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))})
+	
 	}
 }
 
@@ -3160,7 +3209,7 @@ function resample(index){
 			constructVis();
 		
 		vis.render();
-		resampleTimer = setTimeout("resample("+index+")", 100);
+		resampleTimer = setTimeout("resample("+index+")", 10);
 	}
 }
 
