@@ -660,7 +660,11 @@ function constructVis(){
 	});
 	vis.render();
 	
-	
+	if (graphCollection.datasetsMenuShowing) 
+		$('span').css('position', 'absolute')
+						 .css('left',$('#datasets').width()+29)
+						 .css('z-index', -1);
+						 
 	//remove and redraw sample options
 	$('.sampleOptions').remove();
 	$('.resampleOptions').remove();
@@ -697,8 +701,6 @@ function constructVis(){
 		constructLegendPanel(graph,i);
 		positionAndSizeLegendPanel(graph,i);
 	})
-	
-	//if (graphCollection.datasetsMenuShowing) resizeVis();
 }
 
 function constructDatasetPanel(){
@@ -1183,7 +1185,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.left(function(d) {return graph.x(d) })
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
-			.strokeStyle("blue")
+			.strokeStyle(pv.rgb(255,0,0,0.1))
 			.visible(function(){return $('#resampleDispType').is(':checked')})
 		
 		//Dots
