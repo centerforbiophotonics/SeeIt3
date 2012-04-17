@@ -3,8 +3,28 @@
 /* Dynamic Graph Resizing */
 $(window).resize(function() {
 	if (graphCollection.hasOwnProperty("data")){
+		//console.log("Old:" + graphCollection.w + "..." + graphCollection.h);
 		graphCollection.setW(graphCollection.calcGraphWidth());
 		graphCollection.setH(graphCollection.calcGraphHeight());
+		
+		
+		
+		//vis.render();
+		//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+		//positionDisplayMenu();
+		//positionWorksheetMenu();
+		//positionWorksheetURLMenu();
+		//positionAboutPopup();
+		//positionWorksheetDescriptionPopup();
+		//graphCollection.graphs.forEach(function(graph,i){
+			//positionAndSizeLegendPanel(graph,i);
+			//positionPopulationLabels();
+			//positionSampleOptions(graph,i);
+			//positionSampleButton(graph,i);
+			//positionResampleControlPanel(graph,i);
+		//})
+		
+		constructVis();
 		
 		if (graphCollection.datasetsMenuShowing)
 			$('span').css('position', 'absolute')
@@ -14,21 +34,7 @@ $(window).resize(function() {
 			$('span').css('position', 'absolute')
 								 .css('left',8)
 								 .css('z-index', -1);
-		
-		vis.render();
-		positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-		positionDisplayMenu();
-		positionWorksheetMenu();
-		positionWorksheetURLMenu();
-		positionAboutPopup();
-		positionWorksheetDescriptionPopup();
-		graphCollection.graphs.forEach(function(graph,i){
-			positionAndSizeLegendPanel(graph,i);
-			positionPopulationLabels();
-			positionSampleOptions(graph,i);
-			positionSampleButton(graph,i);
-			positionResampleControlPanel(graph,i);
-		})
+		//console.log("New:" + graphCollection.w + "..." + graphCollection.h);
 	}
 });
 

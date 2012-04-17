@@ -44,7 +44,6 @@ function convertToID(set){
 }
 
 function toggleDataSubtree(id,i,title){
-	$('#'+id).slideToggle(null,resizeVis);
 	graphCollection.datasetsVisible[title] ? 
 		graphCollection.datasetsVisible[title] = false :
 		graphCollection.datasetsVisible[title] = true;
@@ -52,17 +51,23 @@ function toggleDataSubtree(id,i,title){
 		$('#subtreeToggle'+i).attr("src","img/rightTriangle.png");
 	else
 		$('#subtreeToggle'+i).attr("src","img/downTriangle.png");
+	
+	$('#'+id).slideToggle(null,resizeVis);
 }
 
 function resizeVis(){
+	
+	graphCollection.setW(graphCollection.calcGraphWidth());
+	
+	constructVis();
+	
 	$('span').css('position', 'absolute')
 					 .css('left',$('#datasets').width()+29)
 					 .css('z-index', -1);
-	graphCollection.setW(graphCollection.calcGraphWidth());
-	vis.render();
-	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+	//vis.render();
+	//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 	
-	positionDisplayMenu();
+	//positionDisplayMenu();
 }
 
 function trim(stringToTrim) {

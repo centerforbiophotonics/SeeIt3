@@ -39,6 +39,8 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 });
 
 
+
+
 function constructVis(){
 	if (jQuery('span').length != 0){
 		closeColorPickers();
@@ -90,37 +92,7 @@ function constructVis(){
 		.left(-34)
 		.top(-31)
 		.lineWidth(1)
-		.event("click", function(){
-			if (!graphCollection.datasetsMenuShowing){
-				$('#datasets').show();
-				graphCollection.datasetsMenuShowing = true;
-				$('span').css('position', 'absolute')
-								 .css('left',$('#datasets').width()+29)
-								 //.css('top', $('#notGraph').height()+10)
-								 .css('z-index', -1);
-				graphCollection.setW(graphCollection.calcGraphWidth());
-				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-				positionDisplayMenu();
-			} else {
-				$('#datasets').hide();
-				graphCollection.datasetsMenuShowing = false;
-				$('span').css('position', 'absolute')
-								 .css('left',8)
-								 //.css('top', $('#notGraph').height()+10)
-								 .css('z-index', -1);
-				graphCollection.setW(graphCollection.calcGraphWidth());
-				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-				positionDisplayMenu();
-			}
-			for(var i=0; i<graphCollection.graphs.length;i++){
-				positionAndSizeLegendPanel(graphCollection.graphs[i],i);
-				positionPopulationLabels();
-				positionSampleOptions(graphCollection.graphs[i],i);
-				positionSampleButton(graphCollection.graphs[i],i);
-				positionResampleControlPanel(graphCollection.graphs[i],i);
-			}
-			vis.render();
-		})
+		.event("click", toggleDatasetMenu)
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
 			this.render();
@@ -144,29 +116,7 @@ function constructVis(){
 			else
 				return false;
 		})
-		.event("click", function(){
-			if (!graphCollection.datasetsMenuShowing){
-				$('#datasets').show();
-				graphCollection.datasetsMenuShowing = true;
-				graphCollection.setW(graphCollection.calcGraphWidth());
-				vis.render();
-				$('span').css('position', 'absolute')
-								 .css('left',$('#datasets').width()+29)
-								 .css('z-index', -1);
-				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-				positionDisplayMenu();
-			} else {
-				$('#datasets').hide();
-				graphCollection.datasetsMenuShowing = false;
-				graphCollection.setW(graphCollection.calcGraphWidth());
-				vis.render();
-				$('span').css('position', 'absolute')
-								 .css('left',8)
-								 .css('z-index', -1);
-				positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-				positionDisplayMenu();
-			}
-		})
+		.event("click", toggleDatasetMenu)
 		.anchor("left").add(pv.Label)
 			.left(function(){
 				if (graphCollection.buttonText && !graphCollection.buttonIcon){
@@ -710,9 +660,6 @@ function constructVis(){
 	});
 	vis.render();
 	
-	if (graphCollection.datasetsMenuShowing) resizeVis();
-	
-	
 	
 	//remove and redraw sample options
 	$('.sampleOptions').remove();
@@ -750,6 +697,8 @@ function constructVis(){
 		constructLegendPanel(graph,i);
 		positionAndSizeLegendPanel(graph,i);
 	})
+	
+	//if (graphCollection.datasetsMenuShowing) resizeVis();
 }
 
 function constructDatasetPanel(){
@@ -3323,4 +3272,39 @@ function positionPopulationLabels(){
 	$('#population2').css('top', top2+"px")
 										.css('left',left2+"px")
 										.css('z-index', 1);
+}
+
+function toggleDatasetMenu() {
+	if (!graphCollection.datasetsMenuShowing){
+		$('#datasets').show();
+		graphCollection.datasetsMenuShowing = true;
+		resizeVis();
+		//graphCollection.setW(graphCollection.calcGraphWidth());
+		
+		$('span').css('position', 'absolute')
+						 .css('left',$('#datasets').width()+29)
+						 .css('z-index', -1);
+		//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+		//positionDisplayMenu();
+	} else {
+		$('#datasets').hide();
+		graphCollection.datasetsMenuShowing = false;
+		graphCollection.setW(graphCollection.calcGraphWidth());
+		//vis.render();
+		$('span').css('position', 'absolute')
+						 .css('left',8)
+						 .css('z-index', -1);
+		constructVis();
+		//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+		//positionDisplayMenu();
+	}
+	//vis.render();
+	
+	//for(var i=0; i<graphCollection.graphs.length;i++){
+		//positionAndSizeLegendPanel(graphCollection.graphs[i],i);
+		//positionPopulationLabels();
+		//positionSampleOptions(graphCollection.graphs[i],i);
+		//positionSampleButton(graphCollection.graphs[i],i);
+		//positionResampleControlPanel(graphCollection.graphs[i],i);
+	//}
 }

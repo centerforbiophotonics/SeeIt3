@@ -149,7 +149,7 @@ GraphCollection.prototype = {
 											(window.innerHeight - jQuery('div#notGraph').height()) - 60
 										 );
 		else
-			return (window.innerHeight - jQuery('div#notGraph').height()) - 55;
+			return (window.innerHeight - jQuery('div#notGraph').height()) - 60;
 	},
 	
 	addGraph: function() {
