@@ -190,6 +190,7 @@ GraphCollection.prototype = {
 		this.data[this.graphs[0].resampleSet] = [];
 		this.graphs[0].addCategory(this.graphs[0].resampleSet);
 		this.graphs[0].fitScalesToData = true;
+		//this.graphs[0].baseLine = 47;
 		
 		this.setH(this.calcGraphHeight());
 	},
@@ -523,7 +524,7 @@ function Graph(graphCollection){
 	this.insufDataForTwo = true;
 	
 	this.panel = {};
-	this.baseLine = 54;
+	this.baseLine = 40;
 	
 	this.twoLineLegend = false;
 	

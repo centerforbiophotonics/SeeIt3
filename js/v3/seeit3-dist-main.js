@@ -1227,7 +1227,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			})
 			.textAlign("center")
 			.textStyle("blue")
-			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine + 5})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine })
 			.left(function(){return graph.x(0)})
 			
 		/* Number of points to the right */
@@ -1243,7 +1243,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			})
 			.textAlign("left")
 			.textStyle("red")
-			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine + 5})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine})
 			.left(function(){return graph.x(Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))})
 		
 		/* Number of points to the left*/
@@ -1259,9 +1259,24 @@ function constructResamplingGraph(graphPanel, graph, index){
 			})
 			.textAlign("right")
 			.textStyle("red")
-			.bottom(function(){return (graph.h-graph.baseLine) * 0.70 + graph.baseLine + 5})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine})
 			.left(function(){return graph.x(-1*Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))})
 	
+		/* Percentage outside lines */
+		graphPanel.add(pv.Label)
+			.data(function(){
+				var outside = 0;
+				graph.data[graph.resampleSet].forEach(function(d){
+					if (Math.abs(d.value) >= Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))
+						outside++;
+				});
+					
+				return [outside+" / "+graph.data[graph.resampleSet].length+" x 100 = "+(outside/graph.data[graph.resampleSet].length*100).toFixed(1)+"%"];	
+			})
+			.textAlign("center")
+			.textStyle("blue")
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.85 + graph.baseLine })
+			.left(function(){return graph.x(0)})
 	}
 }
 
@@ -3209,7 +3224,7 @@ function resample(index){
 			constructVis();
 		
 		vis.render();
-		resampleTimer = setTimeout("resample("+index+")", 10);
+		resampleTimer = setTimeout("resample("+index+")", 50);
 	}
 }
 
