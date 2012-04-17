@@ -547,9 +547,10 @@ function Graph(graphCollection){
 	this.population2 = this;			//Graph Object
 	this.resampleSet = null;
 	this.resamplingIterations = 1000;
+	this.showLines = true;
 }
 
-Graph.prototype = {	
+Graph.prototype = {
 	setXScale: function(min, max){
 		var newMin = min || this.scaleMin;
 		var newMax = max || this.scaleMax;
@@ -613,7 +614,12 @@ Graph.prototype = {
 				if (this.testMode == "sampling")
 					for (var i=0; i<this.samplingTo.length; i++)
 						this.samplingTo[i].updateSample(this.samplingTo[i].samplingHowMany);
-				
+						
+				if (this.graphCollection.resamplingEnabled)
+					if (this.graphCollection.graphs[0].population1 == this ||
+							this.graphCollection.graphs[0].population2 == this)
+						resetResampling(0);
+						
 				return true;
 			} else {
 				return false;
@@ -726,6 +732,11 @@ Graph.prototype = {
 					this.samplingTo[i].samplingHowMany = this.n;
 				this.samplingTo[i].updateSample(this.samplingTo[i].samplingHowMany);
 			}
+			
+		if (this.graphCollection.resamplingEnabled)
+			if (this.graphCollection.graphs[0].population1 == this ||
+					this.graphCollection.graphs[0].population2 == this)
+				resetResampling(0);
 	},
 	
 	dataVals: function(){

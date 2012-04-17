@@ -945,3 +945,8 @@ function showWorksheetDescription(title){
 	$('#worksheetDescriptionPopup').slideToggle();
 }
 
+
+function updateResamplingDisplay(){
+	graphCollection.graphs[0].showLines = $('#resampleDispType').is(':checked');
+	vis.render();
+}

@@ -940,7 +940,9 @@ function popLabDragStop(event){
 		else
 			which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
 			
-			graphCollection.graphs[0]["population"+dragObj.popNum] = graphCollection.graphs[which];
+		graphCollection.graphs[0]["population"+dragObj.popNum] = graphCollection.graphs[which];
+		
+		resetResampling(0);
 	} 
 	constructVis();
 	
@@ -1154,7 +1156,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 	} else {
 		/* X-axis label */
 		graphPanel.add(pv.Label)
-			.right(function(){return graph.w/2 + 100})
+			.right(function(){return graph.w/2 + 120})
 			.bottom(10)
 			.textAlign("center")
 			.textAngle(0)
@@ -1185,8 +1187,8 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.left(function(d) {return graph.x(d) })
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
-			.strokeStyle(pv.rgb(255,0,0,0.1))
-			.visible(function(){return $('#resampleDispType').is(':checked')})
+			.strokeStyle(pv.rgb(0,0,255,0.3))
+			.visible(function(){return graph.showLines})
 		
 		//Dots
 		graphPanel.add(pv.Dot)
@@ -1194,12 +1196,12 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.left(function(d) {return d.x })
 			.bottom(function(d) { return d.y + graph.baseLine })
 			.radius(function() { return graphCollection.bucketDotSize})
-			.fillStyle(function(d) { return "black" })
+			.fillStyle(function(d) { return "grey" })
 			.strokeStyle(function(d) { return "black" })
 			.lineWidth(function(d){
 				return 2;
 			})
-			.visible(function(){return $('#resampleDispType').is(':checked') == false})
+			.visible(function(){return !graph.showLines})
 		
 		/* Source Populations Mean Differences */
 		graphPanel.add(pv.Rule)
@@ -1210,6 +1212,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle("red")
+			.lineWidth(2)
 	}
 }
 
@@ -3054,7 +3057,11 @@ function constructResampleControlPanel(graph, index){
 								"size=\"4\""+
 								"onchange=\"javascript:changeResampleIterations('resampleN"+index+"',"+index+")\""+
 								"value='"+graph.resamplingIterations+"'></td>"+
-								"<td><label for=\"resampleDispType\">Lines</label><input type=\"checkbox\" id=\"resampleDispType\" checked></td>"
+								"<td><label for=\"resampleDispType\">Lines</label>"+
+								"<input type=\"checkbox\" id=\"resampleDispType\" "+
+								"onchange=\"javascript:updateResamplingDisplay()\" "+
+								(graph.showLines?"checked":"")+
+								"></td>"
 							 "</tr></table>";
 							 
 	$('#resampleOptions'+index).html(string);
@@ -3157,12 +3164,30 @@ function resample(index){
 	}
 }
 
-function resetResample(index){
+function resetResampling(index){
+	var graph = graphCollection.graphs[index];
 	
+	graph.data[graph.resampleSet] = [];
+	
+	if (resamplingInProgress){
+		resamplingInProgress = false;
+		$('#resampleToggleButton'+index).val("Start");
+		clearTimeout(resampleTimer);
+	}
+	
+	vis.render();
 }
 
 function changeResampleIterations(textbox, index){
+	var iterations = parseInt($('#'+textbox).val());
+	if (!isNaN(iterations) && iterations >= 100 && iterations <= 10000){
+		resetResampling(0);
+		$('#'+textbox).val(graphCollection.graphs[index].resamplingIterations = iterations);
+	} else {
+		$('#'+textbox).val(graphCollection.graphs[index].resamplingIterations);
+	}
 	
+	vis.render();
 }
 
 function constructLegendPanel(graph, index){
