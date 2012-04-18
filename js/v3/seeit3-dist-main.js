@@ -990,6 +990,8 @@ function popLabTouchEnd(event){
 	var curY = touch.finalY - 
 							$('span').offset().top - 
 							graphCollection.padTop;
+							
+	console.log(curX+"---"+curY);
 						 
 	//touch.finalX = curX;
 	//touch.finalY = curY;
