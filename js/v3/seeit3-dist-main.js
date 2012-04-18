@@ -969,8 +969,8 @@ function popLabTouchStart(event, popNum){
 								 .css('top',event.targetTouches[0].pageY)
 								 .css('z-index', 10000);
 	
-	document.addEventListener("touchmove", popLabDragGo,   true);
-	document.addEventListener("touchend",   popLabDragStop, true);
+	document.addEventListener("touchmove", popLabTouchMove,   true);
+	document.addEventListener("touchend",   popLabTouchStop, true);
 }
 
 function popLabTouchMove(event){
