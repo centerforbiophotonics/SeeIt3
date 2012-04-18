@@ -969,8 +969,8 @@ function popLabTouchStart(event, popNum){
 								 .css('top',event.targetTouches[0].pageY)
 								 .css('z-index', 10000);
 	
-	document.addEventListener("touchmove", popLabTouchMove,   true);
-	document.addEventListener("touchend",   popLabTouchEnd, true);
+	//document.addEventListener("touchmove", popLabTouchMove,   true);
+	//document.addEventListener("touchend",   popLabTouchEnd, true);
 }
 
 function popLabTouchMove(event){
@@ -1005,8 +1005,8 @@ function popLabTouchEnd(event){
 	} 
 	constructVis();
 	
-	document.removeEventListener("touchmove", popLabTouchMove, true);
-	document.removeEventListener("touchend", popLabTouchEnd, true);
+	//document.removeEventListener("touchmove", popLabTouchMove, true);
+	//document.removeEventListener("touchend", popLabTouchEnd, true);
 }
 
 
