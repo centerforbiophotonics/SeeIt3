@@ -983,17 +983,13 @@ function popLabTouchMove(event){
 function popLabTouchEnd(event){
 	$('#dragFeedback').hide();
 	
-	var curX = touch.finalX;
+	var curX = touch.finalX -
+							$('span').offset().left -
+							graphCollection.padLeft + 14;
 	
-						 //event.targetTouches[0].pageX -
-						 //$('span').offset().left -
-						 //graphCollection.padLeft + 14;
-							
-	var curY = touch.finalY;
-	
-						 //event.targetTouches[0].pageY - 
-						 //$('span').offset().top - 
-						 //graphCollection.padTop;
+	var curY = touch.finalY - 
+							$('span').offset().top - 
+							graphCollection.padTop;
 						 
 	//touch.finalX = curX;
 	//touch.finalY = curY;
