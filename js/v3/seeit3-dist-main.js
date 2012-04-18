@@ -8,6 +8,8 @@ var updateTimer = null;
 
 var resamplingInProgress = false;
 var resampleTimer = null;
+var resamplePop1Mean = null;
+var resamplePop2Mean = null;
 
 var exampleSpreadsheets = [
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
@@ -3238,6 +3240,8 @@ function toggleResampling(index){
 	} else {
 		resamplingInProgress = true;
 		$('#resampleToggleButton'+index).val("Stop");
+		resamplePop1Mean = graphCollection.graphs[index].population1.getMeanMedianMode()[0];
+		resamplePop2Mean = graphCollection.graphs[index].population2.getMeanMedianMode()[0];
 		resampleTimer = setTimeout("resample("+index+")", 1);
 	}
 }
@@ -3287,9 +3291,10 @@ function resample(index){
 		
 		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
 																				"value":group1Mean-group2Mean});
-																				
-		var min = -1*Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]) - 1;
-		var max = Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]) + 1;
+		//var pop1Mean = graph.population1.getMeanMedianMode()[0];
+		//var pop2Mean = graph.population2.getMeanMedianMode()[0];
+		var min = -1*Math.abs(resamplePop1Mean - resamplePop2Mean) - 1;
+		var max = Math.abs(resamplePop1Mean - resamplePop2Mean) + 1;
 		for (i=0;i<graph.data[graph.resampleSet].length;i++){
 			if(min > graph.data[graph.resampleSet][i].value)
 				min = graph.data[graph.resampleSet][i].value;
@@ -3299,7 +3304,8 @@ function resample(index){
 				
 		}
 		
-		graph.setXScale(min,max);
+		if (graph.scaleMin > min || graph.scaleMax < max)
+			graph.setXScale(min,max);
 		
 		if (graph.data[graph.resampleSet].length == 1)
 			constructVis();
