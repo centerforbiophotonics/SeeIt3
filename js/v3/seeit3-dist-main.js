@@ -1005,8 +1005,8 @@ function popLabTouchStop(event){
 	} 
 	constructVis();
 	
-	document.removeEventListener("touchmove", popLabDragGo, true);
-	document.removeEventListener("touchend", popLabDragStop, true);
+	document.removeEventListener("touchmove", popLabTouchMove, true);
+	document.removeEventListener("touchend", popLabTouchStop, true);
 }
 
 
