@@ -3082,7 +3082,9 @@ function constructSampleButton(graph, index){
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
 							 "<td><input type=\"button\" class=\"button\" value=\"Sample\""+
-							 "onmousedown=\"javascript:enterUpdateLoop("+index+")\"></td></tr></table>";//+
+							 "onmousedown=\"javascript:enterUpdateLoop("+index+")\""+
+							 "ontouchstart=\"javascript:enterUpdateLoop("+index+")\""+
+							 "></td></tr></table>";//+
 							 //"onmouseup=\"javascript:exitUpdateLoop()\"></td></tr></table>";
 							 //"onclick=\"javascript:updateMultipleSamples("+index+")\">";
 							 
@@ -3114,7 +3116,7 @@ function enterUpdateLoop(index){
 }
 
 function updateMultipleSamples(sourceIndex, firstTime){
-	console.log("enter");
+	console.log("update");
 	for (var i =1; i <= graphCollection.graphs[sourceIndex].samplingToHowMany; i++)
 		updateSample("sampleN"+(sourceIndex+i),sourceIndex+i);
 	if (firstTime)
@@ -3124,7 +3126,7 @@ function updateMultipleSamples(sourceIndex, firstTime){
 }
 
 function exitUpdateLoop(){
-	console.log("enter");
+	console.log("exit");
 	clearTimeout(updateTimer);
 	document.removeEventListener("mouseup", exitUpdateLoop, true);
 }
