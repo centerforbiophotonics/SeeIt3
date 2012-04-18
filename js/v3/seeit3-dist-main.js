@@ -1006,6 +1006,8 @@ function popLabTouchEnd(event){
 		graphCollection.graphs[0]["population"+dragObj.popNum] = graphCollection.graphs[which];
 		
 		resetResampling(0);
+		
+		console.log(which);
 	} 
 	
 	touch.touch = true;
