@@ -170,6 +170,7 @@ GraphCollection.prototype = {
 		this.data[this.graphs[index].sampleSet[number-1]] = [];
 		
 		this.graphs[index+number].sampleNumber = number;
+		this.graphs[index+number].baseLine = 45;
 		
 		if (number == this.graphs[index].samplingToHowMany)
 			for (var i = number; i>0; i--){
