@@ -3084,6 +3084,7 @@ function constructSampleButton(graph, index){
 							 "<td><input type=\"button\" class=\"button\" value=\"Sample\""+
 							 "onmousedown=\"javascript:enterUpdateLoop("+index+")\""+
 							 "ontouchstart=\"javascript:enterUpdateLoop("+index+")\""+
+							 "ontouchend=\"javascript:exitUpdateLoop()\""+
 							 "></td></tr></table>";//+
 							 //"onmouseup=\"javascript:exitUpdateLoop()\"></td></tr></table>";
 							 //"onclick=\"javascript:updateMultipleSamples("+index+")\">";
