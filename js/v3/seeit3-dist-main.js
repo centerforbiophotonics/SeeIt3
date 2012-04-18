@@ -970,7 +970,7 @@ function popLabTouchStart(event, popNum){
 								 .css('z-index', 10000);
 	
 	document.addEventListener("touchmove", popLabTouchMove,   true);
-	document.addEventListener("touchend",   popLabTouchStop, true);
+	document.addEventListener("touchend",   popLabTouchEnd, true);
 }
 
 function popLabTouchMove(event){
@@ -981,7 +981,7 @@ function popLabTouchMove(event){
 								 .css('z-index', 10000);
 }
 
-function popLabTouchStop(event){
+function popLabTouchEnd(event){
 	$('#dragFeedback').hide();
 	
 	var curX = event.targetTouches[0].pageX -
@@ -1006,7 +1006,7 @@ function popLabTouchStop(event){
 	constructVis();
 	
 	document.removeEventListener("touchmove", popLabTouchMove, true);
-	document.removeEventListener("touchend", popLabTouchStop, true);
+	document.removeEventListener("touchend", popLabTouchEnd, true);
 }
 
 
