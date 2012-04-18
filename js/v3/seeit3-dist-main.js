@@ -951,6 +951,64 @@ function popLabDragStop(event){
 	document.removeEventListener("mouseup",   popLabDragStop, true);
 }
 
+function popLabTouchStart(event, popNum){
+	if (touch.touch){
+		touch.touch = false;
+		return;
+	}
+	
+	event.preventDefault();
+	
+	dragObj = new Object();
+	dragObj.popNum = popNum;
+	
+	$('#dragFeedback').html("Population "+popNum);
+	$('#dragFeedback').show();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.targetTouches[0].pageX)
+								 .css('top',event.targetTouches[0].pageY)
+								 .css('z-index', 10000);
+	
+	document.addEventListener("touchmove", popLabDragGo,   true);
+	document.addEventListener("touchend",   popLabDragStop, true);
+}
+
+function popLabTouchMove(event){
+	event.preventDefault();
+	$('#dragFeedback').css('position', 'absolute')
+								 .css('left',event.targetTouches[0].pageX)
+								 .css('top',event.targetTouches[0].pageY)
+								 .css('z-index', 10000);
+}
+
+function popLabTouchStop(event){
+	$('#dragFeedback').hide();
+	
+	var curX = event.targetTouches[0].pageX -
+						 $('span').offset().left -
+						 graphCollection.padLeft + 14;
+							
+	var curY = event.targetTouches[0].pageY - 
+						 $('span').offset().top - 
+						 graphCollection.padTop;
+						 
+	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
+		var which;
+		if (graphCollection.graphs.length > 4)
+			which = parseInt(curY/graphCollection.defaultGraphHeight);
+		else
+			which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
+			
+		graphCollection.graphs[0]["population"+dragObj.popNum] = graphCollection.graphs[which];
+		
+		resetResampling(0);
+	} 
+	constructVis();
+	
+	document.removeEventListener("touchmove", popLabDragGo, true);
+	document.removeEventListener("touchend", popLabDragStop, true);
+}
+
 
 function closeColorPickers(){
 	var picker = 0;
