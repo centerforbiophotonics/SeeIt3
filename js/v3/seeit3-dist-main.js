@@ -974,9 +974,16 @@ function popLabTouchStart(event, popNum){
 
 function popLabTouchMove(event){
 	event.preventDefault();
+	
+	var curX = event.targetTouches[0].clientX;
+	var curY = event.targetTouches[0].clientY;
+	
+	touch.finalX = curX;
+	touch.finalY = curY;
+	
 	$('#dragFeedback').css('position', 'absolute')
-								 .css('left',event.targetTouches[0].pageX)
-								 .css('top',event.targetTouches[0].pageY)
+								 .css('left',curX)
+								 .css('top',curY)
 								 .css('z-index', 10000);
 }
 
