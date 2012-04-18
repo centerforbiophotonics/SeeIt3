@@ -3084,7 +3084,7 @@ function constructSampleButton(graph, index){
 							 "<td><input type=\"button\" class=\"button\" value=\"Sample\""+
 							 "onmousedown=\"javascript:enterUpdateLoop("+index+")\""+
 							 "ontouchstart=\"javascript:enterUpdateLoop("+index+")\""+
-							 "ontouchend=\"javascript:exitUpdateLoop(true)\""+
+							 "ontouchend=\"javascript:exitUpdateLoop(); touch.touch = true;\""+
 							 "></td></tr></table>";//+
 							 //"onmouseup=\"javascript:exitUpdateLoop()\"></td></tr></table>";
 							 //"onclick=\"javascript:updateMultipleSamples("+index+")\">";
@@ -3114,14 +3114,12 @@ function enterUpdateLoop(index){
 		touch.touch = false;
 		return;
 	}
-	console.log("enter");
 	
 	updateMultipleSamples(index, true);
 	document.addEventListener("mouseup", exitUpdateLoop, true);
 }
 
 function updateMultipleSamples(sourceIndex, firstTime){
-	console.log("update");
 	for (var i =1; i <= graphCollection.graphs[sourceIndex].samplingToHowMany; i++)
 		updateSample("sampleN"+(sourceIndex+i),sourceIndex+i);
 	if (firstTime)
@@ -3130,12 +3128,11 @@ function updateMultipleSamples(sourceIndex, firstTime){
 		updateTimer = setTimeout("updateMultipleSamples("+sourceIndex+", false)", 1);
 }
 
-function exitUpdateLoop(touched){
-	console.log("exit");
+function exitUpdateLoop(){
 	clearTimeout(updateTimer);
 	document.removeEventListener("mouseup", exitUpdateLoop, true);
-	if (touched)
-		touch.touch = true;
+	//if (touched)
+		//touch.touch = true;
 }
 
 function constructSampleOptionsMenu(graph, index){
