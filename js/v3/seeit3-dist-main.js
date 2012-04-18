@@ -983,16 +983,20 @@ function popLabTouchMove(event){
 function popLabTouchEnd(event){
 	$('#dragFeedback').hide();
 	
-	var curX = event.targetTouches[0].pageX -
-						 $('span').offset().left -
-						 graphCollection.padLeft + 14;
+	var curX = touch.finalX;
+	
+						 //event.targetTouches[0].pageX -
+						 //$('span').offset().left -
+						 //graphCollection.padLeft + 14;
 							
-	var curY = event.targetTouches[0].pageY - 
-						 $('span').offset().top - 
-						 graphCollection.padTop;
+	var curY = touch.finalY;
+	
+						 //event.targetTouches[0].pageY - 
+						 //$('span').offset().top - 
+						 //graphCollection.padTop;
 						 
-	touch.finalX = curX;
-	touch.finalY = curY;
+	//touch.finalX = curX;
+	//touch.finalY = curY;
 						 
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		var which;
