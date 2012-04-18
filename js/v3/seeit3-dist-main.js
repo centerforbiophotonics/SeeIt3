@@ -952,10 +952,12 @@ function popLabDragStop(event){
 }
 
 function popLabTouchStart(event, popNum){
-	if (touch.touch){
-		touch.touch = false;
-		return;
-	}
+	
+	var curX = event.targetTouches[0].clientX;
+	var curY = event.targetTouches[0].clientY;
+	
+	touch.finalX = curX;
+	touch.finalY = curY;
 	
 	event.preventDefault();
 	
@@ -965,12 +967,9 @@ function popLabTouchStart(event, popNum){
 	$('#dragFeedback').html("Population "+popNum);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
-								 .css('left',event.targetTouches[0].pageX)
-								 .css('top',event.targetTouches[0].pageY)
+								 .css('left',curX)
+								 .css('top',curY)
 								 .css('z-index', 10000);
-	
-	//document.addEventListener("touchmove", popLabTouchMove,   true);
-	//document.addEventListener("touchend",   popLabTouchEnd, true);
 }
 
 function popLabTouchMove(event){
@@ -992,6 +991,9 @@ function popLabTouchEnd(event){
 						 $('span').offset().top - 
 						 graphCollection.padTop;
 						 
+	touch.finalX = curX;
+	touch.finalY = curY;
+						 
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		var which;
 		if (graphCollection.graphs.length > 4)
@@ -1003,10 +1005,10 @@ function popLabTouchEnd(event){
 		
 		resetResampling(0);
 	} 
-	constructVis();
 	
-	//document.removeEventListener("touchmove", popLabTouchMove, true);
-	//document.removeEventListener("touchend", popLabTouchEnd, true);
+	touch.touch = true;
+	
+	constructVis();
 }
 
 
