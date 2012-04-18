@@ -3084,7 +3084,7 @@ function constructSampleButton(graph, index){
 							 "<td><input type=\"button\" class=\"button\" value=\"Sample\""+
 							 "onmousedown=\"javascript:enterUpdateLoop("+index+")\""+
 							 "ontouchstart=\"javascript:enterUpdateLoop("+index+")\""+
-							 "ontouchend=\"javascript:exitUpdateLoop()\""+
+							 "ontouchend=\"javascript:exitUpdateLoop(true)\""+
 							 "></td></tr></table>";//+
 							 //"onmouseup=\"javascript:exitUpdateLoop()\"></td></tr></table>";
 							 //"onclick=\"javascript:updateMultipleSamples("+index+")\">";
@@ -3110,6 +3110,10 @@ function positionSampleButton(graph, index){
 }
 
 function enterUpdateLoop(index){
+	if (touch.touch){
+		touch.touch = false;
+		return;
+	}
 	console.log("enter");
 	
 	updateMultipleSamples(index, true);
@@ -3126,10 +3130,12 @@ function updateMultipleSamples(sourceIndex, firstTime){
 		updateTimer = setTimeout("updateMultipleSamples("+sourceIndex+", false)", 1);
 }
 
-function exitUpdateLoop(){
+function exitUpdateLoop(touched){
 	console.log("exit");
 	clearTimeout(updateTimer);
 	document.removeEventListener("mouseup", exitUpdateLoop, true);
+	if (touched)
+		touch.touch = true;
 }
 
 function constructSampleOptionsMenu(graph, index){
