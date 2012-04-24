@@ -6,10 +6,13 @@ var fontString = "bold 14px arial";
 var dragging = false;
 var updateTimer = null;
 
+//variables for resampling
 var resamplingInProgress = false;
 var resampleTimer = null;
 var resamplePop1Mean = null;
 var resamplePop2Mean = null;
+var resampleResetPopulation = true;
+var population = [];
 
 var exampleSpreadsheets = [
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
@@ -1265,7 +1268,12 @@ function constructResamplingGraph(graphPanel, graph, index){
 		
 		//Dots
 		graphPanel.add(pv.Dot)
-			.data(function() {return graph.getDataDrawObjects()})
+			.data(function() {
+				if (!graph.showLines)
+					return graph.getDataDrawObjects();
+				else 
+					return [];
+			})
 			.left(function(d) {return d.x })
 			.bottom(function(d) { return d.y + graph.baseLine })
 			.radius(function() { return graphCollection.bucketDotSize})
@@ -3198,11 +3206,11 @@ function constructResampleControlPanel(graph, index){
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
 							 "<td><input type=\"button\" value=\""+(resamplingInProgress?"Stop":"Start")+"\" id=\"resampleToggleButton"+index+"\""+
-							 "onclick=\"javascript:toggleResampling("+index+",false)\"></td>"+
+							 "onclick=\"javascript:toggleResampling("+index+")\"></td>"+
 							 "<td><input type=\"button\" value=\"Reset\" id=\"resampleResetButton"+index+"\""+
 							 "onclick=\"javascript:resetResampling("+index+")\"></td>"+
 							 "<td><input type=\"button\" value=\"All\" id=\"resampleAllButton"+index+"\""+
-							 "onclick=\"javascript:toggleResampling("+index+",true)\"></td>"+
+							 "onclick=\"javascript:resampleAtOnce("+index+")\"></td>"+
 							 "<td nowrap><label for=\"resampleN"+index+"\">Iterations = </label>"+
 							 "<input align=\"right\" type=\"text\" id=\"resampleN"+index+"\""+
 								"size=\"4\""+
@@ -3236,7 +3244,7 @@ function positionResampleControlPanel(graph, index){
 										.css('z-index', 1);
 }
 
-function toggleResampling(index, all){
+function toggleResampling(index){
 	if (resamplingInProgress){
 		resamplingInProgress = false;
 		$('#resampleToggleButton'+index).val("Start");
@@ -3246,36 +3254,101 @@ function toggleResampling(index, all){
 		$('#resampleToggleButton'+index).val("Stop");
 		resamplePop1Mean = graphCollection.graphs[index].population1.getMeanMedianMode()[0];
 		resamplePop2Mean = graphCollection.graphs[index].population2.getMeanMedianMode()[0];
-		if (!all)
-			resampleTimer = setTimeout("resample("+index+","+all+")", 100);
-		else
-			resample(index, all);
+		resampleTimer = setTimeout("resample("+index+")", 50);
 	}
 }
 
-function resample(index, all){
+function resampleAtOnce(index){
 	var graph = graphCollection.graphs[index];
+	var sample1Size = graph.population1.n;
+	var sample2Size = graph.population2.n;
+	var group1 = [];
 	
-	//console.log(graph.data[graph.resampleSet].length);
+	resamplePop1Mean = graphCollection.graphs[index].population1.getMeanMedianMode()[0];
+	resamplePop2Mean = graphCollection.graphs[index].population2.getMeanMedianMode()[0];
 	
-	if (graph.data[graph.resampleSet].length >= graph.resamplingIterations){
-		resamplingInProgress = false;
-		$('#resampleToggleButton'+index).val("Start");
-		if(!all)
-			clearTimeout(resampleTimer);
-		vis.render();
-	} else {
-		var graph = graphCollection.graphs[index];
-		var group1 = []; //boolean
-		var population = [];
-		var sample1Size = graph.population1.n;
-		var sample2Size = graph.population2.n;
-		
+	if (resampleResetPopulation){
+		population = [];
 		for (var i=0; i<graph.population1.includedCategories.length; i++)
 			population = population.concat(graph.data[graph.population1.includedCategories[i]]);
 			
 		for (i=0; i<graph.population2.includedCategories.length; i++)
 			population = population.concat(graph.data[graph.population2.includedCategories[i]]);
+		resampleResetPopulation = false;
+	}
+	
+	while (graph.data[graph.resampleSet].length < graph.resamplingIterations){
+		group1 = []; //boolean
+			
+		for (i=0; i<population.length; i++)
+			group1[i] = false;
+		
+		group1Counter = sample1Size;
+		
+		while (group1Counter > 0){
+			var r = rand(0, population.length);
+			if (group1[r] == false){
+				group1[r] = true;
+				group1Counter--;
+			}
+		}
+		
+		var group1Sum = 0;
+		var group2Sum = 0;
+		for (i=0; i<population.length; i++){
+			if(group1[i])
+				group1Sum += population[i].value;
+			else
+				group2Sum += population[i].value;
+		}
+		
+		var group1Mean = group1Sum / sample1Size;
+		var group2Mean = group2Sum / sample2Size;
+		
+		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
+																				"value":group1Mean-group2Mean});
+	}
+	
+	var min = -1*Math.abs(resamplePop1Mean - resamplePop2Mean) - 1;
+	var max = Math.abs(resamplePop1Mean - resamplePop2Mean) + 1;
+	for (i=0;i<graph.data[graph.resampleSet].length;i++){
+		if(min > graph.data[graph.resampleSet][i].value)
+			min = graph.data[graph.resampleSet][i].value;
+		
+		if(max < graph.data[graph.resampleSet][i].value)
+			max = graph.data[graph.resampleSet][i].value;
+	}
+	
+	if (graph.scaleMin != min || graph.scaleMax != max)
+		graph.setXScale(min,max);
+	
+	resamplingInProgress = false;
+	constructVis();
+}
+
+function resample(index, all){
+	var graph = graphCollection.graphs[index];
+	
+	if (graph.data[graph.resampleSet].length >= graph.resamplingIterations){
+		resamplingInProgress = false;
+		$('#resampleToggleButton'+index).val("Start");
+		clearTimeout(resampleTimer);
+		vis.render();
+	} else {
+		var graph = graphCollection.graphs[index];
+		var group1 = []; //boolean
+		var sample1Size = graph.population1.n;
+		var sample2Size = graph.population2.n;
+		
+		if (resampleResetPopulation){
+			population = [];
+			for (var i=0; i<graph.population1.includedCategories.length; i++)
+				population = population.concat(graph.data[graph.population1.includedCategories[i]]);
+				
+			for (i=0; i<graph.population2.includedCategories.length; i++)
+				population = population.concat(graph.data[graph.population2.includedCategories[i]]);
+			resampleResetPopulation = false;
+		}
 			
 		for (i=0; i<population.length; i++)
 			group1[i] = false;
@@ -3320,12 +3393,8 @@ function resample(index, all){
 		if (graph.data[graph.resampleSet].length == 1)
 			constructVis();
 		
-		if (!all){
-			vis.render();
-			resampleTimer = setTimeout("resample("+index+","+all+")", 100);
-		} else {
-			resample(index, all);
-		}
+		vis.render();
+		resampleTimer = setTimeout("resample("+index+")", 50);
 	}
 }
 
@@ -3333,6 +3402,7 @@ function resetResampling(index){
 	var graph = graphCollection.graphs[index];
 	
 	graph.data[graph.resampleSet] = [];
+	resampleResetPopulation = true;
 	
 	if (resamplingInProgress){
 		resamplingInProgress = false;
