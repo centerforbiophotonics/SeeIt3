@@ -904,7 +904,7 @@ function popLabDragStart(event, popNum){
 	dragObj = new Object();
 	dragObj.popNum = popNum;
 	
-	$('#dragFeedback').html("Population "+popNum);
+	$('#dragFeedback').html("Sample "+popNum);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
 								 .css('left',event.pageX)
@@ -966,7 +966,7 @@ function popLabTouchStart(event, popNum){
 	dragObj = new Object();
 	dragObj.popNum = popNum;
 	
-	$('#dragFeedback').html("Population "+popNum);
+	$('#dragFeedback').html("Sample "+popNum);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
 								 .css('left',curX)
@@ -1229,12 +1229,12 @@ function constructResamplingGraph(graphPanel, graph, index){
 	} else {
 		/* X-axis label */
 		graphPanel.add(pv.Label)
-			.right(function(){return graph.w/2 + 120})
+			.right(function(){return graph.w/2 + 140})
 			.bottom(10)
 			.textAlign("center")
 			.textAngle(0)
 			.textBaseline("bottom")
-			.text("Difference between the Means of Samples from Population 1 and Population 2")
+			.text("Difference between the Means of Samples from Sample 1 and Sample 2")
 			.font(fontString)
 		
 		/* X-axis ticks */
@@ -1278,8 +1278,8 @@ function constructResamplingGraph(graphPanel, graph, index){
 		
 		/* Source Populations Mean Differences */
 		graphPanel.add(pv.Rule)
-			.data(function() {return [Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]),
-																-1*Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0])]
+			.data(function() {return [Math.abs(resamplePop1Mean - resamplePop2Mean),
+																-1*Math.abs(resamplePop1Mean - resamplePop2Mean)]
 			})
 			.left(function(d) {return graph.x(d) })
 			.bottom(function(){return graph.baseLine})
@@ -1292,7 +1292,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.data(function(){
 				var inside = 0;
 				graph.data[graph.resampleSet].forEach(function(d){
-					if (Math.abs(d.value) < Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))
+					if (Math.abs(d.value) < Math.abs(resamplePop1Mean - resamplePop2Mean))
 						inside++;
 				});
 					
@@ -1308,7 +1308,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.data(function(){
 				var right = 0;
 				graph.data[graph.resampleSet].forEach(function(d){
-					if (d.value >= Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))
+					if (d.value >= Math.abs(resamplePop1Mean - resamplePop2Mean))
 						right++;
 				});
 					
@@ -1317,14 +1317,14 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.textAlign("left")
 			.textStyle("red")
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine})
-			.left(function(){return graph.x(Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))})
+			.left(function(){return graph.x(Math.abs(resamplePop1Mean - resamplePop2Mean))})
 		
 		/* Number of points to the left*/
 		graphPanel.add(pv.Label)
 			.data(function(){
 				var left = 0;
 				graph.data[graph.resampleSet].forEach(function(d){
-					if (d.value <= -1*Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))
+					if (d.value <= -1*Math.abs(resamplePop1Mean - resamplePop2Mean))
 						left++;
 				});
 					
@@ -1333,18 +1333,20 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.textAlign("right")
 			.textStyle("red")
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine})
-			.left(function(){return graph.x(-1*Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))})
+			.left(function(){return graph.x(-1*Math.abs(resamplePop1Mean - resamplePop2Mean))})
 	
 		/* Percentage outside lines */
 		graphPanel.add(pv.Label)
 			.data(function(){
 				var outside = 0;
 				graph.data[graph.resampleSet].forEach(function(d){
-					if (Math.abs(d.value) >= Math.abs(graph.population1.getMeanMedianMode()[0] - graph.population2.getMeanMedianMode()[0]))
+					if (Math.abs(d.value) >= Math.abs(resamplePop1Mean - resamplePop2Mean))
 						outside++;
 				});
 					
-				return [outside+" / "+graph.data[graph.resampleSet].length+" x 100 = "+(outside/graph.data[graph.resampleSet].length*100).toFixed(1)+"%"];	
+				return [outside+" / "+graph.data[graph.resampleSet].length+" x 100 = "+(graph.data[graph.resampleSet].length*100 != 0 ?
+																																								(outside/graph.data[graph.resampleSet].length*100).toFixed(1) :
+																																								0)+"%"];	
 			})
 			.textAlign("center")
 			.textStyle("blue")
@@ -2109,7 +2111,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.textAlign("center")
 			.textAngle(0)
 			.textBaseline("bottom")
-			.text(function(){return "N = " + graph.n})
+			.text(function(){return "n = " + graph.n})
 			.font(fontString);
 			
 		/* X-axis ticks */
@@ -3196,9 +3198,11 @@ function constructResampleControlPanel(graph, index){
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
 							 "<td><input type=\"button\" value=\""+(resamplingInProgress?"Stop":"Start")+"\" id=\"resampleToggleButton"+index+"\""+
-							 "onclick=\"javascript:toggleResampling("+index+")\"></td>"+
+							 "onclick=\"javascript:toggleResampling("+index+",false)\"></td>"+
 							 "<td><input type=\"button\" value=\"Reset\" id=\"resampleResetButton"+index+"\""+
 							 "onclick=\"javascript:resetResampling("+index+")\"></td>"+
+							 "<td><input type=\"button\" value=\"All\" id=\"resampleAllButton"+index+"\""+
+							 "onclick=\"javascript:toggleResampling("+index+",true)\"></td>"+
 							 "<td nowrap><label for=\"resampleN"+index+"\">Iterations = </label>"+
 							 "<input align=\"right\" type=\"text\" id=\"resampleN"+index+"\""+
 								"size=\"4\""+
@@ -3232,7 +3236,7 @@ function positionResampleControlPanel(graph, index){
 										.css('z-index', 1);
 }
 
-function toggleResampling(index){
+function toggleResampling(index, all){
 	if (resamplingInProgress){
 		resamplingInProgress = false;
 		$('#resampleToggleButton'+index).val("Start");
@@ -3242,19 +3246,30 @@ function toggleResampling(index){
 		$('#resampleToggleButton'+index).val("Stop");
 		resamplePop1Mean = graphCollection.graphs[index].population1.getMeanMedianMode()[0];
 		resamplePop2Mean = graphCollection.graphs[index].population2.getMeanMedianMode()[0];
-		resampleTimer = setTimeout("resample("+index+")", 1);
+		if (!all)
+			resampleTimer = setTimeout("resample("+index+","+all+")", 100);
+		else
+			resample(index, all);
 	}
 }
 
-function resample(index){
+function resample(index, all){
 	var graph = graphCollection.graphs[index];
 	
+	//console.log(graph.data[graph.resampleSet].length);
+	
 	if (graph.data[graph.resampleSet].length >= graph.resamplingIterations){
-		//clearTimeout(resampleTimer);
+		resamplingInProgress = false;
+		$('#resampleToggleButton'+index).val("Start");
+		if(!all)
+			clearTimeout(resampleTimer);
+		vis.render();
 	} else {
 		var graph = graphCollection.graphs[index];
 		var group1 = []; //boolean
 		var population = [];
+		var sample1Size = graph.population1.n;
+		var sample2Size = graph.population2.n;
 		
 		for (var i=0; i<graph.population1.includedCategories.length; i++)
 			population = population.concat(graph.data[graph.population1.includedCategories[i]]);
@@ -3265,7 +3280,7 @@ function resample(index){
 		for (i=0; i<population.length; i++)
 			group1[i] = false;
 		
-		group1Counter = Math.floor(population.length/2);
+		group1Counter = sample1Size;
 		
 		while (group1Counter > 0){
 			var r = rand(0, population.length);
@@ -3284,15 +3299,11 @@ function resample(index){
 				group2Sum += population[i].value;
 		}
 		
-		var group1Mean = group1Sum / Math.floor(population.length/2);
-		var group2Mean = group2Sum / (population.length - Math.floor(population.length/2));
-		
-		//console.log(group1Mean+"..."+group2Mean);
+		var group1Mean = group1Sum / sample1Size;
+		var group2Mean = group2Sum / sample2Size;
 		
 		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
 																				"value":group1Mean-group2Mean});
-		//var pop1Mean = graph.population1.getMeanMedianMode()[0];
-		//var pop2Mean = graph.population2.getMeanMedianMode()[0];
 		var min = -1*Math.abs(resamplePop1Mean - resamplePop2Mean) - 1;
 		var max = Math.abs(resamplePop1Mean - resamplePop2Mean) + 1;
 		for (i=0;i<graph.data[graph.resampleSet].length;i++){
@@ -3301,17 +3312,20 @@ function resample(index){
 			
 			if(max < graph.data[graph.resampleSet][i].value)
 				max = graph.data[graph.resampleSet][i].value;
-				
 		}
 		
-		if (graph.scaleMin > min || graph.scaleMax < max)
+		if (graph.scaleMin != min || graph.scaleMax != max)
 			graph.setXScale(min,max);
 		
 		if (graph.data[graph.resampleSet].length == 1)
 			constructVis();
 		
-		vis.render();
-		resampleTimer = setTimeout("resample("+index+")", 50);
+		if (!all){
+			vis.render();
+			resampleTimer = setTimeout("resample("+index+","+all+")", 100);
+		} else {
+			resample(index, all);
+		}
 	}
 }
 
@@ -3403,7 +3417,7 @@ function constructPopulationLabels(){
 								"ontouchstart=\"popLabTouchStart(event, 1)\""+
 								"ontouchmove=\"popLabTouchMove(event, 1)\""+
 								"ontouchend=\"popLabTouchEnd(event, 1)\""+
-								">Population 1</div>"
+								">Sample 1</div>"
 		
 	var popLab2 = "<div class=\"populationLabels\" id=\"population2\""+
 								"style=\"color:black; background-color:white;\""+
@@ -3413,7 +3427,7 @@ function constructPopulationLabels(){
 								"ontouchstart=\"popLabTouchStart(event, 2)\""+
 								"ontouchmove=\"popLabTouchMove(event, 2)\""+
 								"ontouchend=\"popLabTouchEnd(event, 2)\""+
-								">Population 2</div>"
+								">Sample 2</div>"
 		
 	$('body').prepend(popLab1);
 	$('body').prepend(popLab2);
