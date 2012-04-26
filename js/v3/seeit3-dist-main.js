@@ -1259,12 +1259,12 @@ function constructResamplingGraph(graphPanel, graph, index){
 		
 		/* Lines */
 		graphPanel.add(pv.Rule)
-			.data(function() {return graph.dataVals()})
-			.left(function(d) {return graph.x(d) })
+			.data(function() {return graph.data[graph.resampleSet] })
+			.left(function(d) {return graph.x(d.value) })
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
-			.strokeStyle(pv.rgb(0,0,255,0.3))
-			.visible(function(){return graph.showLines})
+			.strokeStyle(pv.rgb(0,0,255,0.2))
+			.visible(function(){return graph.showLines && this.index <= graph.resamplingIterations})
 		
 		//Dots
 		graphPanel.add(pv.Dot)
@@ -1299,8 +1299,9 @@ function constructResamplingGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Label)
 			.data(function(){
 				var inside = 0;
-				graph.data[graph.resampleSet].forEach(function(d){
-					if (Math.abs(d.value) < Math.abs(resamplePop1Mean - resamplePop2Mean))
+				graph.data[graph.resampleSet].forEach(function(d, index){
+					if (Math.abs(d.value) < Math.abs(resamplePop1Mean - resamplePop2Mean) &&
+							index < graph.resamplingIterations)
 						inside++;
 				});
 					
@@ -1315,8 +1316,9 @@ function constructResamplingGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Label)
 			.data(function(){
 				var right = 0;
-				graph.data[graph.resampleSet].forEach(function(d){
-					if (d.value >= Math.abs(resamplePop1Mean - resamplePop2Mean))
+				graph.data[graph.resampleSet].forEach(function(d, index){
+					if (d.value >= Math.abs(resamplePop1Mean - resamplePop2Mean) &&
+							index < graph.resamplingIterations)
 						right++;
 				});
 					
@@ -1331,8 +1333,9 @@ function constructResamplingGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Label)
 			.data(function(){
 				var left = 0;
-				graph.data[graph.resampleSet].forEach(function(d){
-					if (d.value <= -1*Math.abs(resamplePop1Mean - resamplePop2Mean))
+				graph.data[graph.resampleSet].forEach(function(d, index){
+					if (d.value <= -1*Math.abs(resamplePop1Mean - resamplePop2Mean) &&
+							index < graph.resamplingIterations)
 						left++;
 				});
 					
@@ -1347,14 +1350,18 @@ function constructResamplingGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Label)
 			.data(function(){
 				var outside = 0;
-				graph.data[graph.resampleSet].forEach(function(d){
-					if (Math.abs(d.value) >= Math.abs(resamplePop1Mean - resamplePop2Mean))
+				graph.data[graph.resampleSet].forEach(function(d, index){
+					if (Math.abs(d.value) >= Math.abs(resamplePop1Mean - resamplePop2Mean) &&
+							index < graph.resamplingIterations)
 						outside++;
 				});
 					
-				return [outside+" / "+graph.data[graph.resampleSet].length+" x 100 = "+(graph.data[graph.resampleSet].length*100 != 0 ?
-																																								(outside/graph.data[graph.resampleSet].length*100).toFixed(1) :
-																																								0)+"%"];	
+				return [outside+" / "+
+								(Math.min(graph.data[graph.resampleSet].length, graph.resamplingIterations))+
+								" x 100 = "+
+								(graph.data[graph.resampleSet].length*100 != 0 ?
+									(outside/Math.min(graph.data[graph.resampleSet].length, graph.resamplingIterations)*100).toFixed(1) : 0)+
+								"%"];	
 			})
 			.textAlign("center")
 			.textStyle("blue")
@@ -3416,8 +3423,16 @@ function resetResampling(index){
 function changeResampleIterations(textbox, index){
 	var iterations = parseInt($('#'+textbox).val());
 	if (!isNaN(iterations) && iterations >= 100 && iterations <= 10000){
-		resetResampling(0);
-		$('#'+textbox).val(graphCollection.graphs[index].resamplingIterations = iterations);
+		//resetResampling(0);
+		//if (graphCollection.graphs[index].resamplingIterations < iterations){
+			//$('#'+textbox).val(graphCollection.graphs[index].resamplingIterations = iterations);
+			//resetResampling(0);
+			//resampleAtOnce(index);
+		//} else {
+			$('#'+textbox).val(graphCollection.graphs[index].resamplingIterations = iterations);
+		//}
+			
+		
 	} else {
 		$('#'+textbox).val(graphCollection.graphs[index].resamplingIterations);
 	}
