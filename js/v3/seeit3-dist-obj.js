@@ -84,6 +84,10 @@ function GraphCollection(){
 	this.nextResampleSetNumber = 0;
 	
 	this.resamplingEnabled = false;
+	
+	this.bwMode = false;
+	
+	this.nextDefaultCategoryNumber = 0;
 }
 
 GraphCollection.prototype = {
@@ -191,7 +195,7 @@ GraphCollection.prototype = {
 		this.data[this.graphs[0].resampleSet] = [];
 		this.graphs[0].addCategory(this.graphs[0].resampleSet);
 		this.graphs[0].fitScalesToData = true;
-		//this.graphs[0].baseLine = 47;
+		this.graphs[0].baseLine = 60;
 		
 		this.setH(this.calcGraphHeight());
 	},
@@ -588,6 +592,8 @@ Graph.prototype = {
 			if ((this.isResamplingGraph && this.includedCategories.length < 1) || !this.isResamplingGraph){
 				this.includedCategories.push(category);
 				
+				this.selectedCategory = category;
+				
 				if (this.includedCategories.length > 2){
 					this.twoLineLegend = true;
 					this.baseLine = 89;
@@ -595,10 +601,16 @@ Graph.prototype = {
 					this.twoLineLegend = false;
 					this.baseLine = 54;
 				}
+				var dataVals = this.dataVals();
 				
-				this.xMax = pv.max(this.dataVals(), function(d) { return d });
-				this.xMin = pv.min(this.dataVals(), function(d) { return d });
-				this.n = this.dataVals().length;
+				if (dataVals.length > 1){
+					this.xMax = pv.max(dataVals, function(d) { return d });
+					this.xMin = pv.min(dataVals, function(d) { return d });
+				} else {
+					this.xMax = 100.0;
+					this.xMin = 0.0;
+				}
+				this.n = dataVals.length;
 				
 				this.graphCollection.scaleAllGraphsToFit();
 				

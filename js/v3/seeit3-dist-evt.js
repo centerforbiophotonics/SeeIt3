@@ -7,23 +7,6 @@ $(window).resize(function() {
 		graphCollection.setW(graphCollection.calcGraphWidth());
 		graphCollection.setH(graphCollection.calcGraphHeight());
 		
-		
-		
-		//vis.render();
-		//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-		//positionDisplayMenu();
-		//positionWorksheetMenu();
-		//positionWorksheetURLMenu();
-		//positionAboutPopup();
-		//positionWorksheetDescriptionPopup();
-		//graphCollection.graphs.forEach(function(graph,i){
-			//positionAndSizeLegendPanel(graph,i);
-			//positionPopulationLabels();
-			//positionSampleOptions(graph,i);
-			//positionSampleButton(graph,i);
-			//positionResampleControlPanel(graph,i);
-		//})
-		
 		constructVis();
 		
 		if (graphCollection.datasetsMenuShowing)
@@ -34,7 +17,6 @@ $(window).resize(function() {
 			$('span').css('position', 'absolute')
 								 .css('left',8)
 								 .css('z-index', -1);
-		//console.log("New:" + graphCollection.w + "..." + graphCollection.h);
 	}
 });
 
@@ -331,7 +313,10 @@ $('#displayOptions').change(function(){
 	} else {
 		$('#divisionsCell').hide();
 	}
-	vis.render();
+	
+	graphCollection.bwMode = jQuery('#checkboxBWView').is(':checked');
+	
+	constructVis();
 })
 
 $("#buttonMode").change(function(){
