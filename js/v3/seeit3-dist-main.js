@@ -1264,12 +1264,24 @@ function constructResamplingGraph(graphPanel, graph, index){
 			
 		/* Lines */
 		graphPanel.add(pv.Rule)
-			.data(function() {return graph.data[graph.resampleSet] })
+			.data(function() {return (graph.resampleHistogram ? [] : graph.data[graph.resampleSet])})
 			.left(function(d) {return graph.x(d.value) })
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle(function() {return (graphCollection.bwMode ? pv.rgb(100,100,100,0.2): pv.rgb(0,0,255,0.2))})
-			.visible(function(){return graph.showLines && this.index <= graph.resamplingIterations})
+			.visible(function(){return !graph.resampleHistogram && this.index <= graph.resamplingIterations})
+		
+		/* Fixed Interval Width Histogram */
+		graphPanel.add(pv.Bar)
+			.data(function(){return (graph.resampleHistogram ? fiwHistogram(graph,partitionDataByIntervalWidth(graph)) : []) })
+			.visible(function(d) { return graph.resampleHistogram })
+			.left(function(d){return d.left})
+			.bottom(graph.baseLine)
+			.height(function(d){return d.height})
+			.width(function(d){return d.width})
+			.lineWidth(0.5)
+			.strokeStyle("green")
+			.fillStyle(pv.rgb(0,225,0,0.25));
 		
 		/* Source Populations Mean Differences */
 		graphPanel.add(pv.Rule)
@@ -3221,7 +3233,7 @@ function constructResampleControlPanel(graph, index){
 	$('body').prepend("<div class=\"resampleOptions\" id=\"resampleOptions"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='0' width='100%'><tr>"+
-							 "<td colspan=\"4\">Difference between the Means of Samples from Sample 1 and Sample 2</td></tr>"+
+							 "<td colspan=\"5\">Difference between the Means of Samples from Sample 1 and Sample 2</td></tr>"+
 							 "<tr align=\"center\"><td><input type=\"button\" value=\""+(resamplingInProgress?"Stop":"Start")+"\" id=\"resampleToggleButton"+index+"\""+
 							 "onclick=\"javascript:toggleResampling("+index+")\"></td>"+
 							 "<td><input type=\"button\" value=\"Reset\" id=\"resampleResetButton"+index+"\""+
@@ -3233,11 +3245,11 @@ function constructResampleControlPanel(graph, index){
 								"size=\"4\""+
 								"onchange=\"javascript:changeResampleIterations('resampleN"+index+"',"+index+")\""+
 								"value='"+graph.resamplingIterations+"'></td>"+
-								//"<td><label for=\"resampleDispType\">Lines</label>"+
-								//"<input type=\"checkbox\" id=\"resampleDispType\" "+
-								//"onchange=\"javascript:updateResamplingDisplay()\" "+
-								//(graph.showLines?"checked":"")+
-								//"></td>"
+								"<td><label for=\"resampleDispType\">Histogram</label>"+
+								"<input type=\"checkbox\" id=\"resampleDispType\" "+
+								"onchange=\"javascript:updateResamplingDisplay()\" "+
+								(graph.resampleHistogram?"checked":"")+
+								"></td>"
 							 "</tr></table>";
 							 
 	$('#resampleOptions'+index).html(string);

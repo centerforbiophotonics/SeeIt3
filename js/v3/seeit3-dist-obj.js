@@ -553,7 +553,7 @@ function Graph(graphCollection){
 	this.population2 = this;			//Graph Object
 	this.resampleSet = null;
 	this.resamplingIterations = 1000;
-	this.showLines = true;
+	this.resampleHistogram = false;
 }
 
 Graph.prototype = {

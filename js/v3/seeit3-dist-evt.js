@@ -932,6 +932,6 @@ function showWorksheetDescription(title){
 
 
 function updateResamplingDisplay(){
-	graphCollection.graphs[0].showLines = $('#resampleDispType').is(':checked');
+	graphCollection.graphs[0].resampleHistogram = $('#resampleDispType').is(':checked');
 	vis.render();
 }
