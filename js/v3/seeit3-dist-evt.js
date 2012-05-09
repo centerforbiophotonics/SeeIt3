@@ -753,7 +753,7 @@ $('#loadFromForm').click(function(){
 	});
 	if (validateWorksheetForm(title, cells)){
 		if (worksheetNew)
-			addWorksheet(title, cells);
+			addWorksheet(title, cells, $('#worksheetLabelsRequired').is(':checked'));
 		else
 			updateWorksheet(worksheetToEdit,title,cells);
 	}
@@ -839,30 +839,47 @@ function validateWorksheetForm(title, cells){
 	return true;
 }
 
-function addWorksheet(title, cells){
+function addWorksheet(title, cells, labelsRequired){
 	var obj = {"title": title};
-	var labelType = trim(cells[0][0]);
+	var labelType;
 	var labelMasterList = [];
 	var data = {};
 	var edited = {};
 	
-	//create labelMasterList
-	for (var y=1; y<cells.length; y++){
-		if (trim(cells[y][0]) != "")
-			labelMasterList.push(trim(cells[y][0]));
+	//create labelType
+	if (labelsRequired) {
+		labelType = trim(cells[0][0]);
+	} else {
+		labelType = "Label"
 	}
+	
+	//create labelMasterList
+	if (labelsRequired){
+		for (var y=1; y<cells.length; y++){
+			if (trim(cells[y][0]) != "")
+				labelMasterList.push(trim(cells[y][0]));
+		}	
+	} else {
+		for (var y=1; y<cells.length; y++){
+			labelMasterList.push("Default-"+y);
+		}	
+	}
+	
+
+	
 	obj.labelMasterList = labelMasterList;
 	obj.labelType = labelType;
 	
 	//create data and edited hash
-	for (var x=1; x<cells[0].length; x++){
+	
+	for (var x = (labelsRequired? 1 : 0); x<cells[0].length; x++){
 		if (trim(cells[0][x]) != ""){
 			data[trim(cells[0][x])] = [];
 			edited[trim(cells[0][x])] = true;
 			for (var y=1; y<cells.length; y++){
 				if (cells[y][0] != "" && cells[y][x] != ""){
 					data[trim(cells[0][x])].push({
-						"label":trim(cells[y][0]),
+						"label":trim(labelMasterList[y-1]),
 						"value":parseFloat(cells[y][x])
 					});
 				}

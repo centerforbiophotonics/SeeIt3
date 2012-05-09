@@ -175,14 +175,16 @@
 </div>
 
 <div id="worksheetMenu">
+	<input type='image' src='img/close.png' id='worksheetMenuClose' width='20' height='20' align='right'>
+	Values MUST be separated by tabs or spaces but not both.<br><br>
+	Title: <input type="text" class="textbox" id="worksheetTitle" style="width: 25%;"><br>
+	<label for="worksheetLabelsRequired">First Column is Label: </label> 
+	<input type="checkbox" id="worksheetLabelsRequired" checked> <br>
+	Data:<br>
+	<textarea id="worksheetText" class="textbox" ></textarea><br>
 	<input type="button" class="button" value="Load Worksheet From Form" id="loadFromForm">
 	<input type="button" class="button" value="Load Worksheet From URL" id="loadFromURL">
 	<input type="button" class="button" value="Delete" id="deleteWorksheet">
-	<input type='image' src='img/close.png' id='worksheetMenuClose' width='20' height='20' align='right'><br>
-	<hr>
-	Title: <input type="text" class="textbox" id="worksheetTitle" style="width: 25%;"><br><br>
-	Data:<br>
-	<textarea id="worksheetText" class="textbox" ></textarea><br>
 </div>
 
 <div id="worksheetURLMenu">
