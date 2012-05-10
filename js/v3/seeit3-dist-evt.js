@@ -357,13 +357,13 @@ function touchStart(event){
 
 function dataTouchStart(event){
 	if (!graphCollection.editModeEnabled){
-		var curX = event.targetTouches[0].pageX -
-							$('span').offset().left -
-							graphCollection.padLeft;
+		var curX = event.targetTouches[0].pageX;// -
+							//$('span').offset().left -
+							//graphCollection.padLeft;
 							
-		var curY = event.targetTouches[0].pageY - 
-							$('span').offset().top - 
-							graphCollection.padTop;
+		var curY = event.targetTouches[0].pageY;// - 
+							//$('span').offset().top - 
+							//graphCollection.padTop;
 							
 		var d = touch.dataObj;
 		var graph = graphCollection.graphs[touch.graphIndex];
@@ -481,8 +481,8 @@ function dataTouchMove(event){
 		}
 	} else {
 		$('#dragFeedback').css('position', 'absolute')
-									 .css('left',curX)
-									 .css('top',curY)
+									 .css('left',curX + $('span').offset().left + graphCollection.padLeft)
+									 .css('top',curY + $('span').offset().top +graphCollection.padTop)
 									 .css('z-index', 10000);
 	}
 }
