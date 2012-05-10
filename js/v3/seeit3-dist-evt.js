@@ -372,7 +372,7 @@ function dataTouchStart(event){
 		$('#dragFeedback').show();
 		$('#dragFeedback').css('position', 'absolute')
 									 .css('left',curX)
-									 .css('top',curY - 20)
+									 .css('top',curY - 30)
 									 .css('z-index', 10000);
 	}
 	return;
@@ -482,7 +482,7 @@ function dataTouchMove(event){
 	} else {
 		$('#dragFeedback').css('position', 'absolute')
 									 .css('left',curX + $('span').offset().left + graphCollection.padLeft)
-									 .css('top',curY + $('span').offset().top +graphCollection.padTop - 20)
+									 .css('top',curY + $('span').offset().top + graphCollection.padTop - 30)
 									 .css('z-index', 10000);
 	}
 }
