@@ -235,11 +235,12 @@ $('#applyOptionsToAll').click(function(event){
 				graph.udPartitions.push(pv.vector(selGraph.udPartitions[i].x, selGraph.udPartitions[i].y))
 			}
 		}
-		
-		if (selGraph.customScale)
-			graph.setXScale(selGraph.scaleMin, selGraph.scaleMax);
-			
-		graph.setXScale();
+		if (!graph.isResamplingGraph){
+			if (selGraph.customScale)
+				graph.setXScale(selGraph.scaleMin, selGraph.scaleMax);
+				
+			graph.setXScale();
+		}
 	});
 	vis.render();
 });
