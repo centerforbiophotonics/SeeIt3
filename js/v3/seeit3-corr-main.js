@@ -7,13 +7,13 @@ var dragging = false;
 var dragID = null;
 
 var exampleSpreadsheets = [
-	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
-	new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'),
-	new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'),
-	new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'),
-	new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'),
-	new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'),
-	new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'),
+	//new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
+	//new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'),
+	//new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'),
+	//new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'),
+	//new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'),
+	//new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'),
+	//new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'),
 ];
 
 /* populate dataset drop down menu */
@@ -23,7 +23,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 	if (event.refresh){
 		graphCollection.addWorksheet(event.worksheet);
 	}
-	graphCollection.addWorksheet(event.worksheet);
+	//graphCollection.addWorksheet(event.worksheet);
   numWorksheetsLoaded++;
   $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){

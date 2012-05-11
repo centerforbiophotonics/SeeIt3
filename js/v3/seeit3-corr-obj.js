@@ -700,7 +700,7 @@ Worksheet.prototype = {
 				for (var key in worksheet.data){
 					worksheet.edited[key] = false;
 				}
-				jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
+				jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet, refresh:true  });
 			},
 			error:function() {
 			alert("Could not retrieve worksheet. Is it published?");
@@ -715,8 +715,12 @@ Worksheet.prototype = {
 		worksheet.labelType = feedData.feed.entry[0].content.$t;
 		worksheet.labelMasterList = worksheet.getLabels(feedData);        
 		worksheet.title = feedData.feed.title.$t;
+		worksheet.edited = {}
 		worksheet.description = worksheet.getDescription(feedData);
-		jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet });
+		for (var key in worksheet.data){
+			worksheet.edited[key] = false;
+		}
+		jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:worksheet, refresh:true  });
 	},
 	
 	transformFeedData: function(feedData) {
