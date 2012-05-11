@@ -367,6 +367,7 @@ function constructVis(){
 				else
 					return "grey"
 			})
+			.top(15)
 			.font(fontString)
 			.visible(function() {
 				if (graphCollection.buttonText)
@@ -451,6 +452,7 @@ function constructVis(){
 				else
 				 return 32;
 			})
+			.top(15)
 			.text("Edit Mode")
 			.font(fontString)
 			.textStyle(function(){
@@ -546,6 +548,7 @@ function constructVis(){
 				else
 				 return 32;
 			})
+			.top(15)
 			.text("Fit Scales")
 			.font(fontString)
 			.textStyle(function(){return "black"})
@@ -646,6 +649,7 @@ function constructVis(){
 				else
 				 return 32;
 			})
+			.top(15)
 			.text("Resampling")
 			.font(fontString)
 			.textStyle(function(){
