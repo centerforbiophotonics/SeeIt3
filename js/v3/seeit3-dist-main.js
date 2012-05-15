@@ -3420,8 +3420,10 @@ function resample(index, all){
 				max = graph.data[graph.resampleSet][i].value;
 		}
 		
-		if (graph.scaleMin != min || graph.scaleMax != max)
+		if (graph.scaleMin != min || graph.scaleMax != max){
 			graph.setXScale(min,max);
+			graph.partitionIntervalWidth = (max-min)/100;
+		}
 		
 		if (graph.data[graph.resampleSet].length == 1)
 			constructVis();

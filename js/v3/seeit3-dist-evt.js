@@ -217,7 +217,8 @@ $('#applyOptionsToAll').click(function(event){
 		graph.fitScaleToData = selGraph.fitScaleToData;
 		graph.groupingMode = selGraph.groupingMode;
 		graph.partitionGroupSize = selGraph.partitionGroupSize;
-		graph.partitionIntervalWidth = selGraph.partitionIntervalWidth;
+		if (!graph.isResamplingGraph)
+			graph.partitionIntervalWidth = selGraph.partitionIntervalWidth;
 		graph.showMMM = selGraph.showMMM;
 		graph.showMean = selGraph.showMean;
 		graph.showMedian = selGraph.showMedian;
