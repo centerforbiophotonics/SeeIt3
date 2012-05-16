@@ -14,4 +14,4 @@ var randoms = [0.01261321664787829, 0.44285695627331734, 0.944488349603489, 0.48
 
 //exampleSpreadsheets.push(new Spreadsheet(localData));
 
-constructVis();
+//constructVis();
