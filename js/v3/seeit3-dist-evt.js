@@ -753,7 +753,7 @@ $('#loadFromForm').click(function(){
 		
 		cells.push(lineArray);
 	});
-	if (validateWorksheetForm(title, cells)){
+	if (validateWorksheetForm(title, cells, $('#worksheetLabelsRequired').is(':checked'))){
 		if (worksheetNew)
 			addWorksheet(title, cells, $('#worksheetLabelsRequired').is(':checked'));
 		else
@@ -771,7 +771,7 @@ $('#deleteWorksheet').click(function(){
 	
 });
 
-function validateWorksheetForm(title, cells){
+function validateWorksheetForm(title, cells, labelsRequired){
 	//Check for blank or default title
 	if (trim(title) == "" || title == "*** Enter Worksheet Title ***"){
 		alert("Error: Dataset requires a title.");
@@ -790,12 +790,14 @@ function validateWorksheetForm(title, cells){
 		return false;
 	}
 	
-	//Check Duplicate Labels
-	for (var i=0; i<cells.length; i++){
-		for (var j=0; j<cells.length; j++){
-			if (cells[i][0] == cells[j][0] && i!=j && cells[i][0] != ""){
-				alert("Error: Data contains duplicate labels. Duplicate label is \""+cells[j][0]+"\"");
-				return false;
+	if (labelsRequired){
+		//Check Duplicate Labels
+		for (var i=0; i<cells.length; i++){
+			for (var j=0; j<cells.length; j++){
+				if (cells[i][0] == cells[j][0] && i!=j && cells[i][0] != ""){
+					alert("Error: Data contains duplicate labels. Duplicate label is \""+cells[j][0]+"\"");
+					return false;
+				}
 			}
 		}
 	}
