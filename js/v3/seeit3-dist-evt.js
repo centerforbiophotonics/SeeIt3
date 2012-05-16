@@ -800,6 +800,14 @@ function validateWorksheetForm(title, cells, labelsRequired){
 				}
 			}
 		}
+		
+		//Check for data without label
+		for (var i=0; i<cells.length; i++){
+			if (cells[i][0] == "" && cells[i].length > 1){
+				alert("Error: Data exists without a label.");
+				return false;
+			}
+		}
 	}
 	
 	//Check Duplicate Dataset Titles
@@ -832,13 +840,7 @@ function validateWorksheetForm(title, cells, labelsRequired){
 		}
 	}
 	
-	//Check for data without label
-	for (var i=0; i<cells.length; i++){
-		if (cells[i][0] == "" && cells[i].length > 1){
-			alert("Error: Data exists without a label.");
-			return false;
-		}
-	}
+	
 	
 	return true;
 }
