@@ -554,6 +554,9 @@ function Graph(graphCollection){
 	this.resampleSet = null;
 	this.resamplingIterations = 1000;
 	this.resampleHistogram = false;
+	this.resampleDisplayMode = "line";  //"line", "histogram", "pgraph"
+	this.resamplingPVals = [];					//P Vals at significant number of iterations
+	this.resamplingMaxPVal = -1;
 }
 
 Graph.prototype = {

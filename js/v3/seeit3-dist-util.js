@@ -31,6 +31,48 @@ function updateColor(category, color){
 	}
 }
 
+//Returns an array of ints corresponding to the signficant numbers of 
+//iterations to be used in the resampling p value graph
+function pValTicks(graph){
+	var ticks = [];
+	
+	ticks.push(10);
+	ticks.push(50);
+	ticks.push(100);
+	
+	if (graph.resamplingIterations >= 500)
+		ticks.push(500);
+	
+	var nextTick = 1000;
+	while (graph.resamplingIterations >= nextTick){
+		ticks.push(nextTick);
+		
+		if (nextTick >= 10000)
+			nextTick += 10000;
+		else
+			nextTick += 1000;
+	}
+	
+	if (graph.resamplingIterations % 1000 != 0)
+		ticks.push(graph.resamplingIterations);
+		
+	return ticks;
+	
+}
+
+//Returns an array of p vals paired with significant number of iterations
+// {x: iterations, y:pVal}
+function resamplePVals(graph){
+	var ticks = pValTicks(graph);
+	var pVals = [];
+	
+	for (var i=0; i<ticks.length; i++){
+		
+		
+	}
+}
+
+
 //Takes out characters that don't work in jquery selectors
 //probably misses some and throws out some it doesn't need to
 function convertToID(set){

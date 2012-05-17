@@ -1251,13 +1251,31 @@ function constructResamplingGraph(graphPanel, graph, index){
 	} else {
 		/* X-axis ticks */
 		graphPanel.add(pv.Rule)
-			.data(function() { return graph.x.ticks() })
-			.left(function(d) {return graph.x(d)})
+			.data(function() {
+				if (graph.resampleDisplayMode != "pgraph")
+					return graph.x.ticks();
+				else
+					return pValTicks(graph);
+			})
+			.left(function(d) {
+				if (graph.resampleDisplayMode != "pgraph")
+					return graph.x(d);
+				else {
+					var x = pv.Scale.linear(0, graph.resamplingIterations).range(0, graph.w);
+					return x(d);
+				}
+			})
 			.bottom(function() {return graph.baseLine})
 			.strokeStyle("#aaa")
 			.height(5)
+			//.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 			.anchor("bottom").add(pv.Label)
-				.text(function(d) {return d.toFixed(1)})
+				.text(function(d) {
+					if (graph.resampleDisplayMode != "pgraph")
+						return d.toFixed(1)
+					else
+						return d.toFixed(0);
+				})
 				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
 			
 		/* X-axis line */
@@ -1265,18 +1283,52 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.bottom(function() {return graph.baseLine})
 			.strokeStyle("#000")
 			
+		/* Y-axis Line */
+		graphPanel.add(pv.Rule)
+		.left(0)
+		.top(10)
+		.bottom(graph.baseLine)
+		.visible(function(){return graph.resampleDisplayMode == "pgraph"})
+		
+		/* Y-axis Label */
+		graphPanel.add(pv.Label)
+			.left(-10)
+			.bottom(function(){return graph.baseLine + ((graph.h-graph.baseLine)/2)})
+			.textAlign("center")
+			.textAngle(-Math.PI/2)
+			.textBaseline("bottom")
+			.text("P Value")
+			.font(fontString)
+			.visible(function(){return graph.resampleDisplayMode == "pgraph"})
+		
+		/* P Values */
+		graphPanel.add(pv.Dot)
+			.data(function() {return graph.resamplingPVals})
+			.visible(function(){return graph.resampleDisplayMode == "pgraph"})
+			.left(function(d) { 
+				var x = pv.Scale.linear(0, graph.resamplingIterations).range(0, graph.w);
+				return x(d.x);
+			})
+			.bottom(function(d) { 
+				var y = pv.Scale.linear(0, graph.resamplingMaxPVal).range(0, graph.h-graph.baseLine);
+				return y(d.y) + graph.baseLine 
+			})
+			.radius(function() {return graphCollection.bucketDotSize})
+			.fillStyle("white")
+			.title(function(d) { return d.y })
+		
 		/* Lines */
 		graphPanel.add(pv.Rule)
-			.data(function() {return (graph.resampleHistogram ? [] : graph.data[graph.resampleSet])})
+			.data(function() {return ( graph.resampleDisplayMode == "line" ? graph.data[graph.resampleSet] : [])})
 			.left(function(d) {return graph.x(d.value) })
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle(function() {return (graphCollection.bwMode ? pv.rgb(100,100,100,0.2): pv.rgb(0,0,255,0.2))})
-			.visible(function(){return !graph.resampleHistogram && this.index <= graph.resamplingIterations})
+			.visible(function(){return graph.resampleDisplayMode == "line"})
 		
 		/* Fixed Interval Width Histogram */
 		graphPanel.add(pv.Bar)
-			.data(function(){return (graph.resampleHistogram ? fiwHistogram(graph,partitionDataByIntervalWidth(graph)) : []) })
+			.data(function(){return (graph.resampleDisplayMode == "histogram" ? fiwHistogram(graph,partitionDataByIntervalWidth(graph)) : []) })
 			.visible(function(d) { return graph.resampleHistogram })
 			.left(function(d){return d.left})
 			.bottom(graph.baseLine)
@@ -1284,6 +1336,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.width(function(d){return d.width})
 			.lineWidth(0.5)
 			.strokeStyle("green")
+			.visible(function(){return graph.resampleDisplayMode == "histogram"})
 			.fillStyle(pv.rgb(0,225,0,0.25));
 		
 		/* Source Populations Mean Differences */
@@ -1296,6 +1349,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle(function() {return (graphCollection.bwMode ? "black" : "red")})
 			.lineWidth(2)
+			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 			
 		/* Number of points between lines */
 		graphPanel.add(pv.Label)
@@ -1313,6 +1367,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "blue")})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine })
 			.left(function(){return graph.x(0)})
+			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 			
 		/* Number of points to the right */
 		graphPanel.add(pv.Label)
@@ -1330,6 +1385,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "red")})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine})
 			.left(function(){return graph.x(Math.abs(resamplePop1Mean - resamplePop2Mean))})
+			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 		
 		/* Number of points to the left*/
 		graphPanel.add(pv.Label)
@@ -1347,6 +1403,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "red")})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine})
 			.left(function(){return graph.x(-1*Math.abs(resamplePop1Mean - resamplePop2Mean))})
+			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 	
 		/* Percentage outside lines */
 		graphPanel.add(pv.Label)
@@ -1369,6 +1426,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "blue")})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.85 + graph.baseLine })
 			.left(function(){return graph.x(0)})
+			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 	}
 }
 
@@ -3236,7 +3294,11 @@ function constructResampleControlPanel(graph, index){
 	$('body').prepend("<div class=\"resampleOptions\" id=\"resampleOptions"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='0' width='100%'><tr>"+
-							 "<td colspan=\"5\">Difference between the Means of Samples from Sample 1 and Sample 2</td></tr>"+
+							 "<td colspan=\"5\" id=\"resampleLabel\" align=\"center\">"+
+							 (graph.resampleDisplayMode != "pgraph" ?
+								"Difference between the Means of Samples from Sample 1 and Sample 2" :
+								"Iterations")+
+								"</td></tr>"+
 							 "<tr align=\"center\"><td><input type=\"button\" value=\""+(resamplingInProgress?"Stop":"Start")+"\" id=\"resampleToggleButton"+index+"\""+
 							 "onclick=\"javascript:toggleResampling("+index+")\"></td>"+
 							 "<td><input type=\"button\" value=\"Reset\" id=\"resampleResetButton"+index+"\""+
@@ -3248,12 +3310,12 @@ function constructResampleControlPanel(graph, index){
 								"size=\"4\""+
 								"onchange=\"javascript:changeResampleIterations('resampleN"+index+"',"+index+")\""+
 								"value='"+graph.resamplingIterations+"'></td>"+
-								"<td><label for=\"resampleDispType\">Histogram</label>"+
-								"<input type=\"checkbox\" id=\"resampleDispType\" "+
-								"onchange=\"javascript:updateResamplingDisplay()\" "+
-								(graph.resampleHistogram?"checked":"")+
-								"></td>"
-							 "</tr></table>";
+							 "<td>Mode:<select id=\"resampleDisplayMode\" onchange=\"javascript:updateResamplingDisplay()\">"+
+									"<option value=\"line\" "+(graph.resampleDisplayMode=="line"?"selected":"")+">Line</option>"+
+									"<option value=\"histogram\" "+(graph.resampleDisplayMode=="histogram"?"selected":"")+">Histogram</option>"+
+									"<option value=\"pgraph\" "+(graph.resampleDisplayMode=="pgraph"?"selected":"")+">P Value Graph</option>"+
+								"</select></td>"+
+								"</tr></table>";
 							 
 	$('#resampleOptions'+index).html(string);
 	
@@ -3296,6 +3358,7 @@ function resampleAtOnce(index){
 	var sample1Size = graph.population1.n;
 	var sample2Size = graph.population2.n;
 	var group1 = [];
+	var ticks = pValTicks(graph);
 	
 	resamplePop1Mean = graphCollection.graphs[index].population1.getMeanMedianMode()[0];
 	resamplePop2Mean = graphCollection.graphs[index].population2.getMeanMedianMode()[0];
@@ -3340,6 +3403,26 @@ function resampleAtOnce(index){
 		
 		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
 																				"value":group1Mean-group2Mean});
+		
+		
+		if (ticks.indexOf(graph.data[graph.resampleSet].length) != -1){
+			var indx = ticks.indexOf(graph.data[graph.resampleSet].length);
+			var outside = 0;
+			graph.data[graph.resampleSet].forEach(function(d, index){
+				if (Math.abs(d.value) >= Math.abs(resamplePop1Mean - resamplePop2Mean) &&
+						index < graph.resamplingIterations)
+					outside++;
+			});
+			
+			var y = (outside+0.0)/(graph.resamplingIterations+0.0);
+			graph.resamplingPVals.push({
+				"x":ticks[indx],
+				"y":y
+			})
+			
+			if (y > graph.resamplingMaxPVal)
+				graph.resamplingMaxPVal = y;
+		}
 	}
 	
 	var min = -1*Math.abs(resamplePop1Mean - resamplePop2Mean) - 1;
@@ -3355,12 +3438,15 @@ function resampleAtOnce(index){
 	if (graph.scaleMin != min || graph.scaleMax != max)
 		graph.setXScale(min,max);
 	
+	graph.partitionIntervalWidth = (max-min)/100;
+	
 	resamplingInProgress = false;
 	constructVis();
 }
 
 function resample(index, all){
 	var graph = graphCollection.graphs[index];
+	var ticks = pValTicks(graph);
 	
 	if (graph.data[graph.resampleSet].length >= graph.resamplingIterations){
 		resamplingInProgress = false;
@@ -3425,6 +3511,25 @@ function resample(index, all){
 			graph.partitionIntervalWidth = (max-min)/100;
 		}
 		
+		if (ticks.indexOf(graph.data[graph.resampleSet].length) != -1){
+			var indx = ticks.indexOf(graph.data[graph.resampleSet].length);
+			var outside = 0;
+			graph.data[graph.resampleSet].forEach(function(d, index){
+				if (Math.abs(d.value) >= Math.abs(resamplePop1Mean - resamplePop2Mean) &&
+						index < graph.resamplingIterations)
+					outside++;
+			});
+			
+			var y = (outside+0.0)/(graph.resamplingIterations+0.0);
+			graph.resamplingPVals.push({
+				"x":ticks[indx],
+				"y":y
+			})
+			
+			if (y > graph.resamplingMaxPVal)
+				graph.resamplingMaxPVal = y;
+		}
+		
 		if (graph.data[graph.resampleSet].length == 1)
 			constructVis();
 		
@@ -3437,6 +3542,8 @@ function resetResampling(index){
 	var graph = graphCollection.graphs[index];
 	
 	graph.data[graph.resampleSet] = [];
+	graph.resamplingPVals = [];
+	graph.resamplingMaxPVal = -1;
 	resampleResetPopulation = true;
 	
 	if (resamplingInProgress){
@@ -3450,7 +3557,7 @@ function resetResampling(index){
 
 function changeResampleIterations(textbox, index){
 	var iterations = parseInt($('#'+textbox).val());
-	if (!isNaN(iterations) && iterations >= 100 && iterations <= 10000){
+	if (!isNaN(iterations) && iterations >= 100 && iterations <= 50000){
 		//resetResampling(0);
 		//if (graphCollection.graphs[index].resamplingIterations < iterations){
 			//$('#'+textbox).val(graphCollection.graphs[index].resamplingIterations = iterations);

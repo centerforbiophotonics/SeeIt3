@@ -963,6 +963,12 @@ function showWorksheetDescription(title){
 
 
 function updateResamplingDisplay(){
-	graphCollection.graphs[0].resampleHistogram = $('#resampleDispType').is(':checked');
+	//graphCollection.graphs[0].resampleHistogram = $('#resampleDispType').is(':checked');
+	graphCollection.graphs[0].resampleDisplayMode = $('#resampleDisplayMode option:selected').val();
+	
+	if (graphCollection.graphs[0].resampleDisplayMode == "pgraph")
+		$('#resampleLabel').html("Iterations");
+	else
+		$('#resampleLabel').html("Difference between the Means of Samples from Sample 1 and Sample 2");
 	vis.render();
 }
