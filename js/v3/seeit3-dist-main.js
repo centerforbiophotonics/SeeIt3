@@ -1261,14 +1261,19 @@ function constructResamplingGraph(graphPanel, graph, index){
 				if (graph.resampleDisplayMode != "pgraph")
 					return graph.x(d);
 				else {
-					var x = pv.Scale.linear(0, graph.resamplingIterations).range(0, graph.w);
-					return x(d);
+					var x = pv.Scale.linear(0, graph.resamplingIterations).range(0, graph.w-20);
+					return x(d) + 20;
 				}
 			})
 			.bottom(function() {return graph.baseLine})
 			.strokeStyle("#aaa")
 			.height(5)
-			//.visible(function(){return graph.resampleDisplayMode != "pgraph"})
+			.visible(function(d){
+				if (graph.resamplingIterations > 10000) return d % 10000 == 0;
+				else if (graph.resamplingIterations > 1000) return d % 1000 == 0;
+				else return true;
+				
+			})
 			.anchor("bottom").add(pv.Label)
 				.text(function(d) {
 					if (graph.resampleDisplayMode != "pgraph")
@@ -1281,18 +1286,52 @@ function constructResamplingGraph(graphPanel, graph, index){
 		/* X-axis line */
 		graphPanel.add(pv.Rule)
 			.bottom(function() {return graph.baseLine})
+			.width(function() {
+				if (graph.resampleDisplayMode != "pgraph") return graph.w;
+				else return graph.w-20;
+			})
+			.left(function(){
+				if (graph.resampleDisplayMode != "pgraph") return 0;
+				else return 20;
+			})
 			.strokeStyle("#000")
-			
+		
+		/* Y-axis ticks */
+		graphPanel.add(pv.Rule)
+			.data(function() {  
+				var y = pv.Scale.linear(0, graph.resamplingMaxPVal).range(0, graph.h-graph.baseLine-10);
+				if (graph.resamplingMaxPVal == 0) return [0,1];
+				else return y.ticks();
+			})
+			.bottom(function(d) {
+				var y = pv.Scale.linear(0, graph.resamplingMaxPVal).range(0, graph.h-graph.baseLine-10);
+				if (graph.resamplingMaxPVal == 0) return d*(graph.h-graph.baseLine);
+				else return graph.baseLine + y(d);
+			})
+			.left(20)
+			.strokeStyle("#aaa")
+			.width(5)
+			.visible(function(){
+				return graph.resampleDisplayMode == "pgraph" && 
+					this.index % 2 == 0 &&
+					this.index != 0;
+			})
+			.anchor("left").add(pv.Label)
+				.text(function(d) {return d.toFixed(2)})
+				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+				.left(15)
+				//.visible(function(){return this.index % 2 == 0})
+		
 		/* Y-axis Line */
 		graphPanel.add(pv.Rule)
-		.left(0)
+		.left(20)
 		.top(10)
 		.bottom(graph.baseLine)
 		.visible(function(){return graph.resampleDisplayMode == "pgraph"})
 		
 		/* Y-axis Label */
 		graphPanel.add(pv.Label)
-			.left(-10)
+			.left(-15)
 			.bottom(function(){return graph.baseLine + ((graph.h-graph.baseLine)/2)})
 			.textAlign("center")
 			.textAngle(-Math.PI/2)
@@ -1306,16 +1345,18 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.data(function() {return graph.resamplingPVals})
 			.visible(function(){return graph.resampleDisplayMode == "pgraph"})
 			.left(function(d) { 
-				var x = pv.Scale.linear(0, graph.resamplingIterations).range(0, graph.w);
-				return x(d.x);
+				var x = pv.Scale.linear(0, graph.resamplingIterations).range(0, graph.w-20);
+				return x(d.x) + 20;
 			})
 			.bottom(function(d) { 
-				var y = pv.Scale.linear(0, graph.resamplingMaxPVal).range(0, graph.h-graph.baseLine);
-				return y(d.y) + graph.baseLine 
+				var y = pv.Scale.linear(0, graph.resamplingMaxPVal).range(0, graph.h-graph.baseLine-10);
+				if (graph.resamplingMaxPVal == 0) return 0;
+				else return graph.baseLine + y(d.y);
 			})
 			.radius(function() {return graphCollection.bucketDotSize})
-			.fillStyle("white")
-			.title(function(d) { return d.y })
+			.fillStyle("grey")
+			.strokeStyle("black")
+			.title(function(d) {return "Iterations: "+d.x+", P: "+d.y.toFixed(4)})
 		
 		/* Lines */
 		graphPanel.add(pv.Rule)
@@ -3354,6 +3395,8 @@ function toggleResampling(index){
 }
 
 function resampleAtOnce(index){
+	resetResampling(index);
+	
 	var graph = graphCollection.graphs[index];
 	var sample1Size = graph.population1.n;
 	var sample2Size = graph.population2.n;
@@ -3414,7 +3457,7 @@ function resampleAtOnce(index){
 					outside++;
 			});
 			
-			var y = (outside+0.0)/(graph.resamplingIterations+0.0);
+			var y = (outside+0.0)/(graph.data[graph.resampleSet].length+0.0);
 			graph.resamplingPVals.push({
 				"x":ticks[indx],
 				"y":y
@@ -3520,7 +3563,7 @@ function resample(index, all){
 					outside++;
 			});
 			
-			var y = (outside+0.0)/(graph.resamplingIterations+0.0);
+			var y = (outside+0.0)/(graph.data[graph.resampleSet].length+0.0);
 			graph.resamplingPVals.push({
 				"x":ticks[indx],
 				"y":y
@@ -3557,7 +3600,7 @@ function resetResampling(index){
 
 function changeResampleIterations(textbox, index){
 	var iterations = parseInt($('#'+textbox).val());
-	if (!isNaN(iterations) && iterations >= 100 && iterations <= 50000){
+	if (!isNaN(iterations) && iterations >= 100 && iterations <= 200000){
 		//resetResampling(0);
 		//if (graphCollection.graphs[index].resamplingIterations < iterations){
 			//$('#'+textbox).val(graphCollection.graphs[index].resamplingIterations = iterations);
