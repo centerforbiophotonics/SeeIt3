@@ -1254,8 +1254,13 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.data(function() {
 				if (graph.resampleDisplayMode != "pgraph")
 					return graph.x.ticks();
-				else
-					return pValTicks(graph);
+				else {
+					var array = [0];
+					array = array.concat(pValTicks(graph));
+					return array;
+					//return pValTicks(graph);
+					
+				}
 			})
 			.left(function(d) {
 				if (graph.resampleDisplayMode != "pgraph")
