@@ -3361,6 +3361,9 @@ function constructResampleControlPanel(graph, index){
 									"<option value=\"histogram\" "+(graph.resampleDisplayMode=="histogram"?"selected":"")+">Histogram</option>"+
 									"<option value=\"pgraph\" "+(graph.resampleDisplayMode=="pgraph"?"selected":"")+">P Value Graph</option>"+
 								"</select></td>"+
+								"<td><label for=\"resamplingReplacement\">Replacement</label>"+
+								"<input type=\"checkbox\" id=\"resamplingReplacement\""+
+									"onchange=\"javascript:toggleResamplingReplacement("+index+")\" "+(graph.resamplingReplacement?"checked":"")+"></td>"+
 								"</tr></table>";
 							 
 	$('#resampleOptions'+index).html(string);
@@ -3369,6 +3372,13 @@ function constructResampleControlPanel(graph, index){
 		  graph.population2 == graph)
 		$('#resampleOptions'+index).hide();
 }
+
+function toggleResamplingReplacement(index){
+	var graph = graphCollection.graphs[index];
+	resetResampling(index);
+	graph.resamplingReplacement = !graph.resamplingReplacement;
+}
+
 
 function positionResampleControlPanel(graph, index){
 	var top = $('span').offset().top +
@@ -3421,37 +3431,66 @@ function resampleAtOnce(index){
 		resampleResetPopulation = false;
 	}
 	
+	var group1Sum = 0;
+	var group2Sum = 0;
+	var group1Mean = 0;
+	var group2Mean = 0;
+	
+	var r = 0;
+	
 	while (graph.data[graph.resampleSet].length < graph.resamplingIterations){
-		group1 = []; //boolean
+		group1Sum = 0;
+		group2Sum = 0;
+		group1Mean = 0;
+		group2Mean = 0;
+		
+		if (graph.resamplingReplacement){
+			console.log("replacement");
+			group1Counter = sample1Size;
+			group2Counter = sample2Size;
 			
-		for (i=0; i<population.length; i++)
-			group1[i] = false;
-		
-		group1Counter = sample1Size;
-		
-		while (group1Counter > 0){
-			var r = rand(0, population.length);
-			if (group1[r] == false){
-				group1[r] = true;
+			while (group1Counter > 0){
+				group1Sum += population[rand(0, population.length)].value;
 				group1Counter--;
 			}
+			while (group2Counter > 0){
+				group2Sum += population[rand(0, population.length)].value;
+				group2Counter--;
+			}
+			
+			group1Mean = group1Sum / sample1Size;
+			group2Mean = group2Sum / sample2Size;
+			
+		} else {
+			for (i=0; i<population.length; i++)
+				group1[i] = false;
+			
+			group1Counter = sample1Size;
+			
+			while (group1Counter > 0){
+				r = rand(0, population.length);
+				if (group1[r] == false){
+					group1[r] = true;
+					group1Counter--;
+				}
+			}
+			
+			group1Sum = 0;
+			group2Sum = 0;
+			for (i=0; i<population.length; i++){
+				if(group1[i])
+					group1Sum += population[i].value;
+				else
+					group2Sum += population[i].value;
+			}
+			
+			group1Mean = group1Sum / sample1Size;
+			group2Mean = group2Sum / sample2Size;
+			
 		}
-		
-		var group1Sum = 0;
-		var group2Sum = 0;
-		for (i=0; i<population.length; i++){
-			if(group1[i])
-				group1Sum += population[i].value;
-			else
-				group2Sum += population[i].value;
-		}
-		
-		var group1Mean = group1Sum / sample1Size;
-		var group2Mean = group2Sum / sample2Size;
 		
 		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
 																				"value":group1Mean-group2Mean});
-		
 		
 		if (ticks.indexOf(graph.data[graph.resampleSet].length) != -1){
 			var indx = ticks.indexOf(graph.data[graph.resampleSet].length);
@@ -3516,31 +3555,57 @@ function resample(index, all){
 				population = population.concat(graph.data[graph.population2.includedCategories[i]]);
 			resampleResetPopulation = false;
 		}
-			
-		for (i=0; i<population.length; i++)
-			group1[i] = false;
 		
-		group1Counter = sample1Size;
-		
-		while (group1Counter > 0){
-			var r = rand(0, population.length);
-			if (group1[r] == false){
-				group1[r] = true;
-				group1Counter--;
-			}
-		}
 		
 		var group1Sum = 0;
 		var group2Sum = 0;
-		for (i=0; i<population.length; i++){
-			if(group1[i])
-				group1Sum += population[i].value;
-			else
-				group2Sum += population[i].value;
+		var group1Mean = 0;
+		var group2Mean = 0;
+		
+		if (graph.resamplingReplacement){
+			group1Counter = sample1Size;
+			group2Counter = sample2Size;
+			
+			while (group1Counter > 0){
+				group1Sum += population[rand(0, population.length)].value;
+				group1Counter--;
+			}
+			while (group2Counter > 0){
+				group2Sum += population[rand(0, population.length)].value;
+				group2Counter--;
+			}
+			
+			group1Mean = group1Sum / sample1Size;
+			group2Mean = group2Sum / sample2Size;
+			
+		} else {
+			for (i=0; i<population.length; i++)
+				group1[i] = false;
+			
+			group1Counter = sample1Size;
+			
+			while (group1Counter > 0){
+				var r = rand(0, population.length);
+				if (group1[r] == false){
+					group1[r] = true;
+					group1Counter--;
+				}
+			}
+			
+			group1Sum = 0;
+			group2Sum = 0;
+			for (i=0; i<population.length; i++){
+				if(group1[i])
+					group1Sum += population[i].value;
+				else
+					group2Sum += population[i].value;
+			}
+			
+			group1Mean = group1Sum / sample1Size;
+			group2Mean = group2Sum / sample2Size;
+			
 		}
 		
-		var group1Mean = group1Sum / sample1Size;
-		var group2Mean = group2Sum / sample2Size;
 		
 		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
 																				"value":group1Mean-group2Mean});
