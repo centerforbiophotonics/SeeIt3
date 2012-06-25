@@ -1274,9 +1274,9 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.strokeStyle("#aaa")
 			.height(5)
 			.visible(function(d){
-				if (graph.resamplingIterations > 10000) return d % 10000 == 0;
-				else if (graph.resamplingIterations > 1000) return d % 1000 == 0;
-				else return true;
+				if (graph.resamplingIterations > 10000) return d % 10000 == 0 && d != 0;
+				else if (graph.resamplingIterations > 1000) return d % 1000 == 0 && d != 0;
+				else return true && d != 0;
 				
 			})
 			.anchor("bottom").add(pv.Label)
@@ -1347,7 +1347,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 		
 		/* P Values */
 		graphPanel.add(pv.Dot)
-			.data(function() {return graph.resamplingPVals})
+			.data(function() {console.log(graph.resamplingPVals); return graph.resamplingPVals})
 			.visible(function(){return graph.resampleDisplayMode == "pgraph"})
 			.left(function(d) { 
 				var x = pv.Scale.linear(0, graph.resamplingIterations).range(0, graph.w-20);
@@ -1355,7 +1355,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			})
 			.bottom(function(d) { 
 				var y = pv.Scale.linear(0, graph.resamplingMaxPVal).range(0, graph.h-graph.baseLine-10);
-				if (graph.resamplingMaxPVal == 0) return 0;
+				if (graph.resamplingMaxPVal == 0) return graph.baseLine;
 				else return graph.baseLine + y(d.y);
 			})
 			.radius(function() {return graphCollection.bucketDotSize})
