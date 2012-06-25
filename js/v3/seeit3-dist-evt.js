@@ -750,7 +750,6 @@ $('#loadFromForm').click(function(){
 				lineArray.push($.trim(commaSep[i]));
 		});
 		
-		
 		cells.push(lineArray);
 	});
 	if (validateWorksheetForm(title, cells, $('#worksheetLabelsRequired').is(':checked'))){
@@ -758,6 +757,7 @@ $('#loadFromForm').click(function(){
 			addWorksheet(title, cells, $('#worksheetLabelsRequired').is(':checked'));
 		else
 			updateWorksheet(worksheetToEdit,title,cells);
+		$('#worksheetMenu').slideUp();
 	}
 });
 
@@ -778,18 +778,6 @@ function validateWorksheetForm(title, cells, labelsRequired){
 		return false;
 	}
 	
-	//Check for blank label type
-	if(cells[0][0] == ""){
-		alert("Error: Label type is blank.");
-		return false;
-	}
-	
-	//Check for more than two columns
-	if (cells[0].length < 2){
-		alert("Error: Data contains less than two columns.  The first column is for labels.");
-		return false;
-	}
-	
 	if (labelsRequired){
 		//Check Duplicate Labels
 		for (var i=0; i<cells.length; i++){
@@ -799,6 +787,18 @@ function validateWorksheetForm(title, cells, labelsRequired){
 					return false;
 				}
 			}
+		}
+		
+		//Check for blank label type
+		if(cells[0][0] == ""){
+			alert("Error: Label type is blank.");
+			return false;
+		}
+		
+		//Check for more than two columns
+		if (cells[0].length < 2){
+			alert("Error: Data contains less than two columns.  The first column is for labels.");
+			return false;
 		}
 		
 		//Check for data without label
@@ -828,7 +828,7 @@ function validateWorksheetForm(title, cells, labelsRequired){
 		}
 	}
 	
-	//Check Duplicate Dataset Titles
+	//Check Duplicate Dataset Titles outside of new worksheet
 	if (worksheetNew){
 		for (var i=1; i<cells.length; i++){
 			for (var key in graphCollection.data){
@@ -871,13 +871,10 @@ function addWorksheet(title, cells, labelsRequired){
 		}	
 	}
 	
-
-	
 	obj.labelMasterList = labelMasterList;
 	obj.labelType = labelType;
 	
 	//create data and edited hash
-	
 	for (var x = (labelsRequired? 1 : 0); x<cells[0].length; x++){
 		if (trim(cells[0][x]) != ""){
 			data[trim(cells[0][x])] = [];

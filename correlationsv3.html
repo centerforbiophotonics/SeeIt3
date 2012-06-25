@@ -107,19 +107,19 @@
 	<table id="graphScaleInputs">
 		<tr>
 			<td><label for="textYMin">Y Axis Min:</label>
-			<input type="text" id="textYMin" size="5"><br></td>
+			<input type="text" id="textYMin" class="textbox" size="5"><br></td>
 		</tr>
 		<tr>
 			<td><label for="textYMax">Y Axis Max:</label>
-			<input type="text" id="textYMax" size="5"><br></td>
+			<input type="text" id="textYMax" class="textbox" size="5"><br></td>
 		</tr>
 		<tr>
 			<td><label for="textXMin">X Axis Min:</label>
-			<input type="text" id="textXMin" size="5"><br></td>
+			<input type="text" id="textXMin" class="textbox" size="5"><br></td>
 		</tr>
 		<tr>
 			<td><label for="textXMax">X Axis Max:</label>
-			<input type="text" id="textXMax" size="5"><br></td>
+			<input type="text" id="textXMax" class="textbox" size="5"><br></td>
 		</tr>
 	
 		<tr>
@@ -129,7 +129,7 @@
 			</td>
 		</tr>
 	</table>
-	<input type="button" value="Apply To All" id="applyToAll">
+	<input type="button" value="Apply To All" id="applyToAll" class="button">
 </div>
 
 <div id="displayOptions">
@@ -139,25 +139,25 @@
 			<td id="divisionsCell" valign="top">
 				<h3 style="margin-bottom:10px">Divisions</h3>
 				<center>
-					<input type="button" value="+" id="divisionsInc" style="width:30px; height:30px"><br>
+					<input type="button" value="+" id="divisionsInc" class="button" style="width:30px; height:30px"><br>
 					<p id="divisionsValue">30</p>
-					<input type="button" value="-" id="divisionsDec" style="width:30px; height:30px"><br>
+					<input type="button" value="-" id="divisionsDec" class="button" style="width:30px; height:30px"><br>
 				</center>
 			</td>
 			<td valign="top">
 				<h3 style="margin-bottom:10px">Dot Size</h3>
 				<center>
-					<input type="button" value="+" id="dotSizeInc" style="width:30px; height:30px"><br>
+					<input type="button" value="+" id="dotSizeInc" class="button" style="width:30px; height:30px"><br>
 					<p id="dotSizeValue">5</p>
-					<input type="button" value="-" id="dotSizeDec" style="width:30px; height:30px"><br>
+					<input type="button" value="-" id="dotSizeDec" class="button" style="width:30px; height:30px"><br>
 				</center>
 			</td>
 			<td valign="top">
 				<h3 style="margin-bottom:10px">Text Size</h3>
 				<center>
-					<input type="button" value="+" id="textSizeInc" style="width:30px; height:30px"><br>
+					<input type="button" value="+" id="textSizeInc" class="button" style="width:30px; height:30px"><br>
 					<p id="textSizeValue">12</p>
-					<input type="button" value="-" id="textSizeDec" style="width:30px; height:30px"><br>
+					<input type="button" value="-" id="textSizeDec" class="button" style="width:30px; height:30px"><br>
 				</center>
 			</td>					
 			<td valign="top">
@@ -192,20 +192,22 @@
 </div>
 
 <div id="worksheetMenu">
-	<input type="button" value="Load Worksheet From Form" id="loadFromForm">
-	<input type="button" value="Load Worksheet From URL" id="loadFromURL">
-	<input type="button" value="Delete" id="deleteWorksheet">
-	<input type='image' src='img/close.png' id='worksheetMenuClose' width='20' height='20' align='right'><br>
-	<hr>
-	Title: <input type="text" id="worksheetTitle" style="width: 25%;"><br><br>
+	<input type='image' src='img/close.png' id='worksheetMenuClose' width='20' height='20' align='right'>
+	Values MUST be separated by tabs or commas but not both.<br><br>
+	Title: <input type="text" class="textbox" id="worksheetTitle" style="width: 25%;"><br>
+	<label for="worksheetLabelsRequired">First Column is Label: </label> 
+	<input type="checkbox" id="worksheetLabelsRequired" checked> <br>
 	Data:<br>
-	<textarea id="worksheetText"></textarea><br>
+	<textarea id="worksheetText" class="textbox" ></textarea><br>
+	<input type="button" class="button" value="Load Worksheet From Form" id="loadFromForm">
+	<input type="button" class="button" value="Load Worksheet From URL" id="loadFromURL">
+	<input type="button" class="button" value="Delete" id="deleteWorksheet">
 </div>
 
 <div id="worksheetURLMenu">
-	Worksheet URL: <input type="text" id="worksheetURL" style="width: 300px"><br>
-	<input type="button" value="Submit" id="submitURL">
-	<input type="button" value="Back" id="backToWorksheetMenu">
+	Worksheet URL: <input type="text" id="worksheetURL" class="textbox" style="width: 300px"><br>
+	<input type="button" value="Submit" id="submitURL" class="button">
+	<input type="button" value="Back" id="backToWorksheetMenu"  class="button">
 </div>
 
 <div id="aboutPopup">
