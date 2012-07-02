@@ -11,12 +11,12 @@ $(window).resize(function() {
 		
 		if (graphCollection.datasetsMenuShowing)
 			$('span').css('position', 'absolute')
-								 .css('left',$('#datasets').width()+29)
-								 .css('z-index', -1);
+								.css('left',$('#datasets').width()+29)
+								.css('z-index', -1);
 		else
 			$('span').css('position', 'absolute')
-								 .css('left',8)
-								 .css('z-index', -1);
+								.css('left',8)
+								.css('z-index', -1);
 	}
 });
 

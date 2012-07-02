@@ -36,6 +36,26 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
   numWorksheetsLoaded++;
   $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){
+		if (numWorksheetsLoaded == numWorksheets){
+			var preload = window.location.search;	
+			if (preload.substring(0, 1) == '?') {
+					preload = preload.substring(1);
+					
+					var key = parseSpreadsheetKeyFromURL(preload);
+					
+					var exists = false;
+					exampleSpreadsheets.forEach(function(s){
+						if (s.key == key) exists = true;
+					});
+					
+					if (!exists) {
+						exampleSpreadsheets.push(new Spreadsheet(key));
+						//constructVis();
+					}
+					//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
+			}		
+		}
+			
 		jQuery('p#loadingMsg').hide();
 		constructVis();
 		showHideAdvancedOptions();
@@ -43,8 +63,6 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		positionDisplayMenu();
   }
 });
-
-
 
 
 function constructVis(){
