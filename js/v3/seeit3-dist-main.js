@@ -14,6 +14,7 @@ var resamplePop2Mean = null;
 var resampleResetPopulation = true;
 var population = [];
 
+//Default included worksheets
 var exampleSpreadsheets = [
 	new Spreadsheet('0AuGPdilGXQlBdFBxTkJhdzZmNFVNVXJXZ0xxNXVYTUE'),			//Blank Worksheet
 	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
@@ -24,6 +25,25 @@ var exampleSpreadsheets = [
 	new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'),
 	new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E')
 ];
+
+//Preload a worksheet
+var preload = window.location.search;	
+if (preload.substring(0, 1) == '?') {
+		preload = preload.substring(1);
+		
+		var key = parseSpreadsheetKeyFromURL(preload);
+		
+		var exists = false;
+		exampleSpreadsheets.forEach(function(s){
+			if (s.key == key) exists = true;
+		});
+		
+		if (!exists) {
+			exampleSpreadsheets.push(new Spreadsheet(key));
+			//constructVis();
+		}
+		//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
+}		
 
 
 // Populate dataset drop down menu
@@ -36,26 +56,6 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
   numWorksheetsLoaded++;
   $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){
-		if (numWorksheetsLoaded == numWorksheets){
-			var preload = window.location.search;	
-			if (preload.substring(0, 1) == '?') {
-					preload = preload.substring(1);
-					
-					var key = parseSpreadsheetKeyFromURL(preload);
-					
-					var exists = false;
-					exampleSpreadsheets.forEach(function(s){
-						if (s.key == key) exists = true;
-					});
-					
-					if (!exists) {
-						exampleSpreadsheets.push(new Spreadsheet(key));
-						//constructVis();
-					}
-					//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
-			}		
-		}
-			
 		jQuery('p#loadingMsg').hide();
 		constructVis();
 		showHideAdvancedOptions();
