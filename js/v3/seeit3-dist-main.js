@@ -1254,7 +1254,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
-			.text("Drag the labels above to the graphs you wish to represent your populations.")
+			.text("Drag the labels above to the graphs you wish to represent your samples.")
 			.font(fontString)
 	} else if (graph.data[graph.resampleSet].length == 0) {
 		/* Instructons*/
