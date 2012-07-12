@@ -3045,6 +3045,25 @@ function constructRegularGraph(graphPanel, graph, index){
 			.textAlign("center")
 			.text("0")
 		
+		/* Line Mode Lines */
+		graphPanel.add(pv.Rule)
+			.data(function() {return graph.getDataDrawObjects()})
+			.visible(function(d) {
+				return $('#checkboxHideData').attr('checked') != "checked"  && 
+					d.x >= 0 &&
+					d.x <= graph.w &&
+					graphCollection.lineMode;
+			})
+			.left(function(d) { return d.xReal })
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.75})
+			.lineWidth(function(){return graphCollection.bucketDotSize})
+			.strokeStyle(function(d) {
+				var color = pointFillStyle(d.set); 
+				return pv.rgb(color.r, color.g, color.b, 0.3)
+			})
+			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
+		
 		
 		/* Dots */
 		graphPanel.add(pv.Dot)
@@ -3053,7 +3072,8 @@ function constructRegularGraph(graphPanel, graph, index){
 				return $('#checkboxHideData').attr('checked') != "checked"  && 
 					(d.y+graph.baseLine) < graph.h &&
 					d.x >= 0 &&
-					d.x <= graph.w;
+					d.x <= graph.w &&
+					!graphCollection.lineMode;
 			})
 			.left(function(d) { return d.x })
 			.bottom(function(d) { return d.y + graph.baseLine })

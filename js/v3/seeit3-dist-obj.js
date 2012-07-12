@@ -86,6 +86,7 @@ function GraphCollection(){
 	this.resamplingEnabled = false;
 	
 	this.bwMode = false;
+	this.lineMode = false;
 	
 	this.nextDefaultCategoryNumber = 0;
 }

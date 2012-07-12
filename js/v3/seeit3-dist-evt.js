@@ -756,7 +756,7 @@ $('#loadFromForm').click(function(){
 		if (worksheetNew)
 			addWorksheet(title, cells, $('#worksheetLabelsRequired').is(':checked'));
 		else
-			updateWorksheet(worksheetToEdit,title,cells);
+			updateWorksheet(worksheetToEdit,title,cells, $('#worksheetLabelsRequired').is(':checked'));
 		$('#worksheetMenu').slideUp();
 	}
 });
@@ -898,7 +898,7 @@ function addWorksheet(title, cells, labelsRequired){
 	
 };
 
-function updateWorksheet(oldTitle, newTitle, cells){
+function updateWorksheet(oldTitle, newTitle, cells, labelsRequired){
 	var URL;
 	
 	for (var key in graphCollection.worksheets){
@@ -906,7 +906,7 @@ function updateWorksheet(oldTitle, newTitle, cells){
 			URL = graphCollection.worksheets[key].URL;
 	}
 	graphCollection.removeWorksheet(oldTitle);
-	addWorksheet(newTitle, cells);
+	addWorksheet(newTitle, cells, labelsRequired);
 	exampleSpreadsheets[exampleSpreadsheets.length-1].worksheets[0].URL = URL;
 	constructVis();
 }
