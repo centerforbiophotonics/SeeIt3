@@ -1,4 +1,4 @@
-im//Entry Point
+//Entry Point
 var graphCollection = new GraphCollection();
 var vis = {};
 var touch = new Touch();
