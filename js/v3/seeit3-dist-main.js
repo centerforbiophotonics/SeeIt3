@@ -23,7 +23,10 @@ var exampleSpreadsheets = [
 	new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'),
 	new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'),
 	new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'),
-	new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E')
+	new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'),
+	new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'),		//Skin Cancer Fig 8
+	new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'),		//Skin Cancer Fig 4
+	new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE')			//Skin Cancer Fig 2
 ];
 
 //Preload a worksheet
@@ -78,6 +81,7 @@ function constructVis(){
 		.left(function(){return graphCollection.padLeft})
 		.right(function(){return graphCollection.padRight})
 		.top(function(){return graphCollection.padTop})
+		.fillStyle("white")
 		
 	/*Divider Between Top Graph and Title*/
 	vis.add(pv.Rule)
