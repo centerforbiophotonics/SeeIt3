@@ -886,7 +886,9 @@ function constructCorrGraph(graph, index, graphPanel){
 														 [graph.xMax, graph.mmFarRightYVal]]})
 		.left(function(d) { return graph.x(d[0]) })
 		.bottom(function(d) { return graph.y(d[1]) })
-		.title("Median-median line")
+		.title(function(d) { return "Y = "+graph.mmSlope.toFixed(3)+
+																 "X + "+graph.mmIntercept.toFixed(3) 
+		})
 		.strokeStyle("blue")
 		.lineWidth(2)
 		.add(pv.Label)
@@ -909,7 +911,13 @@ function constructCorrGraph(graph, index, graphPanel){
 														 [graph.xMax, graph.lsFarRightYVal]]})
 		.left(function(d) { return graph.x(d[0]) })
 		.bottom(function(d) { return graph.y(d[1]) })
-		.title("Least-Squares Regression Line")
+		.title(function(d) { return "Y = "+graph.lsSlope.toFixed(3)+
+																"X + "+graph.lsIntercept.toFixed(3) +
+																" -- R = "+ 
+																getR(graph.getData()).toFixed(2)+ 
+																" -- Sum of Squares = "+ 
+																getSumOfLeastSquares(graph).toFixed(1);
+		})
 		.strokeStyle(pv.rgb(0,225,0,1))
 		.lineWidth(2)
 		.add(pv.Label)									//Line Equation
