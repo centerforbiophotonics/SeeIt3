@@ -18,11 +18,13 @@
 	<script type="text/javascript" src = "http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.js"></script>
  
 	<script type="text/javascript">
+		var xPos, yPos;
 		$(document).ready(function(){
 			window.addEventListener("devicemotion",onDeviceMotion,false);
+			xPos = window.innerWidth/2-10;
+			yPos = window.innerHeigh/2-10;
 		});
-		var xPos = window.innerWidth/2-10;
-		var yPos = window.innerHeigh/2-10;
+		
 		
 		$('#pointer').css('top', yPos+"px")
 									 .css('left',xPos+"px");
