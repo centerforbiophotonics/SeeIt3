@@ -30,7 +30,7 @@
 									 .css('left',xPos+"px");
 									 
 		function onDeviceMotion(event){
-			var accel = event.accelerationGravity;
+			var accel = event.accelerationIncludingGravity;
 			xPos += accel.x*10;
 			yPos -= accel.y*10;
 			
