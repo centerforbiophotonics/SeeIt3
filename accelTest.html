@@ -31,8 +31,8 @@
 									 
 		function onDeviceMotion(event){
 			var accel = event.accelerationIncludingGravity;
-			xPos += Math.round(accel.x);
-			yPos += Math.round(accel.y);
+			xPos += accel.x;
+			yPos += accel.y;
 			
 			$('#pointer').css('top', yPos+"px")
 									 .css('left',xPos+"px");
