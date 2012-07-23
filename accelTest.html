@@ -1,0 +1,45 @@
+<!--
+   accelTest.html
+   
+   Author: Matthew Steinwachs   
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+	<meta name="viewport" content="user-scalable=no, width=device-width" />
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.css" />
+
+	<script type="text/javascript" src = "http://code.jquery.com/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src = "http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.js"></script>
+ 
+	<script type="text/javascript">
+		$(document).ready(function(){
+			window.addEventListener("devicemotion",onDeviceMotion,false);
+		});
+		var xPos = window.innerWidth/2-10;
+		var yPos = window.innerHeigh/2-10;
+		
+		$('#pointer').css('top', yPos+"px")
+									 .css('left',xPos+"px");
+									 
+		function onDeviceMotion(event){
+			var accel = event.accelerationIncludingGravity;
+			xPos += Math.round(accel.x);
+			yPos += Math.round(accel.y);
+			
+			$('#pointer').css('top', yPos+"px")
+									 .css('left',xPos+"px");
+		}
+	</script>
+</head> 
+
+<body>
+	<div id="pointer" style="position: absolute; background: #ff0000; height:20px; width:20px;"></div>
+</body>
+
+</html>

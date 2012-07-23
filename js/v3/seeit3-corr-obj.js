@@ -607,10 +607,14 @@ Graph.prototype = {
 		
 		if (this.fitScaleToData) {
 			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);
+			this.xLog = pv.Scale.log(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);
 			this.yHoriz = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
+			this.yHorizLog = pv.Scale.log(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
 		}else{			
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
+			this.xLog = pv.Scale.log(newMin, newMax).range(0, this.w);
 			this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
+			this.yHorizLog = pv.Scale.log(0, Math.ceil(this.yMax)).range(0, this.w);
 			this.xScaleMin = newMin;
 			this.xScaleMax = newMax;
 		}
@@ -625,10 +629,14 @@ Graph.prototype = {
 		
 		if (this.fitScaleToData) {
 			this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
+			this.yLog = pv.Scale.log(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);
 			this.yHoriz = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
+			this.yHorizLog = pv.Scale.log(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
 		}else{
 			this.y = pv.Scale.linear(newMin, newMax).range(0, this.h);
+			this.yLog = pv.Scale.log(newMin, newMax).range(0, this.h);
 			this.yHoriz = pv.Scale.linear(newMin,newMax).range(0, this.w);
+			this.yHorizLog = pv.Scale.log(newMin,newMax).range(0, this.w);
 			this.yScaleMin = newMin;
 			this.yScaleMax = newMax;
 		}			
