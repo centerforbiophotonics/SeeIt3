@@ -32,7 +32,12 @@
 		function onDeviceMotion(event){
 			var accel = event.accelerationIncludingGravity;
 			xPos += accel.x*10;
+			if (xPos < 0) xPos = 0;
+			if (xPos > window.innerWidth-20) xPos = window.innerWidth - 20;
+			
 			yPos -= accel.y*10;
+			if (yPos < 0) yPos = 0;
+			if (yPos > window.innerHeight-20) yPos = window.innerHeight - 20;
 			
 			$('#pointer').css('top', yPos+"px")
 									 .css('left',xPos+"px");
