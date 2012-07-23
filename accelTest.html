@@ -23,11 +23,16 @@
 			window.addEventListener("devicemotion",onDeviceMotion,false);
 			xPos = window.innerWidth/2-10;
 			yPos = window.innerHeight/2-10;
+			
+			$('#target').css('top', window.innerHeight/2-25+"px")
+									 .css('left',window.innerWidth/2-25+"px")
+									 .css('z-index', 1);
 		});
 		
 		
 		$('#pointer').css('top', yPos+"px")
-									 .css('left',xPos+"px");
+									 .css('left',xPos+"px")
+									 .css('z-index', 2);
 									 
 		function onDeviceMotion(event){
 			var accel = event.accelerationIncludingGravity;
@@ -47,6 +52,7 @@
 
 <body>
 	<div id="pointer" style="position: absolute; background: #ff0000; height:20px; width:20px;"></div>
+	<div id="target" style="position: absolute; background: #0000ff; height:50px; width:50px;"></div>
 </body>
 
 </html>
