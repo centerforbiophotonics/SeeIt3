@@ -26,13 +26,13 @@
 			
 			$('#target').css('top', window.innerHeight/2-25+"px")
 									 .css('left',window.innerWidth/2-25+"px")
-									 .css('z-index', -1);
+									 .css('z-index', 1);
 		});
 		
 		
 		$('#pointer').css('top', yPos+"px")
 									 .css('left',xPos+"px")
-									 .css('z-index', 1);
+									 .css('z-index', 2);
 									 
 		function onDeviceMotion(event){
 			var accel = event.accelerationIncludingGravity;
