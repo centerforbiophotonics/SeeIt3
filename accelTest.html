@@ -25,8 +25,7 @@
 			yPos = window.innerHeight/2-10;
 			
 			$('#target').css('top', window.innerHeight/2-25+"px")
-									 .css('left',window.innerWidth/2-25+"px")
-									 .css('z-index', 1);
+									 .css('left',window.innerWidth/2-25+"px");
 		});
 		
 		
@@ -52,7 +51,7 @@
 
 <body>
 	<div id="pointer" style="position: absolute; background: #ff0000; height:20px; width:20px;"></div>
-	<div id="target" style="position: absolute; background: #0000ff; height:50px; width:50px;"></div>
+	<div id="target" style="position: absolute; border-color: #0000ff; height:50px; width:50px;"></div>
 </body>
 
 </html>
