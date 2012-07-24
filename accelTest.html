@@ -50,34 +50,38 @@
 					.attr("cy", function(d) { return d.yPos; })
 					.style("fill", "red");
 			
-		window.addEventListener("devicemotion",onDeviceMotion,false);
+			window.addEventListener("devicemotion",onDeviceMotion,false);
 			
-			//$('#target').css('top', window.innerHeight/2-25+"px")
-			//						 .css('left',window.innerWidth/2-25+"px");
-			//						 
-		//	$('#pointer').css('top', laser.yPos+"px")
-		//							 .css('left',laser.xPos+"px")
-		//							 .css('z-index', 2);
+			d3.timer(function(){
+				laser[0].xPos += laser[0].xVel;
+				laser[0].yPos += laser[0].yVel;
+				
+				circle.transition()
+					.attr("cx", function(d) { return d.xPos; })
+					.attr("cy", function(d) { return d.yPos; })
+			});
+			
 		});
 		
 		
 									 
 		function onDeviceMotion(event){
 			var accel = event.accelerationIncludingGravity;
-			laser[0].xPos += accel.x*10;
-			if (laser[0].xPos < 0) laser[0].xPos = 0;
-			if (laser[0].xPos > window.innerWidth-20) laser[0].xPos = window.innerWidth - 20;
+			var l = laser[0];
+			l.xVel += accel.x;
+			l.yVel += accel.y;
+//			l.xPos += accel.x*10;
+//			if (l.xPos < l.rad) l.xPos = l.rad;
+//			if (l.xPos > w - l.rad) l.xPos = w - l.rad;
+//			
+//			l.yPos -= accel.y*10;
+//			if (l.yPos < l.rad) l.yPos = l.rad;
+//			if (l.yPos > h - l.rad) l.yPos = h - l.rad;
 			
-			laser[0].yPos -= accel.y*10;
-			if (laser[0].yPos < 0) laser[0].yPos = 0;
-			if (laser[0].yPos > window.innerHeight-20) laser[0].yPos = window.innerHeight - 20;
-			
-			circle.transition()
-				.attr("cx", function(d) { return d.xPos; })
-				.attr("cy", function(d) { return d.yPos; })
+//			circle.transition()
+//				.attr("cx", function(d) { return d.xPos; })
+//				.attr("cy", function(d) { return d.yPos; })
 				
-			//$('#pointer').css('top', yPos+"px")
-			//						 .css('left',xPos+"px");
 		}
 	</script>
 	
