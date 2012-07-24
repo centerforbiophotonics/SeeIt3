@@ -16,44 +16,77 @@
 
 	<script type="text/javascript" src = "http://code.jquery.com/jquery-1.6.2.min.js"></script>
 	<script type="text/javascript" src = "http://code.jquery.com/mobile/1.0b2/jquery.mobile-1.0b2.min.js"></script>
- 
+	<script src="lib/d3.v2.min.js"></script>
+
 	<script type="text/javascript">
-		var xPos, yPos;
-		$(document).ready(function(){
-			window.addEventListener("devicemotion",onDeviceMotion,false);
-			xPos = window.innerWidth/2-10;
-			yPos = window.innerHeight/2-10;
-			
-			$('#target').css('top', window.innerHeight/2-25+"px")
-									 .css('left',window.innerWidth/2-25+"px");
-									 
-			$('#pointer').css('top', yPos+"px")
-									 .css('left',xPos+"px")
-									 .css('z-index', 2);
-		});
+		var svg;
+		var w, h;
+		var laser = [{"xPos" : 0,
+									"yPos" : 0,
+									"xVel" : 0,
+									"yVel" : 0,
+									"rad" : 10
+								}];
+								
+		var circle;
 		
+		$(document).ready(function(){
+			
+			w = window.innerWidth;
+			h = window.innerHeight;
+			laser[0].xPos = window.innerWidth/2-10;
+			laser[0].yPos = window.innerHeight/2-10;
+			
+			
+			svg = d3.select("#body").append("svg:svg")
+				.attr("width", w)
+				.attr("height", h);
+			
+			circle = svg.selectAll("circle")
+					.data(laser)
+				.enter().append("svg:circle")
+					.attr("r", function(d) { return d.rad; })
+					.attr("cx", function(d) { return d.xPos; })
+					.attr("cy", function(d) { return d.yPos; })
+					.style("fill", "red");
+			
+		window.addEventListener("devicemotion",onDeviceMotion,false);
+			
+			//$('#target').css('top', window.innerHeight/2-25+"px")
+			//						 .css('left',window.innerWidth/2-25+"px");
+			//						 
+		//	$('#pointer').css('top', laser.yPos+"px")
+		//							 .css('left',laser.xPos+"px")
+		//							 .css('z-index', 2);
+		});
 		
 		
 									 
 		function onDeviceMotion(event){
 			var accel = event.accelerationIncludingGravity;
-			xPos += accel.x*10;
-			if (xPos < 0) xPos = 0;
-			if (xPos > window.innerWidth-20) xPos = window.innerWidth - 20;
+			laser[0].xPos += accel.x*10;
+			if (laser[0].xPos < 0) laser[0].xPos = 0;
+			if (laser[0].xPos > window.innerWidth-20) laser[0].xPos = window.innerWidth - 20;
 			
-			yPos -= accel.y*10;
-			if (yPos < 0) yPos = 0;
-			if (yPos > window.innerHeight-20) yPos = window.innerHeight - 20;
+			laser[0].yPos -= accel.y*10;
+			if (laser[0].yPos < 0) laser[0].yPos = 0;
+			if (laser[0].yPos > window.innerHeight-20) laser[0].yPos = window.innerHeight - 20;
 			
-			$('#pointer').css('top', yPos+"px")
-									 .css('left',xPos+"px");
+			circle.transition()
+				.attr("cx", function(d) { return d.xPos; })
+				.attr("cy", function(d) { return d.yPos; })
+				
+			//$('#pointer').css('top', yPos+"px")
+			//						 .css('left',xPos+"px");
 		}
 	</script>
+	
 </head> 
 
 <body>
-	<div id="pointer" style="position: absolute; background: #ff0000; height:20px; width:20px;"></div>
-	<div id="target" style="position: absolute; background: #0000ff; border-color: #0000ff; border-width: 2px; height:50px; width:50px;"></div>
+	<div id="body"></div>
+	
+	
 </body>
 
 </html>
