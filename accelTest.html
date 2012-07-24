@@ -69,7 +69,7 @@
 			var accel = event.accelerationIncludingGravity;
 			var l = laser[0];
 			l.xVel += accel.x;
-			l.yVel += accel.y;
+			l.yVel -= accel.y;
 //			l.xPos += accel.x*10;
 //			if (l.xPos < l.rad) l.xPos = l.rad;
 //			if (l.xPos > w - l.rad) l.xPos = w - l.rad;
