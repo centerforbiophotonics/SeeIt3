@@ -27,8 +27,8 @@
 			yPos = window.innerHeight/2-10;
 			enterTime = new Date().getTime();
 			
-			$('#target').css('top', window.innerHeight/2-25+"px")
-									 .css('left',window.innerWidth/2-25+"px");
+			$('#target').css('top', window.innerHeight/2-15+"px")
+									 .css('left',window.innerWidth/2-15+"px");
 									 
 			$('#pointer').css('top', yPos+"px")
 									 .css('left',xPos+"px")
@@ -48,20 +48,20 @@
 			if (yPos < 0) yPos = 0;
 			if (yPos > window.innerHeight-20) yPos = window.innerHeight - 20;
 			
-			if ((xPos < window.innerWidth/2-25 ||
-					xPos+20 > window.innerWidth/2+25 ||
-					yPos-10 < window.innerHeight/2-25 ||
-					yPos+10 > window.innerHeight/2+25) &&
+			if ((xPos < window.innerWidth/2-15 ||
+					xPos+20 > window.innerWidth/2+15 ||
+					yPos-10 < window.innerHeight/2-15 ||
+					yPos+10 > window.innerHeight/2+15) &&
 					inside){
 				exitTime = new Date().getTime();
 				inside = false;
 				$('#time').html("Your Time: "+ ((exitTime-enterTime) / 1000.0) + " Seconds");
 			} 
 			
-			if ((xPos >= window.innerWidth/2-25 &&
-					xPos+20 <= window.innerWidth/2+25 &&
-					yPos-10 >= window.innerHeight/2-25 &&
-					yPos+10 <= window.innerHeight/2+25) &&
+			if ((xPos >= window.innerWidth/2-15 &&
+					xPos+20 <= window.innerWidth/2+15 &&
+					yPos-10 >= window.innerHeight/2-15 &&
+					yPos+10 <= window.innerHeight/2+15) &&
 					!inside){
 				enterTime = new Date().getTime();
 				inside = true;
@@ -79,7 +79,7 @@
 <body>
 	<h1 id="time"></h1>
 	<div id="pointer" style="position: absolute; background: #ff0000; height:20px; width:20px;"></div>
-	<div id="target" style="position: absolute; background: #0000ff;  height:50px; width:50px;"></div>
+	<div id="target" style="position: absolute; background: #0000ff;  height:30px; width:30px;"></div>
 </body>
 
 </html>
