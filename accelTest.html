@@ -57,11 +57,11 @@
 				
 				l.xPos += l.xVel;
 				if (l.xPos < l.rad) l.xPos = l.rad;
-				if (l.xPos > w - l.rad) l.xPos = w - l.rad;
+				else if (l.xPos > w - l.rad) l.xPos = w - l.rad;
 				
 				l.yPos += l.yVel;
 				if (l.yPos < l.rad) l.yPos = l.rad;
-				if (l.yPos > h - l.rad) l.yPos = h - l.rad;
+				else if (l.yPos > h - l.rad) l.yPos = h - l.rad;
 					
 				circle.transition()
 					.attr("cx", function(d) { return d.xPos; })
@@ -75,19 +75,8 @@
 		function onDeviceMotion(event){
 			var accel = event.accelerationIncludingGravity;
 			var l = laser[0];
-			l.xVel += accel.x;
-			l.yVel -= accel.y;
-//			l.xPos += accel.x*10;
-//			if (l.xPos < l.rad) l.xPos = l.rad;
-//			if (l.xPos > w - l.rad) l.xPos = w - l.rad;
-//			
-//			l.yPos -= accel.y*10;
-//			if (l.yPos < l.rad) l.yPos = l.rad;
-//			if (l.yPos > h - l.rad) l.yPos = h - l.rad;
-			
-//			circle.transition()
-//				.attr("cx", function(d) { return d.xPos; })
-//				.attr("cy", function(d) { return d.yPos; })
+			l.xVel += accel.x * 10;
+			l.yVel -= accel.y * 10;
 				
 		}
 	</script>
