@@ -55,7 +55,7 @@
 					inside){
 				exitTime = new Date().getTime();
 				inside = false;
-				$('#time').html("Your Time: "+(exitTime-enterTime) / 1000. + " Seconds");
+				$('#time').html("Your Time: "+ ((exitTime-enterTime) / 1000.0) + " Seconds");
 			} 
 			
 			if ((xPos >= window.innerWidth/2-25 &&
@@ -63,7 +63,7 @@
 					yPos >= window.innerHeight/2-25 &&
 					yPos+20 <= window.innerHeight/2+25) &&
 					!inside){
-				enterTime = new Date().getTime()
+				enterTime = new Date().getTime();
 				inside = true;
 				$('#time').html("Your Time: ");
 			} 
