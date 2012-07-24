@@ -19,10 +19,15 @@
  
 	<script type="text/javascript">
 		var xPos, yPos;
+		var d;
+		var enterTime, exitTime;
+		var inside = true;
 		$(document).ready(function(){
 			window.addEventListener("devicemotion",onDeviceMotion,false);
 			xPos = window.innerWidth/2-10;
 			yPos = window.innerHeight/2-10;
+			d = new Date();
+			enterTime = d.getTime();
 			
 			$('#target').css('top', window.innerHeight/2-25+"px")
 									 .css('left',window.innerWidth/2-25+"px");
@@ -45,8 +50,20 @@
 			if (yPos < 0) yPos = 0;
 			if (yPos > window.innerHeight-20) yPos = window.innerHeight - 20;
 			
+			if ((xPos < window.innerWidth/2-25 ||
+					xPos+20 > window.innerWidth/2+25 ||
+					yPos < window.innerHeight/2-25 ||
+					yPos+20 > window.innerHeight/2+25) &&
+					inside){
+				exitTime = d.getTime;
+				inside = false;
+				alert(exitTime-enterTime / 1000 + "");
+			} 
+			
 			$('#pointer').css('top', yPos+"px")
 									 .css('left',xPos+"px");
+									 
+			
 		}
 	</script>
 </head> 
