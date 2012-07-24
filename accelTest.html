@@ -50,8 +50,8 @@
 			
 			if ((xPos < window.innerWidth/2-25 ||
 					xPos+20 > window.innerWidth/2+25 ||
-					yPos+10 < window.innerHeight/2-25 ||
-					yPos+30 > window.innerHeight/2+25) &&
+					yPos-10 < window.innerHeight/2-25 ||
+					yPos+10 > window.innerHeight/2+25) &&
 					inside){
 				exitTime = new Date().getTime();
 				inside = false;
@@ -60,8 +60,8 @@
 			
 			if ((xPos >= window.innerWidth/2-25 &&
 					xPos+20 <= window.innerWidth/2+25 &&
-					yPos+10 >= window.innerHeight/2-25 &&
-					yPos+30 <= window.innerHeight/2+25) &&
+					yPos-10 >= window.innerHeight/2-25 &&
+					yPos+10 <= window.innerHeight/2+25) &&
 					!inside){
 				enterTime = new Date().getTime();
 				inside = true;
