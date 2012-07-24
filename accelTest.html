@@ -48,7 +48,7 @@
 					.attr("r", function(d) { return d.rad; })
 					.attr("cx", function(d) { return d.xPos; })
 					.attr("cy", function(d) { return d.yPos; })
-					.style("fill", "red");
+					.style("fill", "blue");
 			
 			window.addEventListener("devicemotion",onDeviceMotion,false);
 			
@@ -75,8 +75,8 @@
 		function onDeviceMotion(event){
 			var accel = event.accelerationIncludingGravity;
 			var l = laser[0];
-			l.xVel += accel.x * 10;
-			l.yVel -= accel.y * 10;
+			l.xVel += accel.x * 100;
+			l.yVel -= accel.y * 100;
 				
 		}
 	</script>
