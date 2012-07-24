@@ -57,7 +57,7 @@
 					inside){
 				exitTime = d.getTime();
 				inside = false;
-				$('#time').html("Your Time: "+(exitTime-enterTime) / 1000 + " Seconds");
+				$('#time').html("Your Time: "+(exitTime-enterTime) / 1000.0 + " Seconds");
 			} 
 			
 			if ((xPos >= window.innerWidth/2-25 &&
