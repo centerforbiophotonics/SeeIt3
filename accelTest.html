@@ -55,9 +55,19 @@
 					yPos < window.innerHeight/2-25 ||
 					yPos+20 > window.innerHeight/2+25) &&
 					inside){
-				exitTime = d.getTime;
+				exitTime = d.getTime();
 				inside = false;
 				console.log(exitTime-enterTime / 1000 + "");
+			} 
+			
+			if ((xPos >= window.innerWidth/2-25 &&
+					xPos+20 <= window.innerWidth/2+25 &&
+					yPos >= window.innerHeight/2-25 &&
+					yPos+20 <= window.innerHeight/2+25) &&
+					!inside){
+				enterTime = d.getTime();
+				inside = true;
+				console.log("enter");
 			} 
 			
 			$('#pointer').css('top', yPos+"px")
