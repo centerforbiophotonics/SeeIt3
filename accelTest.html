@@ -53,9 +53,16 @@
 			window.addEventListener("devicemotion",onDeviceMotion,false);
 			
 			d3.timer(function(){
-				laser[0].xPos += laser[0].xVel;
-				laser[0].yPos += laser[0].yVel;
+				var l = laser[0];
 				
+				l.xPos += l.xVel;
+				if (l.xPos < l.rad) l.xPos = l.rad;
+				if (l.xPos > w - l.rad) l.xPos = w - l.rad;
+				
+				l.yPos += l.yVel;
+				if (l.yPos < l.rad) l.yPos = l.rad;
+				if (l.yPos > h - l.rad) l.yPos = h - l.rad;
+					
 				circle.transition()
 					.attr("cx", function(d) { return d.xPos; })
 					.attr("cy", function(d) { return d.yPos; })
