@@ -55,14 +55,15 @@
 					inside){
 				exitTime = new Date().getTime();
 				inside = false;
-				$('#time').html("Your Time: "+ ((exitTime-enterTime) / 1000.0) + " Seconds");
+				//$('#time').html("Your Time: "+ ((exitTime-enterTime) / 1000.0) + " Seconds");
+				alert("Your Time: "+ ((exitTime-enterTime) / 1000.0) + " Seconds");
 			} 
 			
 			if ((xPos >= window.innerWidth/2-15 &&
 					xPos+20 <= window.innerWidth/2+15 &&
 					yPos-10 >= window.innerHeight/2-15 &&
 					yPos+10 <= window.innerHeight/2+15) &&
-					!inside){
+					!inside ){
 				enterTime = new Date().getTime();
 				inside = true;
 				$('#time').html("");
