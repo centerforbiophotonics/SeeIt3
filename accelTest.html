@@ -49,28 +49,17 @@
 					.attr("cx", function(d) { return d.xPos; })
 					.attr("cy", function(d) { return d.yPos; })
 					.style("fill", "blue");
-			
-			
-			svg.selectAll("target")
-					.data([0])
-				.enter().append("svg:circle")
-					.attr("r", 100)
-					.attr("cx", w/2 - 100)
-					.attr("cy". h/2 - 100)
-					.style("fill", "green");
 					
 			window.addEventListener("devicemotion",onDeviceMotion,false);
 			
 			d3.timer(function(){
-				var l = laser[0];
+				laser[0].xPos += laser[0].xVel;
+				if (laser[0].xPos < laser[0].rad) laser[0].xPos = laser[0].rad;
+				else if (laser[0].xPos > w - laser[0].rad) laser[0].xPos = w - laser[0].rad;
 				
-				l.xPos += l.xVel;
-				if (l.xPos < l.rad) l.xPos = l.rad;
-				else if (l.xPos > w - l.rad) l.xPos = w - l.rad;
-				
-				l.yPos += l.yVel;
-				if (l.yPos < l.rad) l.yPos = l.rad;
-				else if (l.yPos > h - l.rad) l.yPos = h - l.rad;
+				laser[0].yPos += laser[0].yVel;
+				if (laser[0].yPos < laser[0].rad) laser[0].yPos = laser[0].rad;
+				else if (laser[0].yPos > h - laser[0].rad) laser[0].yPos = h - laser[0].rad;
 					
 				circle.transition()
 					.attr("cx", function(d) { return d.xPos; })
@@ -83,10 +72,8 @@
 									 
 		function onDeviceMotion(event){
 			var accel = event.accelerationIncludingGravity;
-			var l = laser[0];
-			l.xVel += accel.x * 100;
-			l.yVel -= accel.y * 100;
-				
+			laser[0].xVel += accel.x * 100;
+			laser[0].yVel -= accel.y * 100;
 		}
 	</script>
 	
