@@ -393,6 +393,9 @@ function Graph(graphCollection){
 	this.fitScaleToData = false;
 	this.customScale = false;
 	
+	this.xAxisLog = false;
+	this.yAxisLog = false;
+	
 	//Graph Options
 	this.showData = true;
 	this.udLine = false;
@@ -604,17 +607,30 @@ Graph.prototype = {
 		
 		if (min == 0)
 			newMin = min;
+			
+		if (max == 0)
+			newMax = max;
 		
 		if (this.fitScaleToData) {
-			this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);
-			this.xLog = pv.Scale.log(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);
-			this.yHoriz = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
-			this.yHorizLog = pv.Scale.log(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
+			this.x = (this.xAxisLog? 
+									pv.Scale.log(Math.floor(this.xMin) + (Math.floor(this.xMin) == 0 ? 0.00001 : 0.0),
+															 Math.ceil(this.xMax) + (Math.ceil(this.xMax) == 0 ? 0.00001 : 0.0)).range(0, this.w):
+									pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w));
+									
+			this.yHoriz = (this.yAxisLog?
+											pv.Scale.log(Math.floor(this.yMin) + (Math.floor(this.yMin) == 0 ? 0.00001 : 0.0),
+																	 Math.ceil(this.yMax) + (Math.ceil(this.yMax) == 0 ? 0.00001 : 0.0)).range(0, this.w):
+											pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w));
 		}else{			
-			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
-			this.xLog = pv.Scale.log(newMin, newMax).range(0, this.w);
-			this.yHoriz = pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w);
-			this.yHorizLog = pv.Scale.log(0, Math.ceil(this.yMax)).range(0, this.w);
+			this.x = (this.xAxisLog?
+									pv.Scale.log(newMin + (newMin == 0.0 ? 0.00001 : 0.0),
+															 newMax + (newMax == 0.0 ? 0.00001 : 0.0)).range(0, this.w):
+									pv.Scale.linear(newMin, newMax).range(0, this.w));
+									
+			this.yHoriz = (this.yAxisLog?
+											pv.Scale.log(0.00001, Math.ceil(this.yMax) + (Math.ceil(this.yMax) == 0 ? 0.00001 : 0.0)).range(0, this.w):
+											pv.Scale.linear(0, Math.ceil(this.yMax)).range(0, this.w));
+											
 			this.xScaleMin = newMin;
 			this.xScaleMax = newMax;
 		}
@@ -626,17 +642,30 @@ Graph.prototype = {
 		
 		if (min == 0)
 			newMin = min;
+			
+		if (max == 0)
+			newMax = max;
 		
 		if (this.fitScaleToData) {
-			this.y = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);	
-			this.yLog = pv.Scale.log(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h);
-			this.yHoriz = pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
-			this.yHorizLog = pv.Scale.log(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w);
+			this.y = (this.yAxisLog?
+								pv.Scale.log(Math.floor(this.yMin) + (Math.floor(this.yMin) == 0 ? 0.00001 : 0.0),
+														 Math.ceil(this.yMax) + (Math.ceil(this.yMax) == 0 ? 0.00001 : 0.0)).range(0, this.h):
+								pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.h));	
+								
+			this.yHoriz = (this.yAxisLog? 
+											pv.Scale.log(Math.floor(this.yMin) + (Math.floor(this.yMin) == 0 ? 0.00001 : 0.0),
+																	 Math.ceil(this.yMax) + (Math.ceil(this.yMax) == 0 ? 0.00001 : 0.0)).range(0, this.w):
+											pv.Scale.linear(Math.floor(this.yMin), Math.ceil(this.yMax)).range(0, this.w));
 		}else{
-			this.y = pv.Scale.linear(newMin, newMax).range(0, this.h);
-			this.yLog = pv.Scale.log(newMin, newMax).range(0, this.h);
-			this.yHoriz = pv.Scale.linear(newMin,newMax).range(0, this.w);
-			this.yHorizLog = pv.Scale.log(newMin,newMax).range(0, this.w);
+			this.y = (this.yAxisLog?
+									pv.Scale.log(newMin + (newMin == 0.0 ? 0.00001 : 0.0),
+															 newMax + (newMax == 0.0 ? 0.00001 : 0.0)).range(0, this.h):
+									pv.Scale.linear(newMin, newMax).range(0, this.h));
+									
+			this.yHoriz = (this.yAxisLog?
+											pv.Scale.log(newMin + (newMin == 0.0 ? 0.00001 : 0.0),
+																	 newMax + (newMax == 0.0 ? 0.00001 : 0.0)).range(0, this.w):
+											pv.Scale.linear(newMin,newMax).range(0, this.w));
 			this.yScaleMin = newMin;
 			this.yScaleMax = newMax;
 		}			

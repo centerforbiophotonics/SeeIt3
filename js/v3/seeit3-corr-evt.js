@@ -1888,10 +1888,13 @@ $('#fitScalesToData').change(function() {
 });
 
 $('#textYMin').change(function(event) {
+	var selGraph = graphCollection.graphs[graphCollection.selectedGraphIndex];
 	var textBoxVal = parseFloat($('#textYMin').val());
 	var curMax = graphCollection.graphs[graphCollection.selectedGraphIndex].y.domain()[1];
-	if (isNaN(textBoxVal) || textBoxVal >= curMax){
+	if (isNaN(textBoxVal) || textBoxVal >= curMax || (selGraph.yAxisLog && textBoxVal == 0.0)){
 		$('#textYMin').val(graphCollection.graphs[graphCollection.selectedGraphIndex].y.domain()[0]);
+		if (selGraph.yAxisLog && textBoxVal == 0.0)
+			alert("A graph's axis min or max can not be zero when using a logarithmic scale.");
 	} else {
 		graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = false;
 		graphCollection.graphs[graphCollection.selectedGraphIndex].setYScale(textBoxVal, curMax);
@@ -1902,10 +1905,13 @@ $('#textYMin').change(function(event) {
 });
 
 $('#textYMax').change(function(event) {
+	var selGraph = graphCollection.graphs[graphCollection.selectedGraphIndex];
 	var textBoxVal = parseFloat($('#textYMax').val());
 	var curMin = graphCollection.graphs[graphCollection.selectedGraphIndex].y.domain()[0];
-	if (isNaN(textBoxVal) || textBoxVal <= curMin){
+	if (isNaN(textBoxVal) || textBoxVal <= curMin || (selGraph.yAxisLog && textBoxVal == 0.0)){
 		$('#textYMax').val(graphCollection.graphs[graphCollection.selectedGraphIndex].y.domain()[1]);
+		if (selGraph.yAxisLog && textBoxVal == 0.0)
+			alert("A graph's axis min or max can not be zero when using a logarithmic scale.");
 	} else {
 		graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = false;
 		graphCollection.graphs[graphCollection.selectedGraphIndex].setYScale(curMin, textBoxVal);
@@ -1917,10 +1923,13 @@ $('#textYMax').change(function(event) {
 });
 
 $('#textXMin').change(function(event) {
+	var selGraph = graphCollection.graphs[graphCollection.selectedGraphIndex];
 	var textBoxVal = parseFloat($('#textXMin').val());
 	var curMax = graphCollection.graphs[graphCollection.selectedGraphIndex].x.domain()[1];
-	if (isNaN(textBoxVal) || textBoxVal >= curMax){
+	if (isNaN(textBoxVal) || textBoxVal >= curMax || (selGraph.xAxisLog && textBoxVal == 0.0)){
 		$('#textXMin').val(graphCollection.graphs[graphCollection.selectedGraphIndex].x.domain()[0]);
+		if (selGraph.xAxisLog && textBoxVal == 0.0)
+			alert("A graph's axis min or max can not be zero when using a logarithmic scale.");
 	} else {
 		graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = false;
 		graphCollection.graphs[graphCollection.selectedGraphIndex].setXScale(textBoxVal, curMax);
@@ -1931,10 +1940,13 @@ $('#textXMin').change(function(event) {
 });
 
 $('#textXMax').change(function(event) {
+	var selGraph = graphCollection.graphs[graphCollection.selectedGraphIndex];
 	var textBoxVal = parseFloat($('#textXMax').val());
 	var curMin = graphCollection.graphs[graphCollection.selectedGraphIndex].x.domain()[0];
-	if (isNaN(textBoxVal) || textBoxVal <= curMin){
+	if (isNaN(textBoxVal) || textBoxVal <= curMin || (selGraph.xAxisLog && textBoxVal == 0.0)){
 		$('#textXMax').val(graphCollection.graphs[graphCollection.selectedGraphIndex].x.domain()[1]);
+		if (selGraph.xAxisLog && textBoxVal == 0.0)
+			alert("A graph's min or max can not be zero when using a logarithmic scale.");
 	} else {
 		graphCollection.graphs[graphCollection.selectedGraphIndex].fitScaleToData = false;
 		graphCollection.graphs[graphCollection.selectedGraphIndex].setXScale(curMin, textBoxVal);
@@ -1942,6 +1954,38 @@ $('#textXMax').change(function(event) {
 		graphCollection.updateMenuOptions();
 		vis.render();
 	}
+});
+
+$('#xAxisLog').change(function(event){
+	//event.stopPropagation();
+	var selGraph = graphCollection.graphs[graphCollection.selectedGraphIndex];
+	
+	selGraph.xAxisLog = $('#xAxisLog').is(':checked');
+	
+	if (selGraph.xAxisLog && (selGraph.xScaleMin == 0.0 || selGraph.xScaleMax == 0.0)) {
+		$('#xAxisLog').attr('checked', false);
+		selGraph.xAxisLog = false;
+		alert("A graph's axis min or max can not be zero when using a logarithmic scale.");
+	} else
+		selGraph.setXScale();
+	
+	vis.render();
+});
+
+$('#yAxisLog').change(function(event){
+	//event.stopPropagation();
+	var selGraph = graphCollection.graphs[graphCollection.selectedGraphIndex];
+	
+	selGraph.yAxisLog = $('#yAxisLog').is(':checked');
+	
+	if (selGraph.yAxisLog && (selGraph.yScaleMin == 0.0 || selGraph.yScaleMax == 0.0)) {
+		$('#yAxisLog').attr('checked', false);
+		selGraph.yAxisLog = false;
+		alert("A graph's axis min or max can not be zero when using a logarithmic scale.");
+	} else
+		selGraph.setYScale();
+	
+	vis.render();
 });
 
 $('#applyToAll').click(function(event){
