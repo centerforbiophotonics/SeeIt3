@@ -720,9 +720,17 @@ function openWorksheetMenu(worksheetTitle){
 	
 	$('#worksheetTitle').val(title);
 	$('#worksheetText').val(text);
-	positionWorksheetMenu();
-	hideMenus();
-	$('#worksheetMenu').slideDown();
+	
+	if (worksheetMenuShow){
+		$('#worksheetMenu').slideUp();
+	} else {
+		positionWorksheetMenu();
+		hideMenus();
+		$('#worksheetMenu').slideDown();
+	}
+	
+	worksheetMenuShow = !worksheetMenuShow;
+	
 	$('#worksheetText').focus();
 	$('#worksheetText').select();
 	$('#worksheetMenu').scrollTop(0);

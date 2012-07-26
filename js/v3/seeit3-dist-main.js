@@ -5,6 +5,8 @@ var touch = new Touch();
 var fontString = "bold 14px arial";
 var dragging = false;
 var updateTimer = null;
+var displayOptionsShow =  false;
+var worksheetMenuShow = false;
 
 //variables for resampling
 var resamplingInProgress = false;
@@ -24,6 +26,7 @@ var exampleSpreadsheets = [
 	new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'),
 	new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'),
 	new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'),
+	new Spreadsheet('0Al5kfBmMhbwmdGJ2b1A1eWtMdUF4bWJxcnhBQ0Fsb3c'),		//Gapminder
 	new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'),		//Skin Cancer Fig 8
 	new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'),		//Skin Cancer Fig 4
 	new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE')			//Skin Cancer Fig 2
@@ -67,6 +70,15 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
   }
 });
 
+function displayMenuButtonHandler(){
+	if (displayOptionsShow){
+		$('#displayOptions').slideUp();
+	} else {
+		positionDisplayMenu();
+		$('#displayOptions').slideDown();
+	}
+	displayOptionsShow = !displayOptionsShow
+}
 
 function constructVis(){
 	if (jQuery('span').length != 0){
@@ -189,11 +201,7 @@ function constructVis(){
 		})
 		.top(-31)
 		.lineWidth(1)
-		.event("click", function(){
-			hideMenus();
-			positionDisplayMenu();
-			$('#displayOptions').slideDown();
-		})
+		.event("click", displayMenuButtonHandler)
 		.event("mouseover", function(d){
 			this.strokeStyle("black");
 			this.render();
@@ -217,11 +225,7 @@ function constructVis(){
 			else
 				return false;
 		})
-		.event("click", function(){
-			hideMenus();
-			positionDisplayMenu();
-			$('#displayOptions').slideDown();
-		})
+		.event("click", displayMenuButtonHandler)
 		.anchor("left").add(pv.Label)
 			.left(function(){
 				if (graphCollection.buttonText && !graphCollection.buttonIcon)
@@ -3875,3 +3879,5 @@ function toggleDatasetMenu() {
 		//positionResampleControlPanel(graphCollection.graphs[i],i);
 	//}
 }
+
+
