@@ -107,9 +107,9 @@ function resizeVis(){
 					 .css('left',$('#datasets').width()+29)
 					 .css('z-index', -1);
 	//vis.render();
-	//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+	positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 	
-	//positionDisplayMenu();
+	positionDisplayMenu();
 }
 
 function trim(stringToTrim) {

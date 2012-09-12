@@ -1969,7 +1969,7 @@ $('#xAxisLog').change(function(event){
 	} else
 		selGraph.setXScale();
 	
-	vis.render();
+	constructVis();
 });
 
 $('#yAxisLog').change(function(event){
@@ -1985,7 +1985,8 @@ $('#yAxisLog').change(function(event){
 	} else
 		selGraph.setYScale();
 	
-	vis.render();
+	//vis.render();
+	constructVis();
 });
 
 $('#applyToAll').click(function(event){

@@ -8,7 +8,7 @@ var dragID = null;
 
 //Default included worksheets
 var exampleSpreadsheets = [
-	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),			//Blank Sheet
+	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),		//Blank Sheet
 	new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'),
 	new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'),
 	new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'),

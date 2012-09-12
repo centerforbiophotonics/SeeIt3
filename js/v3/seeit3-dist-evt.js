@@ -888,7 +888,7 @@ function addWorksheet(title, cells, labelsRequired){
 			data[trim(cells[0][x])] = [];
 			edited[trim(cells[0][x])] = true;
 			for (var y=1; y<cells.length; y++){
-				if (cells[y][0] != "" && cells[y][x] != ""){
+				if ((cells[y][0] != "" || !labelsRequired) && cells[y][x] != ""){
 					data[trim(cells[0][x])].push({
 						"label":trim(labelMasterList[y-1]),
 						"value":parseFloat(cells[y][x])

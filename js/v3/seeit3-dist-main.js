@@ -3855,8 +3855,8 @@ function toggleDatasetMenu() {
 		$('span').css('position', 'absolute')
 						 .css('left',$('#datasets').width()+29)
 						 .css('z-index', -1);
-		//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-		//positionDisplayMenu();
+		positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+		positionDisplayMenu();
 	} else {
 		$('#datasets').hide();
 		graphCollection.datasetsMenuShowing = false;
@@ -3866,8 +3866,8 @@ function toggleDatasetMenu() {
 						 .css('left',8)
 						 .css('z-index', -1);
 		constructVis();
-		//positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
-		//positionDisplayMenu();
+		positionGroupingMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
+		positionDisplayMenu();
 	}
 	//vis.render();
 	
