@@ -25,7 +25,7 @@ function updateColor(category, color){
 		for (var j=0; j<graphCollection.graphs[i].includedCategories.length; j++){
 			var text = graphCollection.graphs[i].includedCategories[j];
 			if (trim(text) == trim(category)){
-				$('#lgndColor'+i+'-'+j).css('background-color','#'+color.toString());
+				$('#lgndColor'+i+'-'+j).css('fill','#'+color.toString());
 			}
 		}
 	}

@@ -89,6 +89,8 @@ function GraphCollection(){
 	this.lineMode = false;
 	
 	this.nextDefaultCategoryNumber = 0;
+	
+	this.printMode = false;
 }
 
 GraphCollection.prototype = {

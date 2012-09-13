@@ -46,6 +46,21 @@ $('#about').click(function(){
 	$('#aboutPopup').slideToggle();
 });
 
+$('#print').click(function(){
+	if (graphCollection.datasetsMenuShowing) toggleDatasetMenu();
+	$('#notGraph').hide();
+	graphCollection.printMode = true;
+	graphCollection.setW(600);
+	constructVis();
+	
+	window.print();
+	
+	$('#notGraph').show();
+	graphCollection.printMode = false;
+	graphCollection.setW(graphCollection.calcGraphWidth());
+	constructVis();
+});
+
 $('#aboutPopup').hide();
 
 function positionAboutPopup(){

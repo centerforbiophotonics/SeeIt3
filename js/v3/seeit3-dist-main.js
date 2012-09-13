@@ -95,602 +95,604 @@ function constructVis(){
 		.top(function(){return graphCollection.padTop})
 		.fillStyle("white")
 		
-	/*Divider Between Top Graph and Title*/
-	vis.add(pv.Rule)
-		.top(-1)
-		.right(-25)
-		.left(-35)
-		.lineWidth(function(){
-			if (graphCollection.editModeEnabled)
-				return 2;
-			else
-				return 1;
-		})
-		.strokeStyle(function(){
-			if (graphCollection.editModeEnabled)
-				return "red"
-			else
-				return "black"
-		})
-	
-	
-	//Datasets
-	var dataSetsPanel = vis.add(pv.Panel)
-		.events("all")
-		.cursor("pointer")
-		.title("Show Datasets")
-		.height(30)
-		.width(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 100;
-			}else if (!graphCollection.buttonIcon){
-				return 70;
-			}else if (!graphCollection.buttonText){
-				return 34;
-			}
-		})
-		.left(-34)
-		.top(-31)
-		.lineWidth(1)
-		.event("click", toggleDatasetMenu)
-		.event("mouseover", function(d){
-			this.strokeStyle("black");
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-	
-	dataSetsPanel.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/dataset.png")  //fix this
-		.width(25)
-		.height(25)
-		.top(2)
-		.left(2)
-		.cursor("pointer")
-		.title("Show Datasets")
-		.visible(function() {
-			if (graphCollection.buttonIcon)
-				return true;
-			else
-				return false;
-		})
-		.event("click", toggleDatasetMenu)
-		.anchor("left").add(pv.Label)
-			.left(function(){
-				if (graphCollection.buttonText && !graphCollection.buttonIcon){
-					return 2;
-				}else
-					return 32;
-			})
-			.top(15)
-			.text("Datasets")
-			.font(fontString)
-			.visible(function() {
-				if (graphCollection.buttonText)
-					return true;
-				else
-					return false;
-			})
-	
-	
-	/* Display Options Menu Button */
-	var dispOptPanel = vis.add(pv.Panel)
-		.events("all")
-		.cursor("pointer")
-		.title("Show display option menu")
-		.height(30)
-		.width(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 150;
-			}else if (!graphCollection.buttonIcon){
-				return 120;
-			}else if (!graphCollection.buttonText){
-				return 34;
-			}
-		})
-		.left(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 70;
-			}else if (!graphCollection.buttonIcon){
-				return 35;
-			}else if (!graphCollection.buttonText){
-				return 4;
-			}
-		})
-		.top(-31)
-		.lineWidth(1)
-		.event("click", displayMenuButtonHandler)
-		.event("mouseover", function(d){
-			this.strokeStyle("black");
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-	
-	dispOptPanel.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/eye.png")  //fix this
-		.width(30)
-		.height(30)
-		.top(0)
-		.left(2)
-		.cursor("pointer")
-		.title("Show display option menu")
-		.visible(function() {
-			if (graphCollection.buttonIcon)
-				return true;
-			else
-				return false;
-		})
-		.event("click", displayMenuButtonHandler)
-		.anchor("left").add(pv.Label)
-			.left(function(){
-				if (graphCollection.buttonText && !graphCollection.buttonIcon)
+	if(!graphCollection.printMode){
+		/*Divider Between Top Graph and Title*/
+		vis.add(pv.Rule)
+			.top(-1)
+			.right(-25)
+			.left(-35)
+			.lineWidth(function(){
+				if (graphCollection.editModeEnabled)
 					return 2;
 				else
-				 return 32;
+					return 1;
 			})
-			.top(15)
-			.text("Display Options")
-			.font(fontString)
-			.visible(function() {
-				if (graphCollection.buttonText)
-					return true;
-				else
-					return false;
-			})
-		
-	/* Add New Graph Button */
-	var newGrphPanel = vis.add(pv.Panel)
-		.events("all")
-		.cursor("pointer")
-		.title("Add a new empty graph")
-		.height(30)
-		.width(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 115;
-			}else if (!graphCollection.buttonIcon){
-				return 85;
-			}else if (!graphCollection.buttonText){
-				return 34;
-			}
-		})
-		.left(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 225;
-			}else if (!graphCollection.buttonIcon){
-				return 155;
-			}else if (!graphCollection.buttonText){
-				return 45;
-			}
-		})
-		.top(-31)
-		.lineWidth(1)
-		.event("click", function(){
-			graphCollection.addGraph();
-			constructVis();
-		})
-		.event("mouseover", function(d){
-			this.strokeStyle("black");
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-		
-	newGrphPanel.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png")  //fix this
-		.width(30)
-		.height(30)
-		.top(0)
-		.left(2)
-		.cursor("pointer")
-		.title("Add a new empty graph")
-		.event("click", function(){
-			graphCollection.addGraph();
-			constructVis();
-		})
-		.visible(function() {
-			if (graphCollection.buttonIcon)
-				return true;
-			else
-				return false;
-		})
-		.anchor("left").add(pv.Label)
-			.left(function(){
-				if (graphCollection.buttonText && !graphCollection.buttonIcon)
-					return 2;
-				else
-				 return 32;
-			})
-			.top(15)
-			.text("New Graph")
-			.font(fontString)
-			.visible(function() {
-				if (graphCollection.buttonText)
-					return true;
-				else
-					return false;
-			})
-			
-	/*Toggle Basic/Advanced User Mode*/
-	var togUserModePanel = vis.add(pv.Panel)
-		.events("all")
-		.cursor("pointer")
-		.title("Toggle advanced mode")
-		.height(30)
-		.width(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 150;
-			}else if (!graphCollection.buttonIcon){
-				return 122;
-			}else if (!graphCollection.buttonText){
-				return 34;
-			}
-		})
-		.left(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 340;
-			}else if (!graphCollection.buttonIcon){
-				return 240;
-			}else if (!graphCollection.buttonText){
-				return 80;
-			}
-		})
-		.top(-31)
-		.lineWidth(1)
-		.event("click", function(){
-			graphCollection.advancedUser = !(graphCollection.advancedUser);
-			showHideAdvancedOptions();
-		})
-		.event("mouseover", function(d){
-			this.strokeStyle("black");
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-		
-	togUserModePanel.add(pv.Image)
-		.url(function(){
-			if (graphCollection.advancedUser)
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeON.png"
-			else
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeOFF.png"
-		})
-		.width(30)
-		.height(26)
-		.top(2)
-		.left(0)
-		.cursor("pointer")
-		.title("Toggle basic/advanced mode")
-		.event("click", function(){
-			graphCollection.advancedUser = !(graphCollection.advancedUser);
-			showHideAdvancedOptions();
-		})
-		.visible(function() {
-			if (graphCollection.buttonIcon)
-				return true;
-			else
-				return false;
-		})
-		.anchor("left").add(pv.Label)
-			.left(function(){
-				if (graphCollection.buttonText && !graphCollection.buttonIcon)
-					return 2;
-				else
-				 return 32;
-			})
-			.text(function(){return "Advanced Mode"})
-			.textStyle(function(){
-				if (graphCollection.advancedUser)
-					return "red"
-				else
-					return "grey"
-			})
-			.top(15)
-			.font(fontString)
-			.visible(function() {
-				if (graphCollection.buttonText)
-					return true;
-				else
-					return false;
-			})
-			
-		
-	/* Toggle Edit Mode Button */
-	var togEditPanel = vis.add(pv.Panel)
-		.events("all")
-		.cursor("pointer")
-		.title("Toggle edit mode")
-		.height(30)
-		.width(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 110;
-			}else if (!graphCollection.buttonIcon){
-				return 80;
-			}else if (!graphCollection.buttonText){
-				return 34;
-			}
-		})
-		.left(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 490;
-			}else if (!graphCollection.buttonIcon){
-				return 362;
-			}else if (!graphCollection.buttonText){
-				return 114;
-			}
-		})
-		.top(-31)
-		.lineWidth(1)
-		.visible(function() {
-			if (graphCollection.advancedUser)
-				return true;
-			else
-				return false;
-		})
-		.event("click", function(){
-			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
-			constructVis();
-		})
-		.event("mouseover", function(d){
-			this.strokeStyle("black");
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-		
-	togEditPanel.add(pv.Image)
-		.url(function(){
-			if (graphCollection.editModeEnabled)
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/handON.png"
-			else
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/hand.png"
-		})
-		.width(30)
-		.height(26)
-		.top(2)
-		.left(0)
-		.cursor("pointer")
-		.title("Toggle edit mode")
-		.event("click", function(){
-			graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
-			vis.render();
-		})
-		.visible(function() {
-			if (graphCollection.buttonIcon)
-				return true;
-			else
-				return false;
-		})
-		.anchor("left").add(pv.Label)
-			.left(function(){
-				if (graphCollection.buttonText && !graphCollection.buttonIcon)
-					return 2;
-				else
-				 return 32;
-			})
-			.top(15)
-			.text("Edit Mode")
-			.font(fontString)
-			.textStyle(function(){
+			.strokeStyle(function(){
 				if (graphCollection.editModeEnabled)
 					return "red"
 				else
 					return "black"
 			})
+		
+		
+		//Datasets
+		var dataSetsPanel = vis.add(pv.Panel)
+			.events("all")
+			.cursor("pointer")
+			.title("Show Datasets")
+			.height(30)
+			.width(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 100;
+				}else if (!graphCollection.buttonIcon){
+					return 70;
+				}else if (!graphCollection.buttonText){
+					return 34;
+				}
+			})
+			.left(-34)
+			.top(-31)
+			.lineWidth(1)
+			.event("click", toggleDatasetMenu)
+			.event("mouseover", function(d){
+				this.strokeStyle("black");
+				this.render();
+			})
+			.event("mouseout", function(d){ 
+				this.strokeStyle(pv.rgb(0,0,0,0));
+				this.render();
+			})
+		
+		dataSetsPanel.add(pv.Image)
+			.url("http://centerforbiophotonics.github.com/SeeIt3/img/dataset.png")  //fix this
+			.width(25)
+			.height(25)
+			.top(2)
+			.left(2)
+			.cursor("pointer")
+			.title("Show Datasets")
 			.visible(function() {
-				if (graphCollection.buttonText)
+				if (graphCollection.buttonIcon)
 					return true;
 				else
 					return false;
 			})
-	
-	//Fit all graphs to scale button
-	var fitScalePanel = vis.add(pv.Panel)
-		.events("all")
-		.cursor("pointer")
-		.title("Scale all graphs identically")
-		.height(30)
-		.width(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 105;
-			}else if (!graphCollection.buttonIcon){
-				return 75;
-			}else if (!graphCollection.buttonText){
-				return 32;
-			}
-		})
-		.left(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 600;
-			}else if (!graphCollection.buttonIcon){
-				return 442;
-			}else if (!graphCollection.buttonText){
-				return 148;
-			}
-		})
-		.top(-31)
-		.lineWidth(1)
-		.visible(function() {
-			if (graphCollection.advancedUser)
-				return true;
-			else
-				return false;
-		})
-		.event("click", function(){
-			graphCollection.graphs.forEach(function(graph){
-				graph.customScale = false;
-				graph.fitScaleToData = false;
-			});
-			graphCollection.scaleAllGraphsToFit();
-			vis.render();
-		})
-		.event("mouseover", function(d){
-			this.strokeStyle("black");
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
+			.event("click", toggleDatasetMenu)
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon){
+						return 2;
+					}else
+						return 32;
+				})
+				.top(15)
+				.text("Datasets")
+				.font(fontString)
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
 		
-	fitScalePanel.add(pv.Image)
-		.url(function(){
-			return "http://centerforbiophotonics.github.com/SeeIt3/img/ruler.png"
-		})
-		.width(30)
-		.height(30)
-		.top(1)
-		.left(0)
-		.cursor("pointer")
-		.title("Scale all graphs identically.")
-		.event("click", function(){
-			graphCollection.graphs.forEach(function(graph){
-				graph.customScale = false;
-				graph.fitScaleToData = false;
-			});
-			graphCollection.scaleAllGraphsToFit();
-			vis.render();
-		})
-		.visible(function() {
-			if (graphCollection.buttonIcon)
-				return true;
-			else
-				return false;
-		})
-		.anchor("left").add(pv.Label)
-			.left(function(){
-				if (graphCollection.buttonText && !graphCollection.buttonIcon)
-					return 2;
-				else
-				 return 32;
+		
+		/* Display Options Menu Button */
+		var dispOptPanel = vis.add(pv.Panel)
+			.events("all")
+			.cursor("pointer")
+			.title("Show display option menu")
+			.height(30)
+			.width(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 150;
+				}else if (!graphCollection.buttonIcon){
+					return 120;
+				}else if (!graphCollection.buttonText){
+					return 34;
+				}
 			})
-			.top(15)
-			.text("Fit Scales")
-			.font(fontString)
-			.textStyle(function(){return "black"})
+			.left(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 70;
+				}else if (!graphCollection.buttonIcon){
+					return 35;
+				}else if (!graphCollection.buttonText){
+					return 4;
+				}
+			})
+			.top(-31)
+			.lineWidth(1)
+			.event("click", displayMenuButtonHandler)
+			.event("mouseover", function(d){
+				this.strokeStyle("black");
+				this.render();
+			})
+			.event("mouseout", function(d){ 
+				this.strokeStyle(pv.rgb(0,0,0,0));
+				this.render();
+			})
+		
+		dispOptPanel.add(pv.Image)
+			.url("http://centerforbiophotonics.github.com/SeeIt3/img/eye.png")  //fix this
+			.width(30)
+			.height(30)
+			.top(0)
+			.left(2)
+			.cursor("pointer")
+			.title("Show display option menu")
 			.visible(function() {
-				if (graphCollection.buttonText)
+				if (graphCollection.buttonIcon)
 					return true;
 				else
 					return false;
 			})
+			.event("click", displayMenuButtonHandler)
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(15)
+				.text("Display Options")
+				.font(fontString)
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
 			
-	//Add a Resampling Graph
-	var resamplingPanel = vis.add(pv.Panel)
-		.events("all")
-		.cursor("pointer")
-		.title("Toggle Resampling")
-		.height(30)
-		.width(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 120;
-			}else if (!graphCollection.buttonIcon){
-				return 90;
-			}else if (!graphCollection.buttonText){
-				return 32;
-			}
-		})
-		.left(function() {
-			if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-				return 705;
-			}else if (!graphCollection.buttonIcon){
-				return 522;
-			}else if (!graphCollection.buttonText){
-				return 185;
-			}
-		})
-		.top(-31)
-		.lineWidth(1)
-		.visible(function() {
-			if (graphCollection.advancedUser)
-				return true;
-			else
-				return false;
-		})
-		.event("click", function(){
-			if (!graphCollection.resamplingEnabled){
-				graphCollection.resamplingEnabled = true;
-				graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
-			}else{
-				graphCollection.resamplingEnabled = false;
-				graphCollection.removeGraph(graphCollection.graphs[0]);
-			}
-			
-			constructVis();
-		})
-		.event("mouseover", function(d){
-			this.strokeStyle("black");
-			this.render();
-		})
-		.event("mouseout", function(d){ 
-			this.strokeStyle(pv.rgb(0,0,0,0));
-			this.render();
-		})
-		
-	resamplingPanel.add(pv.Image)
-		.url(function(){
-			if (graphCollection.resamplingEnabled)
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle-ON.png"
-			else
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle-OFF.png"
-			
-		})
-		.width(30)
-		.height(30)
-		.top(1)
-		.left(0)
-		.cursor("pointer")
-		.title("Toggle Resampling")
-		.event("click", function(){
-			if (!graphCollection.resamplingEnabled){
-				graphCollection.resamplingEnabled = true;
-				graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
-			}else{
-				graphCollection.resamplingEnabled = false;
-				graphCollection.removeGraph(graphCollection.graphs[0]);
-			}
-			
-			constructVis();
-		})
-		.visible(function() {
-			if (graphCollection.buttonIcon)
-				return true;
-			else
-				return false;
-		})
-		.anchor("left").add(pv.Label)
-			.left(function(){
-				if (graphCollection.buttonText && !graphCollection.buttonIcon)
-					return 2;
-				else
-				 return 32;
+		/* Add New Graph Button */
+		var newGrphPanel = vis.add(pv.Panel)
+			.events("all")
+			.cursor("pointer")
+			.title("Add a new empty graph")
+			.height(30)
+			.width(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 115;
+				}else if (!graphCollection.buttonIcon){
+					return 85;
+				}else if (!graphCollection.buttonText){
+					return 34;
+				}
 			})
-			.top(15)
-			.text("Resampling")
-			.font(fontString)
-			.textStyle(function(){
+			.left(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 225;
+				}else if (!graphCollection.buttonIcon){
+					return 155;
+				}else if (!graphCollection.buttonText){
+					return 45;
+				}
+			})
+			.top(-31)
+			.lineWidth(1)
+			.event("click", function(){
+				graphCollection.addGraph();
+				constructVis();
+			})
+			.event("mouseover", function(d){
+				this.strokeStyle("black");
+				this.render();
+			})
+			.event("mouseout", function(d){ 
+				this.strokeStyle(pv.rgb(0,0,0,0));
+				this.render();
+			})
+			
+		newGrphPanel.add(pv.Image)
+			.url("http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png")  //fix this
+			.width(30)
+			.height(30)
+			.top(0)
+			.left(2)
+			.cursor("pointer")
+			.title("Add a new empty graph")
+			.event("click", function(){
+				graphCollection.addGraph();
+				constructVis();
+			})
+			.visible(function() {
+				if (graphCollection.buttonIcon)
+					return true;
+				else
+					return false;
+			})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(15)
+				.text("New Graph")
+				.font(fontString)
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+				
+		/*Toggle Basic/Advanced User Mode*/
+		var togUserModePanel = vis.add(pv.Panel)
+			.events("all")
+			.cursor("pointer")
+			.title("Toggle advanced mode")
+			.height(30)
+			.width(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 150;
+				}else if (!graphCollection.buttonIcon){
+					return 122;
+				}else if (!graphCollection.buttonText){
+					return 34;
+				}
+			})
+			.left(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 340;
+				}else if (!graphCollection.buttonIcon){
+					return 240;
+				}else if (!graphCollection.buttonText){
+					return 80;
+				}
+			})
+			.top(-31)
+			.lineWidth(1)
+			.event("click", function(){
+				graphCollection.advancedUser = !(graphCollection.advancedUser);
+				showHideAdvancedOptions();
+			})
+			.event("mouseover", function(d){
+				this.strokeStyle("black");
+				this.render();
+			})
+			.event("mouseout", function(d){ 
+				this.strokeStyle(pv.rgb(0,0,0,0));
+				this.render();
+			})
+			
+		togUserModePanel.add(pv.Image)
+			.url(function(){
+				if (graphCollection.advancedUser)
+					return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeON.png"
+				else
+					return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeOFF.png"
+			})
+			.width(30)
+			.height(26)
+			.top(2)
+			.left(0)
+			.cursor("pointer")
+			.title("Toggle basic/advanced mode")
+			.event("click", function(){
+				graphCollection.advancedUser = !(graphCollection.advancedUser);
+				showHideAdvancedOptions();
+			})
+			.visible(function() {
+				if (graphCollection.buttonIcon)
+					return true;
+				else
+					return false;
+			})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.text(function(){return "Advanced Mode"})
+				.textStyle(function(){
+					if (graphCollection.advancedUser)
+						return "red"
+					else
+						return "grey"
+				})
+				.top(15)
+				.font(fontString)
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+				
+			
+		/* Toggle Edit Mode Button */
+		var togEditPanel = vis.add(pv.Panel)
+			.events("all")
+			.cursor("pointer")
+			.title("Toggle edit mode")
+			.height(30)
+			.width(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 110;
+				}else if (!graphCollection.buttonIcon){
+					return 80;
+				}else if (!graphCollection.buttonText){
+					return 34;
+				}
+			})
+			.left(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 490;
+				}else if (!graphCollection.buttonIcon){
+					return 362;
+				}else if (!graphCollection.buttonText){
+					return 114;
+				}
+			})
+			.top(-31)
+			.lineWidth(1)
+			.visible(function() {
+				if (graphCollection.advancedUser)
+					return true;
+				else
+					return false;
+			})
+			.event("click", function(){
+				graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
+				constructVis();
+			})
+			.event("mouseover", function(d){
+				this.strokeStyle("black");
+				this.render();
+			})
+			.event("mouseout", function(d){ 
+				this.strokeStyle(pv.rgb(0,0,0,0));
+				this.render();
+			})
+			
+		togEditPanel.add(pv.Image)
+			.url(function(){
+				if (graphCollection.editModeEnabled)
+					return "http://centerforbiophotonics.github.com/SeeIt3/img/handON.png"
+				else
+					return "http://centerforbiophotonics.github.com/SeeIt3/img/hand.png"
+			})
+			.width(30)
+			.height(26)
+			.top(2)
+			.left(0)
+			.cursor("pointer")
+			.title("Toggle edit mode")
+			.event("click", function(){
+				graphCollection.editModeEnabled = !(graphCollection.editModeEnabled);
+				vis.render();
+			})
+			.visible(function() {
+				if (graphCollection.buttonIcon)
+					return true;
+				else
+					return false;
+			})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(15)
+				.text("Edit Mode")
+				.font(fontString)
+				.textStyle(function(){
+					if (graphCollection.editModeEnabled)
+						return "red"
+					else
+						return "black"
+				})
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+		
+		//Fit all graphs to scale button
+		var fitScalePanel = vis.add(pv.Panel)
+			.events("all")
+			.cursor("pointer")
+			.title("Scale all graphs identically")
+			.height(30)
+			.width(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 105;
+				}else if (!graphCollection.buttonIcon){
+					return 75;
+				}else if (!graphCollection.buttonText){
+					return 32;
+				}
+			})
+			.left(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 600;
+				}else if (!graphCollection.buttonIcon){
+					return 442;
+				}else if (!graphCollection.buttonText){
+					return 148;
+				}
+			})
+			.top(-31)
+			.lineWidth(1)
+			.visible(function() {
+				if (graphCollection.advancedUser)
+					return true;
+				else
+					return false;
+			})
+			.event("click", function(){
+				graphCollection.graphs.forEach(function(graph){
+					graph.customScale = false;
+					graph.fitScaleToData = false;
+				});
+				graphCollection.scaleAllGraphsToFit();
+				vis.render();
+			})
+			.event("mouseover", function(d){
+				this.strokeStyle("black");
+				this.render();
+			})
+			.event("mouseout", function(d){ 
+				this.strokeStyle(pv.rgb(0,0,0,0));
+				this.render();
+			})
+			
+		fitScalePanel.add(pv.Image)
+			.url(function(){
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/ruler.png"
+			})
+			.width(30)
+			.height(30)
+			.top(1)
+			.left(0)
+			.cursor("pointer")
+			.title("Scale all graphs identically.")
+			.event("click", function(){
+				graphCollection.graphs.forEach(function(graph){
+					graph.customScale = false;
+					graph.fitScaleToData = false;
+				});
+				graphCollection.scaleAllGraphsToFit();
+				vis.render();
+			})
+			.visible(function() {
+				if (graphCollection.buttonIcon)
+					return true;
+				else
+					return false;
+			})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(15)
+				.text("Fit Scales")
+				.font(fontString)
+				.textStyle(function(){return "black"})
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+				
+		//Add a Resampling Graph
+		var resamplingPanel = vis.add(pv.Panel)
+			.events("all")
+			.cursor("pointer")
+			.title("Toggle Resampling")
+			.height(30)
+			.width(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 120;
+				}else if (!graphCollection.buttonIcon){
+					return 90;
+				}else if (!graphCollection.buttonText){
+					return 32;
+				}
+			})
+			.left(function() {
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					return 705;
+				}else if (!graphCollection.buttonIcon){
+					return 522;
+				}else if (!graphCollection.buttonText){
+					return 185;
+				}
+			})
+			.top(-31)
+			.lineWidth(1)
+			.visible(function() {
+				if (graphCollection.advancedUser)
+					return true;
+				else
+					return false;
+			})
+			.event("click", function(){
+				if (!graphCollection.resamplingEnabled){
+					graphCollection.resamplingEnabled = true;
+					graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+				}else{
+					graphCollection.resamplingEnabled = false;
+					graphCollection.removeGraph(graphCollection.graphs[0]);
+				}
+				
+				constructVis();
+			})
+			.event("mouseover", function(d){
+				this.strokeStyle("black");
+				this.render();
+			})
+			.event("mouseout", function(d){ 
+				this.strokeStyle(pv.rgb(0,0,0,0));
+				this.render();
+			})
+			
+		resamplingPanel.add(pv.Image)
+			.url(function(){
 				if (graphCollection.resamplingEnabled)
-					return "red"
+					return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle-ON.png"
 				else
-					return "black"
+					return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle-OFF.png"
+				
+			})
+			.width(30)
+			.height(30)
+			.top(1)
+			.left(0)
+			.cursor("pointer")
+			.title("Toggle Resampling")
+			.event("click", function(){
+				if (!graphCollection.resamplingEnabled){
+					graphCollection.resamplingEnabled = true;
+					graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+				}else{
+					graphCollection.resamplingEnabled = false;
+					graphCollection.removeGraph(graphCollection.graphs[0]);
+				}
+				
+				constructVis();
 			})
 			.visible(function() {
-				if (graphCollection.buttonText)
+				if (graphCollection.buttonIcon)
 					return true;
 				else
 					return false;
 			})
-	
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(15)
+				.text("Resampling")
+				.font(fontString)
+				.textStyle(function(){
+					if (graphCollection.resamplingEnabled)
+						return "red"
+					else
+						return "black"
+				})
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+	}
+		
 	constructDatasetPanel();
 	
 	graphCollection.graphs.forEach(function(graph,index,graphs){
@@ -739,6 +741,7 @@ function constructVis(){
 		constructLegendPanel(graph,i);
 		positionAndSizeLegendPanel(graph,i);
 	})
+
 }
 
 function constructDatasetPanel(){
@@ -1137,53 +1140,55 @@ function constructGraphPanel(graph, index){
 		
 	graph.panel = graphPanel;
 	
-	//Remove Graph Button
-	graphPanel.add(pv.Panel)
-		.right(-20)
-		.top(5)
-		.width(20)
-		.height(20)
-		.strokeStyle("black")
-		.cursor("pointer")
-		.events("all")
-		.title("Remove graph")
-		.visible(function(){
-			return !graph.isSamplingGraph && !graph.isResamplingGraph;
-		})
-		.event("click", function(){
-			graphCollection.removeGraph(graph);
-			constructVis();
-		})
-		.add(pv.Dot)
-			.left(10)
-			.top(10)
-			.shape("cross")
+	if (!graphCollection.printMode){
+		//Remove Graph Button
+		graphPanel.add(pv.Panel)
+			.right(-20)
+			.top(5)
+			.width(20)
+			.height(20)
+			.strokeStyle("black")
 			.cursor("pointer")
 			.events("all")
-			.size(20)
-			.lineWidth(2)
-			.title("Remove Graph")
-			.strokeStyle("black")
-			
-	//Show Grouping Option Menu Button
-	graphPanel.add(pv.Image)
-		.url("http://centerforbiophotonics.github.com/SeeIt3/img/wrench.png")  //fix this
-		.width(30)
-		.height(30)
-		.top(4)
-		.left(-30)
-		.cursor("pointer")
-		.title("Show graph option menu")
-		.visible(function(){
-			return !graph.isSamplingGraph && !graph.isResamplingGraph;
-		})
-		.event("click", function(){
-			graphCollection.selectedGraphIndex = index;
-			graphCollection.updateMenuOptions();
-			positionGroupingMenuOverGraph(index, graphCollection);
-			hideMenus();
-			$('#groupingOptions').slideDown();
-		})
+			.title("Remove graph")
+			.visible(function(){
+				return !graph.isSamplingGraph && !graph.isResamplingGraph;
+			})
+			.event("click", function(){
+				graphCollection.removeGraph(graph);
+				constructVis();
+			})
+			.add(pv.Dot)
+				.left(10)
+				.top(10)
+				.shape("cross")
+				.cursor("pointer")
+				.events("all")
+				.size(20)
+				.lineWidth(2)
+				.title("Remove Graph")
+				.strokeStyle("black")
+				
+		//Show Grouping Option Menu Button
+		graphPanel.add(pv.Image)
+			.url("http://centerforbiophotonics.github.com/SeeIt3/img/wrench.png")  //fix this
+			.width(30)
+			.height(30)
+			.top(4)
+			.left(-30)
+			.cursor("pointer")
+			.title("Show graph option menu")
+			.visible(function(){
+				return !graph.isSamplingGraph && !graph.isResamplingGraph;
+			})
+			.event("click", function(){
+				graphCollection.selectedGraphIndex = index;
+				graphCollection.updateMenuOptions();
+				positionGroupingMenuOverGraph(index, graphCollection);
+				hideMenus();
+				$('#groupingOptions').slideDown();
+			})
+	}
 		
 				
 	//Divider Line Between Graphs
@@ -3755,8 +3760,11 @@ function constructLegendPanel(graph, index){
 								"ontouchend=\"graphCatTouchEnd(event, '"+category+"', "+index+")\""+
 								">"+
 								"<table cellpadding='2' cellspacing='0'><tr>"+
-								"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
-								"); border:2px solid black; width:20px; height:20px;'></div></td>"+
+								"<td><svg version='1.1' viewbox='0 0 18 18' width='18' height='18'>"+
+								"<rect id='lgndColor"+index+"-"+i+"' height='16' width='16' x='0' y='0' style='fill: rgb("+color.r+","+color.g+","+color.b+"); stroke: black; stroke-width: 1'/>"+
+								"</svg></td>"+
+								//"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
+								//"); border:2px solid black; width:20px; height:20px;'></div></td>"+
 								"<td style='overflow:hidden;'><div id='lgndText"+index+"-"+i+"' style='white-space:nowrap; width:100%;'>"+category+"</div></td></tr></table></div></td>";
 		});
 		string += "</tr></table></center>";
