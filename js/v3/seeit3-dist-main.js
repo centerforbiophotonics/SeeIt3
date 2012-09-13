@@ -3760,8 +3760,8 @@ function constructLegendPanel(graph, index){
 								"ontouchend=\"graphCatTouchEnd(event, '"+category+"', "+index+")\""+
 								">"+
 								"<table cellpadding='2' cellspacing='0'><tr>"+
-								"<td><svg version='1.1' viewbox='0 0 18 18' width='18' height='18'>"+
-								"<rect id='lgndColor"+index+"-"+i+"' height='16' width='16' x='0' y='0' style='fill: rgb("+color.r+","+color.g+","+color.b+"); stroke: black; stroke-width: 1'/>"+
+								"<td><svg version='1.1' viewbox='0 0 18 18' width='18' height='18' style='border-style:none;'>"+
+								"<rect id='lgndColor"+index+"-"+i+"' height='14' width='14' x='1' y='1' style='fill: rgb("+color.r+","+color.g+","+color.b+"); stroke: black; stroke-width: 2'/>"+
 								"</svg></td>"+
 								//"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
 								//"); border:2px solid black; width:20px; height:20px;'></div></td>"+
