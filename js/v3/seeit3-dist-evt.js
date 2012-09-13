@@ -49,6 +49,8 @@ $('#about').click(function(){
 $('#print').click(function(){
 	if (graphCollection.datasetsMenuShowing) toggleDatasetMenu();
 	$('#notGraph').hide();
+	$('#groupingOptions').hide();
+	$('#displayOptions').hide();
 	graphCollection.printMode = true;
 	graphCollection.setW(620);
 	if (graphCollection.graphs.length <= 4)
