@@ -50,7 +50,8 @@ $('#print').click(function(){
 	if (graphCollection.datasetsMenuShowing) toggleDatasetMenu();
 	$('#notGraph').hide();
 	graphCollection.printMode = true;
-	graphCollection.setW(600);
+	graphCollection.setW(620);
+	graphCollection.setH(830);
 	constructVis();
 	
 	window.print();
@@ -58,6 +59,7 @@ $('#print').click(function(){
 	$('#notGraph').show();
 	graphCollection.printMode = false;
 	graphCollection.setW(graphCollection.calcGraphWidth());
+	graphCollection.setH(graphCollection.calcGraphHeight());
 	constructVis();
 });
 
