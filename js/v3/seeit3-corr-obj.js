@@ -84,6 +84,8 @@ function GraphCollection(){
 	this.numGraphs = 0;
 	this.addGraph();
 	this.updateMenuOptions();
+	
+	this.printMode = false;
 }
 
 GraphCollection.prototype = {

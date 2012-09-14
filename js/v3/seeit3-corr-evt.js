@@ -1529,6 +1529,32 @@ $('#about').click(function(){
 	$('#aboutPopup').slideToggle();
 });
 
+$('#print').click(function(){
+	if (graphCollection.datasetsMenuShowing) toggleDatasetMenu();
+	$('#notGraph').hide();
+	$('#groupingOptions').hide();
+	$('#displayOptions').hide();
+	graphCollection.printMode = true;
+	graphCollection.setW(790);
+	graphCollection.setH(1000);
+	constructVis();
+	graphCollection.setW(790);		//These is repeated because constructVis 
+	graphCollection.setH(1000);		//resizes the graphCollection to default sizes after rendering the graph
+	graphCollection.graphs.forEach(function(graph, index){
+		positionAndSizeAxisPanels(graph,index);
+		positionAndSizeGraphTitle(graph,index);
+	});
+	
+	window.print();
+	
+	$('#notGraph').show();
+	graphCollection.printMode = false;
+	graphCollection.setW(graphCollection.calcGraphWidth());
+	graphCollection.setH(graphCollection.calcGraphHeight());
+	constructVis();
+	
+});
+
 $('#aboutPopup').hide();
 
 function positionAboutPopup(){
