@@ -831,10 +831,16 @@ function validateWorksheetForm(title, cells, labelsRequired){
 		
 		//Check for data without label
 		for (var i=0; i<cells.length; i++){
-			if (cells[i][0] == "" && cells[i].length > 1){
-				alert("Error: Data exists without a label.");
-				return false;
-			}
+			if (cells[i][0] == ""){
+				allEmpty = true;
+				for (var j=0; j<cells[i].length; j++)
+					if (cells[i][j].trim != "") allEmpty = false
+				
+				if (!allEmpty){
+					alert("Error: Data exists without a label.");
+					return false;
+				}
+			} 
 		}
 	}
 	
@@ -867,8 +873,6 @@ function validateWorksheetForm(title, cells, labelsRequired){
 			}
 		}
 	}
-	
-	
 	
 	return true;
 }
