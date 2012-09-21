@@ -164,9 +164,11 @@ function constructVis() {
 			.top(-90)
 			.lineWidth(1)
 			.event("click", function(){
+				var wasShowing = $('#displayOptions').is(":visible")
 				hideMenus();
 				positionDisplayMenu();
-				$('#displayOptions').slideToggle();
+				if (!wasShowing)
+					$('#displayOptions').slideToggle();
 			})
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
