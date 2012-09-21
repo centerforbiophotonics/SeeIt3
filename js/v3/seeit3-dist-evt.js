@@ -54,7 +54,7 @@ $('#print').click(function(){
 	graphCollection.printMode = true;
 	graphCollection.setW(620);
 	if (graphCollection.graphs.length <= 4)
-		graphCollection.setH(830);
+		graphCollection.setH(825);
 	constructVis();
 	
 	window.print();

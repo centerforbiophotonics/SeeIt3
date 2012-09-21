@@ -1536,10 +1536,10 @@ $('#print').click(function(){
 	$('#displayOptions').hide();
 	graphCollection.printMode = true;
 	graphCollection.setW(790);
-	graphCollection.setH(1000);
+	graphCollection.setH(970);
 	constructVis();
 	graphCollection.setW(790);		//These is repeated because constructVis 
-	graphCollection.setH(1000);		//resizes the graphCollection to default sizes after rendering the graph
+	graphCollection.setH(970);		//resizes the graphCollection to default sizes after rendering the graph
 	graphCollection.graphs.forEach(function(graph, index){
 		positionAndSizeAxisPanels(graph,index);
 		positionAndSizeGraphTitle(graph,index);
