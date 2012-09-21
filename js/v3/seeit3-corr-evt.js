@@ -2107,7 +2107,7 @@ $("#textSizeInc").click(function(){
 })
 
 $("#textSizeDec").click(function(){
-	if (parseInt(graphCollection.tickTextSize) > 12){
+	if (parseInt(graphCollection.tickTextSize) > 6){
 		graphCollection.tickTextSize = (parseInt(graphCollection.tickTextSize)-1)+"";
 		graphCollection.labelTextSize = (parseInt(graphCollection.labelTextSize)-1)+"";
 		$("#textSizeValue").html(graphCollection.tickTextSize);
