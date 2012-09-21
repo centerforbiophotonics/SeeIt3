@@ -1626,7 +1626,7 @@ $('#loadFromForm').click(function(){
 		line.split('\t').forEach(function(tabChunk){
 			commaSep = tabChunk.split(",");
 			for (var i=0; i<commaSep.length; i++)
-				lineArray.push($.trim(commaSep[i]));
+				lineArray.push(trim(commaSep[i]));
 		});
 		
 		cells.push(lineArray);
@@ -1687,7 +1687,7 @@ function validateWorksheetForm(title, cells, labelsRequired){
 			if (cells[i][0] == ""){
 				allEmpty = true;
 				for (var j=0; j<cells[i].length; j++)
-					if (cells[i][j].trim != "") allEmpty = false
+					if (trim(cells[i][j]) != "") allEmpty = false
 				
 				if (!allEmpty){
 					alert("Error: Data exists without a label.");
@@ -1747,12 +1747,13 @@ function addWorksheet(title, cells, labelsRequired){
 	//create labelMasterList
 	if (labelsRequired){
 		for (var y=1; y<cells.length; y++){
-			if (trim(cells[y][0]) != "")
+			if (trim(cells[y][0]) != "" && trim(cells[y][0]) != undefined)
 				labelMasterList.push(trim(cells[y][0]));
 		}	
 	} else {
 		for (var y=1; y<cells.length; y++){
-			labelMasterList.push("Default-"+y);
+			if (trim(cells[y][0]) != "" && trim(cells[y][0]) != undefined)
+				labelMasterList.push("Default-"+y);
 		}	
 	}
 	
@@ -1765,10 +1766,10 @@ function addWorksheet(title, cells, labelsRequired){
 			data[trim(cells[0][x])] = [];
 			edited[trim(cells[0][x])] = true;
 			for (var y=1; y<cells.length; y++){
-				if ((cells[y][0] != "" || !labelsRequired) && cells[y][x] != ""){
+				if ((cells[y][0] != "" || !labelsRequired) && cells[y][x] != "" && cells[y][x] != undefined){
 					data[trim(cells[0][x])].push({
-						"label":trim(labelMasterList[y-1]),
-						"value":parseFloat(cells[y][x])
+						"label": labelMasterList[y-1],
+						"value": parseFloat(cells[y][x])
 					});
 				}
 			}

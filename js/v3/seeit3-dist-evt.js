@@ -775,7 +775,7 @@ $('#loadFromForm').click(function(){
 		line.split('\t').forEach(function(tabChunk){
 			commaSep = tabChunk.split(",");
 			for (var i=0; i<commaSep.length; i++)
-				lineArray.push($.trim(commaSep[i]));
+				lineArray.push(trim(commaSep[i]));
 		});
 		
 		cells.push(lineArray);
@@ -834,7 +834,7 @@ function validateWorksheetForm(title, cells, labelsRequired){
 			if (cells[i][0] == ""){
 				allEmpty = true;
 				for (var j=0; j<cells[i].length; j++)
-					if (cells[i][j].trim != "") allEmpty = false
+					if (trim(cells[i][j]) != "") allEmpty = false
 				
 				if (!allEmpty){
 					alert("Error: Data exists without a label.");
