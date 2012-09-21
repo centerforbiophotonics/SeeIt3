@@ -2048,7 +2048,7 @@ $('#displayOptions').hide();
 function positionDisplayMenu(){		
 	$('#displayOptions')
 			.css('position', 'absolute')
-			.css('top', $('span').offset().top + graphCollection.padTop +"px")
+			.css('top', $('span').offset().top + graphCollection.padTop - 59 + "px")
 			.css('left', $('span').offset().left +
 					graphCollection.padLeft - 35 +"px")
 			.css('z-index',2)
