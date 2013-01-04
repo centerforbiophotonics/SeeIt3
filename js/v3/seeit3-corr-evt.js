@@ -1844,7 +1844,7 @@ function showWorksheetDescription(title){
 	$('#worksheetDescriptionParagraph').html(worksheet.description);
 	$('#worksheetDescriptionTitle').html(worksheet.title + "<br>by " + worksheet.labelType);
 	positionWorksheetDescriptionPopup();
-	$('#worksheetDescriptionPopup').slideToggle();
+	$('#worksheetDescriptionPopup').slideDown();
 }
 
 

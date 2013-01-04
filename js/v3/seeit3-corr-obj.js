@@ -786,13 +786,14 @@ Worksheet.prototype = {
 																	e.title.$t.replace(/[0-9]/g,"") == "A"
 															})
 												.forEach(function(e){
-													if (e.content.$t[0] != '*')
+													if (/(NOTE\:)|(SOURCE\:)|(\*)/.test(e.content.$t) == false)
 														rowToLabelVal[parseInt(e.title.$t.replace(/[A-Z]/g,""))] = e.content.$t;
 												});
 
 		feedData.feed.entry.filter(function(e) { 
 																return parseInt(e.title.$t.replace(/[A-Z]/g,"")) > 1 &&
-																	e.title.$t.replace(/[0-9]/g,"") != "A";
+																	e.title.$t.replace(/[0-9]/g,"") != "A" &&
+																	/(NOTE\:)|(SOURCE\:)|(\*)/.test(e.content.$t) == false;
 															})
 												.forEach(function(e) {
 													if (columnToCategory[e.title.$t.replace(/[0-9]/g,"")] != undefined &&
@@ -808,12 +809,22 @@ Worksheet.prototype = {
 	},
 	
 	getDescription: function(feedData){
-		var lastCell = feedData.feed.entry.slice(-1)[0].content.$t;
+		//var lastCell = feedData.feed.entry.slice(-1)[0].content.$t;
 		
-		if (lastCell[0] == '*')
-			return lastCell.slice(1)
-		else
-			return "";
+		//if (lastCell[0] == '*')
+			//return lastCell.slice(1)
+		//else
+			//return "";
+		var description = "";
+		
+		feedData.feed.entry.forEach(function(e){
+			if (/(NOTE\:)|(SOURCE\:)|(\*)/.test(e.content.$t)){
+				description += e.content.$t.replace(/(NOTE\:)|(SOURCE\:)|(\*)/, "");
+				console.log(e.content.$t) 
+			}	
+		});
+		
+		return description;
 	},
 	
 	getLabels: function(feedData){
