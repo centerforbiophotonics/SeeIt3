@@ -1307,9 +1307,9 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.strokeStyle("#aaa")
 			.height(5)
 			.visible(function(d){
-				if (graph.resamplingIterations > 10000) return d % 10000 == 0 && d != 0;
-				else if (graph.resamplingIterations > 1000) return d % 1000 == 0 && d != 0;
-				else return true && d != 0;
+				if (graph.resamplingIterations > 10000) return d % 10000 == 0; //&& d != 0;
+				else if (graph.resamplingIterations > 1000) return d % 1000 == 0;// && d != 0;
+				else return true; //&& d != 0;
 				
 			})
 			.anchor("bottom").add(pv.Label)
@@ -1395,6 +1395,18 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.fillStyle("grey")
 			.strokeStyle("black")
 			.title(function(d) {return "Iterations: "+d.x+", P: "+d.y.toFixed(4)})
+		
+		/* Dots */
+		graphPanel.add(pv.Dot)
+			.data(function() {return ( graph.resampleDisplayMode == "dot" ? graph.getDataDrawObjects() : [])})
+			.left(function(d) { return d.x })
+			.bottom(function(d) { return d.y + graph.baseLine })
+			.radius(2)
+			.fillStyle("black")
+			.strokeStyle("black")
+			.lineWidth(2)
+			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
+			.visible(function(){return graph.resampleDisplayMode == "dot"})
 		
 		/* Lines */
 		graphPanel.add(pv.Rule)
@@ -3410,6 +3422,7 @@ function constructResampleControlPanel(graph, index){
 								"onchange=\"javascript:changeResampleIterations('resampleN"+index+"',"+index+")\""+
 								"value='"+graph.resamplingIterations+"'></td>"+
 							 "<td>Mode:<select id=\"resampleDisplayMode\" onchange=\"javascript:updateResamplingDisplay()\">"+
+									"<option value=\"dot\" "+(graph.resampleDisplayMode=="dot"?"selected":"")+">Dot</option>"+
 									"<option value=\"line\" "+(graph.resampleDisplayMode=="line"?"selected":"")+">Line</option>"+
 									"<option value=\"histogram\" "+(graph.resampleDisplayMode=="histogram"?"selected":"")+">Histogram</option>"+
 									"<option value=\"pgraph\" "+(graph.resampleDisplayMode=="pgraph"?"selected":"")+">P Value Graph</option>"+

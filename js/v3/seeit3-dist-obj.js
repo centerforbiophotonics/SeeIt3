@@ -820,6 +820,8 @@ Graph.prototype = {
 		var data = this.dataObjects();
 		var drawMode = jQuery("#drawMode option:selected").val();
 		
+		var dotSize = this.isResamplingGraph ? 2 : graphCollection.bucketDotSize;
+		
 		for (var i = 0; i < this.graphCollection.buckets; i++){
 			var bucketMin = xDomain[0] + (bucketSize * i);
 			var bucketMax = xDomain[0] + (bucketSize * (i+1));
@@ -846,7 +848,7 @@ Graph.prototype = {
 				for (var j = 0; j < pointsInBucket.length; j++){
 					points.push({"x":pointsInBucket[j][0],
 											 "xReal":pointsInBucket[j][0],
-											 "y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
+											 "y":this.graphCollection.bucketDotSize + j*2*dotSize,
 											 "label":pointsInBucket[j][1],
 											 "set":pointsInBucket[j][2]
 										 });
@@ -856,7 +858,7 @@ Graph.prototype = {
 				for (var j = 0; j < pointsInBucket.length; j++){
 					points.push({"x":(this.x(bucketMin)+this.x(bucketMax))/2,
 											 "xReal":pointsInBucket[j][0],
-											 "y":this.graphCollection.bucketDotSize + j*2*this.graphCollection.bucketDotSize,
+											 "y":this.graphCollection.bucketDotSize + j*2*dotSize,
 											 "label":pointsInBucket[j][1],
 											 "set":pointsInBucket[j][2]
 										 });
@@ -868,20 +870,20 @@ Graph.prototype = {
 						var candidatePoint = {
 							"x":pointsInBucket[j][0],
 							"xReal":pointsInBucket[j][0],
-							"y":graphCollection.bucketDotSize,
+							"y":dotSize,
 							"label":pointsInBucket[j][1],
 							"set":pointsInBucket[j][2]
 							};
 							
 						var collisionPoints = [];
 						for (var k = 0; k < points.length; k++){
-							if (Math.abs(points[k].x-candidatePoint.x) < graphCollection.bucketDotSize*2) {
+							if (Math.abs(points[k].x-candidatePoint.x) < dotSize*2) {
 								collisionPoints.push(points[k]);
 							}
 						}
 						
 						if (collisionPoints.length > 0)
-							candidatePoint.y = fitPointInGraph(candidatePoint, collisionPoints, graphCollection.bucketDotSize);
+							candidatePoint.y = fitPointInGraph(candidatePoint, collisionPoints, dotSize);
 						
 						points.push(candidatePoint);
 					}
