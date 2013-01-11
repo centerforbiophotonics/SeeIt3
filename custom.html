@@ -12,7 +12,9 @@
 	<label for="url-0">Enter One or More Google Spreadsheet URLs:</label>
 	<br>
 	<div id="urls">
-		<input type="text" id="url-0" class="url" size="130">
+		<div id="url-and-button-0">
+			<input type="text" id="url-0" class="url" size="130">
+		</div>
 	</div>
 	
 	
@@ -39,10 +41,8 @@
 	<script type="text/javascript">
 		function parseSpreadsheetKeyFromURL(URL, i) {
 			var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
-			if (!matches)
-			alert("URL "+(i+1)+" doesn't appear to be a valid URL");
-			else
-			return matches[1];
+			if (!matches) alert("URL "+(i+1)+" doesn't appear to be a valid URL");
+			else return matches[1];
 		}
 		
 		function generateURLs(){
@@ -54,9 +54,12 @@
 			if ($("#exclusive").is(':checked')) params += "!"
 			
 			$(".url").each(function(i){
-				params += "key=";
-				params += parseSpreadsheetKeyFromURL($(this).val(),i);
-				if (i < nextNewURL-1) params += "&";
+				if ($(this).val() != ""){
+					if (i > 0) params += "&";
+					params += "key=";
+					params += parseSpreadsheetKeyFromURL($(this).val(),i);
+					
+				}
 			});
 			
 			return [corrURL+params, distURL+params]
@@ -69,14 +72,22 @@
 			$("#dist-preview-url").html('<a href="'+urls[1]+'">'+urls[1]+'</a>');
 		}
 		
+		function removeURL(){
+			console.log($(this).attr("id").split("-")[1]);
+			$("#url-and-button-"+$(this).attr("id").split("-")[1]).remove();
+			updateDisplayedURLs();
+		}
+		
 		$("#exclusive").change(updateDisplayedURLs);
 		
 		$("#url-0").change(updateDisplayedURLs);		
 		
 		var nextNewURL = 1;
 		$("#add").click(function(){
-			$("#urls").append('<br><input type="text" id="url-'+nextNewURL+'" class="url" size="130">');
+			$("#urls").append('<div id="url-and-button-'+nextNewURL+'"><input type="text" id="url-'+nextNewURL+'" class="url" size="130"><input type="button" id="remove-'+nextNewURL+'" value="Remove URL"></div>');
 			$("#url-"+nextNewURL).change(updateDisplayedURLs);
+			$("#remove-"+nextNewURL).click(removeURL);
+			
 			nextNewURL += 1;
 		});
 		
