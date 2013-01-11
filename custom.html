@@ -1,0 +1,97 @@
+<html>
+
+<head>
+	<title>SeeIt Custom Data URL Generator</title>
+	
+	<script src="lib/jquery-1.7.2.js"></script>
+</head>
+
+<body>
+	<h2>SeeIt Custom Data URL Generator</h2>
+	
+	<label for="url-0">Enter One or More Google Spreadsheet URLs:</label>
+	<br>
+	<div id="urls">
+		<input type="text" id="url-0" class="url" size="130">
+	</div>
+	
+	
+	<input type="button" value="Add another URL" id="add">
+	
+	<br><br>
+	
+	<input type="checkbox" id="exclusive">
+	<label for="exclusive">Load SeeIt with ONLY the data in the links above.</label>
+	
+	
+	<br>
+	<input type="button" id="load-corr" value="Load SeeIt Correlations">
+	<input type="button" id="load-dist" value="Load SeeIt Distributions">
+	
+	<p>Preview of Custom SeeIt Correlations Link:</p>
+	<div id="corr-preview-url"></div>
+	
+	<br>
+	
+	<p>Preview of Custom SeeIt Distributions Link:</p>
+	<div id="dist-preview-url"></div>
+	
+	<script type="text/javascript">
+		function parseSpreadsheetKeyFromURL(URL, i) {
+			var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+			if (!matches)
+			alert("URL "+(i+1)+" doesn't appear to be a valid URL");
+			else
+			return matches[1];
+		}
+		
+		function generateURLs(){
+			var corrURL = "http://centerforbiophotonics.github.com/SeeIt3/correlationsv3.html"
+			var distURL = "http://centerforbiophotonics.github.com/SeeIt3/distributionsv3.html"
+			
+			var params = "?"
+			
+			if ($("#exclusive").is(':checked')) params += "!"
+			
+			$(".url").each(function(i){
+				params += "key=";
+				params += parseSpreadsheetKeyFromURL($(this).val(),i);
+				if (i < nextNewURL-1) params += "&";
+			});
+			
+			return [corrURL+params, distURL+params]
+		}
+		
+		function updateDisplayedURLs(){
+			urls = generateURLs();
+			
+			$("#corr-preview-url").html('<a href="'+urls[0]+'">'+urls[0]+'</a>');
+			$("#dist-preview-url").html('<a href="'+urls[1]+'">'+urls[1]+'</a>');
+		}
+		
+		$("#exclusive").change(updateDisplayedURLs);
+		
+		$("#url-0").change(updateDisplayedURLs);		
+		
+		var nextNewURL = 1;
+		$("#add").click(function(){
+			$("#urls").append('<br><input type="text" id="url-'+nextNewURL+'" class="url" size="130">');
+			$("#url-"+nextNewURL).change(updateDisplayedURLs);
+			nextNewURL += 1;
+		});
+		
+		$("#load-corr").click(function(){
+			window.open(generateURLs()[0]);
+		});
+		
+		$("#load-dist").click(function(){
+			window.open(generateURLs()[1]);
+		});
+		
+		
+	
+	</script>
+	
+</body>
+
+</html>
