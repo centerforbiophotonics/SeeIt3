@@ -16,41 +16,55 @@ var resamplePop2Mean = null;
 var resampleResetPopulation = true;
 var population = [];
 
-//Default included worksheets
-var exampleSpreadsheets = [
-	new Spreadsheet('0AuGPdilGXQlBdFBxTkJhdzZmNFVNVXJXZ0xxNXVYTUE'),			//Blank Worksheet
-	new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),
-	new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'),
-	new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'),
-	new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'),
-	new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'),
-	new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'),
-	new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'),
-	new Spreadsheet('0Al5kfBmMhbwmdGJ2b1A1eWtMdUF4bWJxcnhBQ0Fsb3c'),			//Gapminder
-	new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'),			//Skin Cancer Fig 8
-	new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'),			//Skin Cancer Fig 4
-	new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'),			//Skin Cancer Fig 2
-	new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'),			//Doll and Hill
-	new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc')				//Giraffe Data
-];
+
+var exampleSpreadsheets = [ ];
 
 //Preload a worksheet
-var preload = window.location.search;	
+var preload = window.location.search;
+var exclusiveLoad = false;	
 if (preload.substring(0, 1) == '?') {
+		console.log(preload);
+		
 		preload = preload.substring(1);
 		
-		var key = parseSpreadsheetKeyFromURL(preload);
+		if (preload.substring(0, 1) == '!'){
+			exclusiveLoad = true;
+			preload = preload.substring(1);
+		}
+		preload.split("&").forEach(function(url){
+			var key = parseSpreadsheetKeyFromURL(url);
 		
-		var exists = false;
-		exampleSpreadsheets.forEach(function(s){
-			if (s.key == key) exists = true;
+			var exists = false;
+			exampleSpreadsheets.forEach(function(s){
+				if (s.key == key) exists = true;
+			});
+			
+			if (!exists) {
+				exampleSpreadsheets.push(new Spreadsheet(key));
+				//constructVis();
+			}
+			//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
+				
 		});
 		
-		if (!exists) {
-			exampleSpreadsheets.push(new Spreadsheet(key));
-			//constructVis();
-		}
-		//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
+}
+
+
+if (!exclusiveLoad){
+	exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdFBxTkJhdzZmNFVNVXJXZ0xxNXVYTUE'));			//Blank Worksheet
+	exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
+	exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
+	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));
+	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'));
+	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'));
+	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'));
+	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'));
+	exampleSpreadsheets.push(new Spreadsheet('0Al5kfBmMhbwmdGJ2b1A1eWtMdUF4bWJxcnhBQ0Fsb3c'));			//Gapminder
+	exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'));			//Skin Cancer Fig 8
+	exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'));			//Skin Cancer Fig 4
+	exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'));			//Skin Cancer Fig 2
+	exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'));			//Doll and Hill
+	exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
 }		
 
 
@@ -1402,7 +1416,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.left(function(d) { return d.x })
 			.bottom(function(d) { return d.y + graph.baseLine })
 			.radius(2)
-			.fillStyle("black")
+			.fillStyle("white")
 			.strokeStyle("black")
 			.lineWidth(2)
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })

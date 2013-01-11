@@ -1081,7 +1081,6 @@ Worksheet.prototype = {
 		feedData.feed.entry.forEach(function(e){
 			if (/(NOTE\:)|(SOURCE\:)|(\*)/.test(e.content.$t)){
 				description += e.content.$t.replace(/(NOTE\:)|(SOURCE\:)|(\*)/, "");
-				console.log(e.content.$t) 
 			}	
 		});
 		
