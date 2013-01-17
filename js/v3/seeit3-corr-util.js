@@ -74,7 +74,7 @@ function convertToID(set){
 }
 
 function toggleDataSubtree(id,i,title){
-	$('#'+id).slideToggle(null,resizeVis);
+	
 	graphCollection.datasetsVisible[title] ? 
 		graphCollection.datasetsVisible[title] = false :
 		graphCollection.datasetsVisible[title] = true;
@@ -85,6 +85,7 @@ function toggleDataSubtree(id,i,title){
 		$('#subtreeToggle'+i).attr("src","img/downTriangle.png");
 		$('#subtreeToggle'+i).attr("title","Collapse Folder");
 	}
+	$('#'+id).slideToggle(null,resizeVis);
 }
 
 function resizeVis(){
@@ -92,7 +93,8 @@ function resizeVis(){
 					 .css('left',$('#datasets').width()+29)
 					 .css('z-index', -1);
 	graphCollection.setW(graphCollection.calcGraphWidth());
-	vis.render();
+	//vis.render();
+	constructVis();
 	positionGraphMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 	
 	graphCollection.graphs.forEach(function(graph, index){

@@ -78,6 +78,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		jQuery('p#loadingMsg').hide();
 		constructVis();
 		showHideAdvancedOptions();
+		toggleDatasetMenu();
   }
 });
 
@@ -704,7 +705,7 @@ function constructGraphPanel(graph,index){
 			.width(30)
 			.height(30)
 			.top(-95)
-			.left(-80)
+			.left(-90)
 			.cursor("pointer")
 			.title("Show graph option menu")
 			.event("click", function(){
@@ -776,7 +777,7 @@ function constructEmptyGraph(graph,index, graphPanel){
 			.top(function(){return graph.h/2 + 20})
 			.textAlign("center")
 			.textBaseline("center")
-			.text("Drag one or more datasets to this graph to view them.")
+			.text("Drag a dataset to either axis to view it.")
 			.font(fontString)
 		graphPanel.add(pv.Label)
 			.left(function(){return graph.w/2})
@@ -787,7 +788,7 @@ function constructEmptyGraph(graph,index, graphPanel){
 			.font(fontString)
 			
 		graphPanel.add(pv.Label)
-			.left(200)
+			.left(170)
 			.top(-70)
 			.textAlign("center")
 			.textBaseline("center")
@@ -2441,7 +2442,7 @@ function constructLegendPanel(graph, index){
 											"ontouchmove=\"legPanTouchMove(event)\""+
 											"ontouchend=\"legPanTouchEnd(event)\""+
 											">"+
-											"<center><p style=\"margin-top:14px;\">"+
+											"<center><p style=\"margin-top:10px;\">"+
 											(graph.yData != null ? graph.yData : "Drag a dataset here to assign it to the Y-Axis.")+
 											"</p></center>"+
 											"</div>");
@@ -2490,8 +2491,8 @@ function positionAndSizeAxisPanels(graph,index){
 										.css('top', $('span').offset().top + graphCollection.padTop+40 + (graph.h-40)/2)
 										.css('height', 40+"px")
 										.css('width', graph.h+"px")
-										.css("-webkit-transform", "rotate(90deg)") 
-										.css("-moz-transform", "rotate(90deg)")	
+										.css("-webkit-transform", "rotate(270deg)") 
+										.css("-moz-transform", "rotate(270deg)")	
 										.css('z-index', 1)
 															
 	$('#XAxis'+index).css('position', 'absolute')
