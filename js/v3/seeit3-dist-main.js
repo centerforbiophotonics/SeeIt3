@@ -17,11 +17,11 @@ var resampleResetPopulation = true;
 var population = [];
 
 var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
-										[85, 55, 34],		//Display Options
-										[75, 45, 34],		//New Graph
-										[95, 67, 34],		//Advanced Mode
+										[85, 55, 34],			//Display Options
+										[75, 45, 34],			//New Graph
+										[95, 67, 34],			//Advanced Mode
 										[66, 40, 34],			//Edit Mode
-										[73, 47, 32],		//Fit Scales
+										[73, 47, 32],			//Fit Scales
 										[103, 78, 32]			//Resampling
 									 ];
 
@@ -118,7 +118,7 @@ function constructVis(){
 		}else if (!graphCollection.buttonText){
 			return buttonWidths[d][2];
 		}
-	};
+	}
 	
 	function topButtonLeft(d){
 			var left = 0;
@@ -176,7 +176,7 @@ function constructVis(){
 					return "Hide Datasets";
 				else
 					return "Show Datasets";
-			}	)
+			})
 			.height(30)
 			.width(topButtonWidth)
 			.left(topButtonLeft)
@@ -829,8 +829,14 @@ function constructDatasetPanel(){
 	exampleSpreadsheets.forEach(function(s){
 		s.worksheets.forEach(function(w){
 			html += "<table><tr>"+
-							"<td><input type='image' id='subtreeToggle"+i+"' src='"+(graphCollection.datasetsVisible[w.title]?"img/downTriangle.png":"img/rightTriangle.png")+"' onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")' width='15' height='15' title='"+(graphCollection.datasetsVisible[w.title]?"Collapse Folder":"Expand Folder")+"'></td>"+
-							"<td nowrap><div id='treeTitle"+i+"' onmousedown='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")' style='cursor:pointer;'>"+w.title+"</div></td>"+
+							"<td><input type='image' id='subtreeToggle"+i+"'"+ 
+								"src='"+(graphCollection.datasetsVisible[w.title]?"img/downTriangle.png":"img/rightTriangle.png")+"'"+
+								"onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
+								"width='15' height='15'"+
+								"title='"+(graphCollection.datasetsVisible[w.title]?"Collapse Folder":"Expand Folder")+"'></td>"+
+							"<td nowrap><div id='treeTitle"+i+"'"+
+								"onmousedown='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
+								"style='cursor:pointer;'>"+w.title+"</div></td>"+
 							"</table></tr>"+
 							"<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">"+
 							"<input type='image' src='img/edit.png' style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
@@ -840,7 +846,10 @@ function constructDatasetPanel(){
 			for (key in w.data){		
 				var color = graphCollection.categoryColors[key];
 				html+="<table style='margin-left:25px;'><tr><td>"+
-							"<input id='colorPick"+picker+"' class='color {hash:false}' value='"+colorToHex(color.color)+"' onchange=\"updateColor('"+key+"', this.color)\" style='width:20px; height:20px'></td>"+
+							"<input id='colorPick"+picker+"' class='color {hash:false}' "+
+								"value='"+colorToHex(color.color)+"' "+
+								"onchange=\"updateColor('"+key+"', this.color)\" "+
+								"style='width:20px; height:20px'></td>"+
 							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
 							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
 							"onmouseover=\"this.className='menuItemOver'\""+

@@ -136,7 +136,7 @@ GraphCollection.prototype = {
 	
 	calcGraphHeight: function (){
 		//return Math.max(this.numberOfCategories*40,
-									return	(window.innerHeight - jQuery('div#notGraph').height()) - 156
+									return	(window.innerHeight - jQuery('div#notGraph').height()) - 158
 									// );
 	},
 	
@@ -819,8 +819,7 @@ Worksheet.prototype = {
 		
 		feedData.feed.entry.forEach(function(e){
 			if (/(NOTE\:)|(SOURCE\:)|(\*)/.test(e.content.$t)){
-				description += e.content.$t.replace(/(NOTE\:)|(SOURCE\:)|(\*)/, "");
-				console.log(e.content.$t) 
+				description += e.content.$t.replace(/(NOTE\:)|(SOURCE\:)|(\*)/, ""); 
 			}	
 		});
 		

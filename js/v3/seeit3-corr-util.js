@@ -78,10 +78,13 @@ function toggleDataSubtree(id,i,title){
 	graphCollection.datasetsVisible[title] ? 
 		graphCollection.datasetsVisible[title] = false :
 		graphCollection.datasetsVisible[title] = true;
-	if ($('#subtreeToggle'+i).attr("src") == "img/downTriangle.png")
+	if ($('#subtreeToggle'+i).attr("src") == "img/downTriangle.png"){
 		$('#subtreeToggle'+i).attr("src","img/rightTriangle.png");
-	else
+		$('#subtreeToggle'+i).attr("title","Expand Folder");
+	}else{
 		$('#subtreeToggle'+i).attr("src","img/downTriangle.png");
+		$('#subtreeToggle'+i).attr("title","Collapse Folder");
+	}
 }
 
 function resizeVis(){

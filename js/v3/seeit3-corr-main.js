@@ -6,46 +6,12 @@ var fontString = "bold 14px arial";
 var dragging = false;
 var dragID = null;
 
-////Default included worksheets
-//var exampleSpreadsheets = [
-	//new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'),			//Blank Sheet
-	//new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'),
-	//new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'),
-	//new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'),
-	//new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'),
-	//new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'),
-	//new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'),
-	//new Spreadsheet('0Al5kfBmMhbwmdGJ2b1A1eWtMdUF4bWJxcnhBQ0Fsb3c'),			//Gapminder
-	//new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'),			//Skin Cancer Fig 8
-	//new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'),			//Skin Cancer Fig 4
-	//new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'),			//Skin Cancer Fig 2
-	//new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'),			//Doll and Hill
-	//new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc')				//Giraffe Data
-//];
-
-
-////Preload a worksheet
-//var preload = window.location.search;	
-//if (preload.substring(0, 1) == '?') {
-		//preload = preload.substring(1);
-		
-		//var key = parseSpreadsheetKeyFromURL(preload);
-		
-		//var exists = false;
-		//exampleSpreadsheets.forEach(function(s){
-			//if (s.key == key) exists = true;
-		//});
-		
-		//if (!exists) {
-			//exampleSpreadsheets.push(new Spreadsheet(key));
-			////constructVis();
-		//}
-		////else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
-//}		
-
-
-////////////
-
+var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
+										[85, 55, 34],			//Display Options
+										[80, 50, 34],			//Two/One Graph
+										[98, 67, 34],			//Advanced Mode
+										[70, 40, 34]			//Edit Mode				
+									 ];
 
 var exampleSpreadsheets = [ ];
 
@@ -119,6 +85,35 @@ function constructVis() {
 	jQuery('span').remove();
 	touch = new Touch();
 	
+	var topButtonsOffset = -34;
+	
+	function topButtonWidth(d){
+		if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+			return buttonWidths[d][0];
+		}else if (!graphCollection.buttonIcon){
+			return buttonWidths[d][1];
+		}else if (!graphCollection.buttonText){
+			return buttonWidths[d][2];
+		}
+	}
+	
+	function topButtonLeft(d){
+			var left = 0;
+			left += topButtonsOffset;
+			
+			for(var i=0; i<d; i++){
+				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+					left += buttonWidths[i][0];
+				}else if (!graphCollection.buttonIcon){
+					left += buttonWidths[i][1];
+				}else if (!graphCollection.buttonText){
+					left += buttonWidths[i][2];
+				}
+			}
+			
+			return left;			
+	}
+	
 	vis = new pv.Panel()
 		.width(function(){return graphCollection.w})
 		.height(function(){return graphCollection.h})
@@ -137,20 +132,18 @@ function constructVis() {
 		
 		//Datasets
 		var dataSetsPanel = vis.add(pv.Panel)
+			.data([0])
 			.events("all")
 			.cursor("pointer")
-			.title("Show Datasets")
-			.height(30)
-			.width(function() {
-				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-					return 100;
-				}else if (!graphCollection.buttonIcon){
-					return 70;
-				}else if (!graphCollection.buttonText){
-					return 34;
-				}
+			.title(function(){
+				if(graphCollection.datasetsMenuShowing)
+					return "Hide Datasets";
+				else
+					return "Show Datasets";
 			})
-			.left(-34)
+			.height(30)
+			.width(topButtonWidth)
+			.left(topButtonLeft)
 			.top(-90)
 			.lineWidth(1)
 			.event("click", toggleDatasetMenu)
@@ -182,11 +175,32 @@ function constructVis() {
 					if (graphCollection.buttonText && !graphCollection.buttonIcon){
 						return 2;
 					}else
-						return 32;
+						return 28;
 				})
-				.top(15)
+				.top(10)
+				.text(function(){
+					if(graphCollection.datasetsMenuShowing)
+						return "Hide";
+					else
+						return "Show";
+				})
+				.font("bold 12px arial")
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon){
+						return 2;
+					}else
+						return 28;
+				})
+				.top(22)
 				.text("Datasets")
-				.font(fontString)
+				.font("bold 12px arial")
 				.visible(function() {
 					if (graphCollection.buttonText)
 						return true;
@@ -196,28 +210,13 @@ function constructVis() {
 		
 		/* Display Options Menu Button */
 		var dispOptPanel = vis.add(pv.Panel)
+			.data([1])
 			.events("all")
 			.cursor("pointer")
 			.title("Show display option menu")
 			.height(30)
-			.width(function() {
-				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-					return 150;
-				}else if (!graphCollection.buttonIcon){
-					return 120;
-				}else if (!graphCollection.buttonText){
-					return 34;
-				}
-			})
-			.left(function() {
-				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-					return 67;
-				}else if (!graphCollection.buttonIcon){
-					return 40;
-				}else if (!graphCollection.buttonText){
-					return 0;
-				}
-			})
+			.width(topButtonWidth)
+			.left(topButtonLeft)
 			.top(-90)
 			.lineWidth(1)
 			.event("click", function(){
@@ -262,8 +261,25 @@ function constructVis() {
 					else
 					 return 32;
 				})
-				.text("Display Options")
-				.font(fontString)
+				.top(10)
+				.text("Display")
+				.font("bold 12px arial")
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(22)
+				.text("Options")
+				.font("bold 12px arial")
 				.visible(function() {
 					if (graphCollection.buttonText)
 						return true;
@@ -273,28 +289,13 @@ function constructVis() {
 		
 		/* Add New Graph Button */
 		var newGrphPanel = vis.add(pv.Panel)
+			.data([2])
 			.events("all")
 			.cursor("pointer")
 			.title("Switch between One or Two Graph View")
 			.height(30)
-			.width(function() {
-				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-					return graphCollection.numGraphs == 1 ? 120 : 110;
-				}else if (!graphCollection.buttonIcon){
-					return graphCollection.numGraphs == 1 ? 90 : 80;
-				}else if (!graphCollection.buttonText){
-					return graphCollection.numGraphs == 1 ? 39 : 30;
-				}
-			})
-			.left(function() {
-				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-					return 220;
-				}else if (!graphCollection.buttonIcon){
-					return 160;
-				}else if (!graphCollection.buttonText){
-					return 35;
-				}
-			})
+			.width(topButtonWidth)
+			.left(topButtonLeft)
 			.top(-90)
 			.lineWidth(1)
 			.event("click", function(){
@@ -344,11 +345,28 @@ function constructVis() {
 					else
 					 return 32;
 				})
+				.top(10)
 				.text(function(){
-					if(graphCollection.graphs.length == 1) return "Two Graphs";
-					else return "One Graph";
+					if(graphCollection.graphs.length == 1) return "Two";
+					else return "One";
 				})
-				.font(fontString)
+				.font("bold 12px arial")
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(22)
+				.text("Graphs")
+				.font("bold 12px arial")
 				.visible(function() {
 					if (graphCollection.buttonText)
 						return true;
@@ -359,28 +377,13 @@ function constructVis() {
 		
 		/*Toggle Basic/Advanced User Mode*/
 		var togUserModePanel = vis.add(pv.Panel)
+			.data([3])
 			.events("all")
 			.cursor("pointer")
 			.title("Toggle advanced mode")
 			.height(30)
-			.width(function() {
-				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-					return 150;
-				}else if (!graphCollection.buttonIcon){
-					return 122;
-				}else if (!graphCollection.buttonText){
-					return 34;
-				}
-			})
-			.left(function() {
-				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-					return 340;
-				}else if (!graphCollection.buttonIcon){
-					return 250;
-				}else if (!graphCollection.buttonText){
-					return 75;
-				}
-			})
+			.width(topButtonWidth)
+			.left(topButtonLeft)
 			.top(-90)
 			.lineWidth(1)
 			.event("click", function(){
@@ -426,14 +429,37 @@ function constructVis() {
 					else
 					 return 32;
 				})
-				.text(function(){return "Advanced Mode"})
+				.top(10)
+				.text("Advanced")
 				.textStyle(function(){
 					if (graphCollection.advancedUser)
 						return "red"
 					else
 						return "grey"
 				})
-				.font(fontString)
+				.font("bold 12px arial")
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(22)
+				.text("Mode")
+				.textStyle(function(){
+					if (graphCollection.advancedUser)
+						return "red"
+					else
+						return "grey"
+				})
+				.font("bold 12px arial")
 				.visible(function() {
 					if (graphCollection.buttonText)
 						return true;
@@ -444,28 +470,13 @@ function constructVis() {
 		
 		/* Toggle Edit Mode Button */
 		var togEditPanel = vis.add(pv.Panel)
+			.data([4])
 			.events("all")
 			.cursor("pointer")
 			.title("Toggle edit mode")
 			.height(30)
-			.width(function() {
-				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-					return 110;
-				}else if (!graphCollection.buttonIcon){
-					return 80;
-				}else if (!graphCollection.buttonText){
-					return 34;
-				}
-			})
-			.left(function() {
-				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
-					return 490;
-				}else if (!graphCollection.buttonIcon){
-					return 372;
-				}else if (!graphCollection.buttonText){
-					return 109;
-				}
-			})
+			.width(topButtonWidth)
+			.left(topButtonLeft)
 			.top(-90)
 			.lineWidth(1)
 			.visible(function() {
@@ -517,8 +528,31 @@ function constructVis() {
 					else
 					 return 32;
 				})
-				.text("Edit Mode")
-				.font(fontString)
+				.top(10)
+				.text("Edit")
+				.font("bold 12px arial")
+				.textStyle(function(){
+					if (graphCollection.editModeEnabled)
+						return "red"
+					else
+						return "black"
+				})
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(22)
+				.text("Mode")
+				.font("bold 12px arial")
 				.textStyle(function(){
 					if (graphCollection.editModeEnabled)
 						return "red"
@@ -551,7 +585,6 @@ function constructVis() {
 	graphCollection.graphs.forEach(function(graph, index){
 		constructLegendPanel(graph, index);
 	});
-	
 	positionAndSizeGraph();
 	
 	graphCollection.graphs.forEach(function(graph, index){
@@ -571,13 +604,15 @@ function constructDatasetPanel(){
 							"<td><input type='image' id='subtreeToggle"+i+"'"+
 								"src='"+(graphCollection.datasetsVisible[w.title]?"img/downTriangle.png":"img/rightTriangle.png")+"'"+
 								"onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
-								"width='15' height='15'></td>"+
+								"width='15' height='15'"+
+								"title='"+(graphCollection.datasetsVisible[w.title]?"Collapse Folder":"Expand Folder")+"'></td>"+
 							"<td nowrap><div id='treeTitle"+i+"' "+
-								"onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'>"+
+								"onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
+								"style='cursor:pointer;'>"+
 								w.title+"</div></td>"+
-							"</table></tr>";
-			html += "<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">";
-			html += "<input type='image' src='img/edit.png'  style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
+							"</table></tr>"+
+							"<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">"+
+							"<input type='image' src='img/edit.png'  style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
 							"<input type='image' src='img/refresh.png' style='margin-left:25px;' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>"+
 							"<input type='image' src='img/question.png' style='margin-left:25px;' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
 							"<input type='image' src='img/document.png' style='margin-left:25px;' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>";
@@ -705,14 +740,59 @@ function constructGraphPanel(graph,index){
 }
 
 function constructEmptyGraph(graph,index, graphPanel){
+	////Empty Graph Message
+	//graphPanel.add(pv.Label)
+		//.left(function(){return graph.w/2})
+		//.top(function(){return graph.h/2})
+		//.textAlign("center")
+		//.textBaseline("center")
+		//.text("Empty Graph")
+		//.font(fontString)
+		
 	//Empty Graph Message
-	graphPanel.add(pv.Label)
-		.left(function(){return graph.w/2})
-		.top(function(){return graph.h/2})
-		.textAlign("center")
-		.textBaseline("center")
-		.text("Empty Graph")
-		.font(fontString)
+		graphPanel.add(pv.Label)
+			.left(function(){return graph.w/2})
+			.top(function(){return graph.h/2 - 40})
+			.textAlign("center")
+			.textBaseline("center")
+			.text("Empty Graph")
+			.font(fontString)
+		graphPanel.add(pv.Label)
+			.left(function(){return graph.w/2})
+			.top(function(){return graph.h/2 - 20})
+			.textAlign("center")
+			.textBaseline("center")
+			.text("Datasets are organized into folders in the datasets panel to the left.")
+			.font(fontString)
+			graphPanel.add(pv.Label)
+			.left(function(){return graph.w/2})
+			.top(function(){return graph.h/2})
+			.textAlign("center")
+			.textBaseline("center")
+			.text("Click the triangle or title of each dataset folder to expand it.")
+			.font(fontString)
+		graphPanel.add(pv.Label)
+			.left(function(){return graph.w/2})
+			.top(function(){return graph.h/2 + 20})
+			.textAlign("center")
+			.textBaseline("center")
+			.text("Drag one or more datasets to this graph to view them.")
+			.font(fontString)
+		graphPanel.add(pv.Label)
+			.left(function(){return graph.w/2})
+			.top(function(){return graph.h/2 + 40})
+			.textAlign("center")
+			.textBaseline("center")
+			.text("Click the \"hide datasets\" button in the top bar to hide the datasets panel.")
+			.font(fontString)
+			
+		graphPanel.add(pv.Label)
+			.left(200)
+			.top(-70)
+			.textAlign("center")
+			.textBaseline("center")
+			.text("<=== Click the wrench to show visualization tools for this graph.")
+			.font(fontString)
 		
 }
 
@@ -2745,7 +2825,7 @@ function toggleDatasetMenu() {
 		positionAndSizeGraph();
 		positionGraphMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 		positionDisplayMenu();
-		vis.render();
+		constructVis();
 		
 	} else {
 		$('#datasets').hide();
@@ -2753,7 +2833,8 @@ function toggleDatasetMenu() {
 		positionAndSizeGraph();
 		positionGraphMenuOverGraph(graphCollection.selectedGraphIndex, graphCollection);
 		positionDisplayMenu();
-		vis.render();
+		constructVis();
+		
 		
 	}
 	for(var i=0; i<graphCollection.graphs.length;i++){
