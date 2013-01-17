@@ -608,7 +608,7 @@ function constructDatasetPanel(){
 								"width='15' height='15'"+
 								"title='"+(graphCollection.datasetsVisible[w.title]?"Collapse Folder":"Expand Folder")+"'></td>"+
 							"<td nowrap><div id='treeTitle"+i+"' "+
-								"onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
+								"onmousedown='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
 								"style='cursor:pointer;'>"+
 								w.title+"</div></td>"+
 							"</table></tr>"+
