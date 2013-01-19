@@ -366,7 +366,10 @@ function constructVis() {
 					 return 32;
 				})
 				.top(22)
-				.text("Graphs")
+				.text(function(){
+					if(graphCollection.graphs.length == 1) return "Graphs";
+					else return "Graph";
+				})
 				.font("bold 12px arial")
 				.visible(function() {
 					if (graphCollection.buttonText)
