@@ -9,6 +9,7 @@ var dragID = null;
 var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
 										[85, 55, 34],			//Display Options
 										[80, 50, 34],			//Two/One Graph
+										[70, 40, 34],			//Fit Scales
 										[98, 67, 34],			//Advanced Mode
 										[70, 40, 34]			//Edit Mode				
 									 ];
@@ -378,10 +379,99 @@ function constructVis() {
 						return false;
 				})
 		
+		/* Fit Graphs Button */
+		var newGrphPanel = vis.add(pv.Panel)
+			.data([3])
+			.events("all")
+			.cursor("pointer")
+			.title("Fit all graphs to the data they contain")
+			.height(30)
+			.width(topButtonWidth)
+			.left(topButtonLeft)
+			.top(-90)
+			.lineWidth(1)
+			.event("click", function(){
+				graphCollection.graphs.forEach(function(g){
+					g.fitScaleToData = true;
+					jQuery('#fitScalesToData').attr('checked', true);
+					g.setXScale();
+					g.setYScale();
+				});
+				graphCollection.updateMenuOptions();
+				vis.render();
+			})
+			.event("mouseover", function(d){
+				this.strokeStyle("black");
+				this.render();
+			})
+			.event("mouseout", function(d){ 
+				this.strokeStyle(pv.rgb(0,0,0,0));
+				this.render();
+			})
+			
+		newGrphPanel.add(pv.Image)
+			.url(function(){
+				return "http://centerforbiophotonics.github.com/SeeIt3/img/ruler.png"
+			})  //fix this
+			.width(30)
+			.height(30)
+			.top(0)
+			.left(2)
+			.cursor("pointer")
+			.title("Fit all graphs to the data they contain")
+			.event("click", function(){
+				graphCollection.graphs.forEach(function(g){
+					g.fitScaleToData = true;
+					jQuery('#fitScalesToData').attr('checked', true);
+					g.setXScale();
+					g.setYScale();
+				});
+				graphCollection.updateMenuOptions();
+				vis.render();
+			})
+			.visible(function() {
+				if (graphCollection.buttonIcon)
+					return true;
+				else
+					return false;
+			})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(10)
+				.text("Fit")
+				.font("bold 12px arial")
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+			.anchor("left").add(pv.Label)
+				.left(function(){
+					if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						return 2;
+					else
+					 return 32;
+				})
+				.top(22)
+				.text("Scale")
+				.font("bold 12px arial")
+				.visible(function() {
+					if (graphCollection.buttonText)
+						return true;
+					else
+						return false;
+				})
+		
 		
 		/*Toggle Basic/Advanced User Mode*/
 		var togUserModePanel = vis.add(pv.Panel)
-			.data([3])
+			.data([4])
 			.events("all")
 			.cursor("pointer")
 			.title("Toggle advanced mode")
@@ -474,7 +564,7 @@ function constructVis() {
 		
 		/* Toggle Edit Mode Button */
 		var togEditPanel = vis.add(pv.Panel)
-			.data([4])
+			.data([5])
 			.events("all")
 			.cursor("pointer")
 			.title("Toggle edit mode")
@@ -2483,7 +2573,7 @@ function positionAndSizeAxisPanels(graph,index){
 																						60 + index * graph.w + index * 130 )
 															.css('top', $('span').offset().top + 
 																						graphCollection.padTop +
-																						graph.h/2+20 )
+																						graph.h/2+20 -1 )
 															.css('height', 40+"px")
 															.css('width', graph.w+"px")
 															.css('z-index', 1)
@@ -2504,7 +2594,7 @@ function positionAndSizeAxisPanels(graph,index){
 																	60 + index * graph.w + index * 130 )
 										.css('top', $('span').offset().top + 
 																	graphCollection.padTop +
-																	graph.h + 60 - 1)
+																	graph.h + 60 - 2)
 										.css('height', 40+"px")
 										.css('width', graph.w+"px")
 										.css('z-index', 1)

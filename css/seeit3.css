@@ -125,6 +125,7 @@ p#loadingMsg {
 	cursor: move;
 	margin-bottom:1px;
 	overflow:hidden;
+	border: 1px #666666 dashed;
 }
 
 .axisOver {
@@ -134,6 +135,7 @@ p#loadingMsg {
 	cursor: move;
 	margin-bottom:1px;
 	overflow:hidden;
+	border: 1px #666666 solid;
 }
 
 .menuItemSel {
