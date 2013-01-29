@@ -54,7 +54,7 @@
 			if ($("#exclusive").is(':checked')) params += "!"
 			
 			$(".url").each(function(i){
-				if ($(this).val() != ""){
+				if ($.trim($(this).val()) != ""){
 					if (i > 0) params += "&";
 					params += "key=";
 					params += parseSpreadsheetKeyFromURL($(this).val(),i);

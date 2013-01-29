@@ -66,77 +66,126 @@
 		<tr>
 			<td valign="top">
 				<h3>Draw</h3>
-				<input type="checkbox" id="checkboxShowUserLine">
-				<label for="checkboxShowUserLine" style="color:red">Show line?</label><br>
-				<input type="checkbox" id="checkboxUDSquares" style="margin-left:25px;">
-				<label for="checkboxUDSquares">Least Squares</label><br>
+				<input type="checkbox" id="checkboxShowUserLine" 
+					title="Show an adjustable line to estimate the relationship between variables.">
+				<label for="checkboxShowUserLine" style="color:red" 
+					title="Show an adjustable line to estimate the relationship between variables.">Show line?</label><br>
+				
+					<input type="checkbox" id="checkboxUDSquares" style="margin-left:25px;"
+						title="Show squares like those used to calculate the R value in a least squares regression analysis.">
+					<label for="checkboxUDSquares"
+						title="Show squares like those used to calculate the R value in a least squares regression analysis.">Least Squares</label><br>
+					
 				<input type="checkbox" id="checkboxShowEllipse">
 				<label for="checkboxShowMMEllipse">Show ellipse?</label><br>
+				
 				<div id="showDataDiv">
-					<input type="checkbox" id="checkboxShowData" checked>
-					<label for="checkboxShowData">Show data?</label><br>
+					<input type="checkbox" id="checkboxShowData" checked
+						title="Show or hide data to better see analysis visualizations.">
+					<label for="checkboxShowData"
+						title="Show or hide data to better see analysis visualizations.">Show data?</label><br>
 				</div>
+				
 				<div id="fitScalesDiv">
-					<input type="checkbox" id="fitScalesToData"/>
-					<label for="fitScalesToData">Fit scales to data</label><br>
+					<input type="checkbox" id="fitScalesToData" 
+						title="Automatically adjust the scale of this graph to fit the data it contains."/>
+					<label for="fitScalesToData"
+						title="Automatically adjust the scale of this graph to fit the data it contains.">Fit scales to data</label><br>
 				</div>
-				<input type="checkbox" id="showBothDist"/>
-				<label for="showBothDist">Show distribution of both axes</label>
+				
+				<input type="checkbox" id="showBothDist"
+					title="Show two distribution graphs if data is assigned to both axes."/>
+				<label for="showBothDist"
+					title="Show two distribution graphs if data is assigned to both axes.">Show distribution of both axes</label>
 			</td>
+			
 			<td valign="top">
 				<h3>Median-median</h3>
-				<input type="checkbox" id="checkboxShowMMDots">
-				<label for="checkboxShowMMDots">Show dots?</label><br>
-				<input type="checkbox" id="checkboxShowMMRects">
-				<label for="checkboxShowMMRects">Show divisions?</label><br>
-				<input type="checkbox" id="checkboxShowMMLine">
-				<label for="checkboxShowMMLine" style="color:blue">Show line?</label><br>
-				<input type="checkbox" id="checkboxShowMMEqn">
-				<label for="checkboxShowMMEqn">Show equation?</label>
+				<input type="checkbox" id="checkboxShowMMRects"
+					title="Show the way data is grouped for median-median regression.">
+				<label for="checkboxShowMMRects"
+					title="Show the way data is grouped for median-median regression.">Show divisions?</label><br>
+				<input type="checkbox" id="checkboxShowMMDots"
+					title="Show the median X an Y value of data points in each division.">
+				<label for="checkboxShowMMDots"
+					title="Show the median X an Y value of data points in each division.">Show dots?</label><br>
+				<input type="checkbox" id="checkboxShowMMLine"
+					title="Show the median-median regression line.">
+				<label for="checkboxShowMMLine" style="color:blue"
+					title="Show the median-median regression line.">Show line?</label><br>
+				<input type="checkbox" id="checkboxShowMMEqn"
+					title="Show the equation of the median-median regression line.">
+				<label for="checkboxShowMMEqn"
+					title="Show the equation of the median-median regression line.">Show equation?</label>
 			</td>
+			
 			<td valign="top">
 				<h3>Least squares</h3>
-				<input type="checkbox" id="checkboxShowLeastSquaresLine">
-				<label for="checkboxShowLeastSquaresLine" style="color:green">Show line?</label><br>
-				<input type="checkbox" id="checkboxShowLeastSquaresSquares">
-				<label for="checkboxShowLeastSquaresSquares">Show squares?</label><br>
-				<input type="checkbox" id="checkboxShowLeastSquaresEquation">
-				<label for="checkboxShowLeastSquaresEquation">Show equation?</label><br>
-				<input type="checkbox" id="checkboxShowLeastSquaresRValue">
-				<label for="checkboxShowLeastSquaresRValue">Show r value?</label>
+				<input type="checkbox" id="checkboxShowLeastSquaresLine"
+					title="Show the least squares regression line.">
+				<label for="checkboxShowLeastSquaresLine" style="color:green"
+					title="Show the least squares regression line.">Show line?</label><br>
+				<input type="checkbox" id="checkboxShowLeastSquaresSquares"
+					title="Show the squares used to calculate the R value of the least squares regression.">
+				<label for="checkboxShowLeastSquaresSquares"
+					title="Show the squares used to calculate the R value of the least squares regression.">Show squares?</label><br>
+				<input type="checkbox" id="checkboxShowLeastSquaresEquation"
+					title="Show the equation of the least squares regression line.">
+				<label for="checkboxShowLeastSquaresEquation"
+					title="Show the equation of the least squares regression line.">Show equation?</label><br>
+				<input type="checkbox" id="checkboxShowLeastSquaresRValue"
+					title="Show the R value calculated by least squares regression.">
+				<label for="checkboxShowLeastSquaresRValue"
+					title="Show the R value calculated by least squares regression.">Show r value?</label>
 			</td>
 		</tr>
 	</table>
 	<table id="graphScaleInputs">
 		<tr>
-			<td><label for="textYMin">Y Axis Min:</label>
-			<input type="text" id="textYMin" class="textbox" size="5"><br></td>
-			<td><label for="yAxisLog">Y Axis Logarithmic (base e): </label>
-			<input type="checkbox" id="yAxisLog"></td>
+			<td><label for="textYMin" 
+				title="Set the minimum value for the Y axis.">Y Axis Min:</label>
+			<input type="text" id="textYMin" class="textbox" size="5"
+				title="Set the minimum value for the Y axis."><br></td>
+			<td><label for="yAxisLog"
+				title="Switch between a linear scale and a logarithmic scale (base e) for the Y axis.">Y Axis Logarithmic (base e): </label>
+			<input type="checkbox" id="yAxisLog"
+				title="Switch between a linear scale and a logarithmic scale (base e) for the Y axis."></td>
 		</tr>
 		<tr>
-			<td><label for="textYMax">Y Axis Max:</label>
-			<input type="text" id="textYMax" class="textbox" size="5"><br></td>
+			<td><label for="textYMax"
+				title="Set the maximum value for the Y axis.">Y Axis Max:</label>
+			<input type="text" id="textYMax" class="textbox" size="5"
+				title="Set the maximum value for the Y axis."><br></td>
+		</tr>
+		
+		<tr>
+			<td><label for="textXMin"
+				title="Set the minimum value for the X axis.">X Axis Min:</label>
+			<input type="text" id="textXMin" class="textbox" size="5"
+				title="Set the minimum value for the X axis."><br></td>
+			<td><label for="xAxisLog"
+				title="Switch between a linear scale and a logarithmic scale (base e) for the X axis.">X Axis Logarithmic (base e): </label>
+			<input type="checkbox" id="xAxisLog"
+				title="Switch between a linear scale and a logarithmic scale (base e) for the X axis."></td>
 		</tr>
 		<tr>
-			<td><label for="textXMin">X Axis Min:</label>
-			<input type="text" id="textXMin" class="textbox" size="5"><br></td>
-			<td><label for="xAxisLog">X Axis Logarithmic (base e): </label>
-			<input type="checkbox" id="xAxisLog"></td>
-		</tr>
-		<tr>
-			<td><label for="textXMax">X Axis Max:</label>
-			<input type="text" id="textXMax" class="textbox" size="5"><br></td>
+			<td><label for="textXMax"
+				title="Set the maximum value for the X axis.">X Axis Max:</label>
+			<input type="text" id="textXMax" class="textbox" size="5"
+				title="Set the maximum value for the X axis."><br></td>
 		</tr>
 	
 		<tr>
 			<td>
-			<input type="checkbox" id="promptForLabel">
-			<label for="promptForLabel">Prompt for data label on add</label>
+			<input type="checkbox" id="promptForLabel"
+				title="When adding new data points (in edit mode) toggle whether the program will prompt the user to enter a custom label or assign a default label.">
+			<label for="promptForLabel"
+				title="When adding new data points (in edit mode) toggle whether the program will prompt the user to enter a custom label or assign a default label.">Prompt for data label on add</label>
 			</td>
 		</tr>
 	</table>
-	<input type="button" value="Apply To All" id="applyToAll" class="button">
+	<input type="button" value="Apply To All" id="applyToAll" class="button"
+		title="Apply the options set for this graph to all other graphs.">
 </div>
 
 <div id="displayOptions">
