@@ -134,10 +134,8 @@ GraphCollection.prototype = {
 		});
 	},
 	
-	calcGraphHeight: function (){
-		//return Math.max(this.numberOfCategories*40,
-									return	(window.innerHeight - jQuery('div#notGraph').height()) - 158
-									// );
+	calcGraphHeight: function (){		
+		return	(window.innerHeight - jQuery('div#notGraph').height()) - 158							
 	},
 	
 	calcGraphWidth: function(){

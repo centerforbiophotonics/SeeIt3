@@ -82,6 +82,7 @@ function GraphCollection(){
 	
 	this.nextSampleSetNumber = 0;
 	this.nextResampleSetNumber = 0;
+	this.nextIntermedResampleSetNumber = 0;
 	
 	this.resamplingEnabled = false;
 	
@@ -189,8 +190,20 @@ GraphCollection.prototype = {
 	},
 	
 	addResamplingGraph: function(){
+		//Add a graph to display intermediate resampling results.
 		this.graphs.splice(0,0,new Graph(this));
 		
+		this.graphs[0].testMode = "intermedResampling";
+		this.graphs[0].isIntermedResamplingGraph = true;
+		this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+graphCollection.nextIntermedResampleSetNumber++;
+		this.data[this.graphs[0].intermedResampleSet] = [];
+		this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
+		this.graphs[0].fitScalesToData = true;
+		this.graphs[0].baseLine = 60;
+	
+		//Add a graph to display the overall resampling results.
+		this.graphs.splice(0,0,new Graph(this));
+			
 		//set variables to distinguish resampling graph as special type
 		this.graphs[0].testMode = "resampling";
 		this.graphs[0].isResamplingGraph = true;

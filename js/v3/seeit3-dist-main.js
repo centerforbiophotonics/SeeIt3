@@ -1238,7 +1238,7 @@ function constructGraphPanel(graph, index){
 			.events("all")
 			.title("Remove graph")
 			.visible(function(){
-				return !graph.isSamplingGraph && !graph.isResamplingGraph;
+				return !graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph;
 			})
 			.event("click", function(){
 				graphCollection.removeGraph(graph);
@@ -1265,7 +1265,7 @@ function constructGraphPanel(graph, index){
 			.cursor("pointer")
 			.title("Show graph option menu")
 			.visible(function(){
-				return !graph.isSamplingGraph && !graph.isResamplingGraph;
+				return !graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph;
 			})
 			.event("click", function(){
 				graphCollection.selectedGraphIndex = index;
@@ -1333,13 +1333,19 @@ function constructGraphPanel(graph, index){
 				return "black"
 		})
 	
-	if (!graph.isSamplingGraph && !graph.isResamplingGraph){
+	if (!graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph){
 		constructRegularGraph(graphPanel,graph,index);
 	} else if (graph.isSamplingGraph){
 		constructSamplingGraph(graphPanel,graph,index);
 	} else if (graph.isResamplingGraph){
 		constructResamplingGraph(graphPanel,graph,index);
+	} else if (graph.isIntermedResamplingGraph){
+		constructIntermedResamplingGraph(graphPanel,graph,index);
 	}
+}
+
+function constructIntermedResamplingGraph(graphPanel,graph,index){
+
 }
 
 function constructResamplingGraph(graphPanel, graph, index){
