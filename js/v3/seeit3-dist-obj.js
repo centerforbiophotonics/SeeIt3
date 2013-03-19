@@ -48,7 +48,7 @@ function GraphCollection(){
 	this.padTop = 32;
 	this.padLeft = 35;
 	this.padRight = 25;
-	this.defaultGraphHeight = 300;
+	this.defaultGraphHeight = 200;
 	this.labelTextSize = "16";
 	this.tickTextSize = "12";
 	this.buckets = 30;
@@ -190,6 +190,17 @@ GraphCollection.prototype = {
 	},
 	
 	addResamplingGraph: function(){
+		//Add a graph to display intermediate resampling results.
+		this.graphs.splice(0,0,new Graph(this));
+		
+		this.graphs[0].testMode = "intermedResampling";
+		this.graphs[0].isIntermedResamplingGraph = true;
+		this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+graphCollection.nextIntermedResampleSetNumber++;
+		this.data[this.graphs[0].intermedResampleSet] = [];
+		this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
+		this.graphs[0].fitScalesToData = true;
+		this.graphs[0].baseLine = 60;	
+		
 		//Add a graph to display intermediate resampling results.
 		this.graphs.splice(0,0,new Graph(this));
 		
@@ -607,7 +618,8 @@ Graph.prototype = {
 	addCategory: function(category){
 		if (this.includedCategories.indexOf(category) == -1 && 
 				this.includedCategories.length < 4 &&
-				!this.isSamplingGraph){
+				!this.isSamplingGraph &&
+				!this.isIntermedResamplingGraph){
 			
 			if ((this.isResamplingGraph && this.includedCategories.length < 1) || !this.isResamplingGraph){
 				this.includedCategories.push(category);

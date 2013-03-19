@@ -256,7 +256,7 @@ $('#applyOptionsToAll').click(function(event){
 				graph.udPartitions.push(pv.vector(selGraph.udPartitions[i].x, selGraph.udPartitions[i].y))
 			}
 		}
-		if (!graph.isResamplingGraph){
+		if (!graph.isResamplingGraph && !graph.isIntermedResamplingGraph){
 			if (selGraph.customScale)
 				graph.setXScale(selGraph.scaleMin, selGraph.scaleMax);
 				
