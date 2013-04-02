@@ -57,7 +57,6 @@ if (preload.substring(0, 1) == '?') {
 }
 
 if (!exclusiveLoad){
-	exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdFBxTkJhdzZmNFVNVXJXZ0xxNXVYTUE'));			//Blank Worksheet
 	exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
 	exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
 	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));

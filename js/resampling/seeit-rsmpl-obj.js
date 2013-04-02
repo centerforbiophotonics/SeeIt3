@@ -190,27 +190,27 @@ GraphCollection.prototype = {
 	},
 	
 	addResamplingGraph: function(){
-		////Add a graph to display intermediate resampling results.
-		//this.graphs.splice(0,0,new Graph(this));
+		//Add a graph to display intermediate resampling results.
+		this.graphs.splice(0,0,new Graph(this));
 		
-		//this.graphs[0].testMode = "intermedResampling";
-		//this.graphs[0].isIntermedResamplingGraph = true;
-		//this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+graphCollection.nextIntermedResampleSetNumber++;
-		//this.data[this.graphs[0].intermedResampleSet] = [];
-		//this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
-		//this.graphs[0].fitScalesToData = true;
-		//this.graphs[0].baseLine = 60;	
+		this.graphs[0].testMode = "intermedResampling";
+		this.graphs[0].isIntermedResamplingGraph = true;
+		this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+graphCollection.nextIntermedResampleSetNumber++;
+		this.data[this.graphs[0].intermedResampleSet] = [];
+		this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
+		this.graphs[0].fitScalesToData = true;
+		this.graphs[0].baseLine = 60;	
 		
-		////Add a graph to display intermediate resampling results.
-		//this.graphs.splice(0,0,new Graph(this));
+		//Add a graph to display intermediate resampling results.
+		this.graphs.splice(0,0,new Graph(this));
 		
-		//this.graphs[0].testMode = "intermedResampling";
-		//this.graphs[0].isIntermedResamplingGraph = true;
-		//this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+graphCollection.nextIntermedResampleSetNumber++;
-		//this.data[this.graphs[0].intermedResampleSet] = [];
-		//this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
-		//this.graphs[0].fitScalesToData = true;
-		//this.graphs[0].baseLine = 60;
+		this.graphs[0].testMode = "intermedResampling";
+		this.graphs[0].isIntermedResamplingGraph = true;
+		this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+graphCollection.nextIntermedResampleSetNumber++;
+		this.data[this.graphs[0].intermedResampleSet] = [];
+		this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
+		this.graphs[0].fitScalesToData = true;
+		this.graphs[0].baseLine = 60;
 	
 		//Add a graph to display the overall resampling results.
 		this.graphs.splice(0,0,new Graph(this));
@@ -1016,6 +1016,7 @@ Worksheet.prototype = {
 		var worksheet = this;
 		jQuery.jsonp({ url:this.URL + '?alt=json', callbackParameter: "callback", 
 			success:function(feedData) {
+				console.log(feedData);
 				worksheet.data = worksheet.transformFeedData(feedData);
 				worksheet.labelType = feedData.feed.entry[0].content.$t;
 				worksheet.labelMasterList = worksheet.getLabels(feedData);        

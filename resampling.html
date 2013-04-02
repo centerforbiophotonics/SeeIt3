@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SeeIt3 Distributions</title>
+  <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.7.custom.css"/>
+  <link rel="stylesheet" type="text/css" href="css/seeit3.css"/>
+  <script src="lib/protovis-3.2/protovis-d3.2.js"></script>
+  <script src="lib/jquery-1.7.2.js"></script>
+  <script src="lib/jquery-ui-1.8.7.custom.min.js"></script>
+  <script src="lib/jquery.jsonp-2.1.4.min.js"></script>
+  <script type="text/javascript" src="lib/jscolor/jscolor.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1184912-6']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+  
+</head>
+<body>
+
+<div id="notGraph" class="notGraph">
+	<table style="border-spacing: 20px 0px;">
+		<tr>
+			<td> Copyright &copy; UC Regents, Davis campus. All rights reserved.</td>
+			<td><a href="disthelp.html" target="_blank" id="help">Help</a></td>
+			<td><a href="#" id="about">About</a></td>
+			<td><a href="#" id="print">Print</a></td>
+			<td>SeeIt - created by the <a href="https://sites.google.com/a/cbst.ucdavis.edu/sbcepublic/about-us">SBCE SEPA project</a>, UC Davis <a href="http://iamstem.ucdavis.edu/">iAMSTEM Hub</a></td>
+		</tr>
+	</table>
+</div>
+
+<div id="dragFeedback" hidden></div>
+
+<div id="datasets" hidden>
+	<center onclick='toggleDatasetMenu()' style="cursor:pointer" title="Hide Datasets">Datasets</center>
+	<hr>
+	<div id="dataTree"></div>
+</div>
+
+<div id="groupingOptions">
+	<input type='image' src='img/close.png' id='groupOptClose' width='20' height='20' align='right'>
+	<b>Groups:</b><br>
+	<input type="radio" class="radio" id="radioNoGroups" name="mode" style="margin-left:10px;" checked>
+	<label for="radioNoGroups">None</label><br>
+	
+	<input type="radio" id="radioUserDefGroups" name="mode" style="margin-left:10px;">
+	<label for="radioUserDefGroups">Make Your Own Groups</label><br>
+	
+	<input type="radio" id="radioTwoEqualGroups" name="mode" style="margin-left:10px;">
+	<label for="radioTwoEqualGroups">Two Equal</label><br>
+	
+	<input type="radio" id="radioFourEqualGroups" name="mode" style="margin-left:10px;">
+	<label for="radioFourEqualGroups">Four Equal</label><br>
+	
+	<div id="fixedSizeOptions">
+	<input type="radio" id="radioFixedSizeGroups" name="mode" style="margin-left:10px;">
+	<label for="radioFixedSizeGroups">Fixed Size:</label>
+	<input type="text" class="textbox" id="fixedGroupSize"  style="width:50px" value="4">
+	</div>
+	
+	<div id="fixedIntervalOptions">
+	<input type="radio" id="radioFixedIntervalGroups" name="mode" style="margin-left:10px;">
+	<label for="radioFixedIntervalGroups">Fixed Interval Width:</label>
+	<input type="text" class="textbox" id="fixedIntervalWidth"  style="width:50px" value="10"><br>
+	<input type="checkbox" id="checkboxHistogram" name="histogram" style="margin-left:25px;">
+	<label for="checkboxHistogram">Histogram</label>
+	</div>
+	
+	<div id="boxPlotOptions">
+	<input type="radio" id="radioBoxPlot" name="mode" style="margin-left:10px;">
+	<label for="radioBoxPlot">Box Plot</label>
+	<input type="checkbox" id="checkboxAdvBP" style="margin-left:10px;">
+	<label for="checkboxAdvBP">Advanced</label>
+	<input type="checkbox" id="checkboxSDLine" style="margin-left:10px;">
+	<label for="checkboxSDLine">SD</label>
+	</div>
+	
+	<b>Mean Median Mode:</b><br>
+	<input type="checkbox" id="checkboxMMM" style="margin-left:5px;">
+	<label for="checkboxMMM">All</label>
+	<input type="checkbox" id="checkboxMean" style="margin-left:5px;">
+	<label for="checkboxMean"><font color="red">Mean</font></label>
+	<input type="checkbox" id="checkboxMedian" style="margin-left:5px;">
+	<label for="checkboxMedian"><font color="blue">Median</font></label>
+	<input type="checkbox" id="checkboxMode" style="margin-left:5px;">
+	<label for="checkboxMode"><font color="#00FF00">Mode</font></label><br>
+	
+	<div id="scaleOptions"><b>Graph Scale:</b>
+	<label for="textXMin" style="margin-left:10px;">Min: </label>
+	<input type="text" class="textbox" id="textXMin" style="width:50px;">
+	<label for="textXMax" style="margin-left:10px;">Max:</label>
+	<input type="text" class="textbox" id="textXMax" style="width:50px;"><br>
+	
+	<input type="checkbox" id="fitScaleToData" style="margin-left:10px;">
+	<label for="fitScaleToData">Fit Scale Individually</label>
+	</div>
+	
+	<input type="checkbox" id="sampling" name="test" style="margin-left:10px;">
+	<label for="sampling">Sampling Engine</label>
+	<label for="numSamples" style="margin-left:10px;">#: </label>
+	<select id="numSamples" class="textbox" >
+		<option value="1">1</option>
+		<option value="2">2</option>
+	</select><br>
+	
+	<input type="button" class="button" value="Apply to All" id="applyOptionsToAll">
+</div>
+
+<div id="displayOptions">
+	<input type='image' src='img/close.png' id='dispOptClose' onclick='hideMenus()' width='20' height='20' align='right'><br>
+	<table cellspacing="10">
+		<tr>
+			<td id="divisionsCell" valign="top" nowrap>
+				<h3 style="margin-bottom:10px">Buckets</h3>
+				<center>
+					<input type="button" class="button" value="+" id="divisionsInc" style="width:30px; height:30px"><br>
+					<p id="divisionsValue">30</p>
+					<input type="button" class="button" value="-" id="divisionsDec" style="width:30px; height:30px"><br>
+				</center>
+			</td>
+			<td valign="top" nowrap>
+				<h3 style="margin-bottom:10px">Dot Size</h3>
+				<center>
+					<input type="button" class="button" value="+" id="dotSizeInc" style="width:30px; height:30px"><br>
+					<p id="dotSizeValue">5</p>
+					<input type="button" class="button" value="-" id="dotSizeDec" style="width:30px; height:30px"><br>
+				</center>
+			</td>
+			<td valign="top" nowrap>
+				<h3 style="margin-bottom:10px">Text Size</h3>
+				<center>
+					<input type="button" class="button" value="+" id="textSizeInc" style="width:30px; height:30px"><br>
+					<p id="textSizeValue">12</p>
+					<input type="button" class="button" value="-" id="textSizeDec" style="width:30px; height:30px"><br>
+				</center>
+			</td>					
+			<td valign="top" nowrap>
+				<h3>Data Points</h3>
+				<input type="checkbox" id="checkboxBWView" name="color">
+				<label for="checkboxBWView">Black</label><br>
+				<input type="checkbox" id="checkboxFillDots" name="color" checked>
+				<label for="checkboxFillDots">Fill</label><br>
+				<input type="checkbox" id="checkboxHideData">
+				<label for="checkboxHideData">Hide</label><br>
+			</td>
+		</tr>
+	</table>
+	<table id="stackAndButtonTable" cellspacing="10">
+		<tr>
+			<td>
+				<b>Point Stack Mode</b></br>
+				<select id="drawMode" class="textbox" >
+					<option value="floating">Floating</option>
+					<option value="center">Center</option>
+					<option value="gravity" selected>Gravity</option>
+				</select>
+			</td>
+			<td>
+				<b>Button Appearance</b><br>
+				<select id="buttonMode" class="textbox" >
+					<option value="both" selected>Text and Icons</option>
+					<option value="icon">Icons Only</option>
+					<option value="text">Text Only</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div id="worksheetMenu">
+	<input type='image' src='img/close.png' id='worksheetMenuClose' width='20' height='20' align='right'>
+	Values MUST be separated by tabs or commas but not both.<br><br>
+	Title: <input type="text" class="textbox" id="worksheetTitle" style="width: 25%;"><br>
+	<label for="worksheetLabelsRequired">First Column is Label: </label> 
+	<input type="checkbox" id="worksheetLabelsRequired" checked> <br>
+	Data:<br>
+	<textarea id="worksheetText" class="textbox" ></textarea><br>
+	<input type="button" class="button" value="Load Worksheet From Form" id="loadFromForm">
+	<input type="button" class="button" value="Load Worksheet From URL" id="loadFromURL">
+	<input type="button" class="button" value="Delete" id="deleteWorksheet">
+</div>
+
+<div id="worksheetURLMenu">
+	Worksheet URL: <input type="text" class="textbox" id="worksheetURL" style="width: 300px"><br>
+	<input type="button" class="button" value="Submit" id="submitURL">
+	<input type="button" class="button" value="Back" id="backToWorksheetMenu">
+</div>
+
+<div id="aboutPopup">
+	<input type='image' src='img/close.png' id='aboutClose' onclick='hideMenus()' width='20' height='20' align='right'>
+	<h2>SeeIt3: Distributions</h2>
+	<p>
+		SeeIt statistics visualization and interpretation program. <br>
+		Made at University of California - Davis, Copyright UC Regents 2011. <br>
+		Funded by NIH-SEPA grant# 1R25RR026008. <br>
+		Project Director: Marco Molinaro (mmolinaro@ucdavis.edu). <br>
+		Written by Matthew Steinwachs and Andrew Lague.
+	</p>
+</div>
+
+<div id="worksheetDescriptionPopup">
+	<input type='image' src='img/close.png' id='wdpClose' onclick='hideMenus()' width='20' height='20' align='right'>
+	<h2 id="worksheetDescriptionTitle"></h2>
+	<p id="worksheetDescriptionParagraph"></p>
+</div>
+
+<p id="loadingMsg">Loading 0%</p>
+
+<p id="ieWarning" style="display:none;">SeeIt is not compatible with Internet Explorer.  Please copy the url from the address bar and open it with Chrome or Firefox</p>
+
+<script type="text/javascript" src="js/resampling/seeit-rsmpl-util.js"></script>
+<script type="text/javascript" src="js/resampling/seeit-rsmpl-obj.js"></script>
+<script type="text/javascript" src="js/resampling/seeit-rsmpl-main.js"></script>
+<script type="text/javascript" src="js/resampling/seeit-rsmpl-evt.js"></script>
+<script type="text/javascript" src="js/resampling/seeit-rsmpl-local.js"></script>
+
+</body>
+</html>
