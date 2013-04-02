@@ -75,11 +75,7 @@ function GraphCollection(){
 	
 	//for highlighting points with the same label
 	this.selectedLabel = null;
-	
-	//Add an empty graph and initialize menu
-	this.addGraph();
-	this.updateMenuOptions();
-	
+		
 	this.nextSampleSetNumber = 0;
 	this.nextResampleSetNumber = 0;
 	this.nextIntermedResampleSetNumber = 0;
@@ -92,6 +88,14 @@ function GraphCollection(){
 	this.nextDefaultCategoryNumber = 0;
 	
 	this.printMode = false;
+	
+	//Add an empty graph and initialize menu
+	
+	
+	this.addIntermedResamplingGraph();
+	this.addDoubleGraph();
+	this.addResamplingGraph();
+	this.updateMenuOptions();
 }
 
 GraphCollection.prototype = {
@@ -160,8 +164,21 @@ GraphCollection.prototype = {
 			return (window.innerHeight - jQuery('div#notGraph').height()) - 60;
 	},
 	
-	addGraph: function() {
-		this.graphs.push(new Graph(this));
+	addGraph: function(){
+		var regularGraph = new Graph(this);
+		regularGraph.isRegularGraph = true;
+		this.graphs.push(regularGraph);
+		this.setH(this.calcGraphHeight());
+	},
+	
+	addDoubleGraph: function(){
+		var doubleGraph = new Graph(this);
+		doubleGraph.isDoubleGraph = true;
+		
+		doubleGraph.secondGraph = new Graph(this);
+		doubleGraph.secondGraph.isDoubleGraph = true;
+		
+		this.graphs.push(doubleGraph);		
 		this.setH(this.calcGraphHeight());
 	},
 	
@@ -189,28 +206,55 @@ GraphCollection.prototype = {
 		this.setH(this.calcGraphHeight());
 	},
 	
+	addIntermedResamplingGraph: function(){
+		var intermedResamplingGraph = new Graph(this);
+		intermedResamplingGraph.isIntermedResamplingGraph = true;
+		intermedResamplingGraph.dragDropEnabled = false;
+		intermedResamplingGraph.testMode = "intermedResampling";
+		intermedResamplingGraph.isIntermedResamplingGraph = true;
+		intermedResamplingGraph.intermedResampleSet = "***intermedResampleSet-"+this.nextIntermedResampleSetNumber++;
+		this.data[intermedResamplingGraph.intermedResampleSet] = [];
+		intermedResamplingGraph.addCategory(intermedResamplingGraph.intermedResampleSet);
+		intermedResamplingGraph.fitScalesToData = true;
+		intermedResamplingGraph.baseLine = 60;	
+		
+		intermedResamplingGraph.secondGraph = new Graph(this);
+		intermedResamplingGraph.secondGraph.isIntermedResamplingGraph = true;
+		intermedResamplingGraph.secondGraph.dragDropEnabled = false;
+		intermedResamplingGraph.secondGraph.testMode = "intermedResampling";
+		intermedResamplingGraph.secondGraph.isIntermedResamplingGraph = true;
+		intermedResamplingGraph.secondGraph.intermedResampleSet = "***intermedResampleSet-"+this.nextIntermedResampleSetNumber++;
+		this.data[intermedResamplingGraph.secondGraph.intermedResampleSet] = [];
+		intermedResamplingGraph.secondGraph.addCategory(intermedResamplingGraph.intermedResampleSet);
+		intermedResamplingGraph.secondGraph.fitScalesToData = true;
+		intermedResamplingGraph.secondGraph.baseLine = 60;	
+		
+		this.graphs.push(intermedResamplingGraph);		
+		this.setH(this.calcGraphHeight());
+	},
+	
 	addResamplingGraph: function(){
-		//Add a graph to display intermediate resampling results.
-		this.graphs.splice(0,0,new Graph(this));
+		////Add a graph to display intermediate resampling results.
+		//this.graphs.splice(0,0,new Graph(this));
 		
-		this.graphs[0].testMode = "intermedResampling";
-		this.graphs[0].isIntermedResamplingGraph = true;
-		this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+graphCollection.nextIntermedResampleSetNumber++;
-		this.data[this.graphs[0].intermedResampleSet] = [];
-		this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
-		this.graphs[0].fitScalesToData = true;
-		this.graphs[0].baseLine = 60;	
+		//this.graphs[0].testMode = "intermedResampling";
+		//this.graphs[0].isIntermedResamplingGraph = true;
+		//this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+this.nextIntermedResampleSetNumber++;
+		//this.data[this.graphs[0].intermedResampleSet] = [];
+		//this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
+		//this.graphs[0].fitScalesToData = true;
+		//this.graphs[0].baseLine = 60;	
 		
-		//Add a graph to display intermediate resampling results.
-		this.graphs.splice(0,0,new Graph(this));
+		////Add a graph to display intermediate resampling results.
+		//this.graphs.splice(0,0,new Graph(this));
 		
-		this.graphs[0].testMode = "intermedResampling";
-		this.graphs[0].isIntermedResamplingGraph = true;
-		this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+graphCollection.nextIntermedResampleSetNumber++;
-		this.data[this.graphs[0].intermedResampleSet] = [];
-		this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
-		this.graphs[0].fitScalesToData = true;
-		this.graphs[0].baseLine = 60;
+		//this.graphs[0].testMode = "intermedResampling";
+		//this.graphs[0].isIntermedResamplingGraph = true;
+		//this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+this.nextIntermedResampleSetNumber++;
+		//this.data[this.graphs[0].intermedResampleSet] = [];
+		//this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
+		//this.graphs[0].fitScalesToData = true;
+		//this.graphs[0].baseLine = 60;
 	
 		//Add a graph to display the overall resampling results.
 		this.graphs.splice(0,0,new Graph(this));
@@ -218,10 +262,13 @@ GraphCollection.prototype = {
 		//set variables to distinguish resampling graph as special type
 		this.graphs[0].testMode = "resampling";
 		this.graphs[0].isResamplingGraph = true;
-		this.graphs[0].resampleSet = "***resampleSet-"+graphCollection.nextResampleSetNumber++;
+		this.graphs[0].resampleSet = "***resampleSet-"+this.nextResampleSetNumber++;
 		this.data[this.graphs[0].resampleSet] = [];
 		this.graphs[0].addCategory(this.graphs[0].resampleSet);
 		this.graphs[0].fitScalesToData = true;
+		this.graphs[0].baseLine = 60;
+		this.graphs[0].population1 = this.graphs[2];
+		this.graphs[0].population2 = this.graphs[2].secondGraph;
 		this.graphs[0].baseLine = 60;
 		
 		this.setH(this.calcGraphHeight());
@@ -280,6 +327,11 @@ GraphCollection.prototype = {
 		var graphCollection = this;
 		graphCollection.graphs.forEach(function(g,i){
 			g.w = graphCollection.w;
+			if (g.isDoubleGraph){
+				g.subW = Math.floor(g.w/2);
+				g.secondGraph.w = Math.floor(g.w/2);
+				
+			}
 			g.setXScale();
 			positionAndSizeLegendPanel(g,i);
 			positionPopulationLabels();
@@ -518,10 +570,12 @@ function Graph(graphCollection){
 	this.editedCategories = this.graphCollection.editedCategories;
 	
 	this.w = graphCollection.calcGraphWidth();
+	this.subW = Math.floor(graphCollection.calcGraphWidth()/2);
 	this.h = 200;
 	this.xMax = pv.max(this.dataVals(), function(d) { return d });
 	this.xMin = pv.min(this.dataVals(), function(d) { return d });
 	this.x = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.w);
+	this.subX = pv.Scale.linear(0, Math.ceil(this.xMax)).range(0, this.subW);
 	this.n = this.dataVals().length
 	
 	// Scaling Variables
@@ -562,6 +616,7 @@ function Graph(graphCollection){
 	
 	//Testing variables
 	this.testMode = "noTest";
+	this.isRegularGraph = false;
 	
 	this.isSamplingGraph = false;
 	this.samplingFrom = null;			//Graph Object, used by sample graph
@@ -572,8 +627,7 @@ function Graph(graphCollection){
 	this.sampleNumber = 1;
 	this.selectedSample  = null;
 	this.selectedSampleNumber = 1;
-	
-	
+		
 	
 	this.isResamplingGraph = false;
 	this.population1 = this;			//Graph Object
@@ -585,6 +639,13 @@ function Graph(graphCollection){
 	this.resamplingPVals = [];					//P Vals at significant number of iterations
 	this.resamplingMaxPVal = -1;
 	this.resamplingReplacement = false;
+	
+	
+	this.isIntermedResamplingGraph = false;
+	
+	this.isDoubleGraph = false;
+	
+	this.dragDropEnabled = true;
 }
 
 Graph.prototype = {
@@ -600,10 +661,20 @@ Graph.prototype = {
 				this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
 			else 
 				this.x = pv.Scale.linear(Math.floor(this.samplingFrom.xMin), Math.ceil(this.samplingFrom.xMax)).range(0, this.w);	
+		
+			if (this.isDoubleGraph){
+				this.subX = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.subW); 
+				this.secondGraph.subX = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.subW);
+			}
 		} else {
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
 			this.scaleMin = newMin;
 			this.scaleMax = newMax;
+			
+			if (this.isDoubleGraph){
+				this.subX = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.subW-10); 
+				this.secondGraph.subX = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.subW-30);
+			}
 		}
 		
 		if (this.testMode == "sampling"){
@@ -616,10 +687,10 @@ Graph.prototype = {
 	},
 	
 	addCategory: function(category){
-		if (this.includedCategories.indexOf(category) == -1 && 
-				this.includedCategories.length < 4 &&
-				!this.isSamplingGraph &&
-				!this.isIntermedResamplingGraph){
+		if (this.includedCategories.indexOf(category) == -1 &&
+				((this.isRegularGraph && this.includedCategories.length < 4) ||
+				(this.isDoubleGraph && this.includedCategories.length < 1) ||
+				this.isResamplingGraph)){
 			
 			if ((this.isResamplingGraph && this.includedCategories.length < 1) || !this.isResamplingGraph){
 				this.includedCategories.push(category);
@@ -670,6 +741,9 @@ Graph.prototype = {
 			} else {
 				return false;
 			}
+		} else if (this.isDoubleGraph && this.includedCategories.length == 1){
+			if (this.secondGraph != undefined)
+				this.secondGraph.addCategory(category);
 		} else {
 			return false;
 		}
@@ -839,13 +913,18 @@ Graph.prototype = {
 	},
 	 
 	getDataDrawObjects: function(){
-		var xDomain = this.x.domain();
+		var scaleFunc = this.x;
+		
+		if (this.isDoubleGraph)
+		 scaleFunc = this.subX;
+		
+		var xDomain = scaleFunc.domain();
 		var bucketSize = (xDomain[1]-xDomain[0])/this.graphCollection.buckets;
 		var points = [];
 		var data = this.dataObjects();
 		var drawMode = jQuery("#drawMode option:selected").val();
 		
-		var dotSize = this.isResamplingGraph ? 2 : graphCollection.bucketDotSize;
+		var dotSize = this.isResamplingGraph ? 3 : graphCollection.bucketDotSize;
 		
 		for (var i = 0; i < this.graphCollection.buckets; i++){
 			var bucketMin = xDomain[0] + (bucketSize * i);
@@ -861,7 +940,7 @@ Graph.prototype = {
 				if ((xVal >= bucketMin && xVal < bucketMax) 
 						|| drawMode == "gravity")
 				{
-					pointsInBucket.push([this.x(xVal), label, set, 0]);
+					pointsInBucket.push([scaleFunc(xVal), label, set, 0]);
 				}
 			}
 			randomIndex = 20;
@@ -881,7 +960,7 @@ Graph.prototype = {
 				break;
 			case "center":
 				for (var j = 0; j < pointsInBucket.length; j++){
-					points.push({"x":(this.x(bucketMin)+this.x(bucketMax))/2,
+					points.push({"x":(scaleFunc(bucketMin)+scaleFunc(bucketMax))/2,
 											 "xReal":pointsInBucket[j][0],
 											 "y":this.graphCollection.bucketDotSize + j*2*dotSize,
 											 "label":pointsInBucket[j][1],
@@ -1016,7 +1095,6 @@ Worksheet.prototype = {
 		var worksheet = this;
 		jQuery.jsonp({ url:this.URL + '?alt=json', callbackParameter: "callback", 
 			success:function(feedData) {
-				console.log(feedData);
 				worksheet.data = worksheet.transformFeedData(feedData);
 				worksheet.labelType = feedData.feed.entry[0].content.$t;
 				worksheet.labelMasterList = worksheet.getLabels(feedData);        

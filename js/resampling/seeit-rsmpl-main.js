@@ -805,6 +805,7 @@ function constructVis(){
 			positionResampleControlPanel(graph,i);
 		}
 		
+		
 	})
 	
 	//resampling population labels
@@ -938,7 +939,7 @@ function sidePanDragStop(event){
 	document.removeEventListener("mouseup",   sidePanDragStop, true);
 }
 
-function legPanDragStart(event, category, index, i){
+function legPanDragStart(event, category, index, i, isSecondGraph){
 	if (touch.touch){
 		touch.touch = false;
 		return;
@@ -953,6 +954,7 @@ function legPanDragStart(event, category, index, i){
 	dragObj = new Object();
 	dragObj.category = category;
 	dragObj.index = index;
+	dragObj.isSecondGraph = isSecondGraph;
 	$('#dragFeedback').html(category);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
@@ -1008,6 +1010,9 @@ function legPanDragStop(event){
 		}
 	} else {
 		var fromGraph = graphCollection.graphs[dragObj.index];
+		if (dragObj.isSecondGraph)
+			fromGraph = fromGraph.secondGraph;
+		
 		fromGraph.removeCategory(dragObj.category);
 		if (fromGraph.selectedCategory == dragObj.category)
 			fromGraph.selectedCategory = null;
@@ -1228,7 +1233,7 @@ function constructGraphPanel(graph, index){
 		
 	graph.panel = graphPanel;
 	
-	if (!graphCollection.printMode){
+	if (!graphCollection.printMode && (graph.isRegularGraph || graph.isSamplingGraph)){
 		//Remove Graph Button
 		graphPanel.add(pv.Panel)
 			.right(-20)
@@ -1318,24 +1323,24 @@ function constructGraphPanel(graph, index){
 				return "black"
 		})
 		
-	graphPanel.add(pv.Rule)
-		.right(-25)
-		.bottom(0)
-		.top(0)
-		.lineWidth(function(){
-			if (graphCollection.editModeEnabled)
-				return 2;
-			else
-				return 1;
-		})
-		.strokeStyle(function(){
-			if (graphCollection.editModeEnabled)
-				return "red"
-			else
-				return "black"
-		})
+	//graphPanel.add(pv.Rule)
+		//.right(-25)
+		//.bottom(0)
+		//.top(0)
+		//.lineWidth(function(){
+			//if (graphCollection.editModeEnabled)
+				//return 2;
+			//else
+				//return 1;
+		//})
+		//.strokeStyle(function(){
+			//if (graphCollection.editModeEnabled)
+				//return "red"
+			//else
+				//return "black"
+		//})
 	
-	if (!graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph){
+	if (graph.isRegularGraph){
 		constructRegularGraph(graphPanel,graph,index);
 	} else if (graph.isSamplingGraph){
 		constructSamplingGraph(graphPanel,graph,index);
@@ -1343,26 +1348,292 @@ function constructGraphPanel(graph, index){
 		constructResamplingGraph(graphPanel,graph,index);
 	} else if (graph.isIntermedResamplingGraph){
 		constructIntermedResamplingGraph(graphPanel,graph,index);
+	} else if (graph.isDoubleGraph){
+		constructDoubleGraph(graphPanel,graph,index);
 	}
 }
 
 function constructIntermedResamplingGraph(graphPanel,graph,index){
+	//Vertical Divider
+	graphPanel.add(pv.Rule)
+		.left(graph.w/2)
+		.bottom(0)
+		.top(0)
+		.lineWidth(1)
+		.strokeStyle("black")
+}
 
+function constructDoubleGraph(graphPanel,graph,index){
+	//Vertical Divider
+	graphPanel.add(pv.Rule)
+		.left(graph.subW)
+		.bottom(0)
+		.top(0)
+		.lineWidth(1)
+		.strokeStyle("black")
+	
+	var graph1 = graphPanel.add(pv.Panel)
+		.top(0)
+		.left(0)
+		.height(function(){return graph.h})
+		.width(function(){return graph.subW})
+			
+	graph1.add(pv.Label)
+		.left(function(){return graph.subW/2})
+		.top(30)
+		.textAlign("center")
+		.textAngle(0)
+		.textBaseline("bottom")
+		.text("Sample 1")
+		.font(fontString)
+	
+	var graph2 = graphPanel.add(pv.Panel)
+		.top(0)
+		.left(graph.subW)
+		.height(function(){return graph.h})
+		.width(function(){return graph.secondGraph.w})
+		
+	graph2.add(pv.Label)
+		.left(function(){return graph.secondGraph.w/2})
+		.top(30)
+		.textAlign("center")
+		.textAngle(0)
+		.textBaseline("bottom")
+		.text("Sample 2")
+		.font(fontString)
+		
+	if (graph.includedCategories.length == 0){
+		graph1.add(pv.Label)
+			.left(function(){return graph.subW/2})
+			.top(function(){return graph.h/4*3})
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("Drag Data Here")
+			.font(fontString)
+			
+	} else {
+		
+		/* Number of datapoints N */
+		graph1.add(pv.Label)
+			.right(25)
+			.top(30)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text(function(){return "n = " + graph.n})
+			.font(fontString);
+			
+		/* Mean */
+		graph1.add(pv.Label)
+			.left(10)
+			.top(30)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text(function(){return "Mean = " + graph.getMeanMedianMode()[0].toFixed(1)})
+			.font(fontString);
+			
+		/* X-axis ticks */
+		graph1.add(pv.Rule)
+			.data(function() { return graph.subX.ticks() })
+			.left(function(d) {return graph.subX(d)})
+			.bottom(graph.baseLine)
+			.strokeStyle("#aaa")
+			.height(5)
+			.anchor("bottom").add(pv.Label)
+				.text(function(d) {return d.toFixed(1)})
+				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			
+		/* X-axis line */
+		graph1.add(pv.Rule)
+			.bottom(graph.baseLine)
+			.width(function(){return graph.subW-10})
+			.strokeStyle("#000");		
+		
+		/* Dots */
+		graph1.add(pv.Dot)
+			.data(function() {return graph.getDataDrawObjects()})
+			.visible(function(d) {
+				return $('#checkboxHideData').attr('checked') != "checked"  && 
+					(d.y+graph.baseLine) < graph.h &&
+					d.x >= 0 &&
+					d.x <= graph.w &&
+					!graphCollection.lineMode;
+			})
+			.left(function(d) { return d.x })
+			.bottom(function(d) { return d.y + graph.baseLine })
+			.cursor(function(){
+				if (graphCollection.editModeEnabled)
+					return "move";
+				else
+					return "default";
+			})
+			.radius(function() {return graphCollection.bucketDotSize})
+			.fillStyle(function(d) {return pointFillStyle(d.set)})
+			.strokeStyle(function(d) {
+				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling")
+					return graphCollection.bwMode ? "grey": "red";
+				else if (graph.testMode == "sampling" &&
+								 sampleContainsData(graphCollection.data[graph.selectedSample], d, graph))
+					return graphCollection.bwMode ? "grey": "blue";
+				else
+					return pointStrokeStyle(d.set);
+			})
+			.lineWidth(function(d){
+				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling") return 4;
+				else if (graph.testMode == "sampling" &&
+								 sampleContainsData(graphCollection.data[graph.selectedSample], d, graph)) return 4;
+				else return 2;
+			})
+			.title(function(d) { return d.label+", "+graph.subX.invert(d.xReal).toFixed(1) })
+			
+		
+		//Graph Overflow Warning Message
+		graph1.add(pv.Label)
+			.text("Warning! Data points lie outside graph boundaries.")
+			.textStyle("red")
+			.font(fontString)
+			.top(35)
+			.left(function(){return graph.w/2})
+			.textAlign("center")
+			.visible(function(){
+				var retVal = false;
+				graph.getDataDrawObjects().forEach(function(d){
+					if ((d.y+graph.baseLine) > graph.h ||
+							d.x < 0 ||
+							d.x > graph.w)
+						retVal = true;
+				});
+				return retVal;
+			})
+		
+	} 
+	
+	if (graph.secondGraph.includedCategories.length == 0){
+		graph2.add(pv.Label)
+			.left(function(){return graph.secondGraph.w/2})
+			.top(function(){return graph.h/4*3})
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("Drag Data Here")
+			.font(fontString)
+	} else {
+		var horAdjust = 20;
+		
+		/* Number of datapoints N */
+		graph2.add(pv.Label)
+			.right(7)
+			.top(30)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text(function(){return "n = " + graph.secondGraph.n})
+			.font(fontString);
+		
+		/* Mean */
+		graph2.add(pv.Label)
+			.left(50)
+			.top(30)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text(function(){return "Mean = " + graph.secondGraph.getMeanMedianMode()[0].toFixed(1)})
+			.font(fontString);
+			
+		/* X-axis ticks */
+		graph2.add(pv.Rule)
+			.data(function() { return graph.secondGraph.subX.ticks() })
+			.left(function(d) {return graph.secondGraph.subX(d) + horAdjust})
+			.bottom(graph.secondGraph.baseLine)
+			.strokeStyle("#aaa")
+			.height(5)
+			.anchor("bottom").add(pv.Label)
+				.text(function(d) {return d.toFixed(1)})
+				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			
+		/* X-axis line */
+		graph2.add(pv.Rule)
+			.bottom(graph.secondGraph.baseLine)
+			.width(function(){return graph.secondGraph.subW-210})
+			.left(horAdjust)
+			.strokeStyle("#000");
+	
+		
+		/* Dots */
+		graph2.add(pv.Dot)
+			.data(function() {return graph.secondGraph.getDataDrawObjects()})
+			.visible(function(d) {
+				return $('#checkboxHideData').attr('checked') != "checked"  && 
+					(d.y+graph.secondGraph.baseLine) < graph.secondGraph.h &&
+					d.x >= 0 &&
+					d.x <= graph.secondGraph.w &&
+					!graphCollection.lineMode;
+			})
+			.left(function(d) { return d.x + horAdjust})
+			.bottom(function(d) { return d.y + graph.secondGraph.baseLine })
+			.cursor(function(){
+				if (graphCollection.editModeEnabled)
+					return "move";
+				else
+					return "default";
+			})
+			.radius(function() {return graphCollection.bucketDotSize})
+			.fillStyle(function(d) {return pointFillStyle(d.set)})
+			.strokeStyle(function(d) {
+				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling")
+					return graphCollection.bwMode ? "grey": "red";
+				else if (graph.testMode == "sampling" &&
+								 sampleContainsData(graphCollection.data[graph.selectedSample], d, graph))
+					return graphCollection.bwMode ? "grey": "blue";
+				else
+					return pointStrokeStyle(d.set);
+			})
+			.lineWidth(function(d){
+				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling") return 4;
+				else if (graph.testMode == "sampling" &&
+								 sampleContainsData(graphCollection.data[graph.selectedSample], d, graph)) return 4;
+				else return 2;
+			})
+			.title(function(d) { return d.label+", "+graph.secondGraph.subX.invert(d.xReal).toFixed(1) })
+			
+		
+		//Graph Overflow Warning Message
+		graph2.add(pv.Label)
+			.text("Warning! Data points lie outside graph boundaries.")
+			.textStyle("red")
+			.font(fontString)
+			.top(35)
+			.left(function(){return graph.secondGraphw/2})
+			.textAlign("center")
+			.visible(function(){
+				var retVal = false;
+				graph.getDataDrawObjects().forEach(function(d){
+					if ((d.y+graph.secondGraph.baseLine) > graph.secondGraph.h ||
+							d.x < 0 ||
+							d.x > graph.w)
+						retVal = true;
+				});
+				return retVal;
+			})
+	}
 }
 
 function constructResamplingGraph(graphPanel, graph, index){
 	
-	if (graphCollection.graphs.indexOf(graph.population1) == 0 || 
-			graphCollection.graphs.indexOf(graph.population2) == 0){
-		/* Assignment Instructons*/
-		graphPanel.add(pv.Label)
-			.left(function(){return -20})
-			.top(50)
-			.textAlign("left")
-			.textAngle(0)
-			.textBaseline("bottom")
-			.text("Drag the labels above to the graphs you wish to represent your samples.")
-			.font(fontString)
+	if (graph.population1.includedCategories.length == 0 || 
+			graph.population2.includedCategories.length == 0){
+				console.log("test");
+		///* Assignment Instructons*/
+		//graphPanel.add(pv.Label)
+			//.left(function(){return -20})
+			//.top(50)
+			//.textAlign("left")
+			//.textAngle(0)
+			//.textBaseline("bottom")
+			//.text("Drag the labels above to the graphs you wish to represent your samples.")
+			//.font(fontString)
 	} else if (graph.data[graph.resampleSet].length == 0) {
 		/* Instructons*/
 		graphPanel.add(pv.Label)
@@ -1493,7 +1764,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.data(function() {return ( graph.resampleDisplayMode == "dot" ? graph.getDataDrawObjects() : [])})
 			.left(function(d) { return d.x })
 			.bottom(function(d) { return d.y + graph.baseLine })
-			.radius(2)
+			.radius(3)
 			.fillStyle("white")
 			.strokeStyle("black")
 			.lineWidth(2)
@@ -3557,8 +3828,8 @@ function constructResampleControlPanel(graph, index){
 							 
 	$('#resampleOptions'+index).html(string);
 	
-	if (graph.population1 == graph ||
-		  graph.population2 == graph)
+	if (graph.population1.includedCategories.length == 0 ||
+		  graph.population2.includedCategories.length == 0)
 		$('#resampleOptions'+index).hide();
 }
 
@@ -3750,7 +4021,7 @@ function resample(index, repeat){
 		
 		
 		graphCollection.data[graphCollection.graphs[1].intermedResampleSet] = [];
-		graphCollection.data[graphCollection.graphs[2].intermedResampleSet] = [];
+		graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet] = [];
 		
 		var group1Sum = 0;
 		var group2Sum = 0;
@@ -3770,7 +4041,7 @@ function resample(index, repeat){
 			while (group2Counter > 0){
 				var randSelection = population[rand(0, population.length)];
 				group2Sum += randSelection.value;
-				graphCollection.data[graphCollection.graphs[2].intermedResampleSet].push(randSelection);
+				graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].push(randSelection);
 				group2Counter--;
 			}
 			
@@ -3799,7 +4070,7 @@ function resample(index, repeat){
 					graphCollection.data[graphCollection.graphs[1].intermedResampleSet].push(population[i]);
 				}else{
 					group2Sum += population[i].value;
-					graphCollection.data[graphCollection.graphs[2].intermedResampleSet].push(population[i]);
+					graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].push(population[i]);
 				}
 			}
 			
@@ -3892,8 +4163,9 @@ function changeResampleIterations(textbox, index){
 	vis.render();
 }
 
+
 function constructLegendPanel(graph, index){
-	if (!graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph){
+	if (graph.isRegularGraph){
 		$('body').prepend("<div class=\"legend\" id=\"legend"+index+"\"></div>");
 		
 		var selCat = graphCollection.graphs[index].selectedCategory;
@@ -3907,7 +4179,7 @@ function constructLegendPanel(graph, index){
 								"style=\"color:black; background-color:white;\""+
 								"onmouseover=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
 								"onmouseout=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
-								"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+")\""+
+								"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+", false)\""+
 								"ontouchstart=\"graphCatTouchStart(event, '"+category+"', "+index+")\""+
 								"ontouchmove=\"graphCatTouchMove(event, '"+category+"', "+index+")\""+
 								"ontouchend=\"graphCatTouchEnd(event, '"+category+"', "+index+")\""+
@@ -3922,6 +4194,67 @@ function constructLegendPanel(graph, index){
 		});
 		string += "</tr></table></center>";
 		$('#legend'+index).html(string);
+		
+	} else if (graph.isDoubleGraph){
+		
+		if (graph.includedCategories.length > 0){
+			$('body').prepend("<div class=\"legend\" id=\"legend"+index+"-1\"></div>");
+			var selCat = graphCollection.graphs[index].selectedCategory;		
+			var string = "<center><table cellpadding='0' cellspacing='0' style='table-layout:fixed;' width='100%'><tr>";	
+			var category = graph.includedCategories[0];
+			var i = 0;		
+			var color = pointFillStyle(category);
+			string += "<td align='center'><div class='"+(category==selCat&&graphCollection.editModeEnabled?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+ 
+								"style=\"color:black; background-color:white;\""+
+								"onmouseover=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
+								"onmouseout=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
+								"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+", false)\""+
+								"ontouchstart=\"graphCatTouchStart(event, '"+category+"', "+index+")\""+
+								"ontouchmove=\"graphCatTouchMove(event, '"+category+"', "+index+")\""+
+								"ontouchend=\"graphCatTouchEnd(event, '"+category+"', "+index+")\""+
+								">"+
+								"<table cellpadding='2' cellspacing='0'><tr>"+
+								"<td><svg version='1.1' viewbox='0 0 18 18' width='18' height='18' style='border-style:none;'>"+
+								"<rect id='lgndColor"+index+"-"+i+"' height='14' width='14' x='1' y='1' style='fill: rgb("+color.r+","+color.g+","+color.b+"); stroke: black; stroke-width: 2'/>"+
+								"</svg></td>"+
+								//"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
+								//"); border:2px solid black; width:20px; height:20px;'></div></td>"+
+								"<td style='overflow:hidden;'><div id='lgndText"+index+"-"+i+"' style='white-space:nowrap; width:100%;'>"+category+"</div></td></tr></table></div></td>";
+		
+			string += "</tr></table></center>";
+			$('#legend'+index+"-1").html(string);
+		}
+		
+		if (graph.secondGraph.includedCategories.length > 0){
+			$('body').prepend("<div class=\"legend\" id=\"legend"+index+"-2\"></div>");		
+			var selCat = graphCollection.graphs[index].selectedCategory;			
+			var string = "<center><table cellpadding='0' cellspacing='0' style='table-layout:fixed;' width='100%'><tr>";			
+			var category = graph.secondGraph.includedCategories[0];
+			var i = 1;			
+			var color = pointFillStyle(category);
+			string += "<td align='center'><div class='"+(category==selCat&&graphCollection.editModeEnabled?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+ 
+								"style=\"color:black; background-color:white;\""+
+								"onmouseover=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
+								"onmouseout=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
+								"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+", true)\""+
+								"ontouchstart=\"graphCatTouchStart(event, '"+category+"', "+index+")\""+
+								"ontouchmove=\"graphCatTouchMove(event, '"+category+"', "+index+")\""+
+								"ontouchend=\"graphCatTouchEnd(event, '"+category+"', "+index+")\""+
+								">"+
+								"<table cellpadding='2' cellspacing='0'><tr>"+
+								"<td><svg version='1.1' viewbox='0 0 18 18' width='18' height='18' style='border-style:none;'>"+
+								"<rect id='lgndColor"+index+"-"+i+"' height='14' width='14' x='1' y='1' style='fill: rgb("+color.r+","+color.g+","+color.b+"); stroke: black; stroke-width: 2'/>"+
+								"</svg></td>"+
+								//"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
+								//"); border:2px solid black; width:20px; height:20px;'></div></td>"+
+								"<td style='overflow:hidden;'><div id='lgndText"+index+"-"+i+"' style='white-space:nowrap; width:100%;'>"+category+"</div></td></tr></table></div></td>";
+			
+			string += "</tr></table></center>";
+			$('#legend'+index+"-2").html(string);
+		}
+		
+		
+		
 	}
 }
 
@@ -3933,19 +4266,43 @@ function positionAndSizeLegendPanel(graph,index){
 						
 	if (graph.includedCategories.length > 2)
 		top -= 35;
-						
-	var left = $('span').offset().left +
-						 graphCollection.padLeft;
 	
-	$('#legend'+index).css('top', top+"px")
-										.css('left',left+"px")
-										.css('width',graphCollection.w-40 -
-													(graph.testMode=="sampling"?
-														$('#sampleButton'+index).width() :
-														0
-													))
-										.css('max-width',graphCollection.w-40)
-										.css('z-index', 1);
+	var left = $('span').offset().left +
+								graphCollection.padLeft;
+	
+	if(graph.isRegularGraph){
+		$('#legend'+index).css('top', top+"px")
+											.css('left',left+"px")
+											.css('width',graphCollection.w-40 -
+														(graph.testMode=="sampling"?
+															$('#sampleButton'+index).width() :
+															0
+														))
+											.css('max-width',graphCollection.w-40)
+											.css('z-index', 1);
+	} else if (graph.isDoubleGraph){
+		$('#legend'+index+"-1").css('top', top+"px")
+											.css('left',left+"px")
+											.css('width',graphCollection.w/2-40 -
+														(graph.testMode=="sampling"?
+															$('#sampleButton'+index).width() :
+															0
+														))
+											.css('max-width',graphCollection.w/2-40)
+											.css('z-index', 1);
+											
+		$('#legend'+index+"-2").css('top', top+"px")
+											.css('left',left+graph.w/2+graphCollection.padLeft+"px")
+											.css('width',graphCollection.w/2-40 -
+														(graph.testMode=="sampling"?
+															$('#sampleButton'+index).width() :
+															0
+														))
+											.css('max-width',graphCollection.w/2-40)
+											.css('z-index', 1);
+	}
+						
+	
 }
 
 function constructPopulationLabels(){
