@@ -176,7 +176,7 @@ GraphCollection.prototype = {
 		doubleGraph.isDoubleGraph = true;
 		
 		doubleGraph.secondGraph = new Graph(this);
-		doubleGraph.secondGraph.isDoubleGraph = true;
+		doubleGraph.secondGraph.isSecondGraph = true;
 		
 		this.graphs.push(doubleGraph);		
 		this.setH(this.calcGraphHeight());
@@ -216,7 +216,7 @@ GraphCollection.prototype = {
 		this.data[intermedResamplingGraph.intermedResampleSet] = [];
 		intermedResamplingGraph.addCategory(intermedResamplingGraph.intermedResampleSet);
 		intermedResamplingGraph.fitScalesToData = true;
-		intermedResamplingGraph.baseLine = 60;	
+		intermedResamplingGraph.baseLine = 20;	
 		
 		intermedResamplingGraph.secondGraph = new Graph(this);
 		intermedResamplingGraph.secondGraph.isIntermedResamplingGraph = true;
@@ -225,9 +225,10 @@ GraphCollection.prototype = {
 		intermedResamplingGraph.secondGraph.isIntermedResamplingGraph = true;
 		intermedResamplingGraph.secondGraph.intermedResampleSet = "***intermedResampleSet-"+this.nextIntermedResampleSetNumber++;
 		this.data[intermedResamplingGraph.secondGraph.intermedResampleSet] = [];
-		intermedResamplingGraph.secondGraph.addCategory(intermedResamplingGraph.intermedResampleSet);
+		intermedResamplingGraph.secondGraph.addCategory(intermedResamplingGraph.secondGraph.intermedResampleSet);
 		intermedResamplingGraph.secondGraph.fitScalesToData = true;
-		intermedResamplingGraph.secondGraph.baseLine = 60;	
+		intermedResamplingGraph.secondGraph.baseLine = 20;
+		intermedResamplingGraph.secondGraph.isSecondGraph = true;	
 		
 		this.graphs.push(intermedResamplingGraph);		
 		this.setH(this.calcGraphHeight());
@@ -327,9 +328,10 @@ GraphCollection.prototype = {
 		var graphCollection = this;
 		graphCollection.graphs.forEach(function(g,i){
 			g.w = graphCollection.w;
-			if (g.isDoubleGraph){
+			if (g.isDoubleGraph || g.isIntermedResamplingGraph){
 				g.subW = Math.floor(g.w/2);
 				g.secondGraph.w = Math.floor(g.w/2);
+				g.secondGraph.subW = Math.floor(g.w/2);
 				
 			}
 			g.setXScale();
@@ -398,6 +400,11 @@ GraphCollection.prototype = {
 			if(!graph.isResamplingGraph){
 				if (graph.xMax > max) max = graph.xMax
 				if (graph.xMin < min) min = graph.xMin
+				
+				if (graph.secondGraph != undefined && graph.secondGraph.includedCategories.length > 0){
+					if (graph.secondGraph.xMax > max) max = graph.secondGraph.xMax;
+					if (graph.secondGraph.xMin < min) min = graph.secondGraph.xMin;
+				}
 			}
 		});
 		this.graphs.forEach(function(graph){
@@ -405,8 +412,13 @@ GraphCollection.prototype = {
 				if (min > 1000)
 					min = Math.floor(min/1000)*1000;
 				
-				if (!graph.customScale || graph.xMin < graph.scaleMin || graph.xMax > graph.scaleMax)
+				if (!graph.customScale || graph.xMin < graph.scaleMin || graph.xMax > graph.scaleMax){
 					graph.setXScale(Math.floor(min), Math.ceil(max)+0.1);
+				
+					//if (graph.isDoubleGraph){
+						//graph.secondGraph.setXScale(Math.floor(min), Math.ceil(max)+0.1);
+					//}
+				}
 			}
 		});
 	},
@@ -649,31 +661,56 @@ function Graph(graphCollection){
 }
 
 Graph.prototype = {
-	setXScale: function(min, max){
+	setXScale: function(min, max){		
 		var newMin = min || this.scaleMin;
 		var newMax = max || this.scaleMax;
 		
 		if (min == 0)
 			newMin = min;
 		
+		console.log("Setting Scale")	
+		console.log("resampling graph: " + this.isResamplingGraph);	
+		console.log("intermed resampling graph: " + this.isIntermedResamplingGraph);	
+		console.log("double graph: " + this.isDoubleGraph);
+			
+		console.log("second graph: " + this.isSecondGraph);
+		console.log("new Min: " + newMin);	
+		console.log("new Max: " + newMax+"\n");
+			
 		if (this.fitScaleToData) {
 			if (this.isSamplingGraph == false)
 				this.x = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.w);	
 			else 
 				this.x = pv.Scale.linear(Math.floor(this.samplingFrom.xMin), Math.ceil(this.samplingFrom.xMax)).range(0, this.w);	
 		
-			if (this.isDoubleGraph){
-				this.subX = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.subW); 
-				this.secondGraph.subX = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.subW);
+			if ((this.isDoubleGraph || this.isIntermedResamplingGraph) && this.secondGraph != undefined){
+				var minDoubleX = this.xMin;
+				var maxDoubleX = this.xMax;
+				
+				if(this.secondGraph.includedCategories.length > 0){
+					var minDoubleX = Math.min(this.xMin, this.secondGraph.xMin);
+					var maxDoubleX = Math.max(this.xMax, this.secondGraph.xMax);
+				}
+					
+				this.subX = pv.Scale.linear(Math.floor(minDoubleX), Math.ceil(maxDoubleX)).range(0, this.subW-20); 
+				this.secondGraph.subX = pv.Scale.linear(Math.floor(minDoubleX), Math.ceil(maxDoubleX)).range(0, this.secondGraph.subW-20);
 			}
 		} else {
 			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
 			this.scaleMin = newMin;
 			this.scaleMax = newMax;
 			
-			if (this.isDoubleGraph){
-				this.subX = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.subW-10); 
-				this.secondGraph.subX = pv.Scale.linear(Math.floor(this.xMin), Math.ceil(this.xMax)).range(0, this.subW-30);
+			if ((this.isDoubleGraph || this.isIntermedResamplingGraph) && this.secondGraph != undefined){
+				var minDoubleX = this.xMin;
+				var maxDoubleX = this.xMax;
+				
+				if (this.secondGraph.includedCategories.length > 0){
+					var minDoubleX = Math.min(this.xMin, this.secondGraph.xMin);
+					var maxDoubleX = Math.max(this.xMax, this.secondGraph.xMax);
+				}
+							
+				this.subX = pv.Scale.linear(Math.floor(minDoubleX), Math.ceil(maxDoubleX)).range(0, this.subW-20); 
+				this.secondGraph.subX = pv.Scale.linear(Math.floor(minDoubleX), Math.ceil(maxDoubleX)).range(0, this.secondGraph.w-20);
 			}
 		}
 		
@@ -686,11 +723,14 @@ Graph.prototype = {
 		}
 	},
 	
-	addCategory: function(category){
+	addCategory: function(category, override){
+		console.log(this.isIntermedResamplingGraph);
 		if (this.includedCategories.indexOf(category) == -1 &&
 				((this.isRegularGraph && this.includedCategories.length < 4) ||
 				(this.isDoubleGraph && this.includedCategories.length < 1) ||
-				this.isResamplingGraph)){
+				(this.isSecondGraph && this.includedCategories.length < 1) ||
+				this.isResamplingGraph ||
+				(this.isIntermedResamplingGraph && this.includedCategories.length < 1))){
 			
 			if ((this.isResamplingGraph && this.includedCategories.length < 1) || !this.isResamplingGraph){
 				this.includedCategories.push(category);
@@ -741,9 +781,10 @@ Graph.prototype = {
 			} else {
 				return false;
 			}
-		} else if (this.isDoubleGraph && this.includedCategories.length == 1){
+		} else if ((this.isDoubleGraph && this.includedCategories.length == 1) ||
+							 (this.isIntermedResamplingGraph && this.includedCategories.length == 1)){
 			if (this.secondGraph != undefined)
-				this.secondGraph.addCategory(category);
+				return this.secondGraph.addCategory(category);
 		} else {
 			return false;
 		}
@@ -915,7 +956,7 @@ Graph.prototype = {
 	getDataDrawObjects: function(){
 		var scaleFunc = this.x;
 		
-		if (this.isDoubleGraph)
+		if (this.isDoubleGraph || this.isSecondGraph || this.isIntermedResamplingGraph)
 		 scaleFunc = this.subX;
 		
 		var xDomain = scaleFunc.domain();

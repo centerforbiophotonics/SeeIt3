@@ -1354,16 +1354,252 @@ function constructGraphPanel(graph, index){
 }
 
 function constructIntermedResamplingGraph(graphPanel,graph,index){
+	var horAdjust = 20;
+	
 	//Vertical Divider
 	graphPanel.add(pv.Rule)
-		.left(graph.w/2)
+		.left(graph.subW)
 		.bottom(0)
 		.top(0)
 		.lineWidth(1)
 		.strokeStyle("black")
+	
+	var graph1 = graphPanel.add(pv.Panel)
+		.top(0)
+		.left(0)
+		.height(function(){return graph.h})
+		.width(function(){return graph.subW})
+			
+	graph1.add(pv.Label)
+		.left(function(){return graph.subW/2})
+		.top(30)
+		.textAlign("center")
+		.textAngle(0)
+		.textBaseline("bottom")
+		.text(function(){return "Resampling Group 1: Iteration " + graph.data[graphCollection.graphs[0].resampleSet].length })
+		.font(fontString)
+	
+	var graph2 = graphPanel.add(pv.Panel)
+		.top(0)
+		.left(graph.subW)
+		.height(function(){return graph.h})
+		.width(function(){return graph.secondGraph.w})
+		
+	graph2.add(pv.Label)
+		.left(function(){return graph.secondGraph.w/2})
+		.top(30)
+		.textAlign("center")
+		.textAngle(0)
+		.textBaseline("bottom")
+		.text(function(){return "Resampling Group 2: Iteration " + graph.data[graphCollection.graphs[0].resampleSet].length })
+		.font(fontString)
+		
+	if (graphCollection.data[graph.includedCategories[0]] == undefined || graphCollection.data[graph.includedCategories[0]].length == 0){
+		
+			
+	} else {
+		
+		/* Number of datapoints N */
+		graph1.add(pv.Label)
+			.right(25)
+			.top(30)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text(function(){return "n = " + graph.n})
+			.font(fontString);
+			
+		/* Mean */
+		graph1.add(pv.Label)
+			.left(10)
+			.top(30)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text(function(){return "Mean = " + graph.getMeanMedianMode()[0].toFixed(1)})
+			.font(fontString);
+			
+		/* X-axis ticks */
+		graph1.add(pv.Rule)
+			.data(function() { return graph.subX.ticks() })
+			.left(function(d) {return graph.subX(d)})
+			.bottom(graph.baseLine)
+			.strokeStyle("#aaa")
+			.height(5)
+			.anchor("bottom").add(pv.Label)
+				.text(function(d) {return d.toFixed(1)})
+				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			
+		/* X-axis line */
+		graph1.add(pv.Rule)
+			.bottom(graph.baseLine)
+			.width(function(){return graph.subW-horAdjust})
+			.strokeStyle("#000");		
+		
+		/* Dots */
+		graph1.add(pv.Dot)
+			.data(function() {return graph.getDataDrawObjects()})
+			.visible(function(d) {
+				return $('#checkboxHideData').attr('checked') != "checked"  && 
+					(d.y+graph.baseLine) < graph.h &&
+					d.x >= 0 &&
+					d.x <= graph.subW &&
+					!graphCollection.lineMode;
+			})
+			.left(function(d) { return d.x })
+			.bottom(function(d) { return d.y + graph.baseLine })
+			.cursor(function(){
+				if (graphCollection.editModeEnabled)
+					return "move";
+				else
+					return "default";
+			})
+			.radius(function() {return graphCollection.bucketDotSize})
+			.fillStyle(function(d) {return pointFillStyle(d.set)})
+			.strokeStyle(function(d) {
+				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling")
+					return graphCollection.bwMode ? "grey": "red";
+				else if (graph.testMode == "sampling" &&
+								 sampleContainsData(graphCollection.data[graph.selectedSample], d, graph))
+					return graphCollection.bwMode ? "grey": "blue";
+				else
+					return pointStrokeStyle(d.set);
+			})
+			.lineWidth(function(d){
+				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling") return 4;
+				else if (graph.testMode == "sampling" &&
+								 sampleContainsData(graphCollection.data[graph.selectedSample], d, graph)) return 4;
+				else return 2;
+			})
+			.title(function(d) { return d.label+", "+graph.subX.invert(d.xReal).toFixed(1) })
+			
+		
+		//Graph Overflow Warning Message
+		graph1.add(pv.Label)
+			.text("Warning! Data points lie outside graph boundaries.")
+			.textStyle("red")
+			.font(fontString)
+			.top(35)
+			.left(function(){return graph.w/2})
+			.textAlign("center")
+			.visible(function(){
+				var retVal = false;
+				graph.getDataDrawObjects().forEach(function(d){
+					if ((d.y+graph.baseLine) > graph.h ||
+							d.x < 0 ||
+							d.x > graph.w)
+						retVal = true;
+				});
+				return retVal;
+			})
+		
+	} 
+	
+	if (graphCollection.data[graph.secondGraph.includedCategories[0]] == undefined || graphCollection.data[graph.secondGraph.includedCategories[0]].length == 0){
+		
+	} else {
+		
+		/* Number of datapoints N */
+		graph2.add(pv.Label)
+			.right(7)
+			.top(30)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text(function(){return "n = " + graph.secondGraph.n})
+			.font(fontString);
+		
+		/* Mean */
+		graph2.add(pv.Label)
+			.left(50)
+			.top(30)
+			.textAlign("center")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text(function(){return "Mean = " + graph.secondGraph.getMeanMedianMode()[0].toFixed(1)})
+			.font(fontString);
+			
+		/* X-axis ticks */
+		graph2.add(pv.Rule)
+			.data(function() { return graph.secondGraph.subX.ticks() })
+			.left(function(d) {return graph.secondGraph.subX(d) + horAdjust})
+			.bottom(graph.secondGraph.baseLine)
+			.strokeStyle("#aaa")
+			.height(5)
+			.anchor("bottom").add(pv.Label)
+				.text(function(d) {return d.toFixed(1)})
+				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			
+		/* X-axis line */
+		graph2.add(pv.Rule)
+			.bottom(graph.secondGraph.baseLine)
+			.width(function(){return graph.secondGraph.w - horAdjust})
+			.left(horAdjust)
+			.strokeStyle("#000");
+	
+		
+		/* Dots */
+		graph2.add(pv.Dot)
+			.data(function() {return graph.secondGraph.getDataDrawObjects()})
+			.visible(function(d) {
+				return $('#checkboxHideData').attr('checked') != "checked"  && 
+					(d.y+graph.secondGraph.baseLine) < graph.secondGraph.h &&
+					d.x >= 0 &&
+					d.x <= graph.secondGraph.w &&
+					!graphCollection.lineMode;
+			})
+			.left(function(d) { return d.x + horAdjust})
+			.bottom(function(d) { return d.y + graph.secondGraph.baseLine })
+			.cursor(function(){
+				if (graphCollection.editModeEnabled)
+					return "move";
+				else
+					return "default";
+			})
+			.radius(function() {return graphCollection.bucketDotSize})
+			.fillStyle(function(d) {return pointFillStyle(d.set)})
+			.strokeStyle(function(d) {
+				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling")
+					return graphCollection.bwMode ? "grey": "red";
+				else if (graph.testMode == "sampling" &&
+								 sampleContainsData(graphCollection.data[graph.selectedSample], d, graph))
+					return graphCollection.bwMode ? "grey": "blue";
+				else
+					return pointStrokeStyle(d.set);
+			})
+			.lineWidth(function(d){
+				if (d.label == graphCollection.selectedLabel && graph.testMode != "sampling") return 4;
+				else if (graph.testMode == "sampling" &&
+								 sampleContainsData(graphCollection.data[graph.selectedSample], d, graph)) return 4;
+				else return 2;
+			})
+			.title(function(d) { return d.label+", "+graph.secondGraph.subX.invert(d.xReal).toFixed(1) })
+			
+		
+		//Graph Overflow Warning Message
+		graph2.add(pv.Label)
+			.text("Warning! Data points lie outside graph boundaries.")
+			.textStyle("red")
+			.font(fontString)
+			.top(35)
+			.left(function(){return graph.secondGraphw/2})
+			.textAlign("center")
+			.visible(function(){
+				var retVal = false;
+				graph.getDataDrawObjects().forEach(function(d){
+					if ((d.y+graph.secondGraph.baseLine) > graph.secondGraph.h ||
+							d.x < 0 ||
+							d.x > graph.w)
+						retVal = true;
+				});
+				return retVal;
+			})
+	}
 }
 
 function constructDoubleGraph(graphPanel,graph,index){
+	var horAdjust = 20;
+	
 	//Vertical Divider
 	graphPanel.add(pv.Rule)
 		.left(graph.subW)
@@ -1448,7 +1684,7 @@ function constructDoubleGraph(graphPanel,graph,index){
 		/* X-axis line */
 		graph1.add(pv.Rule)
 			.bottom(graph.baseLine)
-			.width(function(){return graph.subW-10})
+			.width(function(){return graph.subW-horAdjust})
 			.strokeStyle("#000");		
 		
 		/* Dots */
@@ -1458,7 +1694,7 @@ function constructDoubleGraph(graphPanel,graph,index){
 				return $('#checkboxHideData').attr('checked') != "checked"  && 
 					(d.y+graph.baseLine) < graph.h &&
 					d.x >= 0 &&
-					d.x <= graph.w &&
+					d.x <= graph.subW &&
 					!graphCollection.lineMode;
 			})
 			.left(function(d) { return d.x })
@@ -1520,7 +1756,6 @@ function constructDoubleGraph(graphPanel,graph,index){
 			.text("Drag Data Here")
 			.font(fontString)
 	} else {
-		var horAdjust = 20;
 		
 		/* Number of datapoints N */
 		graph2.add(pv.Label)
@@ -1556,7 +1791,7 @@ function constructDoubleGraph(graphPanel,graph,index){
 		/* X-axis line */
 		graph2.add(pv.Rule)
 			.bottom(graph.secondGraph.baseLine)
-			.width(function(){return graph.secondGraph.subW-210})
+			.width(function(){return graph.secondGraph.w - horAdjust})
 			.left(horAdjust)
 			.strokeStyle("#000");
 	
@@ -1624,7 +1859,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 	
 	if (graph.population1.includedCategories.length == 0 || 
 			graph.population2.includedCategories.length == 0){
-				console.log("test");
+				//console.log("test");
 		///* Assignment Instructons*/
 		//graphPanel.add(pv.Label)
 			//.left(function(){return -20})
@@ -4011,11 +4246,20 @@ function resample(index, repeat){
 		
 		if (resampleResetPopulation){
 			population = [];
-			for (var i=0; i<graph.population1.includedCategories.length; i++)
+			for (var i=0; i<graph.population1.includedCategories.length; i++){
+				graph.data[graph.population1.includedCategories[i]].forEach(function(d){
+					d.set = graph.population1.includedCategories[i];
+				});
 				population = population.concat(graph.data[graph.population1.includedCategories[i]]);
+			}
 				
-			for (i=0; i<graph.population2.includedCategories.length; i++)
+			for (i=0; i<graph.population2.includedCategories.length; i++){
+				graph.data[graph.population2.includedCategories[i]].forEach(function(d){
+					d.set = graph.population2.includedCategories[i];
+				});
 				population = population.concat(graph.data[graph.population2.includedCategories[i]]);
+				
+			}
 			resampleResetPopulation = false;
 		}
 		
@@ -4048,6 +4292,18 @@ function resample(index, repeat){
 			group1Mean = group1Sum / sample1Size;
 			group2Mean = group2Sum / sample2Size;
 			
+			graphCollection.graphs[1].n = graphCollection.data[graphCollection.graphs[1].intermedResampleSet].length
+			graphCollection.graphs[1].secondGraph.n = graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].length
+			
+			graphCollection.graphs[1].xMin = pv.min(graphCollection.graphs[1].dataVals(), function(d) { return d });
+			graphCollection.graphs[1].xMax = pv.max(graphCollection.graphs[1].dataVals(), function(d) { return d });
+			
+			graphCollection.graphs[1].secondGraph.xMin = pv.min(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
+			graphCollection.graphs[1].secondGraph.xMax = pv.max(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
+			
+			graphCollection.graphs[1].setXScale(graphCollection.graphs[2].scaleMin, graphCollection.graphs[2].scaleMax);
+			graphCollection.graphs[1].secondGraph.setXScale(graphCollection.graphs[2].secondGraph.scaleMin, graphCollection.graphs[2].secondGraph.scaleMax);
+			
 		} else {
 			for (i=0; i<population.length; i++)
 				group1[i] = false;
@@ -4076,6 +4332,18 @@ function resample(index, repeat){
 			
 			group1Mean = group1Sum / sample1Size;
 			group2Mean = group2Sum / sample2Size;
+			
+			graphCollection.graphs[1].n = graphCollection.data[graphCollection.graphs[1].intermedResampleSet].length
+			graphCollection.graphs[1].secondGraph.n = graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].length
+			
+			graphCollection.graphs[1].xMin = pv.min(graphCollection.graphs[1].dataVals(), function(d) { return d });
+			graphCollection.graphs[1].xMax = pv.max(graphCollection.graphs[1].dataVals(), function(d) { return d });
+			
+			graphCollection.graphs[1].secondGraph.xMin = pv.min(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
+			graphCollection.graphs[1].secondGraph.xMax = pv.max(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
+			
+			graphCollection.graphs[1].setXScale(graphCollection.graphs[2].scaleMin, graphCollection.graphs[2].scaleMax);
+			graphCollection.graphs[1].secondGraph.setXScale(graphCollection.graphs[2].secondGraph.scaleMin, graphCollection.graphs[2].secondGraph.scaleMax);
 			
 		}
 		
