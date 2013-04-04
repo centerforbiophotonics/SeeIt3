@@ -1403,7 +1403,7 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 		graph1.add(pv.Label)
 			.right(25)
 			.top(30)
-			.textAlign("center")
+			.textAlign("right")
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text(function(){return "n = " + graph.n})
@@ -1413,7 +1413,7 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 		graph1.add(pv.Label)
 			.left(10)
 			.top(30)
-			.textAlign("center")
+			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text(function(){return "Mean = " + graph.getMeanMedianMode()[0].toFixed(1)})
@@ -1472,6 +1472,45 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 				else return 2;
 			})
 			.title(function(d) { return d.label+", "+graph.subX.invert(d.xReal).toFixed(1) })
+		
+		/*Mean Line */
+		graph1.add(pv.Rule)
+			.data(function(){
+				return [graph.getMeanMedianMode()[0]]
+			})
+			.left(function(d){return graph.subX(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){
+					return (graph.h-graph.baseLine) * 0.75;
+			})
+			.strokeStyle(function(d){
+				return pv.rgb(255,0,0,0.5);
+			})
+			.title(function(d){			
+					return "Mean: " + d.toFixed(1);
+			})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){					
+						return "Mean: " + d.toFixed(1);
+				})
+				.shape(function(d){
+						return "square";
+				})
+				.fillStyle(function(d){
+						return pv.rgb(255,0,0,1);			
+				})
+				.strokeStyle(function(d){				
+						return pv.rgb(255,0,0,0.5);
+				})
+				.size(40)
+				//.anchor("top").add(pv.Label)
+					////.left(10)
+					////.top(30)
+					//.textAlign("center")
+					//.textAngle(0)
+					//.textBaseline("bottom")
+					//.text(function(){return "Mean = " + graph.getMeanMedianMode()[0].toFixed(1)})
+					//.font(fontString);
 			
 		
 		//Graph Overflow Warning Message
@@ -1503,7 +1542,7 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 		graph2.add(pv.Label)
 			.right(7)
 			.top(30)
-			.textAlign("center")
+			.textAlign("right")
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text(function(){return "n = " + graph.secondGraph.n})
@@ -1513,7 +1552,7 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 		graph2.add(pv.Label)
 			.left(50)
 			.top(30)
-			.textAlign("center")
+			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text(function(){return "Mean = " + graph.secondGraph.getMeanMedianMode()[0].toFixed(1)})
@@ -1575,6 +1614,45 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 			})
 			.title(function(d) { return d.label+", "+graph.secondGraph.subX.invert(d.xReal).toFixed(1) })
 			
+		
+		/*Mean Median Mode Lines */
+		graph2.add(pv.Rule)
+			.data(function(){
+				return [graph.secondGraph.getMeanMedianMode()[0]]
+			})
+			.left(function(d){return graph.secondGraph.subX(d) + horAdjust})
+			.bottom(function(){return graph.secondGraph.baseLine})
+			.height(function(){	
+					return (graph.secondGraph.h-graph.secondGraph.baseLine) * 0.75;
+			})
+			.strokeStyle(function(d){
+				return pv.rgb(255,0,0,0.5);
+			})
+			.title(function(d){			
+					return "Mean: " + d.toFixed(1);
+			})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){					
+						return "Mean: " + d.toFixed(1);
+				})
+				.shape(function(d){
+						return "square";
+				})
+				.fillStyle(function(d){
+						return pv.rgb(255,0,0,1);			
+				})
+				.strokeStyle(function(d){				
+						return pv.rgb(255,0,0,0.5);
+				})
+				.size(40)
+				//.anchor("top").add(pv.Label)
+					////.left(10)
+					////.top(30)
+					//.textAlign("center")
+					//.textAngle(0)
+					//.textBaseline("bottom")
+					//.text(function(){return "Mean = " + graph.getMeanMedianMode()[0].toFixed(1)})
+					//.font(fontString);
 		
 		//Graph Overflow Warning Message
 		graph2.add(pv.Label)
@@ -1654,7 +1732,7 @@ function constructDoubleGraph(graphPanel,graph,index){
 		graph1.add(pv.Label)
 			.right(25)
 			.top(30)
-			.textAlign("center")
+			.textAlign("right")
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text(function(){return "n = " + graph.n})
@@ -1664,7 +1742,7 @@ function constructDoubleGraph(graphPanel,graph,index){
 		graph1.add(pv.Label)
 			.left(10)
 			.top(30)
-			.textAlign("center")
+			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text(function(){return "Mean = " + graph.getMeanMedianMode()[0].toFixed(1)})
@@ -1724,6 +1802,45 @@ function constructDoubleGraph(graphPanel,graph,index){
 			})
 			.title(function(d) { return d.label+", "+graph.subX.invert(d.xReal).toFixed(1) })
 			
+		/*Mean Line */
+		graph1.add(pv.Rule)
+			.data(function(){
+				return [graph.getMeanMedianMode()[0]]
+			})
+			.left(function(d){return graph.subX(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){
+					return (graph.h-graph.baseLine) * 0.75;
+			})
+			.strokeStyle(function(d){
+				return pv.rgb(255,0,0,0.5);
+			})
+			.title(function(d){			
+					return "Mean: " + d.toFixed(1);
+			})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){					
+						return "Mean: " + d.toFixed(1);
+				})
+				.shape(function(d){
+						return "square";
+				})
+				.fillStyle(function(d){
+						return pv.rgb(255,0,0,1);			
+				})
+				.strokeStyle(function(d){				
+						return pv.rgb(255,0,0,0.5);
+				})
+				.size(40)
+				//.anchor("top").add(pv.Label)
+					////.left(10)
+					////.top(30)
+					//.textAlign("center")
+					//.textAngle(0)
+					//.textBaseline("bottom")
+					//.text(function(){return "Mean = " + graph.getMeanMedianMode()[0].toFixed(1)})
+					//.font(fontString);
+		
 		
 		//Graph Overflow Warning Message
 		graph1.add(pv.Label)
@@ -1761,7 +1878,7 @@ function constructDoubleGraph(graphPanel,graph,index){
 		graph2.add(pv.Label)
 			.right(7)
 			.top(30)
-			.textAlign("center")
+			.textAlign("right")
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text(function(){return "n = " + graph.secondGraph.n})
@@ -1771,7 +1888,7 @@ function constructDoubleGraph(graphPanel,graph,index){
 		graph2.add(pv.Label)
 			.left(50)
 			.top(30)
-			.textAlign("center")
+			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text(function(){return "Mean = " + graph.secondGraph.getMeanMedianMode()[0].toFixed(1)})
@@ -1833,6 +1950,46 @@ function constructDoubleGraph(graphPanel,graph,index){
 			})
 			.title(function(d) { return d.label+", "+graph.secondGraph.subX.invert(d.xReal).toFixed(1) })
 			
+		
+		/*Mean Median Mode Lines */
+		graph2.add(pv.Rule)
+			.data(function(){
+				return [graph.secondGraph.getMeanMedianMode()[0]]
+			})
+			.left(function(d){return graph.secondGraph.subX(d) + horAdjust})
+			.bottom(function(){return graph.secondGraph.baseLine})
+			.height(function(){	
+					return (graph.secondGraph.h-graph.secondGraph.baseLine) * 0.75;
+			})
+			.strokeStyle(function(d){
+				return pv.rgb(255,0,0,0.5);
+			})
+			.title(function(d){			
+					return "Mean: " + d.toFixed(1);
+			})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){					
+						return "Mean: " + d.toFixed(1);
+				})
+				.shape(function(d){
+						return "square";
+				})
+				.fillStyle(function(d){
+						return pv.rgb(255,0,0,1);			
+				})
+				.strokeStyle(function(d){				
+						return pv.rgb(255,0,0,0.5);
+				})
+				.size(40)
+				//.anchor("top").add(pv.Label)
+					////.left(10)
+					////.top(30)
+					//.textAlign("center")
+					//.textAngle(0)
+					//.textBaseline("bottom")
+					//.text(function(){return "Mean = " + graph.getMeanMedianMode()[0].toFixed(1)})
+					//.font(fontString);
+		
 		
 		//Graph Overflow Warning Message
 		graph2.add(pv.Label)
