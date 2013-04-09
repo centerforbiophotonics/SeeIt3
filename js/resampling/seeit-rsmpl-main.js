@@ -4305,11 +4305,20 @@ function resampleAtOnce(index){
 	
 	if (resampleResetPopulation){
 		population = [];
-		for (var i=0; i<graph.population1.includedCategories.length; i++)
+		for (var i=0; i<graph.population1.includedCategories.length; i++){
+			graph.data[graph.population1.includedCategories[i]].forEach(function(d){
+				d.set = graph.population1.includedCategories[i];
+			});
 			population = population.concat(graph.data[graph.population1.includedCategories[i]]);
+		}
 			
-		for (i=0; i<graph.population2.includedCategories.length; i++)
+		for (i=0; i<graph.population2.includedCategories.length; i++){
+			graph.data[graph.population2.includedCategories[i]].forEach(function(d){
+				d.set = graph.population2.includedCategories[i];
+			});
 			population = population.concat(graph.data[graph.population2.includedCategories[i]]);
+			
+		}
 		resampleResetPopulation = false;
 	}
 	
@@ -4332,12 +4341,18 @@ function resampleAtOnce(index){
 			group2Counter = sample2Size;
 			
 			while (group1Counter > 0){
-				group1Sum += population[rand(0, population.length)].value;
+				var randSelection = population[rand(0, population.length)];
+				group1Sum += randSelection.value;
 				group1Counter--;
+				if (graph.data[graph.resampleSet].length == graph.resamplingIterations-1)
+					graph.data[graphCollection.graphs[1].intermedResampleSet].push(population[i]);
 			}
 			while (group2Counter > 0){
-				group2Sum += population[rand(0, population.length)].value;
+				var randSelection = population[rand(0, population.length)];
+				group2Sum += randSelection.value;
 				group2Counter--;
+				if (graph.data[graph.resampleSet].length == graph.resamplingIterations-1)
+					graph.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].push(population[i]);
 			}
 			
 			group1Mean = group1Sum / sample1Size;
@@ -4360,15 +4375,37 @@ function resampleAtOnce(index){
 			group1Sum = 0;
 			group2Sum = 0;
 			for (i=0; i<population.length; i++){
-				if(group1[i])
+				if(group1[i]){
+					if (graph.data[graph.resampleSet].length == graph.resamplingIterations-1)
+						graph.data[graphCollection.graphs[1].intermedResampleSet].push(population[i]);
 					group1Sum += population[i].value;
-				else
+				} else {
+					if (graph.data[graph.resampleSet].length == graph.resamplingIterations-1)
+						graph.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].push(population[i]);
 					group2Sum += population[i].value;
+				}
 			}
 			
 			group1Mean = group1Sum / sample1Size;
 			group2Mean = group2Sum / sample2Size;
 			
+		}
+		
+		if (graph.data[graph.resampleSet].length == graph.resamplingIterations-1) {
+			group1Mean = group1Sum / sample1Size;
+			group2Mean = group2Sum / sample2Size;
+			
+			graphCollection.graphs[1].n = graphCollection.data[graphCollection.graphs[1].intermedResampleSet].length
+			graphCollection.graphs[1].secondGraph.n = graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].length
+			
+			graphCollection.graphs[1].xMin = pv.min(graphCollection.graphs[1].dataVals(), function(d) { return d });
+			graphCollection.graphs[1].xMax = pv.max(graphCollection.graphs[1].dataVals(), function(d) { return d });
+			
+			graphCollection.graphs[1].secondGraph.xMin = pv.min(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
+			graphCollection.graphs[1].secondGraph.xMax = pv.max(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
+			
+			graphCollection.graphs[1].setXScale(graphCollection.graphs[2].scaleMin, graphCollection.graphs[2].scaleMax);
+			graphCollection.graphs[1].secondGraph.setXScale(graphCollection.graphs[2].secondGraph.scaleMin, graphCollection.graphs[2].secondGraph.scaleMax);
 		}
 		
 		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
@@ -4475,22 +4512,7 @@ function resample(index, repeat){
 				graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].push(randSelection);
 				group2Counter--;
 			}
-			
-			group1Mean = group1Sum / sample1Size;
-			group2Mean = group2Sum / sample2Size;
-			
-			graphCollection.graphs[1].n = graphCollection.data[graphCollection.graphs[1].intermedResampleSet].length
-			graphCollection.graphs[1].secondGraph.n = graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].length
-			
-			graphCollection.graphs[1].xMin = pv.min(graphCollection.graphs[1].dataVals(), function(d) { return d });
-			graphCollection.graphs[1].xMax = pv.max(graphCollection.graphs[1].dataVals(), function(d) { return d });
-			
-			graphCollection.graphs[1].secondGraph.xMin = pv.min(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
-			graphCollection.graphs[1].secondGraph.xMax = pv.max(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
-			
-			graphCollection.graphs[1].setXScale(graphCollection.graphs[2].scaleMin, graphCollection.graphs[2].scaleMax);
-			graphCollection.graphs[1].secondGraph.setXScale(graphCollection.graphs[2].secondGraph.scaleMin, graphCollection.graphs[2].secondGraph.scaleMax);
-			
+				
 		} else {
 			for (i=0; i<population.length; i++)
 				group1[i] = false;
@@ -4516,23 +4538,22 @@ function resample(index, repeat){
 					graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].push(population[i]);
 				}
 			}
-			
-			group1Mean = group1Sum / sample1Size;
-			group2Mean = group2Sum / sample2Size;
-			
-			graphCollection.graphs[1].n = graphCollection.data[graphCollection.graphs[1].intermedResampleSet].length
-			graphCollection.graphs[1].secondGraph.n = graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].length
-			
-			graphCollection.graphs[1].xMin = pv.min(graphCollection.graphs[1].dataVals(), function(d) { return d });
-			graphCollection.graphs[1].xMax = pv.max(graphCollection.graphs[1].dataVals(), function(d) { return d });
-			
-			graphCollection.graphs[1].secondGraph.xMin = pv.min(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
-			graphCollection.graphs[1].secondGraph.xMax = pv.max(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
-			
-			graphCollection.graphs[1].setXScale(graphCollection.graphs[2].scaleMin, graphCollection.graphs[2].scaleMax);
-			graphCollection.graphs[1].secondGraph.setXScale(graphCollection.graphs[2].secondGraph.scaleMin, graphCollection.graphs[2].secondGraph.scaleMax);
-			
 		}
+		
+		group1Mean = group1Sum / sample1Size;
+		group2Mean = group2Sum / sample2Size;
+		
+		graphCollection.graphs[1].n = graphCollection.data[graphCollection.graphs[1].intermedResampleSet].length
+		graphCollection.graphs[1].secondGraph.n = graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].length
+		
+		graphCollection.graphs[1].xMin = pv.min(graphCollection.graphs[1].dataVals(), function(d) { return d });
+		graphCollection.graphs[1].xMax = pv.max(graphCollection.graphs[1].dataVals(), function(d) { return d });
+		
+		graphCollection.graphs[1].secondGraph.xMin = pv.min(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
+		graphCollection.graphs[1].secondGraph.xMax = pv.max(graphCollection.graphs[1].secondGraph.dataVals(), function(d) { return d });
+		
+		graphCollection.graphs[1].setXScale(graphCollection.graphs[2].scaleMin, graphCollection.graphs[2].scaleMax);
+		graphCollection.graphs[1].secondGraph.setXScale(graphCollection.graphs[2].secondGraph.scaleMin, graphCollection.graphs[2].secondGraph.scaleMax);
 		
 		
 		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
@@ -4595,7 +4616,11 @@ function resetResampling(index){
 		clearTimeout(resampleTimer);
 	}
 	
-	vis.render();
+	graph.data[graphCollection.graphs[1].intermedResampleSet] = [];
+	graph.data[graphCollection.graphs[1].secondGraph.intermedResampleSet] = [];
+	
+	constructVis();
+	//vis.render();
 }
 
 function changeResampleIterations(textbox, index){
