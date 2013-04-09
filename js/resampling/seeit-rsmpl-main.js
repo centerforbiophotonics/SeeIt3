@@ -3,6 +3,7 @@ var graphCollection = new GraphCollection();
 var vis = {};
 var touch = new Touch();
 var fontString = "bold 14px arial";
+var largeFontString = "bold 18px arial";
 var dragging = false;
 var updateTimer = null;
 var displayOptionsShow =  false;
@@ -1372,7 +1373,7 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 			
 	graph1.add(pv.Label)
 		.left(function(){return graph.subW/2})
-		.top(30)
+		.top(25)
 		.textAlign("center")
 		.textAngle(0)
 		.textBaseline("bottom")
@@ -1387,7 +1388,7 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 		
 	graph2.add(pv.Label)
 		.left(function(){return graph.secondGraph.w/2})
-		.top(30)
+		.top(25)
 		.textAlign("center")
 		.textAngle(0)
 		.textBaseline("bottom")
@@ -1401,8 +1402,8 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 		
 		/* Number of datapoints N */
 		graph1.add(pv.Label)
-			.right(25)
-			.top(30)
+			.right(10)
+			.top(35)
 			.textAlign("right")
 			.textAngle(0)
 			.textBaseline("bottom")
@@ -1411,8 +1412,8 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 			
 		/* Mean */
 		graph1.add(pv.Label)
-			.left(10)
-			.top(30)
+			.left(-30)
+			.top(35)
 			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
@@ -1540,8 +1541,8 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 		
 		/* Number of datapoints N */
 		graph2.add(pv.Label)
-			.right(7)
-			.top(30)
+			.right(-8)
+			.top(35)
 			.textAlign("right")
 			.textAngle(0)
 			.textBaseline("bottom")
@@ -1550,8 +1551,8 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 		
 		/* Mean */
 		graph2.add(pv.Label)
-			.left(50)
-			.top(30)
+			.left(10)
+			.top(35)
 			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
@@ -1623,7 +1624,7 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 			.left(function(d){return graph.secondGraph.subX(d) + horAdjust})
 			.bottom(function(){return graph.secondGraph.baseLine})
 			.height(function(){	
-					return (graph.secondGraph.h-graph.secondGraph.baseLine) * 0.75;
+					return (graph.h-graph.baseLine) * 0.75;
 			})
 			.strokeStyle(function(d){
 				return pv.rgb(255,0,0,0.5);
@@ -1694,7 +1695,7 @@ function constructDoubleGraph(graphPanel,graph,index){
 			
 	graph1.add(pv.Label)
 		.left(function(){return graph.subW/2})
-		.top(30)
+		.top(25)
 		.textAlign("center")
 		.textAngle(0)
 		.textBaseline("bottom")
@@ -1709,7 +1710,7 @@ function constructDoubleGraph(graphPanel,graph,index){
 		
 	graph2.add(pv.Label)
 		.left(function(){return graph.secondGraph.w/2})
-		.top(30)
+		.top(25)
 		.textAlign("center")
 		.textAngle(0)
 		.textBaseline("bottom")
@@ -1724,14 +1725,15 @@ function constructDoubleGraph(graphPanel,graph,index){
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text("Drag Data Here")
-			.font(fontString)
+			.font(largeFontString)
+			.textStyle("red")
 			
 	} else {
 		
 		/* Number of datapoints N */
 		graph1.add(pv.Label)
-			.right(25)
-			.top(30)
+			.right(10)
+			.top(35)
 			.textAlign("right")
 			.textAngle(0)
 			.textBaseline("bottom")
@@ -1740,8 +1742,8 @@ function constructDoubleGraph(graphPanel,graph,index){
 			
 		/* Mean */
 		graph1.add(pv.Label)
-			.left(10)
-			.top(30)
+			.left(-30)
+			.top(35)
 			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
@@ -1871,13 +1873,14 @@ function constructDoubleGraph(graphPanel,graph,index){
 			.textAngle(0)
 			.textBaseline("bottom")
 			.text("Drag Data Here")
-			.font(fontString)
+			.font(largeFontString)
+			.textStyle("red")
 	} else {
 		
 		/* Number of datapoints N */
 		graph2.add(pv.Label)
-			.right(7)
-			.top(30)
+			.right(-8)
+			.top(35)
 			.textAlign("right")
 			.textAngle(0)
 			.textBaseline("bottom")
@@ -1886,8 +1889,8 @@ function constructDoubleGraph(graphPanel,graph,index){
 		
 		/* Mean */
 		graph2.add(pv.Label)
-			.left(50)
-			.top(30)
+			.left(10)
+			.top(35)
 			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
@@ -1959,7 +1962,7 @@ function constructDoubleGraph(graphPanel,graph,index){
 			.left(function(d){return graph.secondGraph.subX(d) + horAdjust})
 			.bottom(function(){return graph.secondGraph.baseLine})
 			.height(function(){	
-					return (graph.secondGraph.h-graph.secondGraph.baseLine) * 0.75;
+					return (graph.h-graph.baseLine) * 0.75;
 			})
 			.strokeStyle(function(d){
 				return pv.rgb(255,0,0,0.5);
@@ -2016,16 +2019,17 @@ function constructResamplingGraph(graphPanel, graph, index){
 	
 	if (graph.population1.includedCategories.length == 0 || 
 			graph.population2.includedCategories.length == 0){
-				//console.log("test");
-		///* Assignment Instructons*/
-		//graphPanel.add(pv.Label)
-			//.left(function(){return -20})
-			//.top(50)
-			//.textAlign("left")
-			//.textAngle(0)
-			//.textBaseline("bottom")
-			//.text("Drag the labels above to the graphs you wish to represent your samples.")
-			//.font(fontString)
+				console.log("test");
+		/* Assignment Instructons*/
+		graphPanel.add(pv.Label)
+			.left(function(){return graph.w/2})
+			.top(50)
+			.textAlign("center")
+			.textAngle(0)
+			.textStyle(function() {return "red"})
+			.textBaseline("bottom")
+			.text("Drag data from the right to the two boxes at the bottom of the screen.")
+			.font(largeFontString)
 	} else if (graph.data[graph.resampleSet].length == 0) {
 		/* Instructons*/
 		graphPanel.add(pv.Label)
@@ -2207,12 +2211,30 @@ function constructResamplingGraph(graphPanel, graph, index){
 						inside++;
 				});
 					
-				return [inside];	
+				return [inside + " within the limits."];	
 			})
-			.textAlign("center")
+			.textAlign("left")
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "blue")})
-			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine })
-			.left(function(){return graph.x(0)})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.88 + graph.baseLine })
+			.left(0)
+			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
+			
+		/* Number of points outside lines */
+		graphPanel.add(pv.Label)
+			.data(function(){
+				var outside = 0;
+				graph.data[graph.resampleSet].forEach(function(d, index){
+					if (Math.abs(d.value) >= Math.abs(resamplePop1Mean - resamplePop2Mean) &&
+							index < graph.resamplingIterations)
+						outside++;
+				});
+					
+				return [outside + " outside the limits."];	
+			})
+			.textAlign("left")
+			.textStyle(function() {return (graphCollection.bwMode ? "black" : "blue")})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.83 + graph.baseLine })
+			.left(0)
 			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 			
 		/* Number of points to the right */
@@ -2268,10 +2290,10 @@ function constructResamplingGraph(graphPanel, graph, index){
 									(outside/Math.min(graph.data[graph.resampleSet].length, graph.resamplingIterations)*100).toFixed(1) : 0)+
 								"%"];	
 			})
-			.textAlign("center")
+			.textAlign("left")
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "blue")})
-			.bottom(function(){return (graph.h-graph.baseLine) * 0.85 + graph.baseLine })
-			.left(function(){return graph.x(0)})
+			.bottom(function(){return (graph.h-graph.baseLine) * 0.93 + graph.baseLine })
+			.left(0)
 			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 	}
 }
@@ -4194,25 +4216,33 @@ function constructResampleControlPanel(graph, index){
 								"Difference between the Means of Samples from Sample 1 and Sample 2" :
 								"Iterations")+
 								"</td></tr>"+
-							 "<tr align=\"center\"><td><input type=\"button\" value=\""+(resamplingInProgress?"Stop":"Start")+"\" id=\"resampleToggleButton"+index+"\""+
+							 "<tr align=\"center\">"+
+							 
+							 "<td><input type=\"button\" value=\""+(resamplingInProgress?"Stop":"Start")+"\" id=\"resampleToggleButton"+index+"\""+
 							 "onclick=\"javascript:toggleResampling("+index+")\"></td>"+
+							 
 							 "<td><input type=\"button\" value=\"Step\" id=\"resampleStepButton"+index+"\""+
 							 "onclick=\"javascript:resample("+index+", false)\"></td>"+
+							 
 							 "<td><input type=\"button\" value=\"Reset\" id=\"resampleResetButton"+index+"\""+
 							 "onclick=\"javascript:resetResampling("+index+")\"></td>"+
+							 
 							 "<td><input type=\"button\" value=\"All\" id=\"resampleAllButton"+index+"\""+
 							 "onclick=\"javascript:resampleAtOnce("+index+")\"></td>"+
+							 
 							 "<td nowrap><label for=\"resampleN"+index+"\">Iterations = </label>"+
 							 "<input align=\"right\" type=\"text\" id=\"resampleN"+index+"\""+
 								"size=\"4\""+
 								"onchange=\"javascript:changeResampleIterations('resampleN"+index+"',"+index+")\""+
 								"value='"+graph.resamplingIterations+"'></td>"+
+							 
 							 "<td>Mode:<select id=\"resampleDisplayMode\" onchange=\"javascript:updateResamplingDisplay()\">"+
 									"<option value=\"dot\" "+(graph.resampleDisplayMode=="dot"?"selected":"")+">Dot</option>"+
 									"<option value=\"line\" "+(graph.resampleDisplayMode=="line"?"selected":"")+">Line</option>"+
 									"<option value=\"histogram\" "+(graph.resampleDisplayMode=="histogram"?"selected":"")+">Histogram</option>"+
 									"<option value=\"pgraph\" "+(graph.resampleDisplayMode=="pgraph"?"selected":"")+">P Value Graph</option>"+
 								"</select></td>"+
+								
 								"<td><label for=\"resamplingReplacement\">Replacement</label>"+
 								"<input type=\"checkbox\" id=\"resamplingReplacement\""+
 									"onchange=\"javascript:toggleResamplingReplacement("+index+")\" "+(graph.resamplingReplacement?"checked":"")+"></td>"+
