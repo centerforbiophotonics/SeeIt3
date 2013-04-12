@@ -382,10 +382,22 @@ function nextNotSoRandom(){
 
 function parseSpreadsheetKeyFromURL(URL) {
   var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+  if (!matches && !/set\=(.+)/.exec(URL)){
+		alert("That doesn't appear to be a valid URL");
+		return false;
+  } else if (/set\=(.+)/.exec(URL)){
+		return false;
+	} else {
+		return matches[1];
+	}
+}
+
+function parsePreloadedSetFromURL(URL) {
+  var matches = /set\=(.+)/.exec(URL);
   if (!matches)
-	alert("That doesn't appear to be a valid URL");
+		return false;
   else
-	return matches[1];
+		return matches[1];
 }
 
 function countDataInPartitions(graph, partitions){

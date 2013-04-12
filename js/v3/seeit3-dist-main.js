@@ -703,17 +703,21 @@ function constructVis(){
 					return false;
 			})
 			.event("click", function(){
-				if (!graphCollection.resamplingEnabled){
-					graphCollection.resamplingEnabled = true;
-					graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
-				}else{
-					graphCollection.resamplingEnabled = false;
-					graphCollection.removeGraph(graphCollection.graphs[0]);
-					graphCollection.removeGraph(graphCollection.graphs[0]);
-					graphCollection.removeGraph(graphCollection.graphs[0]);
-				}
+				//if (!graphCollection.resamplingEnabled){
+					//graphCollection.resamplingEnabled = true;
+					//graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+				//}else{
+					//graphCollection.resamplingEnabled = false;
+					//graphCollection.removeGraph(graphCollection.graphs[0]);
+				//}
 				
-				constructVis();
+				//constructVis();
+				
+				if (graphCollection.graphs[0].includedCategories.length == 1 &&
+						graphCollection.graphs[1].includedCategories.length == 1)
+					window.open("resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
+				else
+					alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
 			})
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
@@ -739,15 +743,22 @@ function constructVis(){
 			.cursor("pointer")
 			.title("Toggle Resampling")
 			.event("click", function(){
-				if (!graphCollection.resamplingEnabled){
-					graphCollection.resamplingEnabled = true;
-					graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
-				}else{
-					graphCollection.resamplingEnabled = false;
-					graphCollection.removeGraph(graphCollection.graphs[0]);
-				}
+				//if (!graphCollection.resamplingEnabled){
+					//graphCollection.resamplingEnabled = true;
+					//graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+				//}else{
+					//graphCollection.resamplingEnabled = false;
+					//graphCollection.removeGraph(graphCollection.graphs[0]);
+				//}
 				
-				constructVis();
+				//constructVis();
+				
+				if (graphCollection.graphs[0].includedCategories.length == 1 &&
+					  graphCollection.graphs[1].includedCategories.length == 1)
+					window.open("centerforbiophotonics.github.com/SeeIt3/resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
+				else
+					alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
+
 			})
 			.visible(function() {
 				if (graphCollection.buttonIcon)

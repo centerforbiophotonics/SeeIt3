@@ -30,6 +30,7 @@ var exampleSpreadsheets = [ ];
 
 //Preload a worksheet
 var preload = window.location.search;
+var preloadedDataSets = [];
 var exclusiveLoad = false;	
 if (preload.substring(0, 1) == '?') {
 		console.log(preload);
@@ -40,21 +41,33 @@ if (preload.substring(0, 1) == '?') {
 			exclusiveLoad = true;
 			preload = preload.substring(1);
 		}
+		
+		
 		preload.split("&").forEach(function(url){
 			var key = parseSpreadsheetKeyFromURL(url);
-		
-			var exists = false;
-			exampleSpreadsheets.forEach(function(s){
-				if (s.key == key) exists = true;
-			});
 			
-			if (!exists) {
-				exampleSpreadsheets.push(new Spreadsheet(key));
-				//constructVis();
+			var preloadedSet = parsePreloadedSetFromURL(url);
+			if (preloadedSet){
+				preloadedDataSets.push(preloadedSet);
 			}
-			//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
+			
+			if(key){
+				console.log("valid key");
 				
-		});	
+				var exists = false;
+				exampleSpreadsheets.forEach(function(s){
+					if (s.key == key) exists = true;
+				});
+				
+				if (!exists) {
+					exampleSpreadsheets.push(new Spreadsheet(key));
+					//constructVis();
+				}
+				//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
+			}
+		});
+		
+		
 }
 
 if (!exclusiveLoad){
@@ -83,6 +96,21 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
   numWorksheetsLoaded++;
   $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){
+		if (preloadedDataSets.length >= 2){
+			if (graphCollection.data[preloadedDataSets[0].replace(/%20/g," ")] != undefined){
+				graphCollection.graphs[2].addCategory(preloadedDataSets[0].replace(/%20/g," "));
+			} else {
+				alert("Failed to automatically load a dataset. Try assigning it manually.");
+			}
+			
+			if (graphCollection.data[preloadedDataSets[1].replace(/%20/g," ")] != undefined){
+				graphCollection.graphs[2].secondGraph.addCategory(preloadedDataSets[1].replace(/%20/g," "));
+			} else {
+				alert("Failed to automatically load a dataset. Try assigning it manually.");
+			}
+			
+			
+		}	
 		jQuery('p#loadingMsg').hide();
 		constructVis();
 		showHideAdvancedOptions();
