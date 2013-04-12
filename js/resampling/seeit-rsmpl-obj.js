@@ -235,28 +235,6 @@ GraphCollection.prototype = {
 	},
 	
 	addResamplingGraph: function(){
-		////Add a graph to display intermediate resampling results.
-		//this.graphs.splice(0,0,new Graph(this));
-		
-		//this.graphs[0].testMode = "intermedResampling";
-		//this.graphs[0].isIntermedResamplingGraph = true;
-		//this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+this.nextIntermedResampleSetNumber++;
-		//this.data[this.graphs[0].intermedResampleSet] = [];
-		//this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
-		//this.graphs[0].fitScalesToData = true;
-		//this.graphs[0].baseLine = 60;	
-		
-		////Add a graph to display intermediate resampling results.
-		//this.graphs.splice(0,0,new Graph(this));
-		
-		//this.graphs[0].testMode = "intermedResampling";
-		//this.graphs[0].isIntermedResamplingGraph = true;
-		//this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+this.nextIntermedResampleSetNumber++;
-		//this.data[this.graphs[0].intermedResampleSet] = [];
-		//this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
-		//this.graphs[0].fitScalesToData = true;
-		//this.graphs[0].baseLine = 60;
-	
 		//Add a graph to display the overall resampling results.
 		this.graphs.splice(0,0,new Graph(this));
 			
@@ -667,15 +645,6 @@ Graph.prototype = {
 		
 		if (min == 0)
 			newMin = min;
-		
-		console.log("Setting Scale")	
-		console.log("resampling graph: " + this.isResamplingGraph);	
-		console.log("intermed resampling graph: " + this.isIntermedResamplingGraph);	
-		console.log("double graph: " + this.isDoubleGraph);
-			
-		console.log("second graph: " + this.isSecondGraph);
-		console.log("new Min: " + newMin);	
-		console.log("new Max: " + newMax+"\n");
 			
 		if (this.fitScaleToData) {
 			if (this.isSamplingGraph == false)
@@ -724,7 +693,6 @@ Graph.prototype = {
 	},
 	
 	addCategory: function(category, override){
-		console.log(this.isIntermedResamplingGraph);
 		if (this.includedCategories.indexOf(category) == -1 &&
 				((this.isRegularGraph && this.includedCategories.length < 4) ||
 				(this.isDoubleGraph && this.includedCategories.length < 1) ||
@@ -778,7 +746,6 @@ Graph.prototype = {
 						resetResampling(0);
 				
 				if(this.isDoubleGraph || this.isSecondGraph){
-					console.log("test");	
 					this.graphCollection.data[this.graphCollection.graphs[1].intermedResampleSet] = [];
 					this.graphCollection.data[this.graphCollection.graphs[1].secondGraph.intermedResampleSet] = [];
 					resetResampling(0);

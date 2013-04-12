@@ -2019,7 +2019,6 @@ function constructResamplingGraph(graphPanel, graph, index){
 	
 	if (graph.population1.includedCategories.length == 0 || 
 			graph.population2.includedCategories.length == 0){
-				console.log("test");
 		/* Assignment Instructons*/
 		graphPanel.add(pv.Label)
 			.left(function(){return graph.w/2})
@@ -4170,8 +4169,6 @@ function constructSampleOptionsMenu(graph, index){
 							
 							 
 	$('#sampleOptions'+index).html(string);
-	
-	
 }
 
 function positionSampleOptions(graph,index){
@@ -4211,12 +4208,15 @@ function constructResampleControlPanel(graph, index){
 	$('body').prepend("<div class=\"resampleOptions\" id=\"resampleOptions"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='0' width='100%'><tr>"+
-							 "<td colspan=\"7\" id=\"resampleLabel\" align=\"center\">"+
+							 "<td colspan=\"8\" id=\"resampleLabel\" align=\"center\">"+
 							 (graph.resampleDisplayMode != "pgraph" ?
 								"Difference between the Means of Samples from Sample 1 and Sample 2" :
 								"Iterations")+
 								"</td></tr>"+
 							 "<tr align=\"center\">"+
+							 
+							 "<td><input type=\"button\" value=\"Copy\" id=\"resampleCopyShow"+index+"\""+
+							 "onclick=\"javascript:showResamplingCopy("+index+")\"></td>"+
 							 
 							 "<td><input type=\"button\" value=\""+(resamplingInProgress?"Stop":"Start")+"\" id=\"resampleToggleButton"+index+"\""+
 							 "onclick=\"javascript:toggleResampling("+index+")\"></td>"+
@@ -4247,7 +4247,7 @@ function constructResampleControlPanel(graph, index){
 								"<input type=\"checkbox\" id=\"resamplingReplacement\""+
 									"onchange=\"javascript:toggleResamplingReplacement("+index+")\" "+(graph.resamplingReplacement?"checked":"")+"></td>"+
 								"</tr></table>";
-							 
+						 
 	$('#resampleOptions'+index).html(string);
 	
 	if (graph.population1.includedCategories.length == 0 ||
@@ -4256,9 +4256,9 @@ function constructResampleControlPanel(graph, index){
 }
 
 function toggleResamplingReplacement(index){
-	var graph = graphCollection.graphs[index];
-	resetResampling(index);
+	var graph = graphCollection.graphs[index];	
 	graph.resamplingReplacement = !graph.resamplingReplacement;
+	resetResampling(index);	
 }
 
 
@@ -4275,6 +4275,24 @@ function positionResampleControlPanel(graph, index){
 										.css('top', top+"px")
 										.css('left',left+"px")
 										.css('z-index', 1);
+}
+
+function showResamplingCopy(index){
+	$('#resamplingCopy').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2 - $('#worksheetMenu').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#worksheetMenu').width()/2)+"px")
+										 .css("z-index",2);
+	var csvString = "";
+	graphCollection.data[graphCollection.graphs[0].resampleSet].forEach(function(d){
+		csvString += d.label +"\t"+d.value.toFixed(2)+"\n";
+	});
+	
+	$('#resamplingText').text(csvString);									 
+	$('#resamplingCopy').slideDown();
+	$('#resamplingText').focus();
+	$('#resamplingText').select();
+	$('#resamplingText').scrollTop(0);
+		
 }
 
 function toggleResampling(index){
@@ -4345,14 +4363,14 @@ function resampleAtOnce(index){
 				group1Sum += randSelection.value;
 				group1Counter--;
 				if (graph.data[graph.resampleSet].length == graph.resamplingIterations-1)
-					graph.data[graphCollection.graphs[1].intermedResampleSet].push(population[i]);
+					graph.data[graphCollection.graphs[1].intermedResampleSet].push(randSelection);
 			}
 			while (group2Counter > 0){
 				var randSelection = population[rand(0, population.length)];
 				group2Sum += randSelection.value;
 				group2Counter--;
 				if (graph.data[graph.resampleSet].length == graph.resamplingIterations-1)
-					graph.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].push(population[i]);
+					graph.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].push(randSelection);
 			}
 			
 			group1Mean = group1Sum / sample1Size;
@@ -4408,7 +4426,7 @@ function resampleAtOnce(index){
 			graphCollection.graphs[1].secondGraph.setXScale(graphCollection.graphs[2].secondGraph.scaleMin, graphCollection.graphs[2].secondGraph.scaleMax);
 		}
 		
-		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
+		graph.data[graph.resampleSet].push({"label":"iteration-"+(graph.data[graph.resampleSet].length+1),
 																				"value":group1Mean-group2Mean});
 		
 		if (ticks.indexOf(graph.data[graph.resampleSet].length) != -1){
@@ -4556,7 +4574,7 @@ function resample(index, repeat){
 		graphCollection.graphs[1].secondGraph.setXScale(graphCollection.graphs[2].secondGraph.scaleMin, graphCollection.graphs[2].secondGraph.scaleMax);
 		
 		
-		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
+		graph.data[graph.resampleSet].push({"label":"iteration-"+(graph.data[graph.resampleSet].length+1),
 																				"value":group1Mean-group2Mean});
 		var min = -1*Math.abs(resamplePop1Mean - resamplePop2Mean) - 1;
 		var max = Math.abs(resamplePop1Mean - resamplePop2Mean) + 1;

@@ -760,6 +760,10 @@ $('#worksheetMenuClose').click(function(){
 	$('#worksheetMenu').slideUp();
 });
 
+$('#resamplingClose').click(function(){
+	$('#resamplingCopy').slideUp();
+});
+
 $('#loadFromURL').click(function(){
 	hideMenus();
 	positionWorksheetURLMenu();
