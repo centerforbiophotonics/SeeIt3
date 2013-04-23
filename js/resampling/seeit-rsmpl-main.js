@@ -16,6 +16,8 @@ var resamplePop1Mean = null;
 var resamplePop2Mean = null;
 var resampleResetPopulation = true;
 var population = [];
+var replacementPop1 = [];
+var replacementPop2 = [];
 
 var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
 										[85, 55, 34],			//Display Options
@@ -4351,11 +4353,14 @@ function resampleAtOnce(index){
 	
 	if (resampleResetPopulation){
 		population = [];
+		replacementPop1 = [];
+		replacementPop2 = [];
 		for (var i=0; i<graph.population1.includedCategories.length; i++){
 			graph.data[graph.population1.includedCategories[i]].forEach(function(d){
 				d.set = graph.population1.includedCategories[i];
 			});
 			population = population.concat(graph.data[graph.population1.includedCategories[i]]);
+			replacementPop1 = replacementPop1.concat(graph.data[graph.population1.includedCategories[i]]);
 		}
 			
 		for (i=0; i<graph.population2.includedCategories.length; i++){
@@ -4363,7 +4368,7 @@ function resampleAtOnce(index){
 				d.set = graph.population2.includedCategories[i];
 			});
 			population = population.concat(graph.data[graph.population2.includedCategories[i]]);
-			
+			replacementPop2 = replacementPop2.concat(graph.data[graph.population2.includedCategories[i]]);
 		}
 		resampleResetPopulation = false;
 	}
@@ -4387,14 +4392,16 @@ function resampleAtOnce(index){
 			group2Counter = sample2Size;
 			
 			while (group1Counter > 0){
-				var randSelection = population[rand(0, population.length)];
+				//var randSelection = population[rand(0, population.length)];
+				var randSelection = replacementPop1[rand(0, replacementPop1.length)]; //Diaz
 				group1Sum += randSelection.value;
 				group1Counter--;
 				if (graph.data[graph.resampleSet].length == graph.resamplingIterations-1)
 					graph.data[graphCollection.graphs[1].intermedResampleSet].push(randSelection);
 			}
 			while (group2Counter > 0){
-				var randSelection = population[rand(0, population.length)];
+				//var randSelection = population[rand(0, population.length)];
+				var randSelection = replacementPop2[rand(0, replacementPop2.length)]; //Diaz
 				group2Sum += randSelection.value;
 				group2Counter--;
 				if (graph.data[graph.resampleSet].length == graph.resamplingIterations-1)
@@ -4516,11 +4523,14 @@ function resample(index, repeat){
 		
 		if (resampleResetPopulation){
 			population = [];
+			replacementPop1 = [];
+			replacementPop2 = [];
 			for (var i=0; i<graph.population1.includedCategories.length; i++){
 				graph.data[graph.population1.includedCategories[i]].forEach(function(d){
 					d.set = graph.population1.includedCategories[i];
 				});
 				population = population.concat(graph.data[graph.population1.includedCategories[i]]);
+				replacementPop1 = replacementPop1.concat(graph.data[graph.population1.includedCategories[i]]);
 			}
 				
 			for (i=0; i<graph.population2.includedCategories.length; i++){
@@ -4528,7 +4538,7 @@ function resample(index, repeat){
 					d.set = graph.population2.includedCategories[i];
 				});
 				population = population.concat(graph.data[graph.population2.includedCategories[i]]);
-				
+				replacementPop2 = replacementPop2.concat(graph.data[graph.population2.includedCategories[i]]);
 			}
 			resampleResetPopulation = false;
 		}
@@ -4547,13 +4557,15 @@ function resample(index, repeat){
 			group2Counter = sample2Size;
 			
 			while (group1Counter > 0){
-				var randSelection = population[rand(0, population.length)];
+				//var randSelection = population[rand(0, population.length)];
+				var randSelection = replacementPop1[rand(0, replacementPop1.length)]; //Diaz
 				group1Sum += randSelection.value;
 				graphCollection.data[graphCollection.graphs[1].intermedResampleSet].push(randSelection);
 				group1Counter--;
 			}
 			while (group2Counter > 0){
-				var randSelection = population[rand(0, population.length)];
+				//var randSelection = population[rand(0, population.length)];
+				var randSelection = replacementPop2[rand(0, replacementPop2.length)]; //Diaz
 				group2Sum += randSelection.value;
 				graphCollection.data[graphCollection.graphs[1].secondGraph.intermedResampleSet].push(randSelection);
 				group2Counter--;
