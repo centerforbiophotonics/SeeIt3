@@ -61,7 +61,73 @@ if (!exclusiveLoad){
 	exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'));			//Skin Cancer Fig 2
 	exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'));			//Doll and Hill
 	exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
-}		
+}	
+//console.log("test");
+
+var url = 'https://lgh.ohsu.edu/app/seeit/dataset/categories';
+$.ajax({
+	type: "GET",
+	contentType: "application/javascript",
+  dataType: "jsonp",
+  url: 'https://lgh.ohsu.edu/app/seeit/dataset/categories',
+  success: function(data, textStatus, jqXHR){ console.log("success"); console.log(data) },
+  error: function(jqXHR, textStatus, errorThrown){ 
+		console.log(jqXHR); 
+		console.log(textStatus); 
+		console.log(errorThrown);
+	},
+  complete: function(){console.log("complete");}
+});
+
+var testObj = jQuery.parseJSON('[{"description":"Body Size: BMI individual data points","name":"Body Size: BMI"},{"description":"Body Size: Body Fat Percentage individual data points","name":"Body Size: Body Fat Percentage"},{"description":"Total Cholesterol individual data points","name":"Total Cholesterol"},{"description":"Dairy Intake individual data points","name":"Dairy Intake"},{"description":"Daytime Sleepiness individual data points","name":"Daytime Sleepiness"},{"description":"Diastolic Blood Pressure individual data points","name":"Diastolic Blood Pressure"},{"description":"Fruit and Vegetable Intake individual data points","name":"Fruit and Vegetable Intake"},{"description":"Glucose individual data points","name":"Glucose"},{"description":"HDL (High Density Lipoprotein) individual data points","name":"HDL"},{"description":"Height individual data points","name":"Height"},{"description":"LDL (Low Density Lipoprotein) individual data points","name":"LDL"},{"description":"Skin Type individual data points","name":"Skin Type"},{"description":"Sleeper Type individual data points","name":"Sleeper Type"},{"description":"Sleep quality score individual data points","name":"Sleep quality score"},{"description":"Sugar Intake individual data points","name":"Sugar Intake"},{"description":"Sun Safety individual data points","name":"Sun Safety"},{"description":"Systolic Blood Pressue individual data points","name":"Systolic Blood Pressue"},{"description":"Triglycerides individual data points","name":"Triglycerides"},{"description":"Body Size: Waist Circumference individual data points","name":"Body Size: Waist Circumference"},{"description":"Body Size: Weight individual data points","name":"Body Size: Weight"}]');
+
+//console.log($.ajax({
+	 //type: 'GET',
+	 //url: url,
+	 //async: false,
+	 //contentType: "application/javascript",
+	 //dataType: 'jsonp',
+	 //success: function(){console.log("test")}
+//}));
+
+//console.log("test");
+
+//jQuery.getJSON('https://lgh.ohsu.edu/app/seeit/dataset/categories', "", function(data, textStatus, jqXHR){ console.log(data) } )
+
+//jQuery.jsonp({ url:'https://lgh.ohsu.edu/app/seeit/dataset/categories',
+			//callback: "_jqjsp",
+			//success:function(feedData) {
+				//console.log(feedData);
+				////for (var i = 0; i < feedData.feed.entry.length; i++) {
+					////spreadsheet.worksheets.push(new Worksheet(feedData.feed.entry[i].link[1].href));
+				////}
+				////numWorksheets += feedData.feed.entry.length;
+			//},
+			
+			//error:function(xOptions, textStatus) {
+				//console.log(xOptions);
+				//console.log(textStatus);
+				//alert("Could not retrieve worksheets from the spreadsheet. Is it published?");
+			//},
+			
+			//complete:function(){console.log("complete")}
+//});	
+
+//$.ajax({
+	//type: "GET",
+	//url: 'https://lgh.ohsu.edu/app/seeit/dataset/categories',
+	//contentType: "application/javascript",
+	//dataType: "jsonp",
+	//crossDomain: true,
+	//jsonp: "callback",
+	//error: function(jqXHR, textStatus, errorThrown) {   
+		//alert('Error Message: '+textStatus);
+		//alert('HTTP Error: '+errorThrown);
+	//},
+	//success: function (data) {
+			//console.log(data);
+	//}
+//});
 
 
 /* populate dataset drop down menu */

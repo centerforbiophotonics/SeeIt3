@@ -876,9 +876,16 @@ Worksheet.prototype = {
 function Spreadsheet(key) {
 	this.worksheets = [];
 	if( typeof key == 'string'){
-		this.key = key;
-		this.fetchWorksheets();
-		this.local = false;
+		if (key == 'ohsu-chidr'){
+			this.key = 'ohsu-chidr';
+			this.fetchCHIDRData();
+			this.local = false;
+		} else {
+			this.key = key;
+			this.fetchWorksheets();
+			this.local = false;			
+		}
+		
 	} else {
 		if (key.hasOwnProperty('userDefined') == false){
 			this.key = 'local'
