@@ -91,6 +91,7 @@ function GraphCollection(){
 GraphCollection.prototype = {
 	addWorksheet: function(worksheet){
 		graphCollection = this;
+		console.log(worksheet);
 		for (key in worksheet.data){
 			this.data[key] = worksheet.data[key];
 			this.worksheets[worksheet.title] = worksheet;
@@ -493,6 +494,7 @@ Graph.prototype = {
 	},
 	
 	assignX: function(category){
+		console.log(category);
 		this.xData = category;
 		this.userDrawnLinePoints = null;
 		this.pointsInEllipse = null;
@@ -693,6 +695,7 @@ function getWorksheet(){
 var userCreatedWorksheet;
 
 var numWorksheets = 0;
+var numDatasets = 0;
 function Worksheet(param) {
 	if (typeof param == 'string'){
 		this.URL = param;
@@ -701,12 +704,7 @@ function Worksheet(param) {
 		this.fetchWorksheetData();
 		graphCollection.addWorksheet(this);
 	} else {
-		if (param.hasOwnProperty('userDefined') == false){
-			this.URL = param.feed.link[1].href + "***";
-			this.local = true;
-			this.userCreated = false;
-			this.fetchLocalData(param);
-		} else {
+		if (param.hasOwnProperty('userDefined')){
 			this.URL = param.title;
 			this.local = true;
 			this.title = param.title;
@@ -716,7 +714,19 @@ function Worksheet(param) {
 			this.data = param.data;
 			this.edited = param.edited;
 			userCreatedWorksheet = this;
+			graphCollection.addWorksheet(this);		
+		} else if (param.hasOwnProperty('name')){
+			this.URL = "https://lgh.ohsu.edu/app/seeit/dataset/category/" + param.name;
+			this.local = false;
+			this.userCreate = false;
+			this.fetchCHIDRData(param);
 			graphCollection.addWorksheet(this);
+			console.log(param);
+		} else {
+			this.URL = param.feed.link[1].href + "***";
+			this.local = true;
+			this.userCreated = false;
+			this.fetchLocalData(param);
 		}
 	}
 }
@@ -743,6 +753,47 @@ Worksheet.prototype = {
 			alert("Could not retrieve worksheet. Is it published?");
 			}
 		});
+	},
+	
+	fetchCHIDRData: function(params){
+		var worksheet = this;
+		worksheet.data = {};
+		worksheet.edited = {}
+		params.datasets.forEach(function(d, index){
+			$.ajax({
+				type: "GET",
+				contentType: "application/javascript",
+				dataType: "jsonp",
+				url: 'https://lgh.ohsu.edu/app/seeit/dataset/id/'+d.id,
+				success: function(data, textStatus, jqXHR){ 
+					d.data = data.dataPoints;
+					worksheet.dependentVar = null;
+					worksheet.data[d.name] = d.data;
+					worksheet.labelType = "Individual"
+					worksheet.labelMasterList = [];
+					d.data.forEach(function(dat){
+						worksheet.labelMasterList.push(dat.label);
+					});
+					worksheet.title = params.name;
+					worksheet.description = params.description;
+					for (var key in worksheet.data){
+						worksheet.edited[key] = false;
+					}
+					
+					if (index == params.datasets.length-1)
+						jQuery('body').trigger({ type:'CHIDRDatasetLoaded', worksheet:worksheet, refresh:true});
+					else
+						jQuery('body').trigger({ type:'CHIDRDatasetLoaded', worksheet:worksheet, refresh:false});
+				},
+				error: function(jqXHR, textStatus, errorThrown){ 
+					console.log(jqXHR); 
+					console.log(textStatus); 
+					console.log(errorThrown);
+				}
+			});
+		
+		});
+		
 	},
 	
 	fetchLocalData: function(feedData) {
@@ -874,11 +925,13 @@ Worksheet.prototype = {
 
 
 function Spreadsheet(key) {
-	this.worksheets = [];
+	this.worksheets = [];	
+	this.categories = [];
+	
 	if( typeof key == 'string'){
 		if (key == 'ohsu-chidr'){
 			this.key = 'ohsu-chidr';
-			this.fetchCHIDRData();
+			this.fetchCHIDRCategories();
 			this.local = false;
 		} else {
 			this.key = key;
@@ -918,6 +971,69 @@ Spreadsheet.prototype = {
 			}
 			numWorksheets += feedData.feed.entry.length;
 		});
+	},
+	
+	fetchCHIDRCategories: function() {
+		var categories = this.categories;
+		var spreadsheet = this;
+		
+		$.ajax({
+			type: "GET",
+			contentType: "application/javascript",
+			dataType: "jsonp",
+			url: 'https://lgh.ohsu.edu/app/seeit/dataset/categories',
+			success: function(data, textStatus, jqXHR){ 
+				categories = data;		
+				spreadsheet.fetchCHIDRNames(categories);
+			},
+			error: function(jqXHR, textStatus, errorThrown){ 
+				console.log(jqXHR); 
+				console.log(textStatus); 
+				console.log(errorThrown);
+			}
+		});
+	},
+	
+	fetchCHIDRNames: function(categories){	
+		var spreadsheet = this;
+		$.ajax({
+			type: "GET",
+			contentType: "application/javascript",
+			dataType: "jsonp",
+			url: 'https://lgh.ohsu.edu/app/seeit/dataset/names',
+			success: function(data, textStatus, jqXHR){ 
+				var names = data;
+				numDatasets += names.length;
+				
+				categories.forEach(function(c){
+					c.datasets = [];
+				});
+				
+				names.forEach(function(n){
+					categories.forEach(function(c){
+						if (c.name == n.category){
+							c.datasets.push({"id": n.id, "name": n.name});
+							//spreadsheet.fetchCHIDRDataset(c.datasets[c.datasets.length-1])
+						}
+					});
+				});
+				
+				categories.forEach(function(c){
+					spreadsheet.worksheets.push(new Worksheet(c));
+				});
+				
+				console.log(categories); 
+			},
+			error: function(jqXHR, textStatus, errorThrown){ 
+				console.log(jqXHR); 
+				console.log(textStatus); 
+				console.log(errorThrown);
+			}
+		});
+	},
+	
+	fetchCHIDRDataset: function (dataset){
+		
 	},
 	
 	constructLocalWorksheets: function(local) {

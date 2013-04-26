@@ -20,10 +20,8 @@ var exampleSpreadsheets = [ ];
 var preload = window.location.search;
 var exclusiveLoad = false;	
 if (preload.substring(0, 1) == '?') {
-		console.log(preload);
-		
-		preload = preload.substring(1);
-		
+		console.log(preload)	
+		preload = preload.substring(1);	
 		if (preload.substring(0, 1) == '!'){
 			exclusiveLoad = true;
 			preload = preload.substring(1);
@@ -40,95 +38,27 @@ if (preload.substring(0, 1) == '?') {
 				exampleSpreadsheets.push(new Spreadsheet(key));
 				//constructVis();
 			}
-			//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
-				
-		});
-		
+			//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");				
+		});	
 }
 
 
 if (!exclusiveLoad){
-	exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
-	exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
-	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));
-	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'));
-	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'));
-	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'));
-	exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'));
-	exampleSpreadsheets.push(new Spreadsheet('0Al5kfBmMhbwmdGJ2b1A1eWtMdUF4bWJxcnhBQ0Fsb3c'));			//Gapminder
-	exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'));			//Skin Cancer Fig 8
-	exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'));			//Skin Cancer Fig 4
-	exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'));			//Skin Cancer Fig 2
-	exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'));			//Doll and Hill
-	exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
+	//exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
+	//exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
+	//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));
+	//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'));
+	//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'));
+	//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'));
+	//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'));
+	//exampleSpreadsheets.push(new Spreadsheet('0Al5kfBmMhbwmdGJ2b1A1eWtMdUF4bWJxcnhBQ0Fsb3c'));			//Gapminder
+	//exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'));			//Skin Cancer Fig 8
+	//exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'));			//Skin Cancer Fig 4
+	//exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'));			//Skin Cancer Fig 2
+	//exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'));			//Doll and Hill
+	//exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
+	exampleSpreadsheets.push(new Spreadsheet('ohsu-chidr'));
 }	
-//console.log("test");
-
-var url = 'https://lgh.ohsu.edu/app/seeit/dataset/categories';
-$.ajax({
-	type: "GET",
-	contentType: "application/javascript",
-  dataType: "jsonp",
-  url: 'https://lgh.ohsu.edu/app/seeit/dataset/categories',
-  success: function(data, textStatus, jqXHR){ console.log("success"); console.log(data) },
-  error: function(jqXHR, textStatus, errorThrown){ 
-		console.log(jqXHR); 
-		console.log(textStatus); 
-		console.log(errorThrown);
-	},
-  complete: function(){console.log("complete");}
-});
-
-var testObj = jQuery.parseJSON('[{"description":"Body Size: BMI individual data points","name":"Body Size: BMI"},{"description":"Body Size: Body Fat Percentage individual data points","name":"Body Size: Body Fat Percentage"},{"description":"Total Cholesterol individual data points","name":"Total Cholesterol"},{"description":"Dairy Intake individual data points","name":"Dairy Intake"},{"description":"Daytime Sleepiness individual data points","name":"Daytime Sleepiness"},{"description":"Diastolic Blood Pressure individual data points","name":"Diastolic Blood Pressure"},{"description":"Fruit and Vegetable Intake individual data points","name":"Fruit and Vegetable Intake"},{"description":"Glucose individual data points","name":"Glucose"},{"description":"HDL (High Density Lipoprotein) individual data points","name":"HDL"},{"description":"Height individual data points","name":"Height"},{"description":"LDL (Low Density Lipoprotein) individual data points","name":"LDL"},{"description":"Skin Type individual data points","name":"Skin Type"},{"description":"Sleeper Type individual data points","name":"Sleeper Type"},{"description":"Sleep quality score individual data points","name":"Sleep quality score"},{"description":"Sugar Intake individual data points","name":"Sugar Intake"},{"description":"Sun Safety individual data points","name":"Sun Safety"},{"description":"Systolic Blood Pressue individual data points","name":"Systolic Blood Pressue"},{"description":"Triglycerides individual data points","name":"Triglycerides"},{"description":"Body Size: Waist Circumference individual data points","name":"Body Size: Waist Circumference"},{"description":"Body Size: Weight individual data points","name":"Body Size: Weight"}]');
-
-//console.log($.ajax({
-	 //type: 'GET',
-	 //url: url,
-	 //async: false,
-	 //contentType: "application/javascript",
-	 //dataType: 'jsonp',
-	 //success: function(){console.log("test")}
-//}));
-
-//console.log("test");
-
-//jQuery.getJSON('https://lgh.ohsu.edu/app/seeit/dataset/categories', "", function(data, textStatus, jqXHR){ console.log(data) } )
-
-//jQuery.jsonp({ url:'https://lgh.ohsu.edu/app/seeit/dataset/categories',
-			//callback: "_jqjsp",
-			//success:function(feedData) {
-				//console.log(feedData);
-				////for (var i = 0; i < feedData.feed.entry.length; i++) {
-					////spreadsheet.worksheets.push(new Worksheet(feedData.feed.entry[i].link[1].href));
-				////}
-				////numWorksheets += feedData.feed.entry.length;
-			//},
-			
-			//error:function(xOptions, textStatus) {
-				//console.log(xOptions);
-				//console.log(textStatus);
-				//alert("Could not retrieve worksheets from the spreadsheet. Is it published?");
-			//},
-			
-			//complete:function(){console.log("complete")}
-//});	
-
-//$.ajax({
-	//type: "GET",
-	//url: 'https://lgh.ohsu.edu/app/seeit/dataset/categories',
-	//contentType: "application/javascript",
-	//dataType: "jsonp",
-	//crossDomain: true,
-	//jsonp: "callback",
-	//error: function(jqXHR, textStatus, errorThrown) {   
-		//alert('Error Message: '+textStatus);
-		//alert('HTTP Error: '+errorThrown);
-	//},
-	//success: function (data) {
-			//console.log(data);
-	//}
-//});
-
 
 /* populate dataset drop down menu */
 var lastSelectedWorksheet; 
@@ -137,7 +67,6 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 	if (event.refresh){
 		graphCollection.addWorksheet(event.worksheet);
 	}
-	//graphCollection.addWorksheet(event.worksheet);
   numWorksheetsLoaded++;
   $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){
@@ -146,6 +75,22 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		showHideAdvancedOptions();
 		toggleDatasetMenu();
   }
+});
+
+//CHIDR Kickoff Rendering Event
+var numDatasetsLoaded = 0;
+jQuery('body').bind('CHIDRDatasetLoaded', function(event) {
+	if (event.refresh){
+		graphCollection.addWorksheet(event.worksheet);
+	}
+	numDatasetsLoaded++;
+	$('p#loadingMsg').html("Loading "+(numDatasetsLoaded/numDatasets*100).toFixed(0)+"%");
+	if (numDatasetsLoaded >= numDatasets){
+		jQuery('p#loadingMsg').hide();
+		constructVis();
+		showHideAdvancedOptions();
+		toggleDatasetMenu();
+	}
 });
 
 function constructVis() {
