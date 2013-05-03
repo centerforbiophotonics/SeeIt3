@@ -776,6 +776,7 @@ Worksheet.prototype = {
 					});
 					worksheet.title = params.name;
 					worksheet.description = params.description;
+					worksheet.chidr_id = d.id;
 					for (var key in worksheet.data){
 						worksheet.edited[key] = false;
 					}
@@ -853,7 +854,6 @@ Worksheet.prototype = {
 															}
 														);													
 												});	
-		//console.log(data);	
 		return data;
 	},
 	

@@ -28,6 +28,46 @@ function showHideAdvancedOptions(){
 	vis.render();
 }
 
+function getWorksheetCHIDRIdFromDatasetName(name){
+	for (w in graphCollection.worksheets){	
+		for (key in graphCollection.worksheets[w].data){
+			if (key == name)
+				return graphCollection.worksheets[w].chidr_id;
+		} 
+	}	
+}
+
+function getWorksheetDescriptionFromDatasetName(name){
+	for (w in graphCollection.worksheets){	
+		for (key in graphCollection.worksheets[w].data){
+			if (key == name)
+				return graphCollection.worksheets[w].description;
+		} 
+	}	
+}
+
+
+function getRelativeImageURL(){
+	var url = "",
+			done = false;
+			
+	document.URL.split("/").forEach(function(part){
+		if (part == "SeeIt3"){
+			done = true;
+			url += part + "/";
+		}	
+		
+		if (!done){
+			url += part + "/";
+		}
+		
+	});
+	
+	url += "img/"
+
+	return url;
+}
+
 
 function toggleNormalViewOptions(){
 	if (jQuery('#checkboxNormalView').is(':checked')) { 

@@ -36,7 +36,6 @@ if (preload.substring(0, 1) == '?') {
 			
 			if (!exists) {
 				exampleSpreadsheets.push(new Spreadsheet(key));
-				//constructVis();
 			}
 			//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");				
 		});	
@@ -169,7 +168,7 @@ function constructVis() {
 			})
 		
 		dataSetsPanel.add(pv.Image)
-			.url("http://centerforbiophotonics.github.com/SeeIt3/img/dataset.png")  //fix this
+			.url(getRelativeImageURL() + "dataset.png") 
 			.width(25)
 			.height(25)
 			.top(2)
@@ -248,7 +247,7 @@ function constructVis() {
 			})
 		
 		dispOptPanel.add(pv.Image)
-			.url("http://centerforbiophotonics.github.com/SeeIt3/img/eye.png")  //fix this
+			.url(getRelativeImageURL() + "eye.png")
 			.width(30)
 			.height(30)
 			.top(0)
@@ -330,10 +329,10 @@ function constructVis() {
 		newGrphPanel.add(pv.Image)
 			.url(function(){
 				if (graphCollection.numGraphs == 1)
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png";
+					return getRelativeImageURL() + "newGraph.png";
 				else 
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/remGraph.png";
-			})  //fix this
+					return getRelativeImageURL() + "remGraph.png";
+			})
 			.width(30)
 			.height(30)
 			.top(0)
@@ -421,8 +420,8 @@ function constructVis() {
 			
 		newGrphPanel.add(pv.Image)
 			.url(function(){
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/ruler.png"
-			})  //fix this
+				return getRelativeImageURL() + "ruler.png";
+			})
 			.width(30)
 			.height(30)
 			.top(0)
@@ -804,7 +803,7 @@ function constructGraphPanel(graph,index){
 				
 		//Show Graph Option Menu Button
 		graphPanel.add(pv.Image)
-			.url("http://centerforbiophotonics.github.com/SeeIt3/img/wrench.png")  //fix this
+			.url(getRelativeImageURL() + "wrench.png")
 			.width(30)
 			.height(30)
 			.top(-95)
@@ -820,7 +819,45 @@ function constructGraphPanel(graph,index){
 					hideMenus();
 					$('#graphOptions').slideDown();
 			})
+		
+		//Save Axes to CHIDR	
+		graphPanel.add(pv.Image)
+			.url(getRelativeImageURL() + "save.png")
+			.width(30)
+			.height(30)
+			.top(-95)
+			.left(-50)
+			.cursor("pointer")
+			.title("Save current graph to CHIDR")
+			.visible(function(){return graph.yData != null || graph.xData != null })
+			.event("click", function(){
+					var timestamp = new Date().getTime();
+					var name = window.prompt("Enter a name for your graph", timestamp);
+					
+					
+					$.ajax({
+						type: "GET",
+						contentType: "application/javascript",
+						dataType: "jsonp",
+						url: 'https://lgh.ohsu.edu/app/seeit/save_query',
+						data: {
+							"name":name,
+							"urlParameters":"x_axis="+getWorksheetCHIDRIdFromDatasetName(graph.xData)+"&y_axis="+getWorksheetCHIDRIdFromDatasetName(graph.yData),
+							"xAxis":getWorksheetDescriptionFromDatasetName(graph.xData),
+							"yAxis":getWorksheetDescriptionFromDatasetName(graph.yData)
+						},
+						success: function(data, textStatus, jqXHR){ 
+						 console.log(data);
+						},					
+						error: function(jqXHR, textStatus, errorThrown){ 
+							console.log(jqXHR); 
+							console.log(textStatus); 
+							console.log(errorThrown);
+						}
+					});
+			})
 	}	
+	
 	
 	//Divider between graphs
 	graphPanel.add(pv.Rule)

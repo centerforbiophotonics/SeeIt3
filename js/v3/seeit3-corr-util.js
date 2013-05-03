@@ -29,6 +29,27 @@ function showHideAdvancedOptions(){
 }
 
 
+function getRelativeImageURL(){
+	var url = "",
+			done = false;
+			
+	document.URL.split("/").forEach(function(part){
+		if (part == "SeeIt3"){
+			done = true;
+			url += part + "/";
+		}	
+		
+		if (!done){
+			url += part + "/";
+		}
+		
+	});
+	
+	url += "img/"
+
+	return url;
+}
+
 function toggleNormalViewOptions(){
 	if (jQuery('#checkboxNormalView').is(':checked')) { 
 		$('#checkboxShowUserLine').removeAttr('disabled');

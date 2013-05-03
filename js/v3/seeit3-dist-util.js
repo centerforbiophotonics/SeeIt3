@@ -31,6 +31,27 @@ function updateColor(category, color){
 	}
 }
 
+function getRelativeImageURL(){
+	var url = "",
+			done = false;
+			
+	document.URL.split("/").forEach(function(part){
+		if (part == "SeeIt3"){
+			done = true;
+			url += part + "/";
+		}	
+		
+		if (!done){
+			url += part + "/";
+		}
+		
+	});
+	
+	url += "img/"
+
+	return url;
+}
+
 //Returns an array of ints corresponding to the signficant numbers of 
 //iterations to be used in the resampling p value graph
 function pValTicks(graph){
