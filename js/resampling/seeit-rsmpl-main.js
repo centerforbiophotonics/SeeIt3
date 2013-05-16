@@ -4238,7 +4238,7 @@ function constructResampleControlPanel(graph, index){
 	$('body').prepend("<div class=\"resampleOptions\" id=\"resampleOptions"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='0' width='100%'><tr>"+
-							 "<td colspan=\"8\" id=\"resampleLabel\" align=\"center\">"+
+							 "<td colspan=\"7\" id=\"resampleLabel\" align=\"center\">"+
 							 (graph.resampleDisplayMode != "pgraph" ?
 								"Difference between the Means of Samples from Sample 1 and Sample 2" :
 								"Iterations")+
@@ -4273,9 +4273,11 @@ function constructResampleControlPanel(graph, index){
 									"<option value=\"pgraph\" "+(graph.resampleDisplayMode=="pgraph"?"selected":"")+">P Value Graph</option>"+
 								"</select></td>"+
 								
-								"<td><label for=\"resamplingReplacement\">Replacement</label>"+
-								"<input type=\"checkbox\" id=\"resamplingReplacement\""+
-									"onchange=\"javascript:toggleResamplingReplacement("+index+")\" "+(graph.resamplingReplacement?"checked":"")+"></td>"+
+								
+								//"<td><label for=\"resamplingReplacement\">Replacement</label>"+
+								
+								//"<input type=\"checkbox\" id=\"resamplingReplacement\""+
+									//"onchange=\"javascript:toggleResamplingReplacement("+index+")\" "+(graph.resamplingReplacement?"checked":"")+"></td>"+
 								"</tr></table>";
 						 
 	$('#resampleOptions'+index).html(string);
