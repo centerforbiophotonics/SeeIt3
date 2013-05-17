@@ -15,28 +15,31 @@ var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
 									 ];
 
 var exampleSpreadsheets = [ ];
-
+var user = null;
 //Preload a worksheet
 var preload = window.location.search;
 var exclusiveLoad = false;	
 if (preload.substring(0, 1) == '?') {
 		console.log(preload)	
 		preload = preload.substring(1);	
-		if (preload.substring(0, 1) == '!'){
-			exclusiveLoad = true;
-			preload = preload.substring(1);
-		}
-		preload.split("&").forEach(function(url){
-			var key = parseSpreadsheetKeyFromURL(url);
+		//if (preload.substring(0, 1) == '!'){
+			//exclusiveLoad = true;
+			//preload = preload.substring(1);
+		//}
+		preload.split("&").forEach(function(param){
+			//var key = parseSpreadsheetKeyFromURL(url);
 		
-			var exists = false;
-			exampleSpreadsheets.forEach(function(s){
-				if (s.key == key) exists = true;
-			});
+			if (param.indexOf("user=") != -1)
+				user = parseInt(param.replace("user=",""));
+		
+			//var exists = false;
+			//exampleSpreadsheets.forEach(function(s){
+				//if (s.key == key) exists = true;
+			//});
 			
-			if (!exists) {
-				exampleSpreadsheets.push(new Spreadsheet(key));
-			}
+			//if (!exists) {
+				//exampleSpreadsheets.push(new Spreadsheet(key));
+			//}
 			//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");				
 		});	
 }
@@ -834,7 +837,7 @@ function constructGraphPanel(graph,index){
 					var timestamp = new Date().getTime();
 					var name = window.prompt("Enter a name for your graph", timestamp);
 					
-					
+					console.log(getCHIDRIdFromDatasetName(graph.xData));
 					$.ajax({
 						type: "GET",
 						contentType: "application/javascript",
@@ -842,9 +845,9 @@ function constructGraphPanel(graph,index){
 						url: 'https://lgh.ohsu.edu/app/seeit/save_query',
 						data: {
 							"name":name,
-							"urlParameters":"x_axis="+getWorksheetCHIDRIdFromDatasetName(graph.xData)+"&y_axis="+getWorksheetCHIDRIdFromDatasetName(graph.yData),
-							"xAxis":getWorksheetDescriptionFromDatasetName(graph.xData),
-							"yAxis":getWorksheetDescriptionFromDatasetName(graph.yData)
+							"x_axis":getCHIDRIdFromDatasetName(graph.xData),
+							"y_axis":getCHIDRIdFromDatasetName(graph.yData),
+							"user":user
 						},
 						success: function(data, textStatus, jqXHR){ 
 						 console.log(data);

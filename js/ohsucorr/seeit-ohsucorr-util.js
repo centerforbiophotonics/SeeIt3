@@ -28,11 +28,11 @@ function showHideAdvancedOptions(){
 	vis.render();
 }
 
-function getWorksheetCHIDRIdFromDatasetName(name){
-	for (w in graphCollection.worksheets){	
-		for (key in graphCollection.worksheets[w].data){
-			if (key == name)
-				return graphCollection.worksheets[w].chidr_id;
+function getCHIDRIdFromDatasetName(name){
+	for (w in graphCollection.worksheets){
+		if (name in graphCollection.worksheets[w].data){
+			console.log(name + "MATCH");
+			return graphCollection.worksheets[w].chidr_id[name];
 		} 
 	}	
 }

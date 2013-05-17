@@ -704,6 +704,7 @@ function Worksheet(param) {
 		this.fetchWorksheetData();
 		graphCollection.addWorksheet(this);
 	} else {
+	
 		if (param.hasOwnProperty('userDefined')){
 			this.URL = param.title;
 			this.local = true;
@@ -716,6 +717,7 @@ function Worksheet(param) {
 			userCreatedWorksheet = this;
 			graphCollection.addWorksheet(this);		
 		} else if (param.hasOwnProperty('name')){
+			console.log("CHIDR");
 			this.URL = "https://lgh.ohsu.edu/app/seeit/dataset/category/" + param.name;
 			this.local = false;
 			this.userCreate = false;
@@ -758,17 +760,23 @@ Worksheet.prototype = {
 	fetchCHIDRData: function(params){
 		var worksheet = this;
 		worksheet.data = {};
-		worksheet.edited = {}
+		worksheet.edited = {};
+		worksheet.chidr_id = {};
+		
+		console.log(params);
 		params.datasets.forEach(function(d, index){
+			console.log(d);
 			$.ajax({
 				type: "GET",
 				contentType: "application/javascript",
 				dataType: "jsonp",
 				url: 'https://lgh.ohsu.edu/app/seeit/dataset/id/'+d.id,
 				success: function(data, textStatus, jqXHR){ 
+					console.log("fetch Dataset");
 					d.data = data.dataPoints;
 					worksheet.dependentVar = null;
 					worksheet.data[d.name] = d.data;
+					worksheet.chidr_id[d.name] = d.id;
 					worksheet.labelType = "Individual"
 					worksheet.labelMasterList = [];
 					d.data.forEach(function(dat){
@@ -776,7 +784,7 @@ Worksheet.prototype = {
 					});
 					worksheet.title = params.name;
 					worksheet.description = params.description;
-					worksheet.chidr_id = d.id;
+					//worksheet.chidr_id = d.id;
 					for (var key in worksheet.data){
 						worksheet.edited[key] = false;
 					}
@@ -1005,13 +1013,15 @@ Spreadsheet.prototype = {
 				var names = data;
 				numDatasets += names.length;
 				
+				console.log(categories);
+				console.log(names);
 				categories.forEach(function(c){
 					c.datasets = [];
 				});
 				
 				names.forEach(function(n){
 					categories.forEach(function(c){
-						if (c.name == n.category){
+						if (c.name == n.categoryId){
 							c.datasets.push({"id": n.id, "name": n.name});
 							//spreadsheet.fetchCHIDRDataset(c.datasets[c.datasets.length-1])
 						}
