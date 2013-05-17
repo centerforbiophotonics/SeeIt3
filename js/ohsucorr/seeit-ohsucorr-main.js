@@ -16,32 +16,23 @@ var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
 
 var exampleSpreadsheets = [ ];
 var user = null;
+var preselected_x_axis = null;
+var preselected_y_axis = null;
+
 //Preload a worksheet
 var preload = window.location.search;
 var exclusiveLoad = false;	
-if (preload.substring(0, 1) == '?') {
-		console.log(preload)	
-		preload = preload.substring(1);	
-		//if (preload.substring(0, 1) == '!'){
-			//exclusiveLoad = true;
-			//preload = preload.substring(1);
-		//}
-		preload.split("&").forEach(function(param){
-			//var key = parseSpreadsheetKeyFromURL(url);
-		
-			if (param.indexOf("user=") != -1)
-				user = parseInt(param.replace("user=",""));
-		
-			//var exists = false;
-			//exampleSpreadsheets.forEach(function(s){
-				//if (s.key == key) exists = true;
-			//});
-			
-			//if (!exists) {
-				//exampleSpreadsheets.push(new Spreadsheet(key));
-			//}
-			//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");				
-		});	
+if (preload.substring(0, 1) == '?') {	
+	preload = preload.substring(1);	
+	preload.split("&").forEach(function(param){	
+		if (param.indexOf("user=") != -1)
+			user = parseInt(param.replace("user=",""));
+		else if (param.indexOf("x_axis=") != -1)
+			preselected_x_axis = param.replace("x_axis=","");
+		else if (param.indexOf("y_axis=") != -1)
+			preselected_y_axis = param.replace("y_axis=","");
+	
+	});	
 }
 
 
@@ -89,7 +80,15 @@ jQuery('body').bind('CHIDRDatasetLoaded', function(event) {
 	$('p#loadingMsg').html("Loading "+(numDatasetsLoaded/numDatasets*100).toFixed(0)+"%");
 	if (numDatasetsLoaded >= numDatasets){
 		jQuery('p#loadingMsg').hide();
+		
 		constructVis();
+		if (preselected_x_axis != null && preselected_y_axis != null){
+			console.log(preselected_x_axis + " . . . " + preselected_y_axis);
+			console.log(getCHIDRNameFromID(preselected_x_axis));
+			
+			graphCollection.graphs[0].assignX(getCHIDRNameFromID(preselected_x_axis));
+			graphCollection.graphs[0].assignY(getCHIDRNameFromID(preselected_y_axis));
+		}
 		showHideAdvancedOptions();
 		toggleDatasetMenu();
 	}
@@ -837,7 +836,6 @@ function constructGraphPanel(graph,index){
 					var timestamp = new Date().getTime();
 					var name = window.prompt("Enter a name for your graph", timestamp);
 					
-					console.log(getCHIDRIdFromDatasetName(graph.xData));
 					$.ajax({
 						type: "GET",
 						contentType: "application/javascript",
@@ -2609,7 +2607,6 @@ function constructLegendPanel(graph, index){
 }
 
 function xAxisDragEnd(event, index){
-	console.log("xAxis");
 	if (dragObj.dragging){
 		graphCollection.graphs[index].assignX(dragObj.category);
 	}
@@ -2686,7 +2683,6 @@ function sidePanDragStart(event, category){
 		return;
 	}
 	
-	//console.log("sideStart");
 	dragObj = new Object();
 	dragObj.category = category;
 	dragObj.type = "side";

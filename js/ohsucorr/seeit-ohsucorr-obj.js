@@ -91,7 +91,6 @@ function GraphCollection(){
 GraphCollection.prototype = {
 	addWorksheet: function(worksheet){
 		graphCollection = this;
-		console.log(worksheet);
 		for (key in worksheet.data){
 			this.data[key] = worksheet.data[key];
 			this.worksheets[worksheet.title] = worksheet;
@@ -494,7 +493,6 @@ Graph.prototype = {
 	},
 	
 	assignX: function(category){
-		console.log(category);
 		this.xData = category;
 		this.userDrawnLinePoints = null;
 		this.pointsInEllipse = null;
@@ -717,13 +715,11 @@ function Worksheet(param) {
 			userCreatedWorksheet = this;
 			graphCollection.addWorksheet(this);		
 		} else if (param.hasOwnProperty('name')){
-			console.log("CHIDR");
 			this.URL = "https://lgh.ohsu.edu/app/seeit/dataset/category/" + param.name;
 			this.local = false;
 			this.userCreate = false;
 			this.fetchCHIDRData(param);
 			graphCollection.addWorksheet(this);
-			console.log(param);
 		} else {
 			this.URL = param.feed.link[1].href + "***";
 			this.local = true;
@@ -761,22 +757,21 @@ Worksheet.prototype = {
 		var worksheet = this;
 		worksheet.data = {};
 		worksheet.edited = {};
-		worksheet.chidr_id = {};
+		worksheet.chidr_id_by_name = {};
+		worksheet.chidr_name_by_id = {};
 		
-		console.log(params);
 		params.datasets.forEach(function(d, index){
-			console.log(d);
 			$.ajax({
 				type: "GET",
 				contentType: "application/javascript",
 				dataType: "jsonp",
 				url: 'https://lgh.ohsu.edu/app/seeit/dataset/id/'+d.id,
 				success: function(data, textStatus, jqXHR){ 
-					console.log("fetch Dataset");
 					d.data = data.dataPoints;
 					worksheet.dependentVar = null;
 					worksheet.data[d.name] = d.data;
-					worksheet.chidr_id[d.name] = d.id;
+					worksheet.chidr_id_by_name[d.name] = d.id;
+					worksheet.chidr_name_by_id[d.id] = d.name;
 					worksheet.labelType = "Individual"
 					worksheet.labelMasterList = [];
 					d.data.forEach(function(dat){
@@ -784,7 +779,6 @@ Worksheet.prototype = {
 					});
 					worksheet.title = params.name;
 					worksheet.description = params.description;
-					//worksheet.chidr_id = d.id;
 					for (var key in worksheet.data){
 						worksheet.edited[key] = false;
 					}
@@ -1013,8 +1007,6 @@ Spreadsheet.prototype = {
 				var names = data;
 				numDatasets += names.length;
 				
-				console.log(categories);
-				console.log(names);
 				categories.forEach(function(c){
 					c.datasets = [];
 				});
@@ -1031,8 +1023,7 @@ Spreadsheet.prototype = {
 				categories.forEach(function(c){
 					spreadsheet.worksheets.push(new Worksheet(c));
 				});
-				
-				console.log(categories); 
+				 
 			},
 			error: function(jqXHR, textStatus, errorThrown){ 
 				console.log(jqXHR); 

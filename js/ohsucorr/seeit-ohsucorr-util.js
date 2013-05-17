@@ -32,8 +32,16 @@ function getCHIDRIdFromDatasetName(name){
 	for (w in graphCollection.worksheets){
 		if (name in graphCollection.worksheets[w].data){
 			console.log(name + "MATCH");
-			return graphCollection.worksheets[w].chidr_id[name];
+			return graphCollection.worksheets[w].chidr_id_by_name[name];
 		} 
+	}	
+}
+
+
+function getCHIDRNameFromID(id){	
+	for (w in graphCollection.worksheets){
+			if (id in graphCollection.worksheets[w].chidr_name_by_id)
+				return graphCollection.worksheets[w].chidr_name_by_id[id];
 	}	
 }
 
