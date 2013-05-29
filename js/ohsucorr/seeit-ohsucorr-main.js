@@ -844,8 +844,8 @@ function constructGraphPanel(graph,index){
 			.title("Save current graph to CHIDR")
 			.visible(function(){return graph.yData != null || graph.xData != null })
 			.event("click", function(){
-					var timestamp = new Date().getTime();
-					var name = window.prompt("Enter a name for your graph", timestamp);
+					//var timestamp = new Date().getTime();
+					var name = window.prompt("Enter a name for your graph", getCHIDRIdFromDatasetName(graph.yData)+" X "+getCHIDRIdFromDatasetName(graph.xData));
 					
 					$.ajax({
 						type: "GET",
