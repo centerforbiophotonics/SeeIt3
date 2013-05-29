@@ -17,7 +17,7 @@ function showHideAdvancedOptions(){
 		graphCollection.buttonText = true;
 		$("#drawMode option[value='gravity']").attr('selected', 'selected');
 		$('#divisionsCell').hide();
-		graphCollection.buckets = 30;
+		graphCollection.buckets = 100;
 		$("#divisionsValue").html(graphCollection.buckets);
 		
 		graphCollection.graphs.forEach(function(g){

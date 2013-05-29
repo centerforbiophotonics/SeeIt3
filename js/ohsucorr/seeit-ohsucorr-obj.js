@@ -78,7 +78,7 @@ function GraphCollection(){
 	this.buttonText = true;
 	this.labelTextSize = "16";
 	this.tickTextSize = "12";
-	this.buckets = 30;
+	this.buckets = 100;
 	this.dotSize = 3;
 	
 	this.numGraphs = 0;
@@ -150,8 +150,8 @@ GraphCollection.prototype = {
 			this.numGraphs++;
 			this.graphs.push(new Graph(this));
 			if (this.graphs.length == 2){
-				jQuery('#divisionsValue').html(8);
-				this.buckets = 8;
+				jQuery('#divisionsValue').html(100);
+				this.buckets = 100;
 				this.graphs.forEach(function(g){
 					g.xRadius = g.xRadius/2;
 					g.yRadius = g.yRadius/2; 
@@ -174,8 +174,8 @@ GraphCollection.prototype = {
 		if (this.graphs.length == 0) this.addGraph();
 		
 		if (this.graphs.length == 1){
-			jQuery('#divisionsValue').html(30);
-			this.buckets = 30;
+			jQuery('#divisionsValue').html(100);
+			this.buckets = 100;
 		}
 		
 		this.setChildGraphWidths();
