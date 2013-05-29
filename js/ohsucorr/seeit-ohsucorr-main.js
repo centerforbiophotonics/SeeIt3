@@ -94,9 +94,6 @@ jQuery('body').bind('CHIDRDatasetLoaded', function(event) {
 		graphCollection.updateMenuOptions();
 		constructVis();
 		if (preselected_x_axis != null && preselected_y_axis != null){
-			console.log(preselected_x_axis + " . . . " + preselected_y_axis);
-			console.log("'"+getCHIDRNameFromID(preselected_x_axis)+"'");
-			
 			graphCollection.graphs[0].assignX(getCHIDRNameFromID(preselected_x_axis));
 			graphCollection.graphs[0].assignY(getCHIDRNameFromID(preselected_y_axis));
 		}
@@ -845,7 +842,10 @@ function constructGraphPanel(graph,index){
 			.visible(function(){return graph.yData != null || graph.xData != null })
 			.event("click", function(){
 					//var timestamp = new Date().getTime();
-					var name = window.prompt("Enter a name for your graph", getCHIDRIdFromDatasetName(graph.yData)+" X "+getCHIDRIdFromDatasetName(graph.xData));
+					var defaultName = (graph.yData == null?"":getCHIDRIdFromDatasetName(graph.yData))+
+															(graph.yData == null || graph.xData == null?"":" X ")+
+														(graph.xData == null?"":getCHIDRIdFromDatasetName(graph.xData))
+					var name = window.prompt("Enter a name for your graph.", defaultName);
 					
 					$.ajax({
 						type: "GET",
@@ -854,12 +854,12 @@ function constructGraphPanel(graph,index){
 						url: 'https://lgh.ohsu.edu/app/seeit/save_query',
 						data: {
 							"name":name,
-							"x_axis":getCHIDRIdFromDatasetName(graph.xData),
-							"y_axis":getCHIDRIdFromDatasetName(graph.yData),
+							"x_axis":(graph.xData == null?"":getCHIDRIdFromDatasetName(graph.xData)),
+							"y_axis":(graph.yData == null?"":getCHIDRIdFromDatasetName(graph.yData)),
 							"user":user
 						},
 						success: function(data, textStatus, jqXHR){ 
-						 console.log(data);
+						 //Nothing needs doing
 						},					
 						error: function(jqXHR, textStatus, errorThrown){ 
 							console.log(jqXHR); 

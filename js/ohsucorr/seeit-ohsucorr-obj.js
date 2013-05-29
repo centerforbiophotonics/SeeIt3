@@ -767,8 +767,6 @@ Worksheet.prototype = {
 				dataType: "jsonp",
 				url: 'https://lgh.ohsu.edu/app/seeit/dataset/id/'+d.id,
 				success: function(data, textStatus, jqXHR){ 
-					console.log(d);
-					console.log(data);
 					d.data = data.dataPoints;
 					worksheet.dependentVar = null;
 					worksheet.data[d.name] = d.data;

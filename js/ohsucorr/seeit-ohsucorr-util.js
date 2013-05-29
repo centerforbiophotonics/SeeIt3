@@ -31,7 +31,6 @@ function showHideAdvancedOptions(){
 function getCHIDRIdFromDatasetName(name){
 	for (w in graphCollection.worksheets){
 		if (name in graphCollection.worksheets[w].data){
-			console.log(name + "MATCH");
 			return graphCollection.worksheets[w].chidr_id_by_name[name];
 		} 
 	}	
