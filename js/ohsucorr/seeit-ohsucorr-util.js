@@ -468,7 +468,7 @@ function xDistributionPoints(graph, data, scale){
 	var xDomain = graph.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graph.graphCollection.buckets;
 	var points = [];
-	var drawMode = jQuery("#drawMode option:selected").val();
+	var drawMode = "floating"//jQuery("#drawMode option:selected").val();
 	
 	for (var i = 0; i < graph.graphCollection.buckets; i++){
 		var bucketMin = xDomain[0] + (bucketSize * i);

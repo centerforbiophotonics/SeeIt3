@@ -81,10 +81,21 @@ jQuery('body').bind('CHIDRDatasetLoaded', function(event) {
 	if (numDatasetsLoaded >= numDatasets){
 		jQuery('p#loadingMsg').hide();
 		
+		exampleSpreadsheets.forEach(function(s){
+			s.worksheets.forEach(function(w){
+				for (key in w.data){
+					graphCollection.data[key] = w.data[key];
+				}
+			});
+		});
+		
+		
+		graphCollection.addGraph();
+		graphCollection.updateMenuOptions();
 		constructVis();
 		if (preselected_x_axis != null && preselected_y_axis != null){
 			console.log(preselected_x_axis + " . . . " + preselected_y_axis);
-			console.log(getCHIDRNameFromID(preselected_x_axis));
+			console.log("'"+getCHIDRNameFromID(preselected_x_axis)+"'");
 			
 			graphCollection.graphs[0].assignX(getCHIDRNameFromID(preselected_x_axis));
 			graphCollection.graphs[0].assignY(getCHIDRNameFromID(preselected_y_axis));

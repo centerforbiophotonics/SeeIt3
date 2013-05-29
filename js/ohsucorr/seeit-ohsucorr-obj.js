@@ -79,11 +79,11 @@ function GraphCollection(){
 	this.labelTextSize = "16";
 	this.tickTextSize = "12";
 	this.buckets = 30;
-	this.dotSize = 5;
+	this.dotSize = 3;
 	
 	this.numGraphs = 0;
-	this.addGraph();
-	this.updateMenuOptions();
+	//this.addGraph();
+	
 	
 	this.printMode = false;
 }
@@ -700,7 +700,7 @@ function Worksheet(param) {
 		this.local = false;
 		this.userCreated = false;
 		this.fetchWorksheetData();
-		graphCollection.addWorksheet(this);
+		
 	} else {
 	
 		if (param.hasOwnProperty('userDefined')){
@@ -719,7 +719,7 @@ function Worksheet(param) {
 			this.local = false;
 			this.userCreate = false;
 			this.fetchCHIDRData(param);
-			graphCollection.addWorksheet(this);
+			//graphCollection.addWorksheet(this);
 		} else {
 			this.URL = param.feed.link[1].href + "***";
 			this.local = true;
@@ -767,6 +767,8 @@ Worksheet.prototype = {
 				dataType: "jsonp",
 				url: 'https://lgh.ohsu.edu/app/seeit/dataset/id/'+d.id,
 				success: function(data, textStatus, jqXHR){ 
+					console.log(d);
+					console.log(data);
 					d.data = data.dataPoints;
 					worksheet.dependentVar = null;
 					worksheet.data[d.name] = d.data;
@@ -783,10 +785,11 @@ Worksheet.prototype = {
 						worksheet.edited[key] = false;
 					}
 					
-					if (index == params.datasets.length-1)
+					if (index == params.datasets.length-1){
 						jQuery('body').trigger({ type:'CHIDRDatasetLoaded', worksheet:worksheet, refresh:true});
-					else
+					}else{
 						jQuery('body').trigger({ type:'CHIDRDatasetLoaded', worksheet:worksheet, refresh:false});
+					}
 				},
 				error: function(jqXHR, textStatus, errorThrown){ 
 					console.log(jqXHR); 
