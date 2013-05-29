@@ -28,9 +28,9 @@ if (preload.substring(0, 1) == '?') {
 		if (param.indexOf("user=") != -1)
 			user = parseInt(param.replace("user=",""));
 		else if (param.indexOf("x_axis=") != -1)
-			preselected_x_axis = param.replace("x_axis=","");
+			preselected_x_axis = param.replace("x_axis=","").trim();
 		else if (param.indexOf("y_axis=") != -1)
-			preselected_y_axis = param.replace("y_axis=","");
+			preselected_y_axis = param.replace("y_axis=","").trim();
 	
 	});	
 }
