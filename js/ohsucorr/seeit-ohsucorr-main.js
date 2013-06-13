@@ -93,9 +93,12 @@ jQuery('body').bind('CHIDRDatasetLoaded', function(event) {
 		graphCollection.addGraph();
 		graphCollection.updateMenuOptions();
 		constructVis();
-		if (preselected_x_axis != null && preselected_y_axis != null){
-			graphCollection.graphs[0].assignX(getCHIDRNameFromID(preselected_x_axis));
-			graphCollection.graphs[0].assignY(getCHIDRNameFromID(preselected_y_axis));
+		if (preselected_x_axis != null){ 
+			graphCollection.graphs[0].assignX(getCHIDRNameFromID(preselected_x_axis));		
+		}
+		
+		if (preselected_y_axis != null){
+			graphCollection.graphs[0].assignY(getCHIDRNameFromID(preselected_y_axis));	
 		}
 		showHideAdvancedOptions();
 		toggleDatasetMenu();
@@ -712,6 +715,14 @@ function constructDatasetPanel(){
 	var i = 0;
 	var picker = 0;
 	exampleSpreadsheets.forEach(function(s){
+		s.worksheets.sort(function(a,b){
+			if (a.title < b.title)
+				 return -1;
+			if (a.title > b.title)
+				return 1;
+			return 0;		
+		});
+		
 		s.worksheets.forEach(function(w){
 			html += "<table><tr>"+
 							"<td><input type='image' id='subtreeToggle"+i+"'"+
@@ -729,7 +740,23 @@ function constructDatasetPanel(){
 							"<input type='image' src='img/refresh.png' style='margin-left:25px;' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>"+
 							"<input type='image' src='img/question.png' style='margin-left:25px;' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
 							"<input type='image' src='img/document.png' style='margin-left:25px;' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>";
-			for (key in w.data){
+			var keys, len, j, key;
+			
+			keys = [];
+			
+			for(key in w.data){
+				if (w.data.hasOwnProperty(key)) {
+						keys.push(key);
+				}
+			}
+			
+			keys.sort();
+			len = keys.length;
+			
+			for (j = 0; j < len; j++)
+			{
+				key = keys[j];
+				
 				html+="<table style='margin-left:15px;'><tr>"+
 							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
 							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+

@@ -15,7 +15,7 @@ function showHideAdvancedOptions(){
 		graphCollection.editModeEnabled = false;
 		graphCollection.buttonIcon = true;
 		graphCollection.buttonText = true;
-		$("#drawMode option[value='gravity']").attr('selected', 'selected');
+		$("#drawMode option[value='floating']").attr('selected', 'selected');
 		$('#divisionsCell').hide();
 		graphCollection.buckets = 100;
 		$("#divisionsValue").html(graphCollection.buckets);
@@ -467,7 +467,7 @@ function xDistributionPoints(graph, data, scale){
 	var xDomain = graph.x.domain();
 	var bucketSize = (xDomain[1]-xDomain[0])/graph.graphCollection.buckets;
 	var points = [];
-	var drawMode = "floating"//jQuery("#drawMode option:selected").val();
+	var drawMode = jQuery("#drawMode option:selected").val();
 	
 	for (var i = 0; i < graph.graphCollection.buckets; i++){
 		var bucketMin = xDomain[0] + (bucketSize * i);
