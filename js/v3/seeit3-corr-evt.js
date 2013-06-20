@@ -2100,8 +2100,12 @@ $("#textSizeInc").click(function(){
 	if (parseInt(graphCollection.tickTextSize) < 20){
 		graphCollection.tickTextSize = (parseInt(graphCollection.tickTextSize)+1)+"";
 		graphCollection.labelTextSize = (parseInt(graphCollection.labelTextSize)+1)+"";
+		graphCollection.allOtherTextSize = (parseInt(graphCollection.allOtherTextSize)+1)+"";
+		
+		fontString = "bold "+graphCollection.allOtherTextSize+"px arial";
 		$("#textSizeValue").html(graphCollection.tickTextSize);
-		vis.render();
+		//vis.render();
+		constructVis();
 	}
 })
 
@@ -2109,8 +2113,12 @@ $("#textSizeDec").click(function(){
 	if (parseInt(graphCollection.tickTextSize) > 6){
 		graphCollection.tickTextSize = (parseInt(graphCollection.tickTextSize)-1)+"";
 		graphCollection.labelTextSize = (parseInt(graphCollection.labelTextSize)-1)+"";
+		graphCollection.allOtherTextSize = (parseInt(graphCollection.allOtherTextSize)-1)+"";
+		
+		fontString = "bold "+graphCollection.allOtherTextSize+"px arial";
 		$("#textSizeValue").html(graphCollection.tickTextSize);
-		vis.render();
+		//vis.render();
+		constructVis();
 	}
 })
 

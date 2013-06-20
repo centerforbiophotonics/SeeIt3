@@ -708,7 +708,7 @@ function constructDatasetPanel(){
 								"title='"+(graphCollection.datasetsVisible[w.title]?"Collapse Folder":"Expand Folder")+"'></td>"+
 							"<td nowrap><div id='treeTitle"+i+"' "+
 								"onmousedown='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
-								"style='cursor:pointer;'>"+
+								"style='cursor:pointer; font:"+fontString+";'>"+
 								w.title+"</div></td>"+
 							"</table></tr>"+
 							"<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">"+
@@ -719,7 +719,7 @@ function constructDatasetPanel(){
 			for (key in w.data){
 				html+="<table style='margin-left:15px;'><tr>"+
 							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
-							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
+							"style=\"color:"+(w.edited[key]?'red':'black')+"; font:"+fontString+";\""+
 							"onmouseover=\"this.className='menuItemOver'\""+
 							"onmouseout=\"this.className='menuItemDef'\""+
 							"onmousedown=\"javascript:sidePanDragStart(event,'"+key+"')\""+
@@ -735,7 +735,7 @@ function constructDatasetPanel(){
 			i++;
 		})
 	})
-	html+="<table><tr onclick=\"openWorksheetMenu()\" style=\"cursor:pointer;\">"+
+	html+="<table><tr onclick=\"openWorksheetMenu()\" style=\"cursor:pointer; font:"+fontString+";\">"+
 							"<td><image src='img/plus.png' width='25' height='25'></td>"+
 							"<td>Add a Worksheet</td></div></tr></table>";
 	$('#dataTree').html(html);
@@ -822,13 +822,13 @@ function constructGraphPanel(graph,index){
 		
 		//Option Menu Hint	
 		graphPanel.add(pv.Label)
-			.left(170)
+			.left(-30)
 			.top(-70)
-			.textAlign("center")
+			.textAlign("left")
 			.textBaseline("center")
 			.text("<=== Click the wrench to show visualization tools for this graph.")
+			.textStyle("red")
 			.font(fontString)
-			.strokeStyle("red")
 			.visible(function(){return graphCollection.showOptionMenuHint})
 	}	
 	
@@ -2534,7 +2534,7 @@ function constructLegendPanel(graph, index){
 										"ontouchend=\"legPanTouchEnd(event)\""+
 										"ontouchmove=\"legPanTouchMove(event)\""+
 										">"+
-										"<center><p style=\"margin-top:11px;\">"+
+										"<center><p style=\"margin-top:11px; font:"+fontString+";\">"+
 										(graph.yData != null ? graph.yData : "Drag a dataset here to assign it to the Y-Axis.")+
 										"</p></center>"+
 										"</div>");
@@ -2549,7 +2549,7 @@ function constructLegendPanel(graph, index){
 											"ontouchmove=\"legPanTouchMove(event)\""+
 											"ontouchend=\"legPanTouchEnd(event)\""+
 											">"+
-											"<center><p style=\"margin-top:10px;\">"+
+											"<center><p style=\"margin-top:10px; font:"+fontString+";\">"+
 											(graph.yData != null ? graph.yData : "Drag a dataset here to assign it to the Y-Axis.")+
 											"</p></center>"+
 											"</div>");
@@ -2563,7 +2563,7 @@ function constructLegendPanel(graph, index){
 										"ontouchmove=\"legPanTouchMove(event)\""+
 										"ontouchend=\"legPanTouchEnd(event)\""+
 										">"+
-										"<center><p style=\"margin-top:12px;\">"+
+										"<center><p style=\"margin-top:12px; font:"+fontString+";\">"+
 										(graph.xData != null ? graph.xData : "Drag a dataset here to assign it to the X-Axis.")+
 										"</p></center>"+
 										"</div>");

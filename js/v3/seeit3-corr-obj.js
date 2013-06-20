@@ -77,6 +77,7 @@ function GraphCollection(){
 	this.buttonIcon = true;
 	this.buttonText = true;
 	this.labelTextSize = "16";
+	this.allOtherTextSize = "14";
 	this.tickTextSize = "12";
 	this.buckets = 30;
 	this.dotSize = 5;
