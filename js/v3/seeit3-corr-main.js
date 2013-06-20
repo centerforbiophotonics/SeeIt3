@@ -769,7 +769,8 @@ function constructGraphPanel(graph,index){
 		title += graph.yData;
 	}
 	title += "</center>";
-	$('#graphTitle'+index).html(title);	
+	$('#graphTitle'+index).html(title);
+	$('#graphTitle'+index).css("font", fontString);	
 	$('#graphTitle'+index).show();
 	 
 	if(!graphCollection.printMode){

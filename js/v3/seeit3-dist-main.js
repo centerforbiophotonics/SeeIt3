@@ -855,7 +855,7 @@ function constructDatasetPanel(){
 								"title='"+(graphCollection.datasetsVisible[w.title]?"Collapse Folder":"Expand Folder")+"'></td>"+
 							"<td nowrap><div id='treeTitle"+i+"'"+
 								"onmousedown='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
-								"style='cursor:pointer;'>"+w.title+"</div></td>"+
+								"style='cursor:pointer; font:"+fontString+";'>"+w.title+"</div></td>"+
 							"</table></tr>"+
 							"<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">"+
 							"<input type='image' src='img/edit.png' style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
@@ -870,7 +870,7 @@ function constructDatasetPanel(){
 								"onchange=\"updateColor('"+key+"', this.color)\" "+
 								"style='width:20px; height:20px'></td>"+
 							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
-							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
+							"style=\"color:"+(w.edited[key]?'red':'black')+"; font:"+fontString+";\""+
 							"onmouseover=\"this.className='menuItemOver'\""+
 							"onmouseout=\"this.className='menuItemDef'\""+
 							"onmousedown=\"javascript:sidePanDragStart(event,'"+key+"')\""+
@@ -3936,7 +3936,7 @@ function constructLegendPanel(graph, index){
 								"</svg></td>"+
 								//"<td><div id='lgndColor"+index+"-"+i+"' style='background-color:rgb("+color.r+","+color.g+","+color.b+
 								//"); border:2px solid black; width:20px; height:20px;'></div></td>"+
-								"<td style='overflow:hidden;'><div id='lgndText"+index+"-"+i+"' style='white-space:nowrap; width:100%;'>"+category+"</div></td></tr></table></div></td>";
+								"<td style='overflow:hidden;'><div id='lgndText"+index+"-"+i+"' style='white-space:nowrap; width:100%;  font:"+fontString+";'>"+category+"</div></td></tr></table></div></td>";
 		});
 		string += "</tr></table></center>";
 		$('#legend'+index).html(string);
