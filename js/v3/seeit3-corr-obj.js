@@ -86,6 +86,8 @@ function GraphCollection(){
 	this.updateMenuOptions();
 	
 	this.printMode = false;
+	
+	this.showOptionMenuHint = true;
 }
 
 GraphCollection.prototype = {
@@ -390,7 +392,7 @@ function Graph(graphCollection){
 	this.h = this.graphCollection.h - 20;
 	
 	//Scaling Variables
-	this.fitScaleToData = false;
+	this.fitScaleToData = true;
 	this.customScale = false;
 	
 	this.xAxisLog = false;
@@ -490,6 +492,10 @@ Graph.prototype = {
 		if (this.yData != null && this.xData != null){
 			this.setupStats();
 		}
+		
+		if (this.yData == null && this.xData == null){
+			this.graphCollection.showOptionMenuHint = true;
+		}
 	},
 	
 	assignX: function(category){
@@ -508,6 +514,10 @@ Graph.prototype = {
 		
 		if (this.yData != null && this.xData != null){
 			this.setupStats();
+		}
+		
+		if (this.yData == null && this.xData == null){
+			this.graphCollection.showOptionMenuHint = true;
 		}
 	},
 	

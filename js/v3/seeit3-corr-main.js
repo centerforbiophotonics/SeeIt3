@@ -815,7 +815,21 @@ function constructGraphPanel(graph,index){
 				if (oldSelIndex == index)
 					hideMenus();
 					$('#graphOptions').slideDown();
+					
+				graphCollection.showOptionMenuHint = false;
+				vis.render();
 			})
+		
+		//Option Menu Hint	
+		graphPanel.add(pv.Label)
+			.left(170)
+			.top(-70)
+			.textAlign("center")
+			.textBaseline("center")
+			.text("<=== Click the wrench to show visualization tools for this graph.")
+			.font(fontString)
+			.strokeStyle("red")
+			.visible(function(){return graphCollection.showOptionMenuHint})
 	}	
 	
 	//Divider between graphs
@@ -886,13 +900,7 @@ function constructEmptyGraph(graph,index, graphPanel){
 			.text("Click the \"hide datasets\" button in the top bar to hide the datasets panel.")
 			.font(fontString)
 			
-		graphPanel.add(pv.Label)
-			.left(170)
-			.top(-70)
-			.textAlign("center")
-			.textBaseline("center")
-			.text("<=== Click the wrench to show visualization tools for this graph.")
-			.font(fontString)
+		
 		
 }
 
