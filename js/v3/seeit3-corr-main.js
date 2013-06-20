@@ -1072,6 +1072,133 @@ function constructCorrGraph(graph, index, graphPanel){
 		.font(fontString)
 		.textAlign("center")
 		.text("0")
+	
+	/* Dots */
+	graphPanel.add(pv.Dot)
+		.data(function(){return graph.getClonedData()})
+		.event("point", function() { return this.active(this.index).parent })
+		.event("unpoint", function() { return this.active(-1).parent })
+		.left(function(d) { return graph.x(d.x) })
+		.bottom(function(d) { return graph.y(d.y) })
+		.radius(function() { return graphCollection.dotSize })
+		.fillStyle(function(d) {return pointFillStyle(d.label)})
+		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
+		.title(function(d) { return d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1) })
+		.cursor(function(){
+			if (graphCollection.editModeEnabled)
+				return "move";
+			else
+				return "default";
+		})
+		.visible(function(d) {
+			var y = graph.y(d.y);
+			var x = graph.x(d.x);
+			return graph.showData  && 
+				y <= graph.h &&
+				y >= 0 &&
+				x <= graph.w &&
+				x >= 0;
+		})
+		.event("mousedown", pv.Behavior.drag())
+		.event("drag", function(d){
+			dragging = true;
+			if (dragID == null) dragID = d.label; //to ensure other data points don't get stuck to the one that is being dragged
+			
+			if (graphCollection.editModeEnabled &&
+					graphPanel.mouse().x >= 0 &&
+					graphPanel.mouse().x <= graph.w &&
+					graphPanel.mouse().y >= 0 &&
+					graphPanel.mouse().y <= graph.h){
+				
+				var worksheetX = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+						worksheetX = graphCollection.worksheets[key];
+				}
+				var worksheetY = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+						worksheetY = graphCollection.worksheets[key];
+				}
+				
+				graphCollection.editSinglePoint(worksheetX, graph.xData, dragID, graph.x.invert(graphPanel.mouse().x));
+				graphCollection.editSinglePoint(worksheetY, graph.yData, dragID, graph.y.invert(graph.h - graphPanel.mouse().y));
+				
+				dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1) +
+											", " +
+											graph.y.invert(graph.h - graphPanel.mouse().y).toFixed(1));
+				dragLabel.left(graphPanel.mouse().x)
+				dragLabel.top(graphPanel.mouse().y - 10)
+				dragLabel.visible(true)
+				
+				vis.render();
+			} else {
+				dragLabel.text("Delete");
+				vis.render();
+			}
+		})
+		.event("dragend",function(d){
+			if (graphCollection.editModeEnabled){
+				var worksheetX = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.xData] != undefined)
+						worksheetX = graphCollection.worksheets[key];
+				}
+				var worksheetY = null;
+				for (key in graphCollection.worksheets){
+					if (graphCollection.worksheets[key].data[graph.yData] != undefined)
+						worksheetY = graphCollection.worksheets[key];
+				}
+				
+				var newXData = worksheetX.data[graph.xData];
+				var newYData = worksheetY.data[graph.yData];
+				var remIndex = null;
+				newXData.forEach(function(data, index){
+					if (data.label == dragID && 
+					(graphPanel.mouse().x < 0 ||
+					 graphPanel.mouse().x > graph.w ||
+					 graphPanel.mouse().y < 0 ||
+					 graphPanel.mouse().y > graph.h))
+					{
+						remIndex = index;
+					}
+				});
+				if (remIndex != null)
+					newXData.splice(remIndex,1);
+				graphCollection.editData(worksheetX, graph.xData,graph.xData,newXData);
+				
+				remIndex = null;
+				newYData.forEach(function(data, index){
+					if (data.label == dragID && 
+					(graphPanel.mouse().x < 0 ||
+					 graphPanel.mouse().x > graph.w ||
+					 graphPanel.mouse().y < 0 ||
+					 graphPanel.mouse().y > graph.h))
+					{
+						remIndex = index;
+					}
+				});
+				if (remIndex != null)
+					newYData.splice(remIndex,1);
+				graphCollection.editData(worksheetY, graph.yData,graph.yData,newYData);
+				
+				dragLabel.visible(false);
+				dragID = null;
+				constructVis();
+				//vis.render();
+			}
+		})
+		.event("touchstart", function(d){
+			//if (graphCollection.editModeEnabled){
+				touch.dragType = "dataCorr";
+				touch.dataObj = d;
+				touch.dragging = true;
+				touch.graphIndex = index;
+				touch.graphPanel = graphPanel;
+				touch.dragLabel = dragLabel;
+			//}
+		})
+	
 		
 	/* median median crosses and squares */
 	/* rectangle around median group */
@@ -1132,6 +1259,23 @@ function constructCorrGraph(graph, index, graphPanel){
 			.textAngle(function(){return getMMLineLabelAngle(graph)})
 			.font("bold 12px sans-serif");
 			
+	graphPanel.add(pv.Label)
+		.visible(function () { return graph.mmLine; })
+		.text( "Median-Median Regression Line:" )
+		.top(-80)
+		.textAlign("left")
+		.textBaseline("top")
+		.textStyle("blue")
+		.font(function(){return fontString})
+		.add(pv.Label)
+			.top(-60)
+			.text(function(d) {
+			if (this.index == 0) { return "Y = "+graph.mmSlope.toFixed(3)+
+																 "X + "+graph.mmIntercept.toFixed(3) }
+			else { return "" }
+		})
+		
+			
 	/* Least Squares Regression Line */  
 	graphPanel.add(pv.Line)
 		.visible(function() { return graph.lsLine })
@@ -1146,7 +1290,7 @@ function constructCorrGraph(graph, index, graphPanel){
 																" -- Sum of Squares = "+ 
 																getSumOfLeastSquares(graph).toFixed(1);
 		})
-		.strokeStyle(pv.rgb(0,225,0,1))
+		.strokeStyle(pv.rgb(0,125,0,1))
 		.lineWidth(2)
 		.add(pv.Label)									//Line Equation
 			.visible(function () { return graph.lsEQ && graph.lsLine })
@@ -1157,7 +1301,7 @@ function constructCorrGraph(graph, index, graphPanel){
 			})
 			.textAlign("left")
 			.textBaseline("top")
-			.textStyle(pv.rgb(0,225,0,1))
+			.textStyle(pv.rgb(0,125,0,1))
 			.textAngle(function(){return getLSLineLabelAngle(graph)})
 			.font("bold 12px sans-serif")
 		.add(pv.Label)									//R Value
@@ -1171,9 +1315,52 @@ function constructCorrGraph(graph, index, graphPanel){
 			})
 			.textAlign("left")
 			.textBaseline("bottom")
-			.textStyle(pv.rgb(0,225,0,1))
+			.textStyle(pv.rgb(0,125,0,1))
 			.textAngle(function(){return getLSLineLabelAngle(graph)})
 			.font("bold 12px sans-serif");
+	
+	
+	//Separate Line Equation For Readability
+	graphPanel.add(pv.Label)									//Line Equation
+			.visible(function () { return graph.lsLine })
+			.top(-80)
+			.text("Least Squares Regression Line:")
+			.textAlign("left")
+			.textBaseline("top")
+			.textStyle(pv.rgb(0,125,0,1))
+			.font(function(){return fontString})
+		.add(pv.Label)									//Line Equation
+			//.visible(function () { return graph.lsLine })
+			.top(-60)
+			.text(function(d) {
+				if (this.index == 0) { return "Y = "+graph.lsSlope.toFixed(3)+
+																"X + "+graph.lsIntercept.toFixed(3);}
+				else {return ""}
+			})
+			//.textAlign("left")
+			//.textBaseline("top")
+			//.textStyle(pv.rgb(0,125,0,1))
+			//.font(function(){return fontString})
+		.add(pv.Label)									//R Value
+			//.visible(function () { return graph.lsLine })
+			.top(-40)
+			.text(function(d) {
+				if (this.index == 0) { return "R = "+ 
+																getR(graph.getData()).toFixed(2);}
+				else {return ""}
+			})
+			//.textAlign("left")
+			//.textBaseline("bottom")
+			//.textStyle(pv.rgb(0,125,0,1))
+			//.font(function(){return fontString});		
+		.add(pv.Label)									//R Value
+			//.visible(function () { return graph.lsLine })
+			.top(-20)
+			.text(function(d) {
+				if (this.index == 0) { return "Sum of Squares = "+ 
+																getSumOfLeastSquares(graph).toFixed(1);}
+				else {return ""}
+			})
 		
   /*R Squares*/
   graphPanel.add(pv.Bar)
@@ -1468,131 +1655,7 @@ function constructCorrGraph(graph, index, graphPanel){
 	//	.textMargin(10)
 	//	.font("bold 12px sans-serif");
 	
-	/* Dots */
-	graphPanel.add(pv.Dot)
-		.data(function(){return graph.getClonedData()})
-		.event("point", function() { return this.active(this.index).parent })
-		.event("unpoint", function() { return this.active(-1).parent })
-		.left(function(d) { return graph.x(d.x) })
-		.bottom(function(d) { return graph.y(d.y) })
-		.radius(function() { return graphCollection.dotSize })
-		.fillStyle(function(d) {return pointFillStyle(d.label)})
-		.strokeStyle(function(d) {return pointStrokeStyle(d.label)})
-		.title(function(d) { return d.label + ": " + d.x.toFixed(1) + ", " + d.y.toFixed(1) })
-		.cursor(function(){
-			if (graphCollection.editModeEnabled)
-				return "move";
-			else
-				return "default";
-		})
-		.visible(function(d) {
-			var y = graph.y(d.y);
-			var x = graph.x(d.x);
-			return graph.showData  && 
-				y <= graph.h &&
-				y >= 0 &&
-				x <= graph.w &&
-				x >= 0;
-		})
-		.event("mousedown", pv.Behavior.drag())
-		.event("drag", function(d){
-			dragging = true;
-			if (dragID == null) dragID = d.label; //to ensure other data points don't get stuck to the one that is being dragged
-			
-			if (graphCollection.editModeEnabled &&
-					graphPanel.mouse().x >= 0 &&
-					graphPanel.mouse().x <= graph.w &&
-					graphPanel.mouse().y >= 0 &&
-					graphPanel.mouse().y <= graph.h){
-				
-				var worksheetX = null;
-				for (key in graphCollection.worksheets){
-					if (graphCollection.worksheets[key].data[graph.xData] != undefined)
-						worksheetX = graphCollection.worksheets[key];
-				}
-				var worksheetY = null;
-				for (key in graphCollection.worksheets){
-					if (graphCollection.worksheets[key].data[graph.yData] != undefined)
-						worksheetY = graphCollection.worksheets[key];
-				}
-				
-				graphCollection.editSinglePoint(worksheetX, graph.xData, dragID, graph.x.invert(graphPanel.mouse().x));
-				graphCollection.editSinglePoint(worksheetY, graph.yData, dragID, graph.y.invert(graph.h - graphPanel.mouse().y));
-				
-				dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1) +
-											", " +
-											graph.y.invert(graph.h - graphPanel.mouse().y).toFixed(1));
-				dragLabel.left(graphPanel.mouse().x)
-				dragLabel.top(graphPanel.mouse().y - 10)
-				dragLabel.visible(true)
-				
-				vis.render();
-			} else {
-				dragLabel.text("Delete");
-				vis.render();
-			}
-		})
-		.event("dragend",function(d){
-			if (graphCollection.editModeEnabled){
-				var worksheetX = null;
-				for (key in graphCollection.worksheets){
-					if (graphCollection.worksheets[key].data[graph.xData] != undefined)
-						worksheetX = graphCollection.worksheets[key];
-				}
-				var worksheetY = null;
-				for (key in graphCollection.worksheets){
-					if (graphCollection.worksheets[key].data[graph.yData] != undefined)
-						worksheetY = graphCollection.worksheets[key];
-				}
-				
-				var newXData = worksheetX.data[graph.xData];
-				var newYData = worksheetY.data[graph.yData];
-				var remIndex = null;
-				newXData.forEach(function(data, index){
-					if (data.label == dragID && 
-					(graphPanel.mouse().x < 0 ||
-					 graphPanel.mouse().x > graph.w ||
-					 graphPanel.mouse().y < 0 ||
-					 graphPanel.mouse().y > graph.h))
-					{
-						remIndex = index;
-					}
-				});
-				if (remIndex != null)
-					newXData.splice(remIndex,1);
-				graphCollection.editData(worksheetX, graph.xData,graph.xData,newXData);
-				
-				remIndex = null;
-				newYData.forEach(function(data, index){
-					if (data.label == dragID && 
-					(graphPanel.mouse().x < 0 ||
-					 graphPanel.mouse().x > graph.w ||
-					 graphPanel.mouse().y < 0 ||
-					 graphPanel.mouse().y > graph.h))
-					{
-						remIndex = index;
-					}
-				});
-				if (remIndex != null)
-					newYData.splice(remIndex,1);
-				graphCollection.editData(worksheetY, graph.yData,graph.yData,newYData);
-				
-				dragLabel.visible(false);
-				dragID = null;
-				constructVis();
-				//vis.render();
-			}
-		})
-		.event("touchstart", function(d){
-			//if (graphCollection.editModeEnabled){
-				touch.dragType = "dataCorr";
-				touch.dataObj = d;
-				touch.dragging = true;
-				touch.graphIndex = index;
-				touch.graphPanel = graphPanel;
-				touch.dragLabel = dragLabel;
-			//}
-		})
+	
 		
 	//Graph Overflow Warning Message
 	graphPanel.add(pv.Label)

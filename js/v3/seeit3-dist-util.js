@@ -20,12 +20,15 @@ function updateColor(category, color){
 	var g = parseInt(color.rgb[1]*255);
 	var b = parseInt(color.rgb[2]*255);
 	graphCollection.categoryColors[category]= new pv.Color.Rgb(r,g,b,1);
-	vis.render();
+	var newColor = pointFillStyle(category);
+	constructVis();
+	
+	
 	for (var i=0; i<graphCollection.graphs.length; i++){
 		for (var j=0; j<graphCollection.graphs[i].includedCategories.length; j++){
 			var text = graphCollection.graphs[i].includedCategories[j];
 			if (trim(text) == trim(category)){
-				$('#lgndColor'+i+'-'+j).css('fill','#'+color.toString());
+				$('#lgndColor'+i+'-'+j).css('fill','#'+newColor.toString());
 			}
 		}
 	}

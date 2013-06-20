@@ -2244,8 +2244,11 @@ function constructResamplingGraph(graphPanel, graph, index){
 			})
 			.textAlign("left")
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "blue")})
-			.bottom(function(){return (graph.h-graph.baseLine) * 0.88 + graph.baseLine })
-			.left(0)
+			.top(20)
+			.textBaseline("top")
+			//.bottom(function(){return (graph.h-graph.baseLine) * 0.85 + graph.baseLine })
+			.left(30)
+			.font(function(){return fontString})
 			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 			
 		/* Number of points outside lines */
@@ -2262,8 +2265,11 @@ function constructResamplingGraph(graphPanel, graph, index){
 			})
 			.textAlign("left")
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "blue")})
-			.bottom(function(){return (graph.h-graph.baseLine) * 0.83 + graph.baseLine })
-			.left(0)
+			.top(40)
+			.textBaseline("top")
+			//.bottom(function(){return (graph.h-graph.baseLine) * 0.78 + graph.baseLine })
+			.left(30)
+			.font(function(){return fontString})
 			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 			
 		/* Number of points to the right */
@@ -2321,8 +2327,11 @@ function constructResamplingGraph(graphPanel, graph, index){
 			})
 			.textAlign("left")
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "blue")})
-			.bottom(function(){return (graph.h-graph.baseLine) * 0.93 + graph.baseLine })
-			.left(0)
+			.top(0)
+			.textBaseline("top")
+			//.bottom(function(){return (graph.h-graph.baseLine) * 0.93 + graph.baseLine })
+			.left(30)
+			.font(function(){return fontString})
 			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
 	}
 }

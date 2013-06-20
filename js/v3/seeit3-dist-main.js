@@ -3418,11 +3418,12 @@ function constructRegularGraph(graphPanel, graph, index){
 			.font(fontString)
 			
 		graphPanel.add(pv.Label)
-			.left(225)
+			.left(30)
 			.top(30)
-			.textAlign("center")
+			.textAlign("left")
 			.textBaseline("center")
 			.text("<=== Click the wrench to show visualization tools for this graph.")
+			.textStyle("red")
 			.font(fontString)
 	}
 }
