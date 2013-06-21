@@ -1914,8 +1914,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 		//Simple Box Plot Lines
 		graphPanel.add(pv.Line)
 			.data(function(){
-				return [[partitionDataInFour(graph)[0], graph.baseLine],
-								[partitionDataInFour(graph)[0], graph.h * 0.80]]})
+				return [[getQuartiles(graph)[0], graph.baseLine],
+								[getQuartiles(graph)[0], graph.h * 0.80]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1926,8 +1926,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[4], graph.baseLine],
-						 [partitionDataInFour(graph)[4], graph.h * 0.80]]})
+			.data(function(){return [[getQuartiles(graph)[4], graph.baseLine],
+						 [getQuartiles(graph)[4], graph.h * 0.80]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1938,8 +1938,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1950,8 +1950,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 		})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1962,8 +1962,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1974,8 +1974,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})						
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1986,8 +1986,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -1998,8 +1998,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2010,8 +2010,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [partitionDataInFour(graph)[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [getQuartiles(graph)[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2053,8 +2053,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 																	 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2065,8 +2065,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 		})
 																	 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2077,8 +2077,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 																	 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2092,7 +2092,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.data(function(){
 				var min = removeOutliers(graph)[0];
 				return [[min, (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
+						 [getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
 			})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
@@ -2104,8 +2104,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 			
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2116,8 +2116,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 			
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2130,7 +2130,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Line)
 			.data(function(){
 				var max = removeOutliers(graph)[removeOutliers(graph).length-1];
-				return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+				return [[getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
 						 [max, (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
 			})
 			.left(function(d) { return graph.x(d[0]) })
@@ -2721,8 +2721,8 @@ function constructRegularGraph(graphPanel, graph, index){
 		//Simple Box Plot Lines
 		graphPanel.add(pv.Line)
 			.data(function(){
-				return [[partitionDataInFour(graph)[0], graph.baseLine],
-								[partitionDataInFour(graph)[0], graph.h * 0.80]]})
+				return [[getQuartiles(graph)[0], graph.baseLine],
+								[getQuartiles(graph)[0], graph.h * 0.80]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2733,8 +2733,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[4], graph.baseLine],
-						 [partitionDataInFour(graph)[4], graph.h * 0.80]]})
+			.data(function(){return [[getQuartiles(graph)[4], graph.baseLine],
+						 [getQuartiles(graph)[4], graph.h * 0.80]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2745,8 +2745,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2757,8 +2757,8 @@ function constructRegularGraph(graphPanel, graph, index){
 		})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2769,8 +2769,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2781,8 +2781,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})						
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2793,8 +2793,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2805,8 +2805,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2817,8 +2817,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [partitionDataInFour(graph)[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+						 [getQuartiles(graph)[4], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2862,8 +2862,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 																	 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2874,8 +2874,8 @@ function constructRegularGraph(graphPanel, graph, index){
 		})
 																	 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2886,8 +2886,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 																	 
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2901,7 +2901,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.data(function(){
 				var min = removeOutliers(graph)[0];
 				return [[min, (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
-						 [partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
+						 [getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
 			})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
@@ -2913,8 +2913,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 			
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2925,8 +2925,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 			
 		graphPanel.add(pv.Line)
-			.data(function(){return [[partitionDataInFour(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
-						 [partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
+			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
+						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
 			.left(function(d) { return graph.x(d[0]) })
 			.bottom(function(d) { return d[1] })
 			.lineWidth(1)
@@ -2939,7 +2939,7 @@ function constructRegularGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Line)
 			.data(function(){
 				var max = removeOutliers(graph)[removeOutliers(graph).length-1];
-				return [[partitionDataInFour(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
+				return [[getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
 						 [max, (graph.h-graph.baseLine) * 0.40 + graph.baseLine]]
 			})
 			.left(function(d) { return graph.x(d[0]) })

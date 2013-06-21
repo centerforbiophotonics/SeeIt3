@@ -225,6 +225,23 @@ function partitionDataInFour(graph){
 	return divs;
 }
 
+function getQuartiles(graph){
+	var data = graph.dataVals();
+	var divs = [data[0]];
+	var median = data.length%2 == 0 ? (data[Math.floor(data.length/2)]+data[Math.floor(data.length/2-1)])/2 : data[Math.floor(data.length/2)];
+	var lower_half = data.slice(0, data.length/2);
+	var upper_half = data.slice(data.length/2+1);
+	
+	divs.push(lower_half.length%2 == 0 ? (lower_half[Math.floor(lower_half.length/2)]+lower_half[Math.floor(lower_half.length/2-1)])/2 : lower_half[Math.floor(lower_half.length/2)]);
+	divs.push(median);
+	divs.push(upper_half.length%2 == 0 ? (upper_half[Math.floor(upper_half.length/2)]+upper_half[Math.floor(upper_half.length/2-1)])/2 : upper_half[Math.floor(upper_half.length/2)]);
+	divs.push(data[data.length-1]);
+	
+	console.log(divs);
+	
+	return divs;
+}
+
 function countsInFourGroups(length){
 	var counts = [0,0,0,0];
 	if (Math.floor(length/4) == 0){
@@ -470,7 +487,7 @@ function getMinOfArray(numArray) {
 }
 
 function removeOutliers(graph){
-	var fp = partitionDataInFour(graph);
+	var fp = getQuartiles(graph);
 	var numArray = graph.dataVals();
 	var IQR = fp[3] - fp[1];
 	var retVal = [];
