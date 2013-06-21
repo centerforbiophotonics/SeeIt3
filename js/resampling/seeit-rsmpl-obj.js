@@ -50,6 +50,7 @@ function GraphCollection(){
 	this.padRight = 25;
 	this.defaultGraphHeight = 200;
 	this.labelTextSize = "16";
+	this.allOtherTextSize = "14";
 	this.tickTextSize = "12";
 	this.buckets = 30;
 	this.bucketDotSize = 5;

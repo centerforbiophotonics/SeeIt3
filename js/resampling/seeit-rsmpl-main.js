@@ -869,7 +869,7 @@ function constructDatasetPanel(){
 								"title='"+(graphCollection.datasetsVisible[w.title]?"Collapse Folder":"Expand Folder")+"'></td>"+
 							"<td nowrap><div id='treeTitle"+i+"'"+
 								"onmousedown='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
-								"style='cursor:pointer;'>"+w.title+"</div></td>"+
+								"style='cursor:pointer; font:"+fontString+";'>"+w.title+"</div></td>"+
 							"</table></tr>"+
 							"<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">"+
 							"<input type='image' src='img/edit.png' style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
@@ -882,9 +882,9 @@ function constructDatasetPanel(){
 							"<input id='colorPick"+picker+"' class='color {hash:false}' "+
 								"value='"+colorToHex(color.color)+"' "+
 								"onchange=\"updateColor('"+key+"', this.color)\" "+
-								"style='width:20px; height:20px'></td>"+
+								"style='width:20px; height:20px; font:"+fontString+";'></td>"+
 							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
-							"style=\"color:"+(w.edited[key]?'red':'black')+";\""+
+							"style=\"color:"+(w.edited[key]?'red':'black')+"; font:"+fontString+";\""+
 							"onmouseover=\"this.className='menuItemOver'\""+
 							"onmouseout=\"this.className='menuItemDef'\""+
 							"onmousedown=\"javascript:sidePanDragStart(event,'"+key+"')\""+
@@ -900,7 +900,7 @@ function constructDatasetPanel(){
 			i++;
 		})
 	})
-	html+="<table><tr onclick=\"openWorksheetMenu()\" style=\"cursor:pointer;\">"+
+	html+="<table><tr onclick=\"openWorksheetMenu()\" style=\"cursor:pointer; font:"+fontString+";\">"+
 							"<td><image src='img/plus.png' width='25' height='25'></td>"+
 							"<td>Add a Worksheet</td></div></tr></table>";
 	$('#dataTree').html(html);
@@ -4725,7 +4725,7 @@ function constructLegendPanel(graph, index){
 				string += "</tr><tr>"
 			var color = pointFillStyle(category);
 			string += "<td align='center'><div class='"+(category==selCat&&graphCollection.editModeEnabled?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+ 
-								"style=\"color:black; background-color:white;\""+
+								"style=\"color:black; background-color:white; font:"+fontString+";\""+
 								"onmouseover=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
 								"onmouseout=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
 								"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+", false)\""+
@@ -4754,7 +4754,7 @@ function constructLegendPanel(graph, index){
 			var i = 0;		
 			var color = pointFillStyle(category);
 			string += "<td align='center'><div class='"+(category==selCat&&graphCollection.editModeEnabled?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+ 
-								"style=\"color:black; background-color:white;\""+
+								"style=\"color:black; background-color:white; font:"+fontString+";\""+
 								"onmouseover=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
 								"onmouseout=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
 								"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+", false)\""+
@@ -4782,7 +4782,7 @@ function constructLegendPanel(graph, index){
 			var i = 1;			
 			var color = pointFillStyle(category);
 			string += "<td align='center'><div class='"+(category==selCat&&graphCollection.editModeEnabled?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+ 
-								"style=\"color:black; background-color:white;\""+
+								"style=\"color:black; background-color:white; font:"+fontString+";\""+
 								"onmouseover=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
 								"onmouseout=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
 								"onmousedown=\"javascript:legPanDragStart(event,'"+category+"',"+index+", "+i+", true)\""+
