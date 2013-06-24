@@ -237,8 +237,6 @@ function getQuartiles(graph){
 	divs.push(upper_half.length%2 == 0 ? (upper_half[Math.floor(upper_half.length/2)]+upper_half[Math.floor(upper_half.length/2-1)])/2 : upper_half[Math.floor(upper_half.length/2)]);
 	divs.push(data[data.length-1]);
 	
-	console.log(divs);
-	
 	return divs;
 }
 

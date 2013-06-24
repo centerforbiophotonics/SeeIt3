@@ -32,9 +32,11 @@ var ie = $.browser.msie != undefined && $.browser.msie != false;
 if (!ie){
 	//Preload a worksheet
 	var preload = window.location.search;
+	var urlParamsUsed = false;
 	var exclusiveLoad = false;	
 	if (preload.substring(0, 1) == '?') {
 			console.log(preload);
+			urlParamsUsed = true;
 			
 			preload = preload.substring(1);
 			
@@ -42,23 +44,9 @@ if (!ie){
 				exclusiveLoad = true;
 				preload = preload.substring(1);
 			}
-			preload.split("&").forEach(function(url){
-				var key = parseSpreadsheetKeyFromURL(url);
 			
-				var exists = false;
-				exampleSpreadsheets.forEach(function(s){
-					if (s.key == key) exists = true;
-				});
-				
-				if (!exists) {
-					exampleSpreadsheets.push(new Spreadsheet(key));
-					//constructVis();
-				}
-				//else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
-					
-			});	
 	}
-
+	
 	if (!exclusiveLoad){
 		exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
 		exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
@@ -74,6 +62,67 @@ if (!ie){
 		exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'));			//Doll and Hill
 		exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
 	}	
+	
+	var datA = {}
+	if (urlParamsUsed){		
+		preload.split("&").forEach(function(param){
+			param = decodeURIComponent(param);
+			param = param.split("=")
+			
+			
+			if (param[0].indexOf('[') != -1){ // Dataset
+				var setName = param[0].split('[')[0];
+				console.log(param[0].split('['));
+				var index = parseInt(param[0].split('[')[1].replace(']',''));
+				var dataAttribute = param[0].split('[')[2].replace(']','');
+				
+				if (setName in datA){
+					if (datA[setName][index] == undefined)
+						datA[setName][index] = {};
+					
+					if (dataAttribute == 'value'){
+						datA[setName][index][dataAttribute] = parseInt(param[1]);
+					} else if (dataAttribute = 'label'){
+						datA[setName][index][dataAttribute] = param[1];
+					}					
+				} else {
+					datA[setName] = [];
+					datA[setName][index] = {};
+					
+					if (dataAttribute == 'value'){
+						datA[setName][index][dataAttribute] = parseInt(param[1]);
+					} else if (dataAttribute = 'label'){
+						datA[setName][index][dataAttribute] = param[1];
+					}		
+				}
+				
+				console.log(datA);
+			} else if (param[0].indexOf('title') != -1){ // Worksheet Title
+			
+			} else if (param[0].indexOf('key') != -1){  // Preload Worksheet
+				var key = parseSpreadsheetKeyFromURL(param.join('='));
+		
+				var exists = false;
+				exampleSpreadsheets.forEach(function(s){
+					if (s.key == key) exists = true;
+				});
+				
+				if (!exists) {
+					exampleSpreadsheets.push(new Spreadsheet(key));
+					//constructVis();
+				}
+				else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
+				
+			}
+			
+			
+			//console.log(param);
+			
+			
+		});	
+	}
+	console.log(datA);
+	
 } else {
 	$('p#loadingMsg').hide();
 	$("#ieWarning").show();
@@ -199,7 +248,7 @@ function constructVis(){
 			})
 		
 		dataSetsPanel.add(pv.Image)
-			.url("http://centerforbiophotonics.github.com/SeeIt3/img/dataset.png")  //fix this
+			.url(getRelativeImageURL() + "dataset.png") 
 			.width(25)
 			.height(25)
 			.top(2)
@@ -279,7 +328,7 @@ function constructVis(){
 			})
 		
 		dispOptPanel.add(pv.Image)
-			.url("http://centerforbiophotonics.github.com/SeeIt3/img/eye.png")  //fix this
+			.url(getRelativeImageURL() + "eye.png") 
 			.width(30)
 			.height(30)
 			.top(0)
@@ -351,7 +400,7 @@ function constructVis(){
 			})
 			
 		newGrphPanel.add(pv.Image)
-			.url("http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png")  //fix this
+			.url(getRelativeImageURL() + "newGraph.png") 
 			.width(30)
 			.height(30)
 			.top(0)
@@ -428,9 +477,9 @@ function constructVis(){
 		togUserModePanel.add(pv.Image)
 			.url(function(){
 				if (graphCollection.advancedUser)
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeON.png"
+					return getRelativeImageURL() + "advModeON.png"
 				else
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeOFF.png"
+					return getRelativeImageURL() + "advModeOFF.png"
 			})
 			.width(30)
 			.height(26)
@@ -527,9 +576,9 @@ function constructVis(){
 		togEditPanel.add(pv.Image)
 			.url(function(){
 				if (graphCollection.editModeEnabled)
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/handON.png"
+					return getRelativeImageURL() + "handON.png"
 				else
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/hand.png"
+					return getRelativeImageURL() + "hand.png"
 			})
 			.width(30)
 			.height(26)
@@ -628,7 +677,7 @@ function constructVis(){
 			
 		fitScalePanel.add(pv.Image)
 			.url(function(){
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/ruler.png"
+				return getRelativeImageURL() + "ruler.png"
 			})
 			.width(30)
 			.height(30)
@@ -714,10 +763,12 @@ function constructVis(){
 				//constructVis();
 				
 				if (graphCollection.graphs[0].includedCategories.length == 1 &&
-						graphCollection.graphs[1].includedCategories.length == 1)
+					  graphCollection.graphs[1].includedCategories.length == 1)
 					window.open("resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
 				else
-					alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
+					window.open("resampling.html");
+					//alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
+
 			})
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
@@ -731,9 +782,9 @@ function constructVis(){
 		resamplingPanel.add(pv.Image)
 			.url(function(){
 				if (graphCollection.resamplingEnabled)
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle-ON.png"
+					return getRelativeImageURL() + "shuffle-ON.png"
 				else
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/shuffle-OFF.png"
+					return getRelativeImageURL() + "shuffle-OFF.png"
 				
 			})
 			.width(30)
@@ -755,9 +806,10 @@ function constructVis(){
 				
 				if (graphCollection.graphs[0].includedCategories.length == 1 &&
 					  graphCollection.graphs[1].includedCategories.length == 1)
-					window.open("centerforbiophotonics.github.com/SeeIt3/resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
+					window.open("resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
 				else
-					alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
+					window.open("resampling.html");
+					//alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
 
 			})
 			.visible(function() {
@@ -1277,7 +1329,7 @@ function constructGraphPanel(graph, index){
 				
 		//Show Grouping Option Menu Button
 		graphPanel.add(pv.Image)
-			.url("http://centerforbiophotonics.github.com/SeeIt3/img/wrench.png")  //fix this
+			.url(getRelativeImageURL() + "wrench.png") 
 			.width(30)
 			.height(30)
 			.top(4)

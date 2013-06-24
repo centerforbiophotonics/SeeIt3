@@ -165,7 +165,7 @@ function constructVis() {
 			})
 		
 		dataSetsPanel.add(pv.Image)
-			.url("http://centerforbiophotonics.github.com/SeeIt3/img/dataset.png")  //fix this
+			.url(getRelativeImageURL() + "dataset.png")  //fix this
 			.width(25)
 			.height(25)
 			.top(2)
@@ -244,7 +244,7 @@ function constructVis() {
 			})
 		
 		dispOptPanel.add(pv.Image)
-			.url("http://centerforbiophotonics.github.com/SeeIt3/img/eye.png")  //fix this
+			.url(getRelativeImageURL() + "eye.png")  //fix this
 			.width(30)
 			.height(30)
 			.top(0)
@@ -326,9 +326,9 @@ function constructVis() {
 		newGrphPanel.add(pv.Image)
 			.url(function(){
 				if (graphCollection.numGraphs == 1)
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/newGraph.png";
+					return getRelativeImageURL() + "newGraph.png";
 				else 
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/remGraph.png";
+					return getRelativeImageURL() + "remGraph.png";
 			})  //fix this
 			.width(30)
 			.height(30)
@@ -417,7 +417,7 @@ function constructVis() {
 			
 		newGrphPanel.add(pv.Image)
 			.url(function(){
-				return "http://centerforbiophotonics.github.com/SeeIt3/img/ruler.png"
+				return getRelativeImageURL() + "ruler.png"
 			})  //fix this
 			.width(30)
 			.height(30)
@@ -502,9 +502,9 @@ function constructVis() {
 		togUserModePanel.add(pv.Image)
 			.url(function(){
 				if (graphCollection.advancedUser)
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeON.png"
+					return getRelativeImageURL() + "advModeON.png"
 				else
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/advModeOFF.png"
+					return getRelativeImageURL() + "advModeOFF.png"
 			})
 			.width(30)
 			.height(26)
@@ -601,9 +601,9 @@ function constructVis() {
 		togEditPanel.add(pv.Image)
 			.url(function(){
 				if (graphCollection.editModeEnabled)
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/handON.png"
+					return getRelativeImageURL() + "handON.png"
 				else
-					return "http://centerforbiophotonics.github.com/SeeIt3/img/hand.png"
+					return getRelativeImageURL() + "hand.png"
 			})
 			.width(30)
 			.height(26)
@@ -801,7 +801,7 @@ function constructGraphPanel(graph,index){
 				
 		//Show Graph Option Menu Button
 		graphPanel.add(pv.Image)
-			.url("http://centerforbiophotonics.github.com/SeeIt3/img/wrench.png")  //fix this
+			.url(getRelativeImageURL() + "wrench.png")  //fix this
 			.width(30)
 			.height(30)
 			.top(-95)

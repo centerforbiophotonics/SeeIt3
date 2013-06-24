@@ -69,6 +69,7 @@
 						<A HREF="#applyToAllWithScales" style="margin-left:40px;">Apply to All With Scales</a><br>
 					<A HREF="#dragAndClickEditing" style="margin-left:20px;">C. Drag and Click Editing</a><br>
 					<A HREF="#resampling" style="margin-left:20px;">D. Resampling</a><br>
+						<A HREF="#dot" style="margin-left:40px;">Dot</a><br>
 						<A HREF="#line" style="margin-left:40px;">Line</a><br>
 						<A HREF="#resamplingHistogram" style="margin-left:40px;">Histogram</a><br>
 						<A HREF="#pValueGraph" style="margin-left:40px;">P-Value Graph</a><br>
@@ -394,15 +395,20 @@
 				either the current value of the point or the word delete will be shown above the cursor.</p>
 				
 				<b><a name="resampling"><h3>D. Resampling</h3></a></b>
-				<p>To enable SeeIt's resampling engine, first click the "Resampling" button in
-				the top bar. A new graph will appear at the top of the screen with two draggable labels
-				"Sample 1" and "Sample 2". Drag these labels to two graphs which you want to represent
-				your samples. Now the resampling graph will contain several controls. You may specify
+				<p>If you have been working with data in SeeIt Distributions and you would like to perform
+				resampling with that same data, click the Resampling button which appears as an advanced 
+				feature in the top menu bar. If you have two graphs with one data set assigned to each 
+				the resampling module will open in a new page with these same datasets preselected.</p>
+				
+				<p> The resampling graph will contain several controls. You may specify
 				the number of iterations, between 100 and 200,000, to be used in the resampling process by
 				entering a number in the "Iterations" textbox. The display mode of the resampling graph can
 				be set to one of three options:</p>
 					
 					<div style="margin-left:40px;">
+					<b><a name="dot">Dot</a></b>
+					<p>This is the standard way that distributions are displayed throughout the SeeIt modules.</p>	
+						
 					<b><a name="line">Line</a></b>
 					<p>This mode will show lines on the graph corresponding to the differences in the
 					means of two random samples taken from the data in both sample graphs.</p>
@@ -418,7 +424,8 @@
 					
 					</div>
 					
-				<p>To watch the result of each iteration of the resampling process appear on the graph, click the
+				<p>To step through each iteration of the resampling process manually, click the "Step" button.
+				To watch the result of each iteration of the resampling process appear on the graph, click the
 				"Start" button. To reset the graph click the "Reset" button. To run all iterations at once and
 				see the final distribution and P value, click the "All" button. To specify whether to run
 				resampling with replacement, select the "replacement" checkbox.</p>
