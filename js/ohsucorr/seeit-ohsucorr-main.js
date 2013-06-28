@@ -737,9 +737,9 @@ function constructDatasetPanel(){
 							"</table></tr>"+
 							"<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">"+
 							"<input type='image' src='img/edit.png'  style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
-							"<input type='image' src='img/refresh.png' style='margin-left:25px;' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>"+
-							"<input type='image' src='img/question.png' style='margin-left:25px;' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
-							"<input type='image' src='img/document.png' style='margin-left:25px;' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>";
+							//"<input type='image' src='img/refresh.png' style='margin-left:25px;' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>"+
+							"<input type='image' src='img/question.png' style='margin-left:25px;' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>";
+							//"<input type='image' src='img/document.png' style='margin-left:25px;' onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>";
 			var keys, len, j, key;
 			
 			keys = [];

@@ -991,22 +991,41 @@ function Worksheet(param) {
 		this.userCreated = false;
 		this.fetchWorksheetData();
 	} else {
-		if (param.hasOwnProperty('userDefined') == false){
-			this.URL = param.feed.link[1].href + "***";
-			this.local = true;
-			this.userCreated = false;
-			this.fetchLocalData(param);
-		} else {
+		if (param.hasOwnProperty('userDefined')){  //User created datasets
 			this.URL = param.title;
 			this.local = true;
 			this.title = param.title;
 			this.labelMasterList = param.labelMasterList;
 			this.labelType = param.labelType;
 			this.userCreated = true;
+			this.storedLocally = false;
 			this.data = param.data;
 			this.edited = param.edited;
 			userCreatedWorksheet = this;
 			graphCollection.addWorksheet(this);
+				
+		} else if (param.hasOwnProperty('fromLocalStorage')){  //User created and stored in localStorage
+			this.URL = param.title;
+			this.local = true;
+			this.title = param.title;
+			this.labelMasterList = param.labelMasterList;
+			this.labelType = param.labelType;
+			this.userCreated = true;
+			this.storedLocally = true;
+			this.data = param.data;
+			this.edited = param.edited;
+			
+			for (var setName in this.edited)
+				this.edited[setName] = false;
+			 
+			//userCreatedWorksheet = this;
+			graphCollection.addWorksheet(this);
+			
+		} else {  //For hardcoded datasets
+			this.URL = param.feed.link[1].href + "***";
+			this.local = true;
+			this.userCreated = false;
+			this.fetchLocalData(param);
 		}
 	}
 }
@@ -1052,7 +1071,6 @@ Worksheet.prototype = {
 	transformFeedData: function(feedData) {
 		var data = {};
 		var worksheet = this;
-		
 		//Creates of map of column letters to data categories; 
 		//ALSO maps each category to an empty array of maps (in data obj)
 		var columnToCategory = {};
@@ -1168,15 +1186,21 @@ function Spreadsheet(key) {
 		this.key = key;
 		this.fetchWorksheets();
 		this.local = false;
+		console.log("regular default");
 	} else {
-		if (key.hasOwnProperty('userDefined') == false){
-			this.key = 'local'
-			this.constructLocalWorksheets(key);
-			this.local = true;
-		} else {
+		if (key.hasOwnProperty('userDefined')){  //User defined and just created
 			this.key = 'local';
 			this.local = true;
 			this.constructUserDefinedWorksheet(key);
+			console.log("user def created");
+		} else if (key.hasOwnProperty('fromLocalStorage')){  //User defined and from localStorage
+			this.worksheets.push(new Worksheet(key));
+			console.log("user def from local");
+			//numWorksheets++;
+		} else {  //hardcoded json from google spreadsheets
+			this.key = 'local'
+			this.constructLocalWorksheets(key);
+			this.local = true;
 		}
 	}
 }

@@ -30,7 +30,7 @@ var exampleSpreadsheets = [ ];
 var ie = $.browser.msie != undefined && $.browser.msie != false;
 
 if (!ie){
-	//Preload a worksheet
+	//Extract url params and set flag if default worksheets are not to be loaded
 	var preload = window.location.search;
 	var urlParamsUsed = false;
 	var exclusiveLoad = false;	
@@ -47,6 +47,7 @@ if (!ie){
 			
 	}
 	
+	//Push default worksheets from google first so that when pushing worksheets from url we can check for duplication
 	if (!exclusiveLoad){
 		exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
 		exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
@@ -63,43 +64,13 @@ if (!ie){
 		exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
 	}	
 	
-	var datA = {}
+	//Push worksheets specified by key in url
 	if (urlParamsUsed){		
 		preload.split("&").forEach(function(param){
 			param = decodeURIComponent(param);
-			param = param.split("=")
-			
-			
-			if (param[0].indexOf('[') != -1){ // Dataset
-				var setName = param[0].split('[')[0];
-				console.log(param[0].split('['));
-				var index = parseInt(param[0].split('[')[1].replace(']',''));
-				var dataAttribute = param[0].split('[')[2].replace(']','');
+			param = param.split("=");
 				
-				if (setName in datA){
-					if (datA[setName][index] == undefined)
-						datA[setName][index] = {};
-					
-					if (dataAttribute == 'value'){
-						datA[setName][index][dataAttribute] = parseInt(param[1]);
-					} else if (dataAttribute = 'label'){
-						datA[setName][index][dataAttribute] = param[1];
-					}					
-				} else {
-					datA[setName] = [];
-					datA[setName][index] = {};
-					
-					if (dataAttribute == 'value'){
-						datA[setName][index][dataAttribute] = parseInt(param[1]);
-					} else if (dataAttribute = 'label'){
-						datA[setName][index][dataAttribute] = param[1];
-					}		
-				}
-				
-				console.log(datA);
-			} else if (param[0].indexOf('title') != -1){ // Worksheet Title
-			
-			} else if (param[0].indexOf('key') != -1){  // Preload Worksheet
+			if (param[0].indexOf('key') != -1){  // Preload Worksheet
 				var key = parseSpreadsheetKeyFromURL(param.join('='));
 		
 				var exists = false;
@@ -113,15 +84,17 @@ if (!ie){
 				}
 				else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
 				
-			}
-			
-			
-			//console.log(param);
-			
-			
-		});	
+			}	
+		});
 	}
-	console.log(datA);
+	
+	//Push worksheets in localStorage
+	for (var w_title in localStorage){
+		var worksheet = JSON.parse(localStorage[w_title]);
+		console.log(worksheet);
+		worksheet.fromLocalStorage = true;
+		exampleSpreadsheets.push(new Spreadsheet(worksheet));
+	}
 	
 } else {
 	$('p#loadingMsg').hide();
@@ -911,9 +884,20 @@ function constructDatasetPanel(){
 							"</table></tr>"+
 							"<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">"+
 							"<input type='image' src='img/edit.png' style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
-							"<input type='image' src='img/refresh.png' style='margin-left:25px;' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>"+
+							
 							"<input type='image' src='img/question.png' style='margin-left:25px;' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
-							"<input type='image' src='img/document.png'  style='margin-left:25px;'onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>";
+							(!w.local && !w.userCreated ? 
+								"<input type='image' src='img/document.png'  style='margin-left:25px;'onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>":
+								"<input type='image' id='"+w.title+"-save-local' src='img/"+(w.storedLocally?"pinON.png":"pin.png")+"' style='margin-left:25px;'onclick='saveLocally(\""+w.title+"\")' width='25' height='25'>"
+							)+
+							(!w.local && !w.userCreated ? 
+								"<input type='image' src='img/refresh.png' style='margin-left:25px;' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>" :
+								""
+							)+
+							(w.local && w.userCreated && w.storedLocally ?  
+								"<input type='image' src='img/garbage.png' style='margin-left:25px;' onclick='clearFromLocalStorage(\""+w.title+"\")' width='25' height='25'>" :
+								""
+							);
 			for (key in w.data){		
 				var color = graphCollection.categoryColors[key];
 				html+="<table style='margin-left:25px;'><tr><td>"+
