@@ -985,7 +985,7 @@ var userCreatedWorksheet;
 
 var numWorksheets = 0;
 function Worksheet(param) {
-	if (typeof param == 'string'){
+	if (typeof param == 'string'){  //URL of google spreadsheet containing datasets
 		this.URL = param;
 		this.local = false;
 		this.userCreated = false;

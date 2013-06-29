@@ -50,12 +50,14 @@ function saveLocally(title){
 }
 
 function clearFromLocalStorage(title){
-	if (window.confirm("Are you sure you want to remove this data category from local storage?  It will not be accessible in any other SeeIt modules you may open in the future."))
-		localStorage.removeItem("worksheet--"+title);
-		
-	graphCollection.worksheets[title].storedLocally = false;
 	
-	constructVis();
+	if (window.confirm("Are you sure you want to remove this data category from local storage?  It will not be accessible in any other SeeIt modules you may open in the future.")){
+		localStorage.removeItem("worksheet--"+title);
+			
+		graphCollection.worksheets[title].storedLocally = false;
+		
+		constructVis();
+	}
 }
 
 

@@ -27,6 +27,39 @@ function editInGoogleDocs(title){
 	window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
 }
 
+function saveLocally(title){
+	var worksheet = graphCollection.worksheets[title];
+	
+	if (localStorage.hasOwnProperty("worksheet--"+worksheet.title) == false || window.confirm("This data category is already stored.  Do you want to update the stored data?")){
+		localStorage["worksheet--"+worksheet.title] = JSON.stringify(worksheet);
+		
+		worksheet.storedLocally = true;
+		
+		$("#"+worksheet.title+"-save-local").attr("src", "img/pinON.png");
+		
+		for (var dataset_title in worksheet.edited){
+			worksheet.edited[dataset_title] = false;
+			$("#"+dataset_title+"div").css("color","black");
+		}
+		
+		window.alert("This data category has been saved in your browser's local storage. It will be accessible from other SeeIt modules, but your computer may be configured to erase this data once you have closed your browser or once you have logged out or shut down. If this data is important you should back it up yourself. You can do this by copying the text in the edit menu which can be accessed by clicking the pencil icon below the data category's title.  This text can be pasted into a spreadsheet or text file.");
+	
+		constructVis();
+	}
+	
+}
+
+function clearFromLocalStorage(title){
+	
+	if (window.confirm("Are you sure you want to remove this data category from local storage?  It will not be accessible in any other SeeIt modules you may open in the future.")){
+		localStorage.removeItem("worksheet--"+title);
+			
+		graphCollection.worksheets[title].storedLocally = false;
+		
+		constructVis();
+	}
+}
+
 
 function refreshWorksheet(title){
 	graphCollection.worksheets[title].fetchWorksheetData();
