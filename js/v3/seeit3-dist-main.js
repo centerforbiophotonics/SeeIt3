@@ -7,6 +7,7 @@ var dragging = false;
 var updateTimer = null;
 var displayOptionsShow =  false;
 var worksheetMenuShow = false;
+var confidenceIntervalMenuShow = false;
 
 //variables for resampling
 var resamplingInProgress = false;
@@ -3242,6 +3243,11 @@ function constructRegularGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
 			.visible(function(d) {
+				//if ((d.y+graph.baseLine) >= graph.h && graphCollection.bucketDotSize > 2){
+					//$("#dotSizeDec").click()
+					//constructVis();
+				
+				//}
 				return $('#checkboxHideData').attr('checked') != "checked"  && 
 					(d.y+graph.baseLine) < graph.h &&
 					d.x >= 0 &&
@@ -3527,15 +3533,19 @@ function constructSampleOptionsMenu(graph, index){
 	$('body').prepend("<div class=\"sampleOptions\" id=\"sampleOptions"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
+							 
 							 "<td><input type=\"button\" class=\"button\" value=\"Show Points\""+
 							 "onclick=\"javascript:setHighLightedSample("+index+")\"></td>"+
-							// "<td><input type=\"button\" value=\"Sample\""+
-							// "onclick=\"javascript:updateSample('sampleN"+index+"',"+index+")\"></td>"+
+							 
+							 "<td nowrap><input type=\"button\" class=\"button\" value=\"CI\""+
+							 "onclick=\"javascript:openCIMenu("+index+")\"></td>"+
+							 
 							 "<td nowrap><label for=\"sampleN"+index+"\">N = </label>"+
 							 "<input align=\"right\" type=\"text\" class =\"textbox\" id=\"sampleN"+index+"\""+
 								"size=\"2\""+
 								"onchange=\"javascript:updateSample('sampleN"+index+"',"+index+")\""+
 								"value='"+graph.samplingHowMany+"'></td>"+
+							 
 							 "</tr></table>";
 							
 							 

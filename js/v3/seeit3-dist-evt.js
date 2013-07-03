@@ -749,6 +749,119 @@ function partitionMoveTouchEnd(event){
 	touch.reset();
 }
 
+/* Confidence Interval Menu */
+function positionCIMenu(){
+	$('#confidenceIntervalMenu').css('position', 'absolute')
+										 .css('top', parseInt(window.innerHeight/2 - $('#confidenceIntervalMenu').height()/2)+"px")
+										 .css('left',parseInt(window.innerWidth/2 - $('#confidenceIntervalMenu').width()/2)+"px")
+										 .css("z-index",2);
+}
+
+$('#confidenceIntervalMenu').hide();
+
+var confidenceIntervalOnGraph = null;
+var confidenceIntervalIndex = null;
+function openCIMenu(index){
+	confidenceIntervalOnGraph = graphCollection.graphs[index].samplingFrom;
+	confidenceIntervalIndex = index;
+	
+	$("#ciMenuTitleSetName").html(confidenceIntervalOnGraph.includedCategories.join(" and "))
+	
+	if (confidenceIntervalMenuShow){
+		$('#confidenceIntervalMenu').slideUp();
+	} else {
+		positionCIMenu();
+		hideMenus();
+		$('#confidenceIntervalMenu').slideDown();
+	}
+	
+	confidenceIntervalMenuShow = !confidenceIntervalMenuShow;
+}
+
+function runCI(){
+	var graph = confidenceIntervalOnGraph;
+	var index = confidenceIntervalIndex;
+	var populationSize = 0;	
+	var sampleSize = parseInt($('#sampleN'+index).val());
+	var iterations = parseInt($("#ciIterations").val());
+	var sampleGraph = graphCollection.graphs[index];
+	var method = $('input[name=ciMethod]:checked').attr('id');
+	var popMedian = graph.getMeanMedianMode()[1];
+	
+	graph.includedCategories.forEach(function(cat){
+		populationSize += graphCollection.data[cat].length;
+	});
+	
+	var numWithinRange = 0;
+	var ciBounds = [];
+	for (var k = 0; k<iterations; k++){
+		graphCollection.data[sampleGraph.sampleSet] = [];
+		
+		var i = 0;
+		while(i<sampleSize){
+			var catInd = 0;
+			var index = rand(0,populationSize);
+			for (var j=0;j< graph.includedCategories.length; j++){
+				index -= graphCollection.data[graph.includedCategories[j]].length;
+				if (index < 0){
+					index += graphCollection.data[graph.includedCategories[j]].length;
+					break;
+				}
+				catInd++;
+			}
+			
+			var dat = graphCollection.data[graph.includedCategories[catInd]][index];
+			
+			dat.set = graph.includedCategories[catInd];
+			//if (!sampleContainsData(graphCollection.data[sampleGraph.sampleSet],dat,graph)){
+			graphCollection.data[sampleGraph.sampleSet].push(dat);
+			i++;
+			//}
+		}
+		
+		console.log(method)
+		if (method == "q1toq3") {
+			var q = getQuartiles(sampleGraph);
+			
+			if (popMedian > q[1] && popMedian < q[3])
+				numWithinRange++;
+			
+			ciBounds.push({
+				lower: q[1],
+				upper: q[3]
+			})
+				
+		} else if (method == "IQRx1p5divrootn") {
+			var q = getQuartiles(sampleGraph);
+			
+			if (popMedian > q[1]-(1.5*(q[3]-q[1])/Math.sqrt(sampleSize)) &&
+			    popMedian < q[3]+(1.5*(q[3]-q[1])/Math.sqrt(sampleSize)))
+				numWithinRange++;
+			
+			ciBounds.push({
+				lower: q[1]-(1.5*(q[3]-q[1])/Math.sqrt(sampleSize)),
+				upper: q[3]+(1.5*(q[3]-q[1])/Math.sqrt(sampleSize))
+			})
+		
+		}
+		
+	}
+	
+	$("#ciResult").html(numWithinRange/iterations);
+	$("#ciBounds").text("iteration, lower bound, upper bound\n"+
+											ciBounds.map(function(b,i){return (i+1)+','+b.lower+','+b.upper }).join('\n'));
+	
+}
+
+$("#confidenceIntervalMenuClose").click(function(){
+	$('#confidenceIntervalMenu').slideUp();
+});
+
+$("#runCI").click(function(){
+	runCI();
+});
+
+
 /*Worksheet Menu*/
 var worksheetNew;
 var worksheetToEdit;

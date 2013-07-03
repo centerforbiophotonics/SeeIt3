@@ -349,6 +349,7 @@ function hideMenus(){
 	$('#worksheetURLMenu').slideUp();
 	$('#aboutPopup').slideUp();
 	$('#worksheetDescriptionPopup').slideUp();
+	$('#confidenceIntervalMenu').slideUp();
 }
 
 function positionGroupingMenuOverGraph(index, graphCollection){
