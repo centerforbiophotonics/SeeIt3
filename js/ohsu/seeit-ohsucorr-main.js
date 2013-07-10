@@ -53,7 +53,7 @@ if (!exclusiveLoad){
 	exampleSpreadsheets.push(new Spreadsheet('ohsu-chidr'));
 }	
 
-/* populate dataset drop down menu */
+/* Register event for worksheets being loaded from google and wait untill the last has been loaded to render*/
 var lastSelectedWorksheet; 
 var numWorksheetsLoaded = 0;
 jQuery('body').bind('WorksheetLoaded', function(event) {
