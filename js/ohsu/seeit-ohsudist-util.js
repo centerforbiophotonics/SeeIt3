@@ -326,7 +326,7 @@ function showHideAdvancedOptions(){
 		graphCollection.editModeEnabled = false;
 		graphCollection.buttonIcon = true;
 		graphCollection.buttonText = true;
-		$("#drawMode option[value='gravity']").attr('selected', 'selected');
+		$("#drawMode option[value='floating']").attr('selected', 'selected');
 		graphCollection.buckets = 30;
 		$("#divisionsValue").html(graphCollection.buckets);
 		

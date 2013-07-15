@@ -92,7 +92,6 @@ if (!ie){
 	//Push worksheets in localStorage
 	for (var w_title in localStorage){
 		var worksheet = JSON.parse(localStorage[w_title]);
-		console.log(worksheet);
 		worksheet.fromLocalStorage = true;
 		exampleSpreadsheets.push(new Spreadsheet(worksheet));
 	}

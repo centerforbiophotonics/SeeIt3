@@ -97,7 +97,6 @@ GraphCollection.prototype = {
 		for (key in worksheet.data){
 			this.data[key] = worksheet.data[key];
 			this.worksheets[worksheet.title] = worksheet;
-			console.log(key);
 			this.categoryColors[key] = this.colorScale(this.numberOfCategories);
 			this.numberOfCategories++;
 			this.editedCategories[key] = worksheet.edited[key];
@@ -1251,11 +1250,10 @@ function Spreadsheet(key) {
 			this.key = 'local';
 			this.local = true;
 			this.constructUserDefinedWorksheet(key);
-			console.log("user def created");
+			
 		} else if (key.hasOwnProperty('fromLocalStorage')){  //User defined and from localStorage
 			this.worksheets.push(new Worksheet(key));
-			console.log("user def from local");
-			//numWorksheets++;
+			
 		} else {  //hardcoded json from google spreadsheets
 			this.key = 'local'
 			this.constructLocalWorksheets(key);

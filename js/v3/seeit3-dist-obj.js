@@ -1186,17 +1186,16 @@ function Spreadsheet(key) {
 		this.key = key;
 		this.fetchWorksheets();
 		this.local = false;
-		console.log("regular default");
+	
 	} else {
 		if (key.hasOwnProperty('userDefined')){  //User defined and just created
 			this.key = 'local';
 			this.local = true;
 			this.constructUserDefinedWorksheet(key);
-			console.log("user def created");
+
 		} else if (key.hasOwnProperty('fromLocalStorage')){  //User defined and from localStorage
 			this.worksheets.push(new Worksheet(key));
-			console.log("user def from local");
-			//numWorksheets++;
+
 		} else {  //hardcoded json from google spreadsheets
 			this.key = 'local'
 			this.constructLocalWorksheets(key);

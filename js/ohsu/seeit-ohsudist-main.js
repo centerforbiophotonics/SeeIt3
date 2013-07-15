@@ -27,6 +27,10 @@ var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
 									 ];
 
 var exampleSpreadsheets = [ ];
+var user = null;
+var preselected_x_axis = null;
+var preselected_y_axis = null;
+
 
 var ie = $.browser.msie != undefined && $.browser.msie != false;
 
@@ -86,14 +90,18 @@ if (!ie){
 				}
 				else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
 				
-			}	
+			}	else if (param[0].indexOf("user=") != -1)
+				user = parseInt(param[1]);
+			else if (param[0].indexOf("x_axis=") != -1)
+				preselected_x_axis = param[1].trim();
+			else if (param[0].indexOf("y_axis=") != -1)
+				preselected_y_axis = param[1].trim();
 		});
 	}
 	
 	//Push worksheets in localStorage
 	for (var w_title in localStorage){
 		var worksheet = JSON.parse(localStorage[w_title]);
-		console.log(worksheet);
 		worksheet.fromLocalStorage = true;
 		exampleSpreadsheets.push(new Spreadsheet(worksheet));
 	}
@@ -962,7 +970,6 @@ function constructDatasetPanel(){
 			for (j = 0; j < len; j++)
 			{
 				key = keys[j];				
-				console.log(key);
 				var color = graphCollection.categoryColors[key];
 				html+="<table style='margin-left:25px;'><tr><td>"+
 							"<input id='colorPick"+picker+"' class='color {hash:false}' "+
