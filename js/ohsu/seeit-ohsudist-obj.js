@@ -541,6 +541,8 @@ function Graph(graphCollection){
 	
 	this.groupingMode = "NoGroups";
 	
+	this.hideDots = false;
+	
 	this.showMMM = false;
 	this.showMean = false;
 	this.showMedian = false;
@@ -646,10 +648,10 @@ Graph.prototype = {
 				//Adjust fixed interval partition width to avoid hanging on large domains
 				this.graphCollection.graphs.forEach(function(g){
 					var mag = magnitude(g.scaleMax - g.scaleMin);
-					if (Math.pow(10, mag)*4 < g.scaleMax)
-						g.partitionIntervalWidth = Math.pow(10, mag);
+					if (Math.pow(g.partitionIntervalWidth, mag)*4 < g.scaleMax)
+						g.partitionIntervalWidth = Math.pow(g.partitionIntervalWidth, mag);
 					else
-						g.partitionIntervalWidth = Math.pow(10, mag-1);
+						g.partitionIntervalWidth = Math.pow(g.partitionIntervalWidth, mag-1);
 				});
 				
 				this.updateInsufDataFlags();
@@ -753,10 +755,10 @@ Graph.prototype = {
 		this.graphCollection.scaleAllGraphsToFit();
 		this.graphCollection.graphs.forEach(function(g){
 			var mag = magnitude(g.scaleMax - g.scaleMin);
-			if (Math.pow(10, mag)*4 < g.scaleMax)
-				g.partitionIntervalWidth = Math.pow(10, mag);
+			if (Math.pow(g.partitionIntervalWidth, mag)*4 < g.scaleMax)
+				g.partitionIntervalWidth = Math.pow(g.partitionIntervalWidth, mag);
 			else
-				g.partitionIntervalWidth = Math.pow(10, mag-1);
+				g.partitionIntervalWidth = Math.pow(g.partitionIntervalWidth, mag-1);
 		});
 		
 		if (this.dataVals().length < 4)

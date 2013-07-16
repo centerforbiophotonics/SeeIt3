@@ -985,7 +985,7 @@ function constructDatasetPanel(){
 							"ontouchmove=\"sideCatTouchMove(event, '"+key+"')\""+
 							"ontouchend=\"sideCatTouchEnd(event, '"+key+"')\""+
 							">"+
-							key+"</div></td></tr></table>";
+							key+" <br>(n = "+w.data[key].length+")</div></td></tr></table>";
 				picker++;
 			}
 							
@@ -2485,7 +2485,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 	} 
 }
 function constructRegularGraph(graphPanel, graph, index){
-
+	//graph.hideDots = false;
+	
 	if (graph.includedCategories.length > 0){
 	/* Number of datapoints N */
 		graphPanel.add(pv.Label)
@@ -3313,16 +3314,28 @@ function constructRegularGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
 			.visible(function(d) {
-				//if ((d.y+graph.baseLine) >= graph.h && graphCollection.bucketDotSize > 2){
-					//$("#dotSizeDec").click()
-					//constructVis();
-				
-				//}
+				if ((d.y+graph.baseLine) >= graph.h 
+							&& graphCollection.bucketDotSize > 2 
+							&& graph.groupingMode != "FixedIntervalGroups" 
+							&& !graph.histogram){
+					graph.groupingMode = "FixedIntervalGroups"
+					graph.histogram = true;
+					
+					graph.hideDots = true;
+					$("#checkboxHideDots").prop('checked', true);
+					graphCollection.advancedUser = true;
+					showHideAdvancedOptions();
+					
+					$('#fixedIntervalWidth').val("2");
+					graph.partitionIntervalWidth = 2;
+					constructVis();
+				}
 				return $('#checkboxHideData').attr('checked') != "checked"  && 
 					(d.y+graph.baseLine) < graph.h &&
 					d.x >= 0 &&
 					d.x <= graph.w &&
-					!graphCollection.lineMode;
+					!graphCollection.lineMode &&
+					!graph.hideDots;
 			})
 			.left(function(d) { return d.x })
 			.bottom(function(d) { return d.y + graph.baseLine })
@@ -3468,7 +3481,7 @@ function constructRegularGraph(graphPanel, graph, index){
 		
 		//Graph Overflow Warning Message
 		graphPanel.add(pv.Label)
-			.text("Warning! Data points lie outside graph boundaries.")
+			.text("Showing data as a histogram because the number of points in the dataset is too large.")
 			.textStyle("red")
 			.font(fontString)
 			.top(35)

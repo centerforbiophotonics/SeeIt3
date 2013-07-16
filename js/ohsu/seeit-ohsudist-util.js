@@ -334,7 +334,8 @@ function showHideAdvancedOptions(){
 			if (g.groupingMode != "NoGroups" &&
 					g.groupingMode != "UserDefGroups" &&
 					g.groupingMode != "TwoEqualGroups" &&
-					g.groupingMode != "FourEqualGroups")
+					g.groupingMode != "FourEqualGroups" &&
+					g.goupingMode != "FixedIntervalGroups"	)
 			g.groupingMode = "NoGroups";
 		});
 		graphCollection.updateMenuOptions();

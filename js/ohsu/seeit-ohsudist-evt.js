@@ -251,8 +251,12 @@ $('#fixedIntervalWidth').change(function(event) {
 		$('#fixedIntervalWidth').val(graphCollection.graphs[graphCollection.selectedGraphIndex].partitionIntervalWidth);
 	} else {
 		graphCollection.graphs[graphCollection.selectedGraphIndex].partitionIntervalWidth = textBoxVal;
-		vis.render();
+		constructVis();
 	}
+});
+
+$("#checkboxHideDots").change(function() {
+	graphCollection.graphs[graphCollection.selectedGraphIndex].hideDots = $("#checkboxHideDots").is(':checked');	
 });
 
 $('#fitScaleToData').change(function() {
