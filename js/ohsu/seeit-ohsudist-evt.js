@@ -331,7 +331,7 @@ $("#dotSizeInc").click(function(){
 })
 
 $("#dotSizeDec").click(function(){
-	if (graphCollection.bucketDotSize > 2)
+	if (graphCollection.bucketDotSize > 1)
 		graphCollection.bucketDotSize--;
 	$("#dotSizeValue").html(graphCollection.bucketDotSize);
 	vis.render();

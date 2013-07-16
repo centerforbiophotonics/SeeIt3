@@ -2090,7 +2090,7 @@ $("#dotSizeInc").click(function(){
 })
 
 $("#dotSizeDec").click(function(){
-	if (graphCollection.dotSize > 2)
+	if (graphCollection.dotSize > 1)
 		graphCollection.dotSize--;
 	$("#dotSizeValue").html(graphCollection.dotSize);
 	vis.render();
