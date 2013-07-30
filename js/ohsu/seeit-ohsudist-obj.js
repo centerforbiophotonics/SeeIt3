@@ -529,7 +529,7 @@ function Graph(graphCollection){
 	
 	/* Partition Params */
 	this.partitionGroupSize = 4;
-	this.partitionIntervalWidth = 10;
+	this.partitionIntervalWidth = 2;
 	
 	this.histogram = false;
 	this.advBoxPlot = false;

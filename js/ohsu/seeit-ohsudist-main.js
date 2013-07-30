@@ -26,10 +26,11 @@ var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
 										[103, 78, 32]			//Resampling
 									 ];
 
-var exampleSpreadsheets = [ ];
+var exampleSpreadsheets = [];
 var user = null;
-var preselected_x_axis = null;
-var preselected_y_axis = null;
+var preselected_graphs = [];
+
+
 
 
 var ie = $.browser.msie != undefined && $.browser.msie != false;
@@ -40,7 +41,6 @@ if (!ie){
 	var urlParamsUsed = false;
 	var exclusiveLoad = false;	
 	if (preload.substring(0, 1) == '?') {
-			console.log(preload);
 			urlParamsUsed = true;
 			
 			preload = preload.substring(1);
@@ -92,10 +92,10 @@ if (!ie){
 				
 			}	else if (param[0].indexOf("user=") != -1)
 				user = parseInt(param[1]);
-			else if (param[0].indexOf("x_axis=") != -1)
-				preselected_x_axis = param[1].trim();
-			else if (param[0].indexOf("y_axis=") != -1)
-				preselected_y_axis = param[1].trim();
+			else if (param[0].indexOf("graph") != -1){
+				var graph_index = param[0].replace("graph","").replace("=","");
+				preselected_graphs[graph_index] = param[1].trim();
+			}
 		});
 	}
 	
@@ -155,13 +155,32 @@ jQuery('body').bind('CHIDRDatasetLoaded', function(event) {
 		graphCollection.addGraph();
 		graphCollection.updateMenuOptions();
 		constructVis();
-		if (preselected_x_axis != null){ 
-			graphCollection.graphs[0].assignX(getCHIDRNameFromID(preselected_x_axis));		
-		}
 		
-		if (preselected_y_axis != null){
-			graphCollection.graphs[0].assignY(getCHIDRNameFromID(preselected_y_axis));	
+		if (preselected_graphs.length > 0){
+			var num_assigned = 0;
+			preselected_graphs.forEach(function(id){
+				if (id != undefined){
+					if (num_assigned == graphCollection.graphs.length)
+						graphCollection.addGraph();
+						
+					var last_graph_index = graphCollection.graphs.length-1,
+							CHIDR_name = getCHIDRNameFromID(id)
+					
+					graphCollection.graphs[last_graph_index].addCategory(CHIDR_name);	
+					
+					num_assigned++;
+					
+				}
+			});
+			
 		}
+		//if (preselected_x_axis != null){ 
+			//graphCollection.graphs[0].assignX(getCHIDRNameFromID(preselected_x_axis));		
+		//}
+		
+		//if (preselected_y_axis != null){
+			//graphCollection.graphs[0].assignY(getCHIDRNameFromID(preselected_y_axis));	
+		//}
 		showHideAdvancedOptions();
 		toggleDatasetMenu();
 	}

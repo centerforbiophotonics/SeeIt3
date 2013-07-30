@@ -39,7 +39,8 @@ function getCHIDRIdFromDatasetName(name){
 
 function getCHIDRNameFromID(id){	
 	for (w in graphCollection.worksheets){
-			if (id in graphCollection.worksheets[w].chidr_name_by_id)
+			if (graphCollection.worksheets[w].chidr_name_by_id != undefined &&
+					id in graphCollection.worksheets[w].chidr_name_by_id)
 				return graphCollection.worksheets[w].chidr_name_by_id[id];
 	}	
 }
