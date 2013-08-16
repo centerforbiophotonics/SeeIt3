@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>SeeIt3 Distributions</title>
+  <title>SeeIt3 Distributions STEW</title>
   <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.8.7.custom.css"/>
   <link rel="stylesheet" type="text/css" href="css/seeit3.css"/>
   <script src="lib/protovis-3.2/protovis-d3.2.js"></script>
@@ -183,15 +183,21 @@
 	<label for="ciIterations">Number of iterations: </label> 
 	<input type="text" id="ciIterations" value="1000" class="textbox"><br>
 	
-	Method:<br>
+	Interval Formula:<br>
 	<input type="radio" id="q1toq3" name="ciMethod" checked><label for="q1toq3">Q1 to Q3</label><br>
 	<input type="radio" id="IQRx1p5divrootn" name="ciMethod"><label for="IQRx1p5divrootn">q1 - 1.5*IQR/(root n) to q3 + 1.5*IQR/(root n)</label><br>
 	
 	<input type="button" id="runCI" value="Run"><br>
 	
-	<textarea id="ciBounds" class="textbox" ></textarea><br>
+	<div id="ciResults" style="display:none;">
+		The proportion of intervals that trap the population median is: <div id="ciResult"></div>
+		<br>
+		The upper and lower bounds of the sample taken in each iteration are listen below in a format that can be pasted into SeeIt or a spreadsheet:<br>
+		<textarea id="ciBounds" class="textbox" style="width:300px; height:300px;" ></textarea><br>
+	</div>
 	
-	<div id="ciResult"></div>
+	
+	
 </div>
 
 <div id="worksheetMenu">

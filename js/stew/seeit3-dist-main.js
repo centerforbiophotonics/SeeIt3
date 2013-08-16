@@ -117,6 +117,13 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		positionGroupingMenuOverGraph(0,graphCollection);
 		positionDisplayMenu();
 		toggleDatasetMenu();
+		
+		//Start sampling engine and enable box plot
+		graphCollection.graphs[0].groupingMode = "BoxPlot";
+		
+		$("#sampling").attr('checked', true);
+		samplingCheckboxChange();
+		
   }
 });
 
@@ -3539,7 +3546,7 @@ function constructSampleOptionsMenu(graph, index){
 							 "<td nowrap><input type=\"button\" class=\"button\" value=\"CI\""+
 							 "onclick=\"javascript:openCIMenu("+index+")\"></td>"+
 							 
-							 "<td nowrap><label for=\"sampleN"+index+"\">N = </label>"+
+							 "<td nowrap><label for=\"sampleN"+index+"\">n = </label>"+
 							 "<input align=\"right\" type=\"text\" class =\"textbox\" id=\"sampleN"+index+"\""+
 								"size=\"2\""+
 								"onchange=\"javascript:updateSample('sampleN"+index+"',"+index+")\""+

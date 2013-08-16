@@ -623,6 +623,10 @@ Graph.prototype = {
 				!this.isIntermedResamplingGraph){
 			
 			if ((this.isResamplingGraph && this.includedCategories.length < 1) || !this.isResamplingGraph){
+				var increaseSamplingHowMany = false;
+				if (this.includedCategories.length == 0)
+					increaseSamplingHowMany =  true;
+				
 				this.includedCategories.push(category);
 				
 				this.selectedCategory = category;
@@ -659,8 +663,16 @@ Graph.prototype = {
 				this.updateInsufDataFlags();
 				
 				if (this.testMode == "sampling")
-					for (var i=0; i<this.samplingTo.length; i++)
+					for (var i=0; i<this.samplingTo.length; i++){
+						if (increaseSamplingHowMany) {
+							if (this.n > 15)
+								this.samplingTo[i].samplingHowMany = 15;
+							else
+								this.samplingTo[i].samplingHowMany = this.n;
+						}
 						this.samplingTo[i].updateSample(this.samplingTo[i].samplingHowMany);
+								
+					}
 						
 				if (this.graphCollection.resamplingEnabled)
 					if (this.graphCollection.graphs[0].population1 == this ||

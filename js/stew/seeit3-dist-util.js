@@ -350,6 +350,7 @@ function hideMenus(){
 	$('#aboutPopup').slideUp();
 	$('#worksheetDescriptionPopup').slideUp();
 	$('#confidenceIntervalMenu').slideUp();
+	confidenceIntervalMenuShow = false;
 }
 
 function positionGroupingMenuOverGraph(index, graphCollection){

@@ -128,7 +128,9 @@ jQuery('#groupingOptions').change(function(event) {
 });
 
 //sampling engine checkbox
-jQuery('#sampling').change(function(event) {
+jQuery('#sampling').change(samplingCheckboxChange);
+
+function samplingCheckboxChange(){
 	var testMode = $('#sampling').attr('checked') == 'checked' ? "sampling" : "noTest";
 	graphCollection.graphs[graphCollection.selectedGraphIndex].testMode = testMode;
 	
@@ -155,7 +157,7 @@ jQuery('#sampling').change(function(event) {
 	}
 	
 	constructVis();
-});
+}
 
 //number of sampling graphs per source graph
 jQuery('#numSamples').change(function(event){
@@ -850,11 +852,14 @@ function runCI(){
 	$("#ciResult").html(numWithinRange/iterations);
 	$("#ciBounds").text("iteration, lower bound, upper bound\n"+
 											ciBounds.map(function(b,i){return (i+1)+','+b.lower+','+b.upper }).join('\n'));
+											
+	$("#ciResults").show();
 	
 }
 
 $("#confidenceIntervalMenuClose").click(function(){
 	$('#confidenceIntervalMenu').slideUp();
+	confidenceIntervalMenuShow = false;
 });
 
 $("#runCI").click(function(){
