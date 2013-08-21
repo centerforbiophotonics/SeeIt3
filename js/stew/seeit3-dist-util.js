@@ -225,8 +225,13 @@ function partitionDataInFour(graph){
 	return divs;
 }
 
-function getQuartiles(graph){
-	var data = graph.dataVals();
+function getQuartiles(source){
+	var data = null;
+	if (source instanceof Array) //Data Array
+		data = source.sort(function(a,b){return a.value-b.value});
+	else                       	 //Graph Option
+		data = source.dataVals();
+	
 	var divs = [data[0]];
 	var median = data.length%2 == 0 ? (data[Math.floor(data.length/2)]+data[Math.floor(data.length/2-1)])/2 : data[Math.floor(data.length/2)];
 	var lower_half = data.slice(0, data.length/2);

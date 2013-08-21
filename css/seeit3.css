@@ -331,6 +331,13 @@ div.resampleOptions {
 	left:0px;
 }
 
+div.confOptions {
+	position:absolute;
+	overflow-x:hidden;
+	top:0px;
+	left:0px;
+}
+
 #ieWarning {
 	font:bold 30px arial
 }

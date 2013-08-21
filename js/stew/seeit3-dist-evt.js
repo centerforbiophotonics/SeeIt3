@@ -132,28 +132,43 @@ jQuery('#sampling').change(samplingCheckboxChange);
 
 function samplingCheckboxChange(){
 	var testMode = $('#sampling').attr('checked') == 'checked' ? "sampling" : "noTest";
-	graphCollection.graphs[graphCollection.selectedGraphIndex].testMode = testMode;
 	
-	if (graphCollection.graphs[graphCollection.selectedGraphIndex].testMode != "sampling")
-		graphCollection.graphs[graphCollection.selectedGraphIndex].samplingData = [];
+	var graphs = graphCollection.graphs;
+	var selectedGraphIndex = graphCollection.selectedGraphIndex;
+	var selectedGraph = graphs[selectedGraphIndex];
 	
-	graphCollection.graphs[graphCollection.selectedGraphIndex].sampleSet = [];
-	graphCollection.graphs[graphCollection.selectedGraphIndex].samplingTo = [];
-	for (var i=1; i<= graphCollection.graphs[graphCollection.selectedGraphIndex].samplingToHowMany; i++){
-		if (graphCollection.graphs[graphCollection.selectedGraphIndex+1] != undefined){
-			if (graphCollection.graphs[graphCollection.selectedGraphIndex+1].isSamplingGraph){
-				delete graphCollection.data[graphCollection.graphs[graphCollection.selectedGraphIndex].sampleSet[i-1]];
-				graphCollection.removeGraph(graphCollection.graphs[graphCollection.selectedGraphIndex+1]);
+	
+	
+	selectedGraph.testMode = testMode;
+	
+	
+	if (selectedGraph.testMode != "sampling")
+		selectedGraph.samplingData = [];
+	
+	selectedGraph.sampleSet = [];
+	selectedGraph.samplingTo = [];
+	
+	for (var i=1; i<= selectedGraph.samplingToHowMany; i++){
+		if (graphs[selectedGraphIndex+1] != undefined){
+			if (graphs[selectedGraphIndex+1].isSamplingGraph){
+				delete graphCollection.data[selectedGraph.sampleSet[i-1]];
+				graphCollection.removeGraph(graphs[selectedGraphIndex+1]);
+			} else {
+				i++;
 			}
 		}
 	}
 	
 	if (testMode == "sampling"){
-		for (i=1; i<= graphCollection.graphs[graphCollection.selectedGraphIndex].samplingToHowMany; i++){
-			graphCollection.addSamplingGraph(graphCollection.selectedGraphIndex, i);
-			graphCollection.graphs[graphCollection.selectedGraphIndex+i].updateSample(graphCollection.graphs[graphCollection.selectedGraphIndex+i].samplingHowMany);
+		for (i=1; i<= graphCollection.graphs[selectedGraphIndex].samplingToHowMany; i++){
+			graphCollection.addSamplingGraph(selectedGraphIndex, i);
+			graphs[selectedGraphIndex+i].updateSample(graphs[selectedGraphIndex+i].samplingHowMany);
 		}
-		setHighLightedSample(graphCollection.selectedGraphIndex+1);
+		setHighLightedSample(selectedGraphIndex+1);
+		
+		//$('#confidenceIntervalContainer').show()
+	} else {
+		//$('#confidenceIntervalContainer').hide()
 	}
 	
 	constructVis();
@@ -184,6 +199,34 @@ jQuery('#numSamples').change(function(event){
 		selectedGraph.samplingToHowMany = newNumSamples;
 	}
 });
+
+
+$('#confidenceInterval').change(confIntervalCheckboxChange)
+
+function confIntervalCheckboxChange(event){
+	var confidenceIntervalChecked = $('#confidenceInterval').prop('checked');
+	
+	var graphs = graphCollection.graphs;
+	var selectedGraphIndex = graphCollection.selectedGraphIndex;
+	var selectedGraph = graphs[selectedGraphIndex];
+	
+	selectedGraph.hasConfidenceIntervalGraph = confidenceIntervalChecked;
+	
+	
+	if(selectedGraph.confBoundsSet != null && selectedGraph.confSink != null){
+		delete graphCollection.data[selectedGraph.confBoundsSet]
+		graphCollection.removeGraph(selectedGraph.confSink);
+		selectedGraph.confBoundsSet = null;
+		selectedGraph.confSink = null;
+	}
+	
+	if (selectedGraph.hasConfidenceIntervalGraph){
+		graphCollection.addConfidenceIntervalGraph(selectedGraphIndex);
+	}
+	
+	constructVis();
+}
+
 
 $('#checkboxMMM').change(function(event){
 	$('#checkboxMean').attr('checked', $('#checkboxMMM').is(':checked'));
@@ -751,120 +794,108 @@ function partitionMoveTouchEnd(event){
 	touch.reset();
 }
 
-/* Confidence Interval Menu */
-function positionCIMenu(){
-	$('#confidenceIntervalMenu').css('position', 'absolute')
-										 .css('top', parseInt(window.innerHeight/2 - $('#confidenceIntervalMenu').height()/2)+"px")
-										 .css('left',parseInt(window.innerWidth/2 - $('#confidenceIntervalMenu').width()/2)+"px")
-										 .css("z-index",2);
-}
-
-$('#confidenceIntervalMenu').hide();
-
-var confidenceIntervalOnGraph = null;
-var confidenceIntervalIndex = null;
-function openCIMenu(index){
-	confidenceIntervalOnGraph = graphCollection.graphs[index].samplingFrom;
-	confidenceIntervalIndex = index;
+/* Confidence Interval Bounds Graph */
+function runCI(index){
+	var sourceGraph = graphCollection.graphs[index].confSource;
+	var sourceGraphCategories = sourceGraph.includedCategories;
+	var sinkGraph = sourceGraph.confSink;
 	
-	$("#ciMenuTitleSetName").html(confidenceIntervalOnGraph.includedCategories.join(" and "))
-	
-	if (confidenceIntervalMenuShow){
-		$('#confidenceIntervalMenu').slideUp();
-	} else {
-		positionCIMenu();
-		hideMenus();
-		$('#confidenceIntervalMenu').slideDown();
-	}
-	
-	confidenceIntervalMenuShow = !confidenceIntervalMenuShow;
-}
-
-function runCI(){
-	var graph = confidenceIntervalOnGraph;
-	var index = confidenceIntervalIndex;
 	var populationSize = 0;	
-	var sampleSize = parseInt($('#sampleN'+index).val());
-	var iterations = parseInt($("#ciIterations").val());
-	var sampleGraph = graphCollection.graphs[index];
-	var method = $('input[name=ciMethod]:checked').attr('id');
-	var popMedian = graph.getMeanMedianMode()[1];
+	var sampleSize = parseInt($('#ciSampleSize-'+index).val());
+	var iterations = parseInt($("#ciIterations-"+index).val());
+	var method = $('select#ciBoundFormula-'+index+' option:selected').val();
+	var popMedian = sourceGraph.getMeanMedianMode()[1];
 	
-	graph.includedCategories.forEach(function(cat){
+	console.log("Pop Med = "+popMedian);
+	
+	//console.log(index);
+	//console.log(sampleSize);
+	//console.log(iterations);
+	//console.log(method);
+	
+	sourceGraphCategories.forEach(function(cat){
 		populationSize += graphCollection.data[cat].length;
 	});
 	
 	var numWithinRange = 0;
 	var ciBounds = [];
 	for (var k = 0; k<iterations; k++){
-		graphCollection.data[sampleGraph.sampleSet] = [];
+		var sample = [];
 		
 		var i = 0;
 		while(i<sampleSize){
 			var catInd = 0;
 			var index = rand(0,populationSize);
-			for (var j=0;j< graph.includedCategories.length; j++){
-				index -= graphCollection.data[graph.includedCategories[j]].length;
+			for (var j=0;j< sourceGraphCategories.length; j++){
+				index -= graphCollection.data[sourceGraphCategories[j]].length;
 				if (index < 0){
-					index += graphCollection.data[graph.includedCategories[j]].length;
+					index += graphCollection.data[sourceGraphCategories[j]].length;
 					break;
 				}
 				catInd++;
 			}
 			
-			var dat = graphCollection.data[graph.includedCategories[catInd]][index];
+			var dat = graphCollection.data[sourceGraph.includedCategories[catInd]][index];
 			
-			dat.set = graph.includedCategories[catInd];
-			//if (!sampleContainsData(graphCollection.data[sampleGraph.sampleSet],dat,graph)){
-			graphCollection.data[sampleGraph.sampleSet].push(dat);
-			i++;
-			//}
+			dat.set = sourceGraphCategories[catInd];
+			sample.push(dat);
+			i++;	
 		}
 		
-		console.log(method)
+		//console.log(sample);
+		
 		if (method == "q1toq3") {
-			var q = getQuartiles(sampleGraph);
+			var q = getQuartiles(sample);
+			var q1 = q[1].value;
+			var q3 = q[3].value;
 			
-			if (popMedian > q[1] && popMedian < q[3])
+			console.log(q);
+			
+			if (popMedian > q1 && popMedian < q3)
 				numWithinRange++;
+				
+			
 			
 			ciBounds.push({
-				lower: q[1],
-				upper: q[3]
+				lower: q1,
+				upper: q3
 			})
 				
 		} else if (method == "IQRx1p5divrootn") {
-			var q = getQuartiles(sampleGraph);
+			var q = getQuartiles(sample);
+			var lowerBound = q1-(1.5*(q3-q1)/Math.sqrt(sampleSize));
+			var upperBound = q3+(1.5*(q3-q1)/Math.sqrt(sampleSize))
 			
-			if (popMedian > q[1]-(1.5*(q[3]-q[1])/Math.sqrt(sampleSize)) &&
-			    popMedian < q[3]+(1.5*(q[3]-q[1])/Math.sqrt(sampleSize)))
+			
+			
+			if (popMedian > lowerBound &&
+			    popMedian < upperBound)
 				numWithinRange++;
 			
 			ciBounds.push({
-				lower: q[1]-(1.5*(q[3]-q[1])/Math.sqrt(sampleSize)),
-				upper: q[3]+(1.5*(q[3]-q[1])/Math.sqrt(sampleSize))
+				lower: lowerBound,
+				upper: upperBound
 			})
-		
 		}
 		
+		
 	}
+	graphCollection.data[sourceGraph.confBoundsSet] = ciBounds;
+	//console.log(ciBounds);
 	
-	$("#ciResult").html(numWithinRange/iterations);
-	$("#ciBounds").text("iteration, lower bound, upper bound\n"+
-											ciBounds.map(function(b,i){return (i+1)+','+b.lower+','+b.upper }).join('\n'));
+	//console.log(numWithinRange)
+	//console.log(iterations)
+	
+	sinkGraph.confResult = numWithinRange/iterations;
+	
+	constructVis();	
+	//$("#ciResult").html(numWithinRange/iterations);
+	//$("#ciBounds").text("iteration, lower bound, upper bound\n"+
+											//ciBounds.map(function(b,i){return (i+1)+','+b.lower+','+b.upper }).join('\n'));
 											
-	$("#ciResults").show();
-	
+	//$("#ciResults").show();	
 }
 
-$("#confidenceIntervalMenuClose").click(function(){
-	$('#confidenceIntervalMenu').slideUp();
-	confidenceIntervalMenuShow = false;
-});
-
-$("#runCI").click(function(){
-	runCI();
-});
 
 
 /*Worksheet Menu*/

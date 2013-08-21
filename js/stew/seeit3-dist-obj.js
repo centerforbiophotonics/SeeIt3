@@ -84,6 +84,7 @@ function GraphCollection(){
 	this.nextSampleSetNumber = 0;
 	this.nextResampleSetNumber = 0;
 	this.nextIntermedResampleSetNumber = 0;
+	this.nextConfBoundsSetNumber = 0;
 	
 	this.resamplingEnabled = false;
 	
@@ -191,28 +192,6 @@ GraphCollection.prototype = {
 	},
 	
 	addResamplingGraph: function(){
-		////Add a graph to display intermediate resampling results.
-		//this.graphs.splice(0,0,new Graph(this));
-		
-		//this.graphs[0].testMode = "intermedResampling";
-		//this.graphs[0].isIntermedResamplingGraph = true;
-		//this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+graphCollection.nextIntermedResampleSetNumber++;
-		//this.data[this.graphs[0].intermedResampleSet] = [];
-		//this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
-		//this.graphs[0].fitScalesToData = true;
-		//this.graphs[0].baseLine = 60;	
-		
-		////Add a graph to display intermediate resampling results.
-		//this.graphs.splice(0,0,new Graph(this));
-		
-		//this.graphs[0].testMode = "intermedResampling";
-		//this.graphs[0].isIntermedResamplingGraph = true;
-		//this.graphs[0].intermedResampleSet = "***intermedResampleSet-"+graphCollection.nextIntermedResampleSetNumber++;
-		//this.data[this.graphs[0].intermedResampleSet] = [];
-		//this.graphs[0].addCategory(this.graphs[0].intermedResampleSet);
-		//this.graphs[0].fitScalesToData = true;
-		//this.graphs[0].baseLine = 60;
-	
 		//Add a graph to display the overall resampling results.
 		this.graphs.splice(0,0,new Graph(this));
 			
@@ -226,6 +205,32 @@ GraphCollection.prototype = {
 		this.graphs[0].baseLine = 60;
 		
 		this.setH(this.calcGraphHeight());
+	},
+	
+	addConfidenceIntervalGraph: function(index){
+		this.graphs.splice(index+1,0,new Graph(this));
+		
+		var sourceGraph = this.graphs[index];
+		var sinkGraph = this.graphs[index+1];
+
+		sourceGraph.confSink = sinkGraph;
+		sinkGraph.confSource = sourceGraph;
+
+		sourceGraph.hasConfidenceIntervalGraph = true;
+		sinkGraph.isConfidenceIntervalGraph = true;
+		
+		var confBoundsSet = "***confBoundsSet-"+graphCollection.nextConfBoundsSetNumber++;
+		sourceGraph.confBoundsSet = confBoundsSet;
+		sinkGraph.confBoundsSet = confBoundsSet;
+		
+		this.data[confBoundsSet] = [];
+
+		sinkGraph.includedCategories = [];
+		sinkGraph.addConfCategory(confBoundsSet);
+		
+		sinkGraph.baseLine = 60
+		
+		this.setH(this.calcGraphHeight());	
 	},
 	
 	removeGraph: function(graph){
@@ -246,6 +251,8 @@ GraphCollection.prototype = {
 				
 		} else if (graph.testMode == "resampling") {
 			delete graphCollection.data[graph.resampleSet];
+		} else if (graph.hasConfidenceIntervalGraph) {
+			
 		}
 		
 		//reassign population for resampling if graph being removed was assigned as a population
@@ -586,6 +593,15 @@ function Graph(graphCollection){
 	this.resamplingPVals = [];					//P Vals at significant number of iterations
 	this.resamplingMaxPVal = -1;
 	this.resamplingReplacement = false;
+	
+	this.isConfidenceIntervalGraph = false;		//Used by confidence graph
+	this.hasConfidenceIntervalGraph = false;	//Used by source graph
+	this.confSource = null;										//Used by confidence graph
+	this.confSink = null;											//Used by source graph
+	this.confSampleSize = 15;									//Used by confidence graph
+	this.confIterations = 1000;								//Used by confidence graph
+	this.confBoundsSet = null;								//Used by both
+	this.confResult = null;
 }
 
 Graph.prototype = {
@@ -620,7 +636,8 @@ Graph.prototype = {
 		if (this.includedCategories.indexOf(category) == -1 && 
 				this.includedCategories.length < 4 &&
 				!this.isSamplingGraph &&
-				!this.isIntermedResamplingGraph){
+				!this.isIntermedResamplingGraph &&
+				!this.isConfidenceIntervalGraph){
 			
 			if ((this.isResamplingGraph && this.includedCategories.length < 1) || !this.isResamplingGraph){
 				var increaseSamplingHowMany = false;
@@ -690,14 +707,25 @@ Graph.prototype = {
 	
 	addSampleCategory: function(category){
 		this.includedCategories.push(category);
-		this.xMax = this.samplingFrom.xMax;//pv.max(this.samplingFrom.dataVals(), function(d) { return d });
-		this.xMin = this.samplingFrom.xMin;//pv.min(this.samplingFrom.dataVals(), function(d) { return d });
+		this.xMax = this.samplingFrom.xMax;
+		this.xMin = this.samplingFrom.xMin;
 		this.n = this.dataVals().length;
 		
 		this.graphCollection.scaleAllGraphsToFit();
 		
 		this.updateInsufDataFlags();
 		
+	},
+	
+	addConfCategory: function(category){
+		this.includedCategories.push(category);
+		this.xMax = this.confSource.xMax;
+		this.xMin = this.confSource.xMin;
+		this.n = this.dataVals().length;
+		
+		this.graphCollection.scaleAllGraphsToFit();
+		
+		this.updateInsufDataFlags();	
 	},
 	
 	updateSample: function(size){

@@ -121,8 +121,8 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		//Start sampling engine and enable box plot
 		graphCollection.graphs[0].groupingMode = "BoxPlot";
 		
-		$("#sampling").attr('checked', true);
-		samplingCheckboxChange();
+		$("#confidenceInterval").attr('checked', true);
+		confIntervalCheckboxChange();
 		
   }
 });
@@ -857,6 +857,19 @@ function constructVis(){
 		
 	})
 	
+	//Remove and redraw confidence interval test options
+	$(".confOptions").remove();
+	graphCollection.graphs.forEach(function(graph,i){
+		if (graph.isConfidenceIntervalGraph){
+			constructConfOptionsMenu(graph,i);
+			positionConfOptions(graph,i);
+			if (graph.confSource.includedCategories.length > 0)
+				$('#confOptions'+i).show();
+			else
+				$('#confOptions'+i).hide();
+		}
+	});
+	
 	//resampling population labels
 	$('.populationLabels').remove();
 	if(graphCollection.resamplingEnabled){
@@ -1301,7 +1314,7 @@ function constructGraphPanel(graph, index){
 			.events("all")
 			.title("Remove graph")
 			.visible(function(){
-				return !graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph;
+				return !graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph && !graph.isConfidenceIntervalGraph;
 			})
 			.event("click", function(){
 				graphCollection.removeGraph(graph);
@@ -1328,7 +1341,7 @@ function constructGraphPanel(graph, index){
 			.cursor("pointer")
 			.title("Show graph option menu")
 			.visible(function(){
-				return !graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph;
+				return !graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph && !graph.isConfidenceIntervalGraph;
 			})
 			.event("click", function(){
 				graphCollection.selectedGraphIndex = index;
@@ -1396,7 +1409,7 @@ function constructGraphPanel(graph, index){
 				return "black"
 		})
 	
-	if (!graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph){
+	if (!graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph && !graph.isConfidenceIntervalGraph){
 		constructRegularGraph(graphPanel,graph,index);
 	} else if (graph.isSamplingGraph){
 		constructSamplingGraph(graphPanel,graph,index);
@@ -1404,11 +1417,139 @@ function constructGraphPanel(graph, index){
 		constructResamplingGraph(graphPanel,graph,index);
 	} else if (graph.isIntermedResamplingGraph){
 		constructIntermedResamplingGraph(graphPanel,graph,index);
+	} else if (graph.isConfidenceIntervalGraph){
+		constructionConfidenceIntervalGraph(graphPanel,graph,index);
+	}
+}
+
+function constructionConfidenceIntervalGraph(graphPanel,graph,index){
+	/* Title*/
+	graphPanel.add(pv.Label)
+		.right(function(){return graph.w/2})
+		.top(30)
+		.textAlign("center")
+		.textAngle(0)
+		.textBaseline("bottom")
+		.text("Confidence Intervals")
+		.font(fontString)
+	
+	if (graph.confSource.includedCategories.length == 0){
+		/* Instructons*/
+		graphPanel.add(pv.Label)
+			.left(100)
+			.bottom(175)
+			.textAlign("left")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("Drag one or more datasets to the population graph above.")
+			.font(fontString)
+			
+	} else if (graphCollection.data[graph.confBoundsSet].length == 0){
+		/* Instructons*/
+		graphPanel.add(pv.Label)
+			.left(100)
+			.top(45)
+			.textAlign("left")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("1. Choose the size of the sample taken during each iteration (n).")
+			.font(fontString)
+			
+		graphPanel.add(pv.Label)
+			.left(100)
+			.top(60)
+			.textAlign("left")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("2. Choose the number of iterations to run.")
+			.font(fontString)
+			
+		graphPanel.add(pv.Label)
+			.left(100)
+			.top(75)
+			.textAlign("left")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("3. Choose the formula used to compute the upper and lower bounds of each sample.")
+			.font(fontString)
+			
+		graphPanel.add(pv.Label)
+			.left(100)
+			.top(90)
+			.textAlign("left")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text("4. Press Run.")
+			.font(fontString)
+	} else {
+		/* X-axis ticks */
+		graphPanel.add(pv.Rule)
+			.data(function() {				
+				return graph.x.ticks();
+			})
+			.left(function(d) {
+				//if (graph.resampleDisplayMode != "pgraph")
+					//return graph.x(d);
+				//else {
+					//var x = pv.Scale.linear(0, graph.resamplingIterations).range(0, graph.w-20);
+					return graph.x(d)// + 20;
+				//}
+			})
+			.bottom(function() {return graph.baseLine})
+			.strokeStyle("#aaa")
+			.height(5)
+			.anchor("bottom").add(pv.Label)
+				.text(function(d) {	
+						return d.toFixed(1)
+				})
+				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
+			
+		/* X-axis line */
+		graphPanel.add(pv.Rule)
+			.bottom(function() {return graph.baseLine})
+			.width(function() {
+				if (graph.resampleDisplayMode != "pgraph") return graph.w;
+				else return graph.w-20;
+			})
+			.left(function(){
+				if (graph.resampleDisplayMode != "pgraph") return 0;
+				else return 20;
+			})
+			.strokeStyle("#000")
+			
+		/* Lower Bound Lines */
+		graphPanel.add(pv.Rule)
+			.data(function() {return graphCollection.data[graph.confBoundsSet]})
+			.left(function(d) {return graph.x(d.lower) })
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.60})
+			.lineWidth(2)
+			.strokeStyle(function() {return (graphCollection.bwMode ? pv.rgb(100,100,100,0.25): pv.rgb(255,0,0,0.25))})
+			
+		/* Upper Bound Lines */
+		graphPanel.add(pv.Rule)
+			.data(function() {return graphCollection.data[graph.confBoundsSet]})
+			.left(function(d) {return graph.x(d.upper) })
+			.bottom(function(){return graph.baseLine})
+			.height(function(){return (graph.h-graph.baseLine) * 0.60})
+			.lineWidth(2)
+			.strokeStyle(function() {return (graphCollection.bwMode ? pv.rgb(20,20,20,0.2): pv.rgb(0,0,255,0.25))})
+		
+		/* Results */	
+		graphPanel.add(pv.Label)
+			.left(0)
+			.top(60)
+			.textAlign("left")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.text(function(){return "The proportion of intervals that trap the population median is: "+graph.confResult})
+			.font(fontString)
+		
 	}
 }
 
 function constructIntermedResamplingGraph(graphPanel,graph,index){
-
+	
 }
 
 function constructResamplingGraph(graphPanel, graph, index){
@@ -3535,6 +3676,37 @@ function exitUpdateLoop(){
 		//touch.touch = true;
 }
 
+function constructConfOptionsMenu(graph,index){
+	$('body').prepend("<div class=\"confOptions\" id=\"confOptions"+index+"\"></div>");
+	
+	var string = "<label for='ciSampleSize-"+index+"'>n = </label>"+
+							 "<input type='text' id='ciSampleSize-"+index+"' value='"+graph.confSampleSize+"' class='textbox' size='2' style='margin-right:20px;'>"+
+							 "<label for='ciIterations-"+index+"'>Iterations: </label>"+
+							 "<input type='text' id='ciIterations-"+index+"' value='"+graph.confIterations+"' class='textbox' size='3' style='margin-right:20px;'>"+
+							 "<label for='ciBoundFormula-"+index+"'>Interval Formula: </label>"+
+							 "<select id='ciBoundFormula-"+index+"' style='margin-right:20px;'>"+
+								"<option value='q1toq3'>Q1 to Q3</option>"+
+								"<option value='IQRx1p5divrootn'>Q1 - 1.5*IQR/(root n) to Q3 + 1.5*IQR/(root n)</option>"+
+							 "</select>"+
+							 "<input type='button' id='runCI-"+index+"' onclick='runCI("+index+");' value='Run'>"
+						 
+	$('#confOptions'+index).html(string);
+}
+
+function positionConfOptions(graph,index){
+	var top = $('span').offset().top +
+						graphCollection.padTop +
+						graph.h * (index+1) - 34;
+						
+	var left = $('span').offset().left +
+						 graphCollection.padLeft +
+						 graph.w - $('#confOptions'+index).width() + 15;
+	
+	$('#confOptions'+index).css('top', top+"px")
+										.css('left',left+"px")
+										.css('z-index', 1);
+}
+
 function constructSampleOptionsMenu(graph, index){
 	$('body').prepend("<div class=\"sampleOptions\" id=\"sampleOptions"+index+"\"></div>");
 	
@@ -3543,8 +3715,8 @@ function constructSampleOptionsMenu(graph, index){
 							 "<td><input type=\"button\" class=\"button\" value=\"Show Points\""+
 							 "onclick=\"javascript:setHighLightedSample("+index+")\"></td>"+
 							 
-							 "<td nowrap><input type=\"button\" class=\"button\" value=\"CI\""+
-							 "onclick=\"javascript:openCIMenu("+index+")\"></td>"+
+							 //"<td nowrap><input type=\"button\" class=\"button\" value=\"CI\""+
+							 //"onclick=\"javascript:openCIMenu("+index+")\"></td>"+
 							 
 							 "<td nowrap><label for=\"sampleN"+index+"\">n = </label>"+
 							 "<input align=\"right\" type=\"text\" class =\"textbox\" id=\"sampleN"+index+"\""+
@@ -3561,18 +3733,19 @@ function constructSampleOptionsMenu(graph, index){
 }
 
 function positionSampleOptions(graph,index){
-		var top = $('span').offset().top +
-							graphCollection.padTop +
-							graph.h * (index+1) - 34;
-							
-		var left = $('span').offset().left +
-							 graphCollection.padLeft +
-							 graph.w - $('#sampleOptions'+index).width() + 15;
-		
-		$('#sampleOptions'+index).css('top', top+"px")
-											.css('left',left+"px")
-											.css('z-index', 1);
+	var top = $('span').offset().top +
+						graphCollection.padTop +
+						graph.h * (index+1) - 34;
+						
+	var left = $('span').offset().left +
+						 graphCollection.padLeft +
+						 graph.w - $('#sampleOptions'+index).width() + 15;
+	
+	$('#sampleOptions'+index).css('top', top+"px")
+										.css('left',left+"px")
+										.css('z-index', 1);
 }
+
 
 function updateSample(textbox, index){
 	var sampleSize = parseInt($('#'+textbox).val());
@@ -3964,7 +4137,7 @@ function changeResampleIterations(textbox, index){
 }
 
 function constructLegendPanel(graph, index){
-	if (!graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph){
+	if (!graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph && !graph.isConfidenceIntervalGraph){
 		$('body').prepend("<div class=\"legend\" id=\"legend"+index+"\"></div>");
 		
 		var selCat = graphCollection.graphs[index].selectedCategory;
