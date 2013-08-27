@@ -1461,7 +1461,7 @@ function constructionConfidenceIntervalGraph(graphPanel,graph,index){
 			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
-			.text("2. Choose the number of iterations to run.")
+			.text("2. Choose the number of sample confidence intervals.")
 			.font(fontString)
 			
 		graphPanel.add(pv.Label)
@@ -3681,7 +3681,7 @@ function constructConfOptionsMenu(graph,index){
 	
 	var string = "<label for='ciSampleSize-"+index+"'>n = </label>"+
 							 "<input type='text' id='ciSampleSize-"+index+"' value='"+graph.confSampleSize+"' class='textbox' size='2' style='margin-right:20px;'>"+
-							 "<label for='ciIterations-"+index+"'>Iterations: </label>"+
+							 "<label for='ciIterations-"+index+"'>Number of sample confidence intervals: </label>"+
 							 "<input type='text' id='ciIterations-"+index+"' value='"+graph.confIterations+"' class='textbox' size='3' style='margin-right:20px;'>"+
 							 "<label for='ciBoundFormula-"+index+"'>Interval Formula: </label>"+
 							 "<select id='ciBoundFormula-"+index+"' style='margin-right:20px;'>"+
