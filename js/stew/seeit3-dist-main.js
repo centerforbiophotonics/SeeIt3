@@ -1543,7 +1543,12 @@ function constructConfidenceIntervalGraph(graphPanel,graph,index){
 			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
-			.text(function(){return "The proportion of intervals that trap the population median is: "+graph.confResult})
+			.text(function(){
+				return "The proportion of intervals that trap the population median after taking "+
+					graphCollection.data[graph.confBoundsSet].length+
+					" sample"+(graphCollection.data[graph.confBoundsSet].length> 1 ? "s":"")+
+					" is: "+graph.confResult;
+			})
 			.font(fontString)
 			
 		/* Legend */
@@ -3391,7 +3396,7 @@ function constructRegularGraph(graphPanel, graph, index){
 		
 		/* Line Mode Lines */
 		graphPanel.add(pv.Rule)
-			.data(function() {return graph.getDataDrawObjects()})
+			.data(function() {return graphCollection.lineMode ? graph.getDataDrawObjects() : [] })
 			.visible(function(d) {
 				return $('#checkboxHideData').attr('checked') != "checked"  && 
 					d.x >= 0 &&
@@ -3411,7 +3416,7 @@ function constructRegularGraph(graphPanel, graph, index){
 		
 		/* Dots */
 		graphPanel.add(pv.Dot)
-			.data(function() {return graph.getDataDrawObjects()})
+			.data(function() {return $('#checkboxHideData').attr('checked') != "checked" ? graph.getDataDrawObjects() : []})
 			.visible(function(d) {
 				//if ((d.y+graph.baseLine) >= graph.h && graphCollection.bucketDotSize > 2){
 					//$("#dotSizeDec").click()
@@ -3567,23 +3572,23 @@ function constructRegularGraph(graphPanel, graph, index){
 			
 		
 		//Graph Overflow Warning Message
-		graphPanel.add(pv.Label)
-			.text("Warning! Data points lie outside graph boundaries.")
-			.textStyle("red")
-			.font(fontString)
-			.top(35)
-			.left(function(){return graph.w/2})
-			.textAlign("center")
-			.visible(function(){
-				var retVal = false;
-				graph.getDataDrawObjects().forEach(function(d){
-					if ((d.y+graph.baseLine) > graph.h ||
-							d.x < 0 ||
-							d.x > graph.w)
-						retVal = true;
-				});
-				return retVal;
-			})
+		//graphPanel.add(pv.Label)
+			//.text("Warning! Data points lie outside graph boundaries.")
+			//.textStyle("red")
+			//.font(fontString)
+			//.top(35)
+			//.left(function(){return graph.w/2})
+			//.textAlign("center")
+			//.visible(function(){
+				//var retVal = false;
+				//graph.getDataDrawObjects().forEach(function(d){
+					//if ((d.y+graph.baseLine) > graph.h ||
+							//d.x < 0 ||
+							//d.x > graph.w)
+						//retVal = true;
+				//});
+				//return retVal;
+			//})
 	} else {
 		//Empty Graph Message
 		graphPanel.add(pv.Label)

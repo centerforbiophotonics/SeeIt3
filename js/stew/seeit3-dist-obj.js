@@ -696,13 +696,13 @@ Graph.prototype = {
 					if (this.graphCollection.graphs[0].population1 == this ||
 							this.graphCollection.graphs[0].population2 == this)
 						resetResampling(0);
-						
+				this.resetConfidenceIntervalVariables();		
 				return true;
 			} else {
 				return false;
 			}
 			
-			this.resetConfidenceIntervalVariables();
+			
 		} else {
 			return false;
 		}
