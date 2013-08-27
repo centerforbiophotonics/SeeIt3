@@ -602,6 +602,7 @@ function Graph(graphCollection){
 	this.confIterations = 1000;								//Used by confidence graph
 	this.confBoundsSet = null;								//Used by both
 	this.confResult = null;
+	this.confNumWithinRange = 0;
 }
 
 Graph.prototype = {
@@ -700,6 +701,8 @@ Graph.prototype = {
 			} else {
 				return false;
 			}
+			
+			this.resetConfidenceIntervalVariables();
 		} else {
 			return false;
 		}
@@ -726,6 +729,8 @@ Graph.prototype = {
 		this.graphCollection.scaleAllGraphsToFit();
 		
 		this.updateInsufDataFlags();	
+		
+		
 	},
 	
 	updateSample: function(size){
@@ -824,6 +829,15 @@ Graph.prototype = {
 			if (this.graphCollection.graphs[0].population1 == this ||
 					this.graphCollection.graphs[0].population2 == this)
 				resetResampling(0);
+				
+		if (this.hasConfidenceIntervalGraph)
+			this.resetConfidenceIntervalVariables();
+	},
+	
+	resetConfidenceIntervalVariables: function(){	
+		this.confSink.confResult = null;
+		this.confSink.confNumWithinRange = 0;
+		graphCollection.data[this.confBoundsSet] = [];
 	},
 	
 	dataVals: function(){
@@ -880,6 +894,7 @@ Graph.prototype = {
 	},
 	 
 	getDataDrawObjects: function(){
+		console.log("dataDrawObjects");
 		var xDomain = this.x.domain();
 		var bucketSize = (xDomain[1]-xDomain[0])/this.graphCollection.buckets;
 		var points = [];

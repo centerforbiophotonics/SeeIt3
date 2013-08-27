@@ -50,19 +50,20 @@ if (!ie){
 	
 	//Push default worksheets from google first so that when pushing worksheets from url we can check for duplication
 	if (!exclusiveLoad){
-		exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
-		exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
-		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));
-		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'));
-		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'));
-		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'));
-		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'));
-		exampleSpreadsheets.push(new Spreadsheet('0Al5kfBmMhbwmdGJ2b1A1eWtMdUF4bWJxcnhBQ0Fsb3c'));			//Gapminder
-		exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'));			//Skin Cancer Fig 8
-		exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'));			//Skin Cancer Fig 4
-		exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'));			//Skin Cancer Fig 2
-		exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'));			//Doll and Hill
-		exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
+		exampleSpreadsheets.push(new Spreadsheet('0AqCOVVoSSVQVdDBoVlJyRWFJaUJWM3k4dmNLMURBa3c'));  //STEW Data
+		//exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
+		//exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
+		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));
+		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'));
+		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'));
+		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'));
+		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'));
+		//exampleSpreadsheets.push(new Spreadsheet('0Al5kfBmMhbwmdGJ2b1A1eWtMdUF4bWJxcnhBQ0Fsb3c'));			//Gapminder
+		//exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'));			//Skin Cancer Fig 8
+		//exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'));			//Skin Cancer Fig 4
+		//exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'));			//Skin Cancer Fig 2
+		//exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'));			//Doll and Hill
+		//exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
 	}	
 	
 	//Push worksheets specified by key in url
@@ -1418,11 +1419,11 @@ function constructGraphPanel(graph, index){
 	} else if (graph.isIntermedResamplingGraph){
 		constructIntermedResamplingGraph(graphPanel,graph,index);
 	} else if (graph.isConfidenceIntervalGraph){
-		constructionConfidenceIntervalGraph(graphPanel,graph,index);
+		constructConfidenceIntervalGraph(graphPanel,graph,index);
 	}
 }
 
-function constructionConfidenceIntervalGraph(graphPanel,graph,index){
+function constructConfidenceIntervalGraph(graphPanel,graph,index){
 	/* Title*/
 	graphPanel.add(pv.Label)
 		.right(function(){return graph.w/2})
@@ -1544,6 +1545,28 @@ function constructionConfidenceIntervalGraph(graphPanel,graph,index){
 			.textBaseline("bottom")
 			.text(function(){return "The proportion of intervals that trap the population median is: "+graph.confResult})
 			.font(fontString)
+			
+		/* Legend */
+		graphPanel.add(pv.Label)
+			.left(0)
+			.top(80)
+			.textAlign("left")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.textStyle("red")
+			.text(function(){return "Red = lower bounds(s) of confidence intervals"})
+			.font(fontString)
+			
+		graphPanel.add(pv.Label)
+			.left(0)
+			.top(100)
+			.textAlign("left")
+			.textAngle(0)
+			.textBaseline("bottom")
+			.textStyle("blue")
+			.text(function(){return "Blue = upper bounds(s) of confidence intervals"})
+			.font(fontString)
+		
 		
 	}
 }
@@ -3688,7 +3711,8 @@ function constructConfOptionsMenu(graph,index){
 								"<option value='q1toq3'>Q1 to Q3</option>"+
 								"<option value='IQRx1p5divrootn'>Q1 - 1.5*IQR/(root n) to Q3 + 1.5*IQR/(root n)</option>"+
 							 "</select>"+
-							 "<input type='button' id='runCI-"+index+"' onclick='runCI("+index+");' value='Run'>"
+							 "<input type='button' id='runCI-"+index+"' onclick='runCI("+index+",true);' value='Sample Once'>"+
+							 "<input type='button' id='runAllCI-"+index+"' onclick='runCI("+index+",false);' value='Sample All'>"
 						 
 	$('#confOptions'+index).html(string);
 }

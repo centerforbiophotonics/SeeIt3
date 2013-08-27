@@ -795,7 +795,7 @@ function partitionMoveTouchEnd(event){
 }
 
 /* Confidence Interval Bounds Graph */
-function runCI(index){
+function runCI(index, run_once){
 	var sourceGraph = graphCollection.graphs[index].confSource;
 	var sourceGraphCategories = sourceGraph.includedCategories;
 	var sinkGraph = sourceGraph.confSink;
@@ -806,20 +806,12 @@ function runCI(index){
 	var method = $('select#ciBoundFormula-'+index+' option:selected').val();
 	var popMedian = sourceGraph.getMeanMedianMode()[1];
 	
-	console.log("Pop Med = "+popMedian);
-	
-	//console.log(index);
-	//console.log(sampleSize);
-	//console.log(iterations);
-	//console.log(method);
-	
 	sourceGraphCategories.forEach(function(cat){
 		populationSize += graphCollection.data[cat].length;
 	});
 	
-	var numWithinRange = 0;
-	var ciBounds = [];
-	for (var k = 0; k<iterations; k++){
+	var ciBounds = graphCollection.data[sourceGraph.confBoundsSet];
+	for (var k = ciBounds.length; k<iterations; k++){
 		var sample = [];
 		
 		var i = 0;
@@ -842,17 +834,13 @@ function runCI(index){
 			i++;	
 		}
 		
-		//console.log(sample);
-		
 		if (method == "q1toq3") {
 			var q = getQuartiles(sample);
 			var q1 = q[1].value;
 			var q3 = q[3].value;
 			
-			console.log(q);
-			
 			if (popMedian > q1 && popMedian < q3)
-				numWithinRange++;
+				sinkGraph.confNumWithinRange++;
 				
 			
 			
@@ -870,7 +858,7 @@ function runCI(index){
 			
 			if (popMedian > lowerBound &&
 			    popMedian < upperBound)
-				numWithinRange++;
+				sinkGraph.confNumWithinRange++;
 			
 			ciBounds.push({
 				lower: lowerBound,
@@ -878,22 +866,13 @@ function runCI(index){
 			})
 		}
 		
-		
+		if (run_once) break;
 	}
-	graphCollection.data[sourceGraph.confBoundsSet] = ciBounds;
-	//console.log(ciBounds);
+	//graphCollection.data[sourceGraph.confBoundsSet] = ciBounds;
 	
-	//console.log(numWithinRange)
-	//console.log(iterations)
-	
-	sinkGraph.confResult = numWithinRange/iterations;
+	sinkGraph.confResult = sinkGraph.confNumWithinRange/ciBounds.length;
 	
 	constructVis();	
-	//$("#ciResult").html(numWithinRange/iterations);
-	//$("#ciBounds").text("iteration, lower bound, upper bound\n"+
-											//ciBounds.map(function(b,i){return (i+1)+','+b.lower+','+b.upper }).join('\n'));
-											
-	//$("#ciResults").show();	
 }
 
 
