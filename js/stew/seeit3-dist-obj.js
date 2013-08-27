@@ -540,9 +540,9 @@ function Graph(graphCollection){
 	
 	/* Partition Params */
 	this.partitionGroupSize = 4;
-	this.partitionIntervalWidth = 10;
+	this.partitionIntervalWidth = 0.2;
 	
-	this.histogram = false;
+	this.histogram = true;
 	this.advBoxPlot = false;
 	this.sdLine = false;
 	
@@ -619,7 +619,7 @@ Graph.prototype = {
 			else 
 				this.x = pv.Scale.linear(Math.floor(this.samplingFrom.xMin), Math.ceil(this.samplingFrom.xMax)).range(0, this.w);	
 		} else {
-			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
+			this.x = pv.Scale.linear(newMin-0.5, newMax).range(0, this.w);
 			this.scaleMin = newMin;
 			this.scaleMax = newMax;
 		}
@@ -673,9 +673,9 @@ Graph.prototype = {
 				this.graphCollection.graphs.forEach(function(g){
 					var mag = magnitude(g.scaleMax - g.scaleMin);
 					if (Math.pow(10, mag)*4 < g.scaleMax)
-						g.partitionIntervalWidth = Math.pow(10, mag);
+						g.partitionIntervalWidth = Math.pow(10, mag-1)*2;
 					else
-						g.partitionIntervalWidth = Math.pow(10, mag-1);
+						g.partitionIntervalWidth = Math.pow(10, mag-2)*2;
 				});
 				
 				this.updateInsufDataFlags();
