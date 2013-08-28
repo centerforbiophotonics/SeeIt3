@@ -70,7 +70,7 @@ function GraphCollection(){
 
 	//Mode flags
 	this.editModeEnabled = false;
-	this.advancedUser = false;
+	this.advancedUser = true;
 	this.buttonIcon = true;
 	this.buttonText = true;
 	
@@ -252,7 +252,8 @@ GraphCollection.prototype = {
 		} else if (graph.testMode == "resampling") {
 			delete graphCollection.data[graph.resampleSet];
 		} else if (graph.hasConfidenceIntervalGraph) {
-			
+			delete graphCollection.data[graph.confBoundsSet];
+			this.graphs.splice(this.graphs.indexOf(graph.confSink));
 		}
 		
 		//reassign population for resampling if graph being removed was assigned as a population
@@ -546,11 +547,10 @@ function Graph(graphCollection){
 	this.advBoxPlot = false;
 	this.sdLine = false;
 	
-	
 	this.selectedUDPart = null;
 	this.udPartitions = [];
 	
-	this.groupingMode = "NoGroups";
+	this.groupingMode = "FixedIntervalGroups";
 	
 	this.showMMM = false;
 	this.showMean = false;

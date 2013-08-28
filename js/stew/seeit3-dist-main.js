@@ -121,10 +121,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		
 		//Start sampling engine and enable box plot
 		//graphCollection.graphs[0].groupingMode = "BoxPlot";
-		graphCollection.graphs[0].groupingMode = "FixedIntervalGroups";
-		graphCollection.graphs[0].histogram = true;
-		graphCollection.graphs[0].partitionIntervalWidth = 0.2;
-		graphCollection.advancedUser = true;
+		
 		showHideAdvancedOptions();
 		$("#confidenceInterval").attr('checked', true);
 		confIntervalCheckboxChange();
@@ -1323,6 +1320,9 @@ function constructGraphPanel(graph, index){
 			})
 			.event("click", function(){
 				graphCollection.removeGraph(graph);
+				$("#confidenceInterval").attr('checked', true);
+				confIntervalCheckboxChange();
+		
 				constructVis();
 			})
 			.add(pv.Dot)
