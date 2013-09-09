@@ -124,7 +124,9 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		
 		graphCollection.graphs[0].groupingMode = "FixedIntervalGroups";
 		graphCollection.graphs[0].histogram = true;
+
 		
+		showHideAdvancedOptions();
 		$("#confidenceInterval").attr('checked', true);
 		confIntervalCheckboxChange();
 		
@@ -1326,6 +1328,9 @@ function constructGraphPanel(graph, index){
 			})
 			.event("click", function(){
 				graphCollection.removeGraph(graph);
+				$("#confidenceInterval").attr('checked', true);
+				confIntervalCheckboxChange();
+		
 				constructVis();
 			})
 			.add(pv.Dot)

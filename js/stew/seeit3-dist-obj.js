@@ -70,7 +70,7 @@ function GraphCollection(){
 
 	//Mode flags
 	this.editModeEnabled = false;
-	this.advancedUser = false;
+	this.advancedUser = true;
 	this.buttonIcon = true;
 	this.buttonText = true;
 	
@@ -256,6 +256,7 @@ GraphCollection.prototype = {
 		if (graph.hasConfidenceIntervalGraph) {
 			this.graphs.splice(this.graphs.indexOf(graph.confSink),1);
 			delete graphCollection.data[graph.confBoundsSet];
+
 		}
 		
 		//reassign population for resampling if graph being removed was assigned as a population
@@ -556,17 +557,16 @@ function Graph(graphCollection){
 	
 	/* Partition Params */
 	this.partitionGroupSize = 4;
-	this.partitionIntervalWidth = 10;
+	this.partitionIntervalWidth = 0.2;
 	
-	this.histogram = false;
+	this.histogram = true;
 	this.advBoxPlot = false;
 	this.sdLine = false;
-	
 	
 	this.selectedUDPart = null;
 	this.udPartitions = [];
 	
-	this.groupingMode = "NoGroups";
+	this.groupingMode = "FixedIntervalGroups";
 	
 	this.showMMM = false;
 	this.showMean = false;
@@ -635,7 +635,7 @@ Graph.prototype = {
 			else 
 				this.x = pv.Scale.linear(Math.floor(this.samplingFrom.xMin), Math.ceil(this.samplingFrom.xMax)).range(0, this.w);	
 		} else {
-			this.x = pv.Scale.linear(newMin, newMax).range(0, this.w);
+			this.x = pv.Scale.linear(newMin-0.5, newMax).range(0, this.w);
 			this.scaleMin = newMin;
 			this.scaleMax = newMax;
 		}
@@ -696,6 +696,7 @@ Graph.prototype = {
 						//g.partitionIntervalWidth = Math.pow(10, mag);
 					//else
 						//g.partitionIntervalWidth = Math.pow(10, mag-1);
+
 				});
 				
 				this.updateInsufDataFlags();
