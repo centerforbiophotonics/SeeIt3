@@ -53,7 +53,7 @@ if (!ie){
 		exampleSpreadsheets.push(new Spreadsheet('0AqCOVVoSSVQVdDBoVlJyRWFJaUJWM3k4dmNLMURBa3c'));  //STEW Data
 		//exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
 		//exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
-		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));
+		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));	//% Smokers		
 		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'));
 		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'));
 		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'));
@@ -119,12 +119,19 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		positionDisplayMenu();
 		toggleDatasetMenu();
 		
-		//Start sampling engine and enable box plot
-		graphCollection.graphs[0].groupingMode = "BoxPlot";
+		//Start confidence interval, sampling, and enable box plot
+		showHideAdvancedOptions();
+		
+		graphCollection.graphs[0].groupingMode = "FixedIntervalGroups";
+		graphCollection.graphs[0].histogram = true;
 		
 		$("#confidenceInterval").attr('checked', true);
 		confIntervalCheckboxChange();
 		
+		$("#sampling").attr('checked', true);
+		samplingCheckboxChange();
+		
+		$('#checkboxHideData').attr('checked', true);
   }
 });
 
@@ -1438,11 +1445,11 @@ function constructConfidenceIntervalGraph(graphPanel,graph,index){
 		/* Instructons*/
 		graphPanel.add(pv.Label)
 			.left(100)
-			.bottom(175)
+			.bottom(function(){return graph.h/2})
 			.textAlign("left")
 			.textAngle(0)
 			.textBaseline("bottom")
-			.text("Drag one or more datasets to the population graph above.")
+			.text("Drag one or more datasets to the population graph at the top of the screen..")
 			.font(fontString)
 			
 	} else if (graphCollection.data[graph.confBoundsSet].length == 0){
@@ -2568,6 +2575,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.lineWidth(function(d){
 				return 2;
 			})
+			.visible(function(){return $('#checkboxHideData').attr('checked') != "checked"})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
 			
 		//Advanced Box Plot Outlier Marks
@@ -2589,6 +2597,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			
 	} 
 }
+
+
 function constructRegularGraph(graphPanel, graph, index){
 
 	if (graph.includedCategories.length > 0){
@@ -2599,7 +2609,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.textAlign("center")
 			.textAngle(0)
 			.textBaseline("bottom")
-			.text(function(){return "n = " + graph.n})
+			.text(function(){return "N = " + graph.n})
 			.font(fontString);
 			
 		/* X-axis ticks */
@@ -3658,7 +3668,7 @@ function constructSampleButton(graph, index){
 							 //"onmouseup=\"javascript:exitUpdateLoop()\"></td></tr></table>";
 							 //"onclick=\"javascript:updateMultipleSamples("+index+")\">";
 							 
-	$('#sampleButton'+index).html(string);
+	//$('#sampleButton'+index).html(string);
 	
 	if (graph.testMode != "sampling" || graph.includedCategories == 0)
 		$('#sampleButton'+index).hide();
@@ -3744,6 +3754,9 @@ function constructSampleOptionsMenu(graph, index){
 							 "<td><input type=\"button\" class=\"button\" value=\"Show Points\""+
 							 "onclick=\"javascript:setHighLightedSample("+index+")\"></td>"+
 							 
+							 "<td><input type=\"button\" class=\"button\" value=\"Sample\""+
+							 "onclick=\"javascript:updateSample('sampleN"+index+"',"+index+")\"></td>"+
+				
 							 //"<td nowrap><input type=\"button\" class=\"button\" value=\"CI\""+
 							 //"onclick=\"javascript:openCIMenu("+index+")\"></td>"+
 							 
@@ -3764,11 +3777,11 @@ function constructSampleOptionsMenu(graph, index){
 function positionSampleOptions(graph,index){
 	var top = $('span').offset().top +
 						graphCollection.padTop +
-						graph.h * (index+1) - 34;
+						graph.h * (index) //- 34;
 						
 	var left = $('span').offset().left +
 						 graphCollection.padLeft +
-						 graph.w - $('#sampleOptions'+index).width() + 15;
+						 graph.w/2 - $('#sampleOptions'+index).width()/2;// + 15;
 	
 	$('#sampleOptions'+index).css('top', top+"px")
 										.css('left',left+"px")

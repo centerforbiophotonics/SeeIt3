@@ -251,8 +251,11 @@ GraphCollection.prototype = {
 				
 		} else if (graph.testMode == "resampling") {
 			delete graphCollection.data[graph.resampleSet];
-		} else if (graph.hasConfidenceIntervalGraph) {
-			
+		}  
+		
+		if (graph.hasConfidenceIntervalGraph) {
+			this.graphs.splice(this.graphs.indexOf(graph.confSink),1);
+			delete graphCollection.data[graph.confBoundsSet];
 		}
 		
 		//reassign population for resampling if graph being removed was assigned as a population
@@ -269,7 +272,20 @@ GraphCollection.prototype = {
 			
 		this.selectedGraphIndex = 0;
 			
-		if (this.graphs.length == 0) this.addGraph();
+		if (this.graphs.length == 0){
+			this.addGraph();
+			
+			//Start confidence interval and enable box plot
+			graphCollection.graphs[0].groupingMode = "FixedIntervalGroups";
+			graphCollection.graphs[0].histogram = true;
+			
+			
+			$("#confidenceInterval").attr('checked', true);
+			confIntervalCheckboxChange();
+			
+			$("#sampling").attr('checked', true);
+			samplingCheckboxChange();
+		}
 	},
 	
 	setChildGraphHeights: function(){
@@ -671,11 +687,15 @@ Graph.prototype = {
 				
 				//Adjust fixed interval partition width to avoid hanging on large domains
 				this.graphCollection.graphs.forEach(function(g){
-					var mag = magnitude(g.scaleMax - g.scaleMin);
-					if (Math.pow(10, mag)*4 < g.scaleMax)
-						g.partitionIntervalWidth = Math.pow(10, mag);
-					else
-						g.partitionIntervalWidth = Math.pow(10, mag-1);
+					var r = g.scaleMax - g.scaleMin;
+					var sqrtN = Math.sqrt(g.n);
+					g.partitionIntervalWidth = r / sqrtN;
+					
+					//var mag = magnitude(g.scaleMax - g.scaleMin);
+					//if (Math.pow(10, mag)*4 < g.scaleMax)
+						//g.partitionIntervalWidth = Math.pow(10, mag);
+					//else
+						//g.partitionIntervalWidth = Math.pow(10, mag-1);
 				});
 				
 				this.updateInsufDataFlags();
@@ -778,6 +798,11 @@ Graph.prototype = {
 			this.updateInsufDataFlags();
 			return size;
 		}
+	},
+	
+	updateHistogramWidth: function(){
+		
+		
 	},
 	
 	updateInsufDataFlags: function(){
