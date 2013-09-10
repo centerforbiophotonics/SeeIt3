@@ -119,7 +119,6 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		positionDisplayMenu();
 		toggleDatasetMenu();
 		
-
 		//Start confidence interval, sampling, and enable box plot
 		showHideAdvancedOptions();
 		

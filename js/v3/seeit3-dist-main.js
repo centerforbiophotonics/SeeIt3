@@ -3289,7 +3289,7 @@ function constructRegularGraph(graphPanel, graph, index){
 																		{"set":d.set,
 																		 "label":d.label,
 																		 "value":graph.x.invert(d.xReal)});
-						graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany++;
+						graph.samplingTo[graph.selectedSampleNumber].samplingHowMany++;
 						$("#sampleN"+(index+1)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
 																	 
 					} else {
