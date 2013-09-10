@@ -874,7 +874,7 @@ function positionWorksheetMenu(){
 
 $('#worksheetMenu').hide();
 
-function openWorksheetMenu(worksheetTitle){
+function openWorksheetMenu(worksheetTitle, label){
 	var text, title;
 	
 	if (worksheetTitle == undefined){
@@ -891,6 +891,11 @@ function openWorksheetMenu(worksheetTitle){
 		$('#loadFromURL').hide();
 		$('#deleteWorksheet').show();
 	}
+	
+	if (label)
+		$('#worksheetLabelsRequired').attr("checked", true);
+	else
+		$('#worksheetLabelsRequired').attr("checked", false);
 	
 	$('#worksheetTitle').val(title);
 	$('#worksheetText').val(text);

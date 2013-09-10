@@ -29,12 +29,13 @@ var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
 var exampleSpreadsheets = [ ];
 
 var ie = $.browser.msie != undefined && $.browser.msie != false;
+var exclusiveLoad = false;
 
 if (!ie){
 	//Extract url params and set flag if default worksheets are not to be loaded
 	var preload = window.location.search;
 	var urlParamsUsed = false;
-	var exclusiveLoad = false;	
+		
 	if (preload.substring(0, 1) == '?') {
 			console.log(preload);
 			urlParamsUsed = true;
@@ -107,10 +108,10 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 	if (event.refresh){
 		graphCollection.addWorksheet(event.worksheet);
 	}
-	
+
   numWorksheetsLoaded++;
   $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
-  if (numWorksheetsLoaded >= numWorksheets){
+  if (numWorksheetsLoaded >= numWorksheets || exclusiveLoad){
 		jQuery('p#loadingMsg').hide();
 		constructVis();
 		showHideAdvancedOptions();
@@ -883,7 +884,7 @@ function constructDatasetPanel(){
 								"style='cursor:pointer; font:"+fontString+";'>"+w.title+"</div></td>"+
 							"</table></tr>"+
 							"<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">"+
-							"<input type='image' src='img/edit.png' style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
+							"<input type='image' src='img/edit.png' style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\",true)' width='25' height='25'>"+
 							
 							"<input type='image' src='img/question.png' style='margin-left:25px;' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
 							(!w.local && !w.userCreated ? 
@@ -922,7 +923,7 @@ function constructDatasetPanel(){
 			i++;
 		})
 	})
-	html+="<table><tr onclick=\"openWorksheetMenu()\" style=\"cursor:pointer;  font:"+fontString+";\">"+
+	html+="<table><tr onclick=\"openWorksheetMenu(undefined, false)\" style=\"cursor:pointer;  font:"+fontString+";\">"+
 							"<td><image src='img/plus.png' width='25' height='25'></td>"+
 							"<td>Add a Worksheet</td></div></tr></table>";
 	$('#dataTree').html(html);

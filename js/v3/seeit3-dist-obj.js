@@ -1020,7 +1020,7 @@ function Worksheet(param) {
 			 
 			//userCreatedWorksheet = this;
 			graphCollection.addWorksheet(this);
-			
+			setTimeout(function(){jQuery('body').trigger({ type:'WorksheetLoaded', worksheet:this, refresh:true })}, 500);
 		} else {  //For hardcoded datasets
 			this.URL = param.feed.link[1].href + "***";
 			this.local = true;
