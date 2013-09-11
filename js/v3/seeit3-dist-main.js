@@ -3289,13 +3289,14 @@ function constructRegularGraph(graphPanel, graph, index){
 																		{"set":d.set,
 																		 "label":d.label,
 																		 "value":graph.x.invert(d.xReal)});
-						graph.samplingTo[graph.selectedSampleNumber].samplingHowMany++;
-						$("#sampleN"+(index+1)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
-																	 
+						graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany++;
+						$("#sampleN"+(graph.selectedSampleNumber)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
+						console.log(graph.selectedSampleNumber);											 
 					} else {
+						console.log(graph.selectedSampleNumber);
 						graphCollection.data[graph.selectedSample].splice(sampleIndexOfData(graphCollection.data[graph.selectedSample], d, graph),1);
 						graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany--;
-						$("#sampleN"+(index+1)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
+						$("#sampleN"+(graph.selectedSampleNumber)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
 					}
 					graph.samplingTo[graph.selectedSampleNumber-1].updateInsufDataFlags();
 				}
