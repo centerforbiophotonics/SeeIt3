@@ -19,7 +19,7 @@ var population = [];
 
 var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
 										[85, 55, 34],			//Display Options
-										[75, 45, 34],			//New Graph
+										//[75, 45, 34],			//New Graph
 										[95, 67, 34],			//Advanced Mode
 										[66, 40, 34],			//Edit Mode
 										[73, 47, 32],			//Fit Scales
@@ -365,83 +365,83 @@ function constructVis(){
 				})
 			
 		/* Add New Graph Button */
-		var newGrphPanel = vis.add(pv.Panel)
-			.data([2])
-			.events("all")
-			.cursor("pointer")
-			.title("Add a new empty graph")
-			.height(30)
-			.width(topButtonWidth)
-			.left(topButtonLeft)
-			.top(-31)
-			.lineWidth(1)
-			.event("click", function(){
-				graphCollection.addGraph();
-				constructVis();
-			})
-			.event("mouseover", function(d){
-				this.strokeStyle("black");
-				this.render();
-			})
-			.event("mouseout", function(d){ 
-				this.strokeStyle(pv.rgb(0,0,0,0));
-				this.render();
-			})
+		//var newGrphPanel = vis.add(pv.Panel)
+			//.data([2])
+			//.events("all")
+			//.cursor("pointer")
+			//.title("Add a new empty graph")
+			//.height(30)
+			//.width(topButtonWidth)
+			//.left(topButtonLeft)
+			//.top(-31)
+			//.lineWidth(1)
+			//.event("click", function(){
+				//graphCollection.addGraph();
+				//constructVis();
+			//})
+			//.event("mouseover", function(d){
+				//this.strokeStyle("black");
+				//this.render();
+			//})
+			//.event("mouseout", function(d){ 
+				//this.strokeStyle(pv.rgb(0,0,0,0));
+				//this.render();
+			//})
 			
-		newGrphPanel.add(pv.Image)
-			.url(getRelativeImageURL() + "newGraph.png") 
-			.width(30)
-			.height(30)
-			.top(0)
-			.left(2)
-			.cursor("pointer")
-			.title("Add a new empty graph")
-			.event("click", function(){
-				graphCollection.addGraph();
-				constructVis();
-			})
-			.visible(function() {
-				if (graphCollection.buttonIcon)
-					return true;
-				else
-					return false;
-			})
-			.anchor("left").add(pv.Label)
-				.left(function(){
-					if (graphCollection.buttonText && !graphCollection.buttonIcon)
-						return 2;
-					else
-					 return 32;
-				})
-				.top(10)
-				.text("New")
-				.font("bold 12px arial")
-				.visible(function() {
-					if (graphCollection.buttonText)
-						return true;
-					else
-						return false;
-				})
-			.anchor("left").add(pv.Label)
-				.left(function(){
-					if (graphCollection.buttonText && !graphCollection.buttonIcon)
-						return 2;
-					else
-					 return 32;
-				})
-				.top(22)
-				.text("Graph")
-				.font("bold 12px arial")
-				.visible(function() {
-					if (graphCollection.buttonText)
-						return true;
-					else
-						return false;
-				})
+		//newGrphPanel.add(pv.Image)
+			//.url(getRelativeImageURL() + "newGraph.png") 
+			//.width(30)
+			//.height(30)
+			//.top(0)
+			//.left(2)
+			//.cursor("pointer")
+			//.title("Add a new empty graph")
+			//.event("click", function(){
+				//graphCollection.addGraph();
+				//constructVis();
+			//})
+			//.visible(function() {
+				//if (graphCollection.buttonIcon)
+					//return true;
+				//else
+					//return false;
+			//})
+			//.anchor("left").add(pv.Label)
+				//.left(function(){
+					//if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						//return 2;
+					//else
+					 //return 32;
+				//})
+				//.top(10)
+				//.text("New")
+				//.font("bold 12px arial")
+				//.visible(function() {
+					//if (graphCollection.buttonText)
+						//return true;
+					//else
+						//return false;
+				//})
+			//.anchor("left").add(pv.Label)
+				//.left(function(){
+					//if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						//return 2;
+					//else
+					 //return 32;
+				//})
+				//.top(22)
+				//.text("Graph")
+				//.font("bold 12px arial")
+				//.visible(function() {
+					//if (graphCollection.buttonText)
+						//return true;
+					//else
+						//return false;
+				//})
 				
 		/*Toggle Basic/Advanced User Mode*/
 		var togUserModePanel = vis.add(pv.Panel)
-			.data([3])
+			.data([2])
 			.events("all")
 			.cursor("pointer")
 			.title("Toggle advanced mode")
@@ -534,7 +534,7 @@ function constructVis(){
 			
 		/* Toggle Edit Mode Button */
 		var togEditPanel = vis.add(pv.Panel)
-			.data([4])
+			.data([3])
 			.events("all")
 			.cursor("pointer")
 			.title("Toggle edit mode")
@@ -632,7 +632,7 @@ function constructVis(){
 		
 		//Fit all graphs to scale button
 		var fitScalePanel = vis.add(pv.Panel)
-			.data([5])
+			.data([4])
 			.events("all")
 			.cursor("pointer")
 			.title("Scale all graphs identically")
@@ -724,111 +724,111 @@ function constructVis(){
 				})
 				
 		//Add a Resampling Graph
-		var resamplingPanel = vis.add(pv.Panel)
-			.data([6])
-			.events("all")
-			.cursor("pointer")
-			.title("Toggle Resampling")
-			.height(30)
-			.width(topButtonWidth)
-			.left(topButtonLeft)
-			.top(-31)
-			.lineWidth(1)
-			.visible(function() {
-				if (graphCollection.advancedUser)
-					return true;
-				else
-					return false;
-			})
-			.event("click", function(){
-				//if (!graphCollection.resamplingEnabled){
-					//graphCollection.resamplingEnabled = true;
-					//graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
-				//}else{
-					//graphCollection.resamplingEnabled = false;
-					//graphCollection.removeGraph(graphCollection.graphs[0]);
-				//}
+		//var resamplingPanel = vis.add(pv.Panel)
+			//.data([5])
+			//.events("all")
+			//.cursor("pointer")
+			//.title("Toggle Resampling")
+			//.height(30)
+			//.width(topButtonWidth)
+			//.left(topButtonLeft)
+			//.top(-31)
+			//.lineWidth(1)
+			//.visible(function() {
+				//if (graphCollection.advancedUser)
+					//return true;
+				//else
+					//return false;
+			//})
+			//.event("click", function(){
+				////if (!graphCollection.resamplingEnabled){
+					////graphCollection.resamplingEnabled = true;
+					////graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+				////}else{
+					////graphCollection.resamplingEnabled = false;
+					////graphCollection.removeGraph(graphCollection.graphs[0]);
+				////}
 				
-				//constructVis();
+				////constructVis();
 				
-				if (graphCollection.graphs[0].includedCategories.length == 1 &&
-					  graphCollection.graphs[1].includedCategories.length == 1)
-					window.open("resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
-				else
-					window.open("resampling.html");
-					//alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
+				//if (graphCollection.graphs[0].includedCategories.length == 1 &&
+					  //graphCollection.graphs[1].includedCategories.length == 1)
+					//window.open("resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
+				//else
+					//window.open("resampling.html");
+					////alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
 
-			})
-			.event("mouseover", function(d){
-				this.strokeStyle("black");
-				this.render();
-			})
-			.event("mouseout", function(d){ 
-				this.strokeStyle(pv.rgb(0,0,0,0));
-				this.render();
-			})
+			//})
+			//.event("mouseover", function(d){
+				//this.strokeStyle("black");
+				//this.render();
+			//})
+			//.event("mouseout", function(d){ 
+				//this.strokeStyle(pv.rgb(0,0,0,0));
+				//this.render();
+			//})
 			
-		resamplingPanel.add(pv.Image)
-			.url(function(){
-				if (graphCollection.resamplingEnabled)
-					return getRelativeImageURL() + "shuffle-ON.png"
-				else
-					return getRelativeImageURL() + "shuffle-OFF.png"
+		//resamplingPanel.add(pv.Image)
+			//.url(function(){
+				//if (graphCollection.resamplingEnabled)
+					//return getRelativeImageURL() + "shuffle-ON.png"
+				//else
+					//return getRelativeImageURL() + "shuffle-OFF.png"
 				
-			})
-			.width(30)
-			.height(30)
-			.top(1)
-			.left(0)
-			.cursor("pointer")
-			.title("Toggle Resampling")
-			.event("click", function(){
-				//if (!graphCollection.resamplingEnabled){
-					//graphCollection.resamplingEnabled = true;
-					//graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
-				//}else{
-					//graphCollection.resamplingEnabled = false;
-					//graphCollection.removeGraph(graphCollection.graphs[0]);
-				//}
+			//})
+			//.width(30)
+			//.height(30)
+			//.top(1)
+			//.left(0)
+			//.cursor("pointer")
+			//.title("Toggle Resampling")
+			//.event("click", function(){
+				////if (!graphCollection.resamplingEnabled){
+					////graphCollection.resamplingEnabled = true;
+					////graphCollection.addResamplingGraph(graphCollection.selectedGraphIndex);
+				////}else{
+					////graphCollection.resamplingEnabled = false;
+					////graphCollection.removeGraph(graphCollection.graphs[0]);
+				////}
 				
-				//constructVis();
+				////constructVis();
 				
-				if (graphCollection.graphs[0].includedCategories.length == 1 &&
-					  graphCollection.graphs[1].includedCategories.length == 1)
-					window.open("resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
-				else
-					window.open("resampling.html");
-					//alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
+				//if (graphCollection.graphs[0].includedCategories.length == 1 &&
+					  //graphCollection.graphs[1].includedCategories.length == 1)
+					//window.open("resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
+				//else
+					//window.open("resampling.html");
+					////alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
 
-			})
-			.visible(function() {
-				if (graphCollection.buttonIcon)
-					return true;
-				else
-					return false;
-			})
-			.anchor("left").add(pv.Label)
-				.left(function(){
-					if (graphCollection.buttonText && !graphCollection.buttonIcon)
-						return 2;
-					else
-					 return 28;
-				})
-				.top(15)
-				.text("Resampling")
-				.font("bold 12px arial")
-				.textStyle(function(){
-					if (graphCollection.resamplingEnabled)
-						return "red"
-					else
-						return "black"
-				})
-				.visible(function() {
-					if (graphCollection.buttonText)
-						return true;
-					else
-						return false;
-				})
+			//})
+			//.visible(function() {
+				//if (graphCollection.buttonIcon)
+					//return true;
+				//else
+					//return false;
+			//})
+			//.anchor("left").add(pv.Label)
+				//.left(function(){
+					//if (graphCollection.buttonText && !graphCollection.buttonIcon)
+						//return 2;
+					//else
+					 //return 28;
+				//})
+				//.top(15)
+				//.text("Resampling")
+				//.font("bold 12px arial")
+				//.textStyle(function(){
+					//if (graphCollection.resamplingEnabled)
+						//return "red"
+					//else
+						//return "black"
+				//})
+				//.visible(function() {
+					//if (graphCollection.buttonText)
+						//return true;
+					//else
+						//return false;
+				//})
 	}
 		
 	constructDatasetPanel();
@@ -3721,17 +3721,21 @@ function exitUpdateLoop(){
 function constructConfOptionsMenu(graph,index){
 	$('body').prepend("<div class=\"confOptions\" id=\"confOptions"+index+"\"></div>");
 	
-	var string = "<label for='ciSampleSize-"+index+"'>n = </label>"+
-							 "<input type='text' id='ciSampleSize-"+index+"' value='"+graph.confSampleSize+"' class='textbox' size='2' style='margin-right:20px;'>"+
+	var ciBounds = graphCollection.data[graph.confSource.confBoundsSet];
+	var iterations = graph.confIterations;
+	
+	var string = //"<label for='ciSampleSize-"+index+"'>n = </label>"+
+							 //"<input type='text' id='ciSampleSize-"+index+"' value='"+graph.confSampleSize+"' class='textbox' size='2' style='margin-right:20px;'>"+
 							 "<label for='ciIterations-"+index+"'>Number of sample confidence intervals: </label>"+
-							 "<input type='text' id='ciIterations-"+index+"' value='"+graph.confIterations+"' class='textbox' size='3' style='margin-right:20px;'>"+
+							 "<input type='text' id='ciIterations-"+index+"' value='"+graph.confIterations+"' class='textbox' onchange='updateCIIterations("+index+")' size='3' style='margin-right:20px;'>"+
 							 "<label for='ciBoundFormula-"+index+"'>Interval Formula: </label>"+
 							 "<select id='ciBoundFormula-"+index+"' style='margin-right:20px;'>"+
 								"<option value='q1toq3'>Q1 to Q3</option>"+
 								"<option value='IQRx1p5divrootn'>Q1 - 1.5*IQR/(root n) to Q3 + 1.5*IQR/(root n)</option>"+
 							 "</select>"+
-							 "<input type='button' id='runCI-"+index+"' onclick='runCI("+index+",true);' value='Sample Once'>"+
-							 "<input type='button' id='runAllCI-"+index+"' onclick='runCI("+index+",false);' value='Sample All'>"
+							 //"<input type='button' id='runCI-"+index+"' onclick='runCI("+index+",true);' value='Sample Once'>"+
+							 "<input type='button' class='button' id='runAllCI-"+index+"' onclick='runCI("+index+",false);' value='"+(ciBounds.length >= iterations ? 'Reset and Sample All' :'Sample All')+"'>"+
+							 "<input type='button' class='button' id='resetCI-"+index+"' onclick='resetCI("+index+");' value ='Reset'>";
 						 
 	$('#confOptions'+index).html(string);
 }
@@ -3755,8 +3759,12 @@ function constructSampleOptionsMenu(graph, index){
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
 							 
-							 "<td><input type=\"button\" class=\"button\" value=\"Show Points\""+
-							 "onclick=\"javascript:setHighLightedSample("+index+")\"></td>"+
+							 ($('#checkboxHideData').is(':checked') ?
+								 "":
+								 
+								 "<td><input type=\"button\" class=\"button\" value=\"Show Points\""+
+								 "onclick=\"javascript:setHighLightedSample("+index+")\"></td>"								 
+							 )+
 							 
 							 "<td><input type=\"button\" class=\"button\" value=\"Sample\""+
 							 "onclick=\"javascript:updateSample('sampleN"+index+"',"+index+")\"></td>"+
@@ -3801,7 +3809,7 @@ function updateSample(textbox, index){
 		$('#'+textbox).val(graphCollection.graphs[index].samplingHowMany);
 	}
 	
-	vis.render();
+	constructVis();
 
 }
 

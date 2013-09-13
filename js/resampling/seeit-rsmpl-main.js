@@ -176,6 +176,14 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
   numWorksheetsLoaded++;
   $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
   if (numWorksheetsLoaded >= numWorksheets){
+		
+		jQuery('p#loadingMsg').hide();
+		constructVis();
+		showHideAdvancedOptions();
+		positionGroupingMenuOverGraph(0,graphCollection);
+		positionDisplayMenu();
+		toggleDatasetMenu();
+		
 		if (preloadedDataSets.length >= 2){
 			if (graphCollection.data[preloadedDataSets[0].replace(/%20/g," ")] != undefined){
 				graphCollection.graphs[2].addCategory(preloadedDataSets[0].replace(/%20/g," "));
@@ -188,15 +196,7 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 			} else {
 				alert("Failed to automatically load a dataset. Try assigning it manually.");
 			}
-			
-			
 		}	
-		jQuery('p#loadingMsg').hide();
-		constructVis();
-		showHideAdvancedOptions();
-		positionGroupingMenuOverGraph(0,graphCollection);
-		positionDisplayMenu();
-		toggleDatasetMenu();
   }
 });
 

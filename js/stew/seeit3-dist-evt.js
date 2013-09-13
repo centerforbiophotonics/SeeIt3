@@ -795,13 +795,40 @@ function partitionMoveTouchEnd(event){
 }
 
 /* Confidence Interval Bounds Graph */
+function updateCIIterations(index){
+	var newIterations = parseInt($('#ciIterations-'+index).val())
+	
+	if (!isNaN(newIterations) && newIterations > 0){
+		graphCollection.graphs[index].confIterations = newIterations;
+		$('#ciIterations-'+index).val(newIterations)
+	}
+	
+	
+	
+}
+
+function resetCI(index){
+	var sourceGraph = graphCollection.graphs[index].confSource;
+	var sinkGraph = sourceGraph.confSink;
+	var iterations = parseInt($("#ciIterations-"+index).val());
+	
+	if (graphCollection.data[sourceGraph.confBoundsSet].length >= iterations){
+		graphCollection.data[sourceGraph.confBoundsSet] = [];
+		sinkGraph.confNumWithinRange = 0;
+	}
+	
+	constructVis();
+}
+
 function runCI(index, run_once){
 	var sourceGraph = graphCollection.graphs[index].confSource;
 	var sourceGraphCategories = sourceGraph.includedCategories;
 	var sinkGraph = sourceGraph.confSink;
 	
 	var populationSize = 0;	
-	var sampleSize = parseInt($('#ciSampleSize-'+index).val());
+	var sampleSize = sourceGraph.samplingTo[0].samplingHowMany;
+	
+	//parseInt($('#ciSampleSize-'+index).val());
 	var iterations = parseInt($("#ciIterations-"+index).val());
 	var method = $('select#ciBoundFormula-'+index+' option:selected').val();
 	var popMedian = sourceGraph.getMeanMedianMode()[1];
@@ -810,7 +837,14 @@ function runCI(index, run_once){
 		populationSize += graphCollection.data[cat].length;
 	});
 	
+	
+	if (graphCollection.data[sourceGraph.confBoundsSet].length >= iterations){
+		graphCollection.data[sourceGraph.confBoundsSet] = [];
+		sinkGraph.confNumWithinRange = 0;
+	}
+	
 	var ciBounds = graphCollection.data[sourceGraph.confBoundsSet];
+	
 	for (var k = ciBounds.length; k<iterations; k++){
 		var sample = [];
 		
@@ -866,9 +900,14 @@ function runCI(index, run_once){
 			})
 		}
 		
+		
+		
 		if (run_once) break;
 	}
-	//graphCollection.data[sourceGraph.confBoundsSet] = ciBounds;
+	
+	//if (ciBounds.length == iterations){
+		//$("#runAllCI-"+index).attr('value', 'Reset and Sample All');
+	//}
 	
 	sinkGraph.confResult = sinkGraph.confNumWithinRange/ciBounds.length;
 	

@@ -208,10 +208,10 @@ GraphCollection.prototype = {
 	},
 	
 	addConfidenceIntervalGraph: function(index){
-		this.graphs.splice(index+1,0,new Graph(this));
+		this.graphs.push(new Graph(this));
 		
 		var sourceGraph = this.graphs[index];
-		var sinkGraph = this.graphs[index+1];
+		var sinkGraph = this.graphs[this.graphs.length-1];
 
 		sourceGraph.confSink = sinkGraph;
 		sinkGraph.confSource = sourceGraph;
@@ -280,12 +280,12 @@ GraphCollection.prototype = {
 			graphCollection.graphs[0].groupingMode = "FixedIntervalGroups";
 			graphCollection.graphs[0].histogram = true;
 			
-			
 			$("#confidenceInterval").attr('checked', true);
 			confIntervalCheckboxChange();
 			
 			$("#sampling").attr('checked', true);
 			samplingCheckboxChange();
+			
 		}
 	},
 	
@@ -757,6 +757,13 @@ Graph.prototype = {
 	updateSample: function(size){
 		graphCollection.data[this.sampleSet] = [];
 		
+		var sinkGraph = this.samplingFrom.confSink;
+		var confGraphIndex = graphCollection.graphs.indexOf(sinkGraph);
+		var ciBounds = graphCollection.data[this.samplingFrom.confBoundsSet];
+		var iterations = parseInt($("#ciIterations-"+confGraphIndex).val());
+		var method = $('select#ciBoundFormula-'+confGraphIndex+' option:selected').val();
+		var popMedian = this.samplingFrom.getMeanMedianMode()[1];
+		
 		var populationSize = 0;
 		this.samplingFrom.includedCategories.forEach(function(cat){
 			populationSize += graphCollection.data[cat].length;
@@ -770,10 +777,48 @@ Graph.prototype = {
 					graphCollection.data[graph.sampleSet].push(d);
 				});
 			});
+			
+			if (ciBounds.length < iterations){
+				if (method == "q1toq3") {
+					var q = getQuartiles(graphCollection.data[graph.sampleSet]);
+					var q1 = q[1].value;
+					var q3 = q[3].value;
+					
+					if (popMedian > q1 && popMedian < q3)
+						sinkGraph.confNumWithinRange++;
+						
+					
+					
+					ciBounds.push({
+						lower: q1,
+						upper: q3
+					})
+						
+				} else if (method == "IQRx1p5divrootn") {
+					var q = getQuartiles(graphCollection.data[graph.sampleSet]);
+					var lowerBound = q1-(1.5*(q3-q1)/Math.sqrt(sampleSize));
+					var upperBound = q3+(1.5*(q3-q1)/Math.sqrt(sampleSize))
+					
+					
+					
+					if (popMedian > lowerBound &&
+							popMedian < upperBound)
+						sinkGraph.confNumWithinRange++;
+					
+					ciBounds.push({
+						lower: lowerBound,
+						upper: upperBound
+					})
+				}
+				
+				sinkGraph.confResult = sinkGraph.confNumWithinRange/ciBounds.length;
+			}
+			
 			this.samplingHowMany = populationSize;
 			this.updateInsufDataFlags();
 			return populationSize;
-		} else {											//sample randomly
+		} else {//sample randomly
+			var graph = this;											
 			var i = 0;
 			while(i<size){
 				var catInd = 0;
@@ -794,7 +839,47 @@ Graph.prototype = {
 					graphCollection.data[this.sampleSet].push(dat);
 					i++;
 				}
+				
+				
 			}
+			
+			if (ciBounds.length < iterations){
+				
+				if (method == "q1toq3") {
+					var q = getQuartiles(graphCollection.data[graph.sampleSet]);
+					var q1 = q[1].value;
+					var q3 = q[3].value;
+					
+					if (popMedian > q1 && popMedian < q3)
+						sinkGraph.confNumWithinRange++;
+						
+					
+					
+					ciBounds.push({
+						lower: q1,
+						upper: q3
+					})
+						
+				} else if (method == "IQRx1p5divrootn") {
+					var q = getQuartiles(graphCollection.data[graph.sampleSet]);
+					var lowerBound = q1-(1.5*(q3-q1)/Math.sqrt(sampleSize));
+					var upperBound = q3+(1.5*(q3-q1)/Math.sqrt(sampleSize))
+					
+					
+					
+					if (popMedian > lowerBound &&
+							popMedian < upperBound)
+						sinkGraph.confNumWithinRange++;
+					
+					ciBounds.push({
+						lower: lowerBound,
+						upper: upperBound
+					})
+				}
+				
+				sinkGraph.confResult = sinkGraph.confNumWithinRange/ciBounds.length;
+			}
+			
 			this.samplingHowMany = size;
 			this.updateInsufDataFlags();
 			return size;
@@ -920,7 +1005,6 @@ Graph.prototype = {
 	},
 	 
 	getDataDrawObjects: function(){
-		console.log("dataDrawObjects");
 		var xDomain = this.x.domain();
 		var bucketSize = (xDomain[1]-xDomain[0])/this.graphCollection.buckets;
 		var points = [];

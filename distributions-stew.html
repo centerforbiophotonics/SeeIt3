@@ -105,14 +105,18 @@
 	<label for="fitScaleToData">Fit Scale Individually</label>
 	</div>
 	
-	<input type="checkbox" id="sampling" name="test" style="margin-left:10px;">
-	<label for="sampling">Sampling Engine</label>
-	<label for="numSamples" style="margin-left:10px;">#: </label>
-	<select id="numSamples" class="textbox" >
-		<option value="1">1</option>
-		<option value="2">2</option>
-	</select><br>
-	<div id='confidenceIntervalContainer'>
+	<div id='samplingContainer' style="display:none">
+		<input type="checkbox" id="sampling" name="test" style="margin-left:10px;">
+		<label for="sampling">Sampling Engine</label>
+		<label for="numSamples" style="margin-left:10px;">#: </label>
+		<select id="numSamples" class="textbox" >
+			<option value="1">1</option>
+			<option value="2">2</option>
+		</select>
+	</div>
+	
+	
+	<div id='confidenceIntervalContainer' style="display:none">
 		<input type="checkbox" id="confidenceInterval" name="test" style="margin-left:10px;">
 		<label for="confidenceInterval">Confidence Intervals</label><br>
 	</div>
