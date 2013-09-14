@@ -1583,7 +1583,135 @@ function constructConfidenceIntervalGraph(graphPanel,graph,index){
 			.text(function(){return "Blue = upper bounds(s) of confidence intervals"})
 			.font(fontString)
 		
-		
+		/*Mean Median Mode Lines */
+		graphPanel.add(pv.Rule)
+			.data(function(){
+				graph.confSource.getMeanMedianMode().forEach(function(m,i){
+					if (i > graph.confSource.MMMLabelVis.length-1)
+						graph.confSource.MMMLabelVis[i] = false;
+				});
+				return graph.confSource.getMeanMedianMode()
+			})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){return graph.baseLine})
+			.height(function(){
+				if (this.index == 0)
+					return (graph.h-graph.baseLine) * 0.75;
+				else if (this.index == 1)
+					return (graph.h-graph.baseLine) * 0.70;
+				else
+					return (graph.h-graph.baseLine) * 0.65;
+			})
+			.visible(function(){
+				if (this.index == 0)
+					return graph.confSource.showMMM || graph.confSource.showMean;
+				else if (this.index == 1)
+					return graph.confSource.showMMM || graph.confSource.showMedian;
+				else
+					return graph.confSource.showMMM || graph.confSource.showMode;
+			})
+			.strokeStyle(function(d){
+				if(this.index == 0)
+					return pv.rgb(255,0,0,0.5);
+				else if (this.index == 1)
+					return pv.rgb(255,0,255,0.5);
+				else
+					return pv.rgb(0,255,0,0.5);
+			})
+			.title(function(d){
+				if(this.index == 0)
+					return "Mean: " + d.toFixed(1);
+				else if (this.index == 1)
+					return "Median: " + d.toFixed(1);
+				else
+					return "Mode: " + d.toFixed(1);
+			})
+			.anchor("top").add(pv.Dot)
+				.title(function(d){
+					if(this.index == 0)
+						return "Mean: " + d.toFixed(1);
+					else if (this.index == 1)
+						return "Median: " + d.toFixed(1);
+					else
+						return "Mode: " + d.toFixed(1);
+				})
+				.shape(function(d){
+					if(this.index == 0)
+						return "square";
+					else if (this.index == 1)
+						return "circle"
+					else
+						return "triangle";
+				})
+				.fillStyle(function(d){
+					if(this.index == 0)
+						return pv.rgb(255,0,0,1);
+					else if (this.index == 1)
+						return pv.rgb(255,0,255,1);
+					else
+						return pv.rgb(0,255,0,1);
+				})
+				.strokeStyle(function(d){
+					if(this.index == 0)
+						return pv.rgb(255,0,0,0.5);
+					else if (this.index == 1)
+						return pv.rgb(255,0,255,0.5);
+					else
+						return pv.rgb(0,255,0,0.5);
+				})
+				.visible(function(){
+					if (this.index == 0)
+						return graph.confSource.showMMM || graph.confSource.showMean;
+					else if (this.index == 1)
+						return graph.confSource.showMMM || graph.confSource.showMedian;
+					else
+						return graph.confSource.showMMM || graph.confSource.showMode;
+				})
+				.size(40)
+				.event('click', function(){
+					graph.confSource.MMMLabelVis[this.index] = !(graph.confSource.MMMLabelVis[this.index]);
+					vis.render();
+				})
+				
+		// Mean, Median, Mode Labels
+		graphPanel.add(pv.Label)
+			.data(function(){return graph.confSource.getMeanMedianMode()})
+			.text(function(d){
+				if(this.index == 0)
+					return "Mean = " + d.toFixed(1);
+				else if (this.index == 1)
+					return "Median = " + d.toFixed(1);
+				else
+					return "Mode = " + d.toFixed(1);
+			})
+			.left(function(d){return graph.x(d)})
+			.bottom(function(){
+				if (this.index == 0)
+					return graph.baseLine + (graph.h-graph.baseLine) * 0.75 + 10;
+				else if (this.index == 1)
+					return graph.baseLine + (graph.h-graph.baseLine) * 0.70 + 10;
+				else
+					return graph.baseLine + (graph.h-graph.baseLine) * 0.65 + 10;
+			})
+			//.bottom(function(d){
+				//return graph.baseLine + (graph.h-graph.baseLine) * 0.75 + 5;
+			//})
+			.textStyle(function(d){
+				if(this.index == 0)
+					return pv.rgb(255,0,0,1);
+				else if (this.index == 1)
+					return pv.rgb(255,0,255,1);
+				else
+					return pv.rgb(0,255,0,1);
+			})
+			.font(fontString)
+			.textAlign("center")
+			.visible(function(){
+				return graph.confSource.MMMLabelVis[this.index] && //graph.showMMM &&
+					((this.index == 0) ? graph.confSource.showMean : true) &&
+					((this.index == 1) ? graph.confSource.showMedian : true) &&
+					((this.index >= 2) ? graph.confSource.showMode : true);
+			})
 	}
 }
 
@@ -2468,7 +2596,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 				if(this.index == 0)
 					return pv.rgb(255,0,0,0.5);
 				else if (this.index == 1)
-					return pv.rgb(0,0,255,0.5);
+					return pv.rgb(255,0,255,0.5);
 				else
 					return pv.rgb(0,255,0,0.5);
 			})
@@ -2489,12 +2617,12 @@ function constructSamplingGraph(graphPanel, graph, index){
 					else
 						return "Mode: " + d.toFixed(1);
 				})
-				.shape("square")
+				.shape("circle")
 				.fillStyle(function(d){
 					if(this.index == 0)
 						return pv.rgb(255,0,0,1);
 					else if (this.index == 1)
-						return pv.rgb(0,0,255,1);
+						return pv.rgb(255,0,255,1);
 					else
 						return pv.rgb(0,255,0,1);
 				})
@@ -2502,7 +2630,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 					if(this.index == 0)
 						return pv.rgb(255,0,0,0.5);
 					else if (this.index == 1)
-						return pv.rgb(0,0,255,0.5);
+						return pv.rgb(255,0,255,0.5);
 					else
 						return pv.rgb(0,255,0,0.5);
 				})
@@ -2537,11 +2665,11 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 			.textStyle(function(d){
 				if(this.index == 0)
-					return pv.rgb(255,0,0,0.5);
+					return pv.rgb(255,0,0,1);
 				else if (this.index == 1)
-					return pv.rgb(0,0,255,0.5);
+					return pv.rgb(255,0,255,1);
 				else
-					return pv.rgb(0,255,0,0.5);
+					return pv.rgb(0,255,0,1);
 			})
 			.font(fontString)
 			.textAlign("center")
@@ -3287,7 +3415,7 @@ function constructRegularGraph(graphPanel, graph, index){
 				if(this.index == 0)
 					return pv.rgb(255,0,0,0.5);
 				else if (this.index == 1)
-					return pv.rgb(0,0,255,0.5);
+					return pv.rgb(255,0,255,0.5);
 				else
 					return pv.rgb(0,255,0,0.5);
 			})
@@ -3320,7 +3448,7 @@ function constructRegularGraph(graphPanel, graph, index){
 					if(this.index == 0)
 						return pv.rgb(255,0,0,1);
 					else if (this.index == 1)
-						return pv.rgb(0,0,255,1);
+						return pv.rgb(255,0,255,1);
 					else
 						return pv.rgb(0,255,0,1);
 				})
@@ -3328,7 +3456,7 @@ function constructRegularGraph(graphPanel, graph, index){
 					if(this.index == 0)
 						return pv.rgb(255,0,0,0.5);
 					else if (this.index == 1)
-						return pv.rgb(0,0,255,0.5);
+						return pv.rgb(255,0,255,0.5);
 					else
 						return pv.rgb(0,255,0,0.5);
 				})
@@ -3371,11 +3499,11 @@ function constructRegularGraph(graphPanel, graph, index){
 			//})
 			.textStyle(function(d){
 				if(this.index == 0)
-					return pv.rgb(255,0,0,0.75);
+					return pv.rgb(255,0,0,1);
 				else if (this.index == 1)
-					return pv.rgb(0,0,255,0.75);
+					return pv.rgb(255,0,255,1);
 				else
-					return pv.rgb(0,255,0,0.75);
+					return pv.rgb(0,255,0,1);
 			})
 			.font(fontString)
 			.textAlign("center")
@@ -3704,7 +3832,7 @@ function enterUpdateLoop(index){
 
 function updateMultipleSamples(sourceIndex, firstTime){
 	for (var i =1; i <= graphCollection.graphs[sourceIndex].samplingToHowMany; i++)
-		updateSample("sampleN"+(sourceIndex+i),sourceIndex+i);
+		updateSample("sampleN"+(sourceIndex+i),sourceIndex+i,true);
 	if (firstTime)
 		updateTimer = setTimeout("updateMultipleSamples("+sourceIndex+", false)", 1000);
 	else
@@ -3767,7 +3895,7 @@ function constructSampleOptionsMenu(graph, index){
 							 )+
 							 
 							 "<td><input type=\"button\" class=\"button\" value=\"Sample\""+
-							 "onclick=\"javascript:updateSample('sampleN"+index+"',"+index+")\"></td>"+
+							 "onclick=\"javascript:updateSample('sampleN"+index+"',"+index+", true)\"></td>"+
 				
 							 //"<td nowrap><input type=\"button\" class=\"button\" value=\"CI\""+
 							 //"onclick=\"javascript:openCIMenu("+index+")\"></td>"+
@@ -3775,7 +3903,7 @@ function constructSampleOptionsMenu(graph, index){
 							 "<td nowrap><label for=\"sampleN"+index+"\">n = </label>"+
 							 "<input align=\"right\" type=\"text\" class =\"textbox\" id=\"sampleN"+index+"\""+
 								"size=\"2\""+
-								"onchange=\"javascript:updateSample('sampleN"+index+"',"+index+")\""+
+								"onchange=\"javascript:updateSample('sampleN"+index+"',"+index+", false)\""+
 								"value='"+graph.samplingHowMany+"'></td>"+
 							 
 							 "</tr></table>";
@@ -3801,16 +3929,19 @@ function positionSampleOptions(graph,index){
 }
 
 
-function updateSample(textbox, index){
+function updateSample(textbox, index, runSample){
 	var sampleSize = parseInt($('#'+textbox).val());
 	if (!isNaN(sampleSize)){
-		$('#'+textbox).val(graphCollection.graphs[index].updateSample(sampleSize));
+		if (runSample){
+			$('#'+textbox).val(graphCollection.graphs[index].updateSample(sampleSize));
+		} else { 
+			$('#'+textbox).val(sampleSize);
+			graphCollection.graphs[index].samplingHowMany = sampleSize;
+		}
 	} else {
 		$('#'+textbox).val(graphCollection.graphs[index].samplingHowMany);
 	}
-	
 	constructVis();
-
 }
 
 function setHighLightedSample(index){

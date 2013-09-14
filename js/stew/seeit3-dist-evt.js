@@ -812,10 +812,13 @@ function resetCI(index){
 	var sinkGraph = sourceGraph.confSink;
 	var iterations = parseInt($("#ciIterations-"+index).val());
 	
-	if (graphCollection.data[sourceGraph.confBoundsSet].length >= iterations){
-		graphCollection.data[sourceGraph.confBoundsSet] = [];
-		sinkGraph.confNumWithinRange = 0;
-	}
+	console.log(sinkGraph);
+	console.log(sourceGraph);
+	
+
+	graphCollection.data[sourceGraph.confBoundsSet] = [];
+	sinkGraph.confNumWithinRange = 0;
+	sinkGraph.confResult = null;
 	
 	constructVis();
 }

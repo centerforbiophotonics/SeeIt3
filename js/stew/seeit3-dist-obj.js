@@ -780,7 +780,7 @@ Graph.prototype = {
 			
 			if (ciBounds.length < iterations){
 				if (method == "q1toq3") {
-					var q = getQuartiles(graphCollection.data[graph.sampleSet]);
+					var q = getQuartiles(graph);
 					var q1 = q[1].value;
 					var q3 = q[3].value;
 					
@@ -795,7 +795,7 @@ Graph.prototype = {
 					})
 						
 				} else if (method == "IQRx1p5divrootn") {
-					var q = getQuartiles(graphCollection.data[graph.sampleSet]);
+					var q = getQuartiles(graph);
 					var lowerBound = q1-(1.5*(q3-q1)/Math.sqrt(sampleSize));
 					var upperBound = q3+(1.5*(q3-q1)/Math.sqrt(sampleSize))
 					
@@ -846,9 +846,11 @@ Graph.prototype = {
 			if (ciBounds.length < iterations){
 				
 				if (method == "q1toq3") {
-					var q = getQuartiles(graphCollection.data[graph.sampleSet]);
+					var q = getQuartiles(graph);
 					var q1 = q[1].value;
 					var q3 = q[3].value;
+					
+					console.log(q);
 					
 					if (popMedian > q1 && popMedian < q3)
 						sinkGraph.confNumWithinRange++;
@@ -861,7 +863,7 @@ Graph.prototype = {
 					})
 						
 				} else if (method == "IQRx1p5divrootn") {
-					var q = getQuartiles(graphCollection.data[graph.sampleSet]);
+					var q = getQuartiles(graph);
 					var lowerBound = q1-(1.5*(q3-q1)/Math.sqrt(sampleSize));
 					var upperBound = q3+(1.5*(q3-q1)/Math.sqrt(sampleSize))
 					
