@@ -781,8 +781,8 @@ Graph.prototype = {
 			if (ciBounds.length < iterations){
 				if (method == "q1toq3") {
 					var q = getQuartiles(graph);
-					var q1 = q[1].value;
-					var q3 = q[3].value;
+					var q1 = q[1]//.value;
+					var q3 = q[3]//.value;
 					
 					if (popMedian > q1 && popMedian < q3)
 						sinkGraph.confNumWithinRange++;
@@ -847,8 +847,8 @@ Graph.prototype = {
 				
 				if (method == "q1toq3") {
 					var q = getQuartiles(graph);
-					var q1 = q[1].value;
-					var q3 = q[3].value;
+					var q1 = q[1]//.value;
+					var q3 = q[3]//.value;
 					
 					console.log(q);
 					

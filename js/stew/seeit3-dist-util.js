@@ -226,11 +226,18 @@ function partitionDataInFour(graph){
 }
 
 function getQuartiles(source){
+	//console.log(source)
+	
 	var data = null;
-	if (source instanceof Array) //Data Array
-		data = source.sort(function(a,b){return a.value-b.value});
-	else                       	 //Graph Option
+	if (source instanceof Array) { //Data Array{
+		data = source.sort(function(a,b){return a.value-b.value}).map(function(d){return d.value});
+		//console.log("array");
+	} else {                       	 //Graph Option
 		data = source.dataVals();
+		//console.log("graph");
+	}
+	
+	//console.log(data);
 	
 	var divs = [data[0]];
 	var median = data.length%2 == 0 ? (data[Math.floor(data.length/2)]+data[Math.floor(data.length/2-1)])/2 : data[Math.floor(data.length/2)];

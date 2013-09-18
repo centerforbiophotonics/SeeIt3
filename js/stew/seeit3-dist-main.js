@@ -133,6 +133,10 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		samplingCheckboxChange();
 		
 		$('#checkboxHideData').attr('checked', true);
+		
+		graphCollection.graphs[0].showMedian = true;
+		graphCollection.graphs[0].MMMLabelVis[1] = true;
+		graphCollection.graphs[1].MMMLabelVis[1] = true;
   }
 });
 
@@ -3862,7 +3866,7 @@ function constructConfOptionsMenu(graph,index){
 								"<option value='IQRx1p5divrootn'>Q1 - 1.5*IQR/(root n) to Q3 + 1.5*IQR/(root n)</option>"+
 							 "</select>"+
 							 //"<input type='button' id='runCI-"+index+"' onclick='runCI("+index+",true);' value='Sample Once'>"+
-							 "<input type='button' class='button' id='runAllCI-"+index+"' onclick='runCI("+index+",false);' value='"+(ciBounds.length >= iterations ? 'Reset and Sample All' :'Sample All')+"'>"+
+							 "<input type='button' class='button' id='runAllCI-"+index+"' onclick='runCI("+index+",false);' value='Sample All'>"+
 							 "<input type='button' class='button' id='resetCI-"+index+"' onclick='resetCI("+index+");' value ='Reset'>";
 						 
 	$('#confOptions'+index).html(string);
@@ -3937,6 +3941,8 @@ function updateSample(textbox, index, runSample){
 		} else { 
 			$('#'+textbox).val(sampleSize);
 			graphCollection.graphs[index].samplingHowMany = sampleSize;
+			console.log("update sample don't run");
+			resetCI(graphCollection.graphs.indexOf(graphCollection.graphs[index].samplingFrom.confSink));
 		}
 	} else {
 		$('#'+textbox).val(graphCollection.graphs[index].samplingHowMany);

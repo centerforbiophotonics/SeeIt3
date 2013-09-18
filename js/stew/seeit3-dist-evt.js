@@ -873,8 +873,10 @@ function runCI(index, run_once){
 		
 		if (method == "q1toq3") {
 			var q = getQuartiles(sample);
-			var q1 = q[1].value;
-			var q3 = q[3].value;
+			var q1 = q[1]//.value;
+			var q3 = q[3]//.value;
+			
+			console.log(q);
 			
 			if (popMedian > q1 && popMedian < q3)
 				sinkGraph.confNumWithinRange++;
@@ -888,6 +890,8 @@ function runCI(index, run_once){
 				
 		} else if (method == "IQRx1p5divrootn") {
 			var q = getQuartiles(sample);
+			var q1 = q[1]//.value;
+			var q3 = q[3]//.value;
 			var lowerBound = q1-(1.5*(q3-q1)/Math.sqrt(sampleSize));
 			var upperBound = q3+(1.5*(q3-q1)/Math.sqrt(sampleSize))
 			
