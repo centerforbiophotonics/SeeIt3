@@ -3,7 +3,6 @@
 /* Dynamic Graph Resizing */
 $(window).resize(function() {
 	if (graphCollection.hasOwnProperty("data")){
-		//console.log("Old:" + graphCollection.w + "..." + graphCollection.h);
 		graphCollection.setW(graphCollection.calcGraphWidth());
 		graphCollection.setH(graphCollection.calcGraphHeight());
 		
@@ -162,7 +161,8 @@ function samplingCheckboxChange(){
 	if (testMode == "sampling"){
 		for (i=1; i<= graphCollection.graphs[selectedGraphIndex].samplingToHowMany; i++){
 			graphCollection.addSamplingGraph(selectedGraphIndex, i);
-			graphs[selectedGraphIndex+i].updateSample(graphs[selectedGraphIndex+i].samplingHowMany);
+			if (graphCollection.graphs[selectedGraphIndex].includedCategories.length > 0)
+				graphs[selectedGraphIndex+i].updateSample(graphs[selectedGraphIndex+i].samplingHowMany);
 		}
 		setHighLightedSample(selectedGraphIndex+1);
 		
@@ -812,10 +812,6 @@ function resetCI(index){
 	var sinkGraph = sourceGraph.confSink;
 	var iterations = parseInt($("#ciIterations-"+index).val());
 	
-	console.log(sinkGraph);
-	console.log(sourceGraph);
-	
-
 	graphCollection.data[sourceGraph.confBoundsSet] = [];
 	sinkGraph.confNumWithinRange = 0;
 	sinkGraph.confResult = null;
@@ -875,8 +871,6 @@ function runCI(index, run_once){
 			var q = getQuartiles(sample);
 			var q1 = q[1]//.value;
 			var q3 = q[3]//.value;
-			
-			console.log(q);
 			
 			if (popMedian > q1 && popMedian < q3)
 				sinkGraph.confNumWithinRange++;

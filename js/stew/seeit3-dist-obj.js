@@ -769,55 +769,55 @@ Graph.prototype = {
 			populationSize += graphCollection.data[cat].length;
 		});
 		
-		if (size >= populationSize){  //sample all
-			var graph = this;
-			this.samplingFrom.includedCategories.forEach(function(cat){
-				graphCollection.data[cat].forEach(function(d){
-					d.set = cat;
-					graphCollection.data[graph.sampleSet].push(d);
-				});
-			});
+		//if (size >= populationSize){  //sample all
+			//var graph = this;
+			//this.samplingFrom.includedCategories.forEach(function(cat){
+				//graphCollection.data[cat].forEach(function(d){
+					//d.set = cat;
+					//graphCollection.data[graph.sampleSet].push(d);
+				//});
+			//});
 			
-			if (ciBounds.length < iterations){
-				if (method == "q1toq3") {
-					var q = getQuartiles(graph);
-					var q1 = q[1]//.value;
-					var q3 = q[3]//.value;
+			//if (ciBounds.length < iterations){
+				//if (method == "q1toq3") {
+					//var q = getQuartiles(graph);
+					//var q1 = q[1]//.value;
+					//var q3 = q[3]//.value;
 					
-					if (popMedian > q1 && popMedian < q3)
-						sinkGraph.confNumWithinRange++;
+					//if (popMedian > q1 && popMedian < q3)
+						//sinkGraph.confNumWithinRange++;
 						
 					
 					
-					ciBounds.push({
-						lower: q1,
-						upper: q3
-					})
+					//ciBounds.push({
+						//lower: q1,
+						//upper: q3
+					//})
 						
-				} else if (method == "IQRx1p5divrootn") {
-					var q = getQuartiles(graph);
-					var lowerBound = q1-(1.5*(q3-q1)/Math.sqrt(sampleSize));
-					var upperBound = q3+(1.5*(q3-q1)/Math.sqrt(sampleSize))
+				//} else if (method == "IQRx1p5divrootn") {
+					//var q = getQuartiles(graph);
+					//var lowerBound = q1-(1.5*(q3-q1)/Math.sqrt(sampleSize));
+					//var upperBound = q3+(1.5*(q3-q1)/Math.sqrt(sampleSize))
 					
 					
 					
-					if (popMedian > lowerBound &&
-							popMedian < upperBound)
-						sinkGraph.confNumWithinRange++;
+					//if (popMedian > lowerBound &&
+							//popMedian < upperBound)
+						//sinkGraph.confNumWithinRange++;
 					
-					ciBounds.push({
-						lower: lowerBound,
-						upper: upperBound
-					})
-				}
+					//ciBounds.push({
+						//lower: lowerBound,
+						//upper: upperBound
+					//})
+				//}
 				
-				sinkGraph.confResult = sinkGraph.confNumWithinRange/ciBounds.length;
-			}
+				//sinkGraph.confResult = sinkGraph.confNumWithinRange/ciBounds.length;
+			//}
 			
-			this.samplingHowMany = populationSize;
-			this.updateInsufDataFlags();
-			return populationSize;
-		} else {//sample randomly
+			//this.samplingHowMany = populationSize;
+			//this.updateInsufDataFlags();
+			//return populationSize;
+		//} else {//sample randomly
 			var graph = this;											
 			var i = 0;
 			while(i<size){
@@ -831,14 +831,14 @@ Graph.prototype = {
 					}
 					catInd++;
 				}
-				
-				var dat = graphCollection.data[this.samplingFrom.includedCategories[catInd]][index];
+
+				var dat = graphCollection.data[graph.samplingFrom.includedCategories[catInd]][index];
 				
 				dat.set = this.samplingFrom.includedCategories[catInd];
-				if (!sampleContainsData(graphCollection.data[this.sampleSet],dat,this.samplingFrom)){
+				//if (!sampleContainsData(graphCollection.data[this.sampleSet],dat,this.samplingFrom)){
 					graphCollection.data[this.sampleSet].push(dat);
 					i++;
-				}
+				//}
 				
 				
 			}
@@ -849,8 +849,6 @@ Graph.prototype = {
 					var q = getQuartiles(graph);
 					var q1 = q[1]//.value;
 					var q3 = q[3]//.value;
-					
-					console.log(q);
 					
 					if (popMedian > q1 && popMedian < q3)
 						sinkGraph.confNumWithinRange++;
@@ -885,7 +883,7 @@ Graph.prototype = {
 			this.samplingHowMany = size;
 			this.updateInsufDataFlags();
 			return size;
-		}
+		//}
 	},
 	
 	updateHistogramWidth: function(){

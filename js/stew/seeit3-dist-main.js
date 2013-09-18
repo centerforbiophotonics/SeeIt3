@@ -36,7 +36,6 @@ if (!ie){
 	var urlParamsUsed = false;
 	var exclusiveLoad = false;	
 	if (preload.substring(0, 1) == '?') {
-			console.log(preload);
 			urlParamsUsed = true;
 			
 			preload = preload.substring(1);
@@ -1213,8 +1212,6 @@ function popLabTouchEnd(event){
 	var curY = touch.finalY - 
 							$('span').offset().top - 
 							graphCollection.padTop;
-							
-	//console.log(curX+"---"+curY);
 						 
 	//touch.finalX = curX;
 	//touch.finalY = curY;
@@ -1229,8 +1226,6 @@ function popLabTouchEnd(event){
 		graphCollection.graphs[0]["population"+dragObj.popNum] = graphCollection.graphs[which];
 		
 		resetResampling(0);
-		
-		//console.log(which);
 	} 
 	
 	touch.touch = true;
@@ -3792,7 +3787,6 @@ function constructRegularGraph(graphPanel, graph, index){
 }
 
 function constructSampleButton(graph, index){
-	//console.log("contructing Sample Button");
 	$('body').prepend("<div class=\"sampleOptions\" id=\"sampleButton"+index+"\"></div>");
 	
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
@@ -3935,13 +3929,12 @@ function positionSampleOptions(graph,index){
 
 function updateSample(textbox, index, runSample){
 	var sampleSize = parseInt($('#'+textbox).val());
-	if (!isNaN(sampleSize)){
+	if (!isNaN(sampleSize) && sampleSize >= 4){
 		if (runSample){
 			$('#'+textbox).val(graphCollection.graphs[index].updateSample(sampleSize));
 		} else { 
 			$('#'+textbox).val(sampleSize);
 			graphCollection.graphs[index].samplingHowMany = sampleSize;
-			console.log("update sample don't run");
 			resetCI(graphCollection.graphs.indexOf(graphCollection.graphs[index].samplingFrom.confSink));
 		}
 	} else {
@@ -4069,7 +4062,6 @@ function resampleAtOnce(index){
 		group2Mean = 0;
 		
 		if (graph.resamplingReplacement){
-			console.log("replacement");
 			group1Counter = sample1Size;
 			group2Counter = sample2Size;
 			
