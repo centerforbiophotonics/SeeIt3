@@ -157,6 +157,7 @@ jQuery('body').bind('CHIDRDatasetLoaded', function(event) {
 		constructVis();
 		
 		if (preselected_graphs.length > 0){
+			console.log("preselect")
 			var num_assigned = 0;
 			preselected_graphs.forEach(function(id){
 				if (id != undefined){

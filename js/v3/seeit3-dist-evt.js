@@ -27,10 +27,15 @@ function editInGoogleDocs(title){
 	window.open('https://spreadsheets.google.com/ccc?key=' + matches[1]);
 }
 
-function saveLocally(title){
+function saveLocally(title, auto){
 	var worksheet = graphCollection.worksheets[title];
 	
-	if (localStorage.hasOwnProperty("worksheet--"+worksheet.title) == false || window.confirm("This data category is already stored.  Do you want to update the stored data?")){
+	
+	if (localStorage.hasOwnProperty("worksheet--"+worksheet.title) == false 
+			|| (!auto && window.confirm("This data category is already stored.  Do you want to update the stored data?"))
+			|| auto
+		
+		){
 		localStorage["worksheet--"+worksheet.title] = JSON.stringify(worksheet);
 		
 		worksheet.storedLocally = true;
@@ -41,6 +46,7 @@ function saveLocally(title){
 			worksheet.edited[dataset_title] = false;
 			$("#"+dataset_title+"div").css("color","black");
 		}
+		
 		
 		window.alert("This data category has been saved in your browser's local storage. It will be accessible from other SeeIt modules, but your computer may be configured to erase this data once you have closed your browser or once you have logged out or shut down. If this data is important you should back it up yourself. You can do this by copying the text in the edit menu which can be accessed by clicking the pencil icon below the data category's title.  This text can be pasted into a spreadsheet or text file.");
 	
@@ -945,6 +951,8 @@ $('#loadFromForm').click(function(){
 		else
 			updateWorksheet(worksheetToEdit,title,cells, $('#worksheetLabelsRequired').is(':checked'));
 		$('#worksheetMenu').slideUp();
+		
+		saveLocally(title,true);
 	}
 });
 

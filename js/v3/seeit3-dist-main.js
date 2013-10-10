@@ -896,7 +896,7 @@ function constructDatasetPanel(){
 								""
 							)+
 							(w.local && w.userCreated && w.storedLocally ?  
-								"<input type='image' src='img/garbage.png' style='margin-left:25px;' onclick='clearFromLocalStorage(\""+w.title+"\")' width='25' height='25'>" :
+								"<input type='image' src='img/garbage.png' style='margin-left:25px;' onclick='clearFromLocalStorage(\""+w.title+"\",false)' width='25' height='25'>" :
 								""
 							);
 			for (key in w.data){		
