@@ -748,7 +748,7 @@ function constructVis(){
 						graphCollection.graphs[1].includedCategories.length == 1)
 					setString = "set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]
 				
-				window.open("resampling.html?"+keyString+setString);
+				window.open("resampling.html?"+(exclusiveLoad ? "!" : "")+keyString+setString);
 				
 			})
 			.event("mouseover", function(d){
