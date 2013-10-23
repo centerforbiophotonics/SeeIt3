@@ -30,6 +30,7 @@ var exampleSpreadsheets = [ ];
 
 var ie = $.browser.msie != undefined && $.browser.msie != false;
 var exclusiveLoad = false;
+var preloadedWorksheets = [];
 
 if (!ie){
 	//Extract url params and set flag if default worksheets are not to be loaded
@@ -82,6 +83,7 @@ if (!ie){
 				
 				if (!exists) {
 					exampleSpreadsheets.push(new Spreadsheet(key));
+					preloadedWorksheets.push(key);
 					//constructVis();
 				}
 				else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
@@ -736,13 +738,18 @@ function constructVis(){
 				
 				//constructVis();
 				
+				
+				var keyString = ""
+				if(preloadedWorksheets.length > 0)
+					keyString = "key="+preloadedWorksheets.join("&key=")+"&";
+				
+				var setString = "";		
 				if (graphCollection.graphs[0].includedCategories.length == 1 &&
-					  graphCollection.graphs[1].includedCategories.length == 1)
-					window.open("resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
-				else
-					window.open("resampling.html");
-					//alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
-
+						graphCollection.graphs[1].includedCategories.length == 1)
+					setString = "set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]
+				
+				window.open("resampling.html?"+keyString+setString);
+				
 			})
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
