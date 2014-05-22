@@ -1613,8 +1613,8 @@ function openWorksheetMenu(worksheetTitle){
 	var text, title;
 	
 	if (worksheetTitle == undefined){
-		title = "*** Enter Worksheet Title ***";
-		text = "*** Enter Worksheet Text ***";
+		title = "*** Enter Dataset Title ***";
+		text = "*** Enter Dataset Text ***";
 		worksheetNew = true;
 		$('#loadFromURL').show();
 		$('#deleteWorksheet').hide();

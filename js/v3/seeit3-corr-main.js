@@ -768,7 +768,7 @@ function constructDatasetPanel(){
 	})
 	html+="<table><tr onclick=\"openWorksheetMenu()\" style=\"cursor:pointer; font:"+fontString+";\">"+
 							"<td><image src='img/plus.png' width='25' height='25'></td>"+
-							"<td>Add a Worksheet</td></div></tr></table>";
+							"<td>Add a Dataset</td></div></tr></table>";
 	$('#dataTree').html(html);
 	$('#datasets').css('z-index',2)
 }

@@ -208,7 +208,7 @@ function partitionDataInTwo(graph){
 						getMaxOfArray(data)];
 	else
 		return [getMinOfArray(data), 
-						(data[Math.floor(data.length/2)]+data[Math.floor(data.length/2+1)])/2,
+						(data[Math.floor(data.length/2)-1]+data[Math.floor(data.length/2)])/2,
 						getMaxOfArray(data)];
 }
 
@@ -216,14 +216,23 @@ function partitionDataInFour(graph){
 	var data = graph.dataVals();
 	var divs = [getMinOfArray(data)];
 	
-	if (data.length >= 4){
-		divs.push((data[Math.floor(data.length/4)] + data[Math.floor(data.length/4) - 1])/2);
-		divs.push((data[Math.floor(data.length/4)*2] + data[Math.floor(data.length/4)*2 - 1])/2);
-		divs.push((data[Math.floor(data.length/4)*3] + data[Math.floor(data.length/4)*3 - 1])/2);
-		divs.push(getMaxOfArray(data));
+	var length = data.length;
+	var bin_size = Math.floor(data.length/4);
+	var remainder = length % 4;
+	
+	for (var i = 1; i < 4; i++){
+		var index = bin_size*i;
+		if (i > (length - remainder))
+			index += 1;
+		divs.push((data[index] + data[index - 1])/2);
 	}
+
+	divs.push(getMaxOfArray(data));
+	
 	return divs;
 }
+
+
 
 function getQuartiles(graph){
 	var data = graph.dataVals();

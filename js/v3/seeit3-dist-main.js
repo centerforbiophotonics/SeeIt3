@@ -932,7 +932,7 @@ function constructDatasetPanel(){
 	})
 	html+="<table><tr onclick=\"openWorksheetMenu(undefined, false)\" style=\"cursor:pointer;  font:"+fontString+";\">"+
 							"<td><image src='img/plus.png' width='25' height='25'></td>"+
-							"<td>Add a Worksheet</td></div></tr></table>";
+							"<td>Add a Dataset</td></div></tr></table>";
 	$('#dataTree').html(html);
 	jscolor.init();
 }
@@ -1890,13 +1890,17 @@ function constructSamplingGraph(graphPanel, graph, index){
 							 !graph.insufDataForTwo;
 			})
 			.text(function(){
-				if (graph.dataVals().length % 2 == 0)
+				if (graph.dataVals().length % 2 == 0){
+					console.log(graph.dataVals().length/2);
 					return graph.dataVals().length/2;
-				else if(this.index != partitionDataInTwo(graph).length-2)
-					return Math.ceil(graph.dataVals().length/2);
-				else
-					return Math.floor(graph.dataVals().length/2);
-				
+
+				} else {
+					console.log(graph.dataVals().length/2);
+					if (this.index == 2)
+						return Math.floor(graph.dataVals().length/2);
+					else
+						return Math.ceil(graph.dataVals().length/2);
+				}	
 			})
 		
 		/*Insufficient Data for Two Warning */	
@@ -1950,8 +1954,13 @@ function constructSamplingGraph(graphPanel, graph, index){
 							!graph.insufDataForFour;
 			})
 			.text(function(d){
-				if (this.index != partitionDataInFour(graph).length-1){
-					return d;
+				var length = graph.dataVals().length
+				if (this.index != 4){
+					var bin_size = Math.floor(length/4);
+					var remainder = length % 4;
+					if (this.index+1 > (4 - remainder))
+						bin_size += 1;
+					return bin_size;
 				} else return 0;
 			})
 			
@@ -2696,13 +2705,17 @@ function constructRegularGraph(graphPanel, graph, index){
 							 !graph.insufDataForTwo;
 			})
 			.text(function(){
-				if (graph.dataVals().length % 2 == 0)
+				if (graph.dataVals().length % 2 == 0){
+					console.log(graph.dataVals().length/2);
 					return graph.dataVals().length/2;
-				else if(this.index != partitionDataInTwo(graph).length-2)
-					return Math.ceil(graph.dataVals().length/2);
-				else
-					return Math.floor(graph.dataVals().length/2);
-				
+
+				} else {
+					console.log(graph.dataVals().length/2);
+					if (this.index == 0)
+						return Math.floor(graph.dataVals().length/2);
+					else
+						return Math.ceil(graph.dataVals().length/2);
+				}	
 			})
 		
 		/*Insufficient Data for Two Warning */	
@@ -2757,8 +2770,13 @@ function constructRegularGraph(graphPanel, graph, index){
 							!graph.insufDataForFour;
 			})
 			.text(function(d){
-				if (this.index != partitionDataInFour(graph).length-1){
-					return d;
+				var length = graph.dataVals().length
+				if (this.index != 4){
+					var bin_size = Math.floor(length/4);
+					var remainder = length % 4;
+					if (this.index+1 > (4 - remainder))
+						bin_size += 1;
+					return bin_size;
 				} else return 0;
 			})
 		
