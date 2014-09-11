@@ -20,7 +20,7 @@ var population = [];
 var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
 										[85, 55, 34],			//Display Options
 										[75, 45, 34],			//New Graph
-										[95, 67, 34],			//Advanced Mode
+										//[95, 67, 34],			//Advanced Mode
 										[66, 40, 34],			//Edit Mode
 										[73, 47, 32],			//Fit Scales
 										[103, 78, 32]			//Resampling
@@ -427,101 +427,101 @@ function constructVis(){
 				})
 				
 		/*Toggle Basic/Advanced User Mode*/
-		var togUserModePanel = vis.add(pv.Panel)
-			.data([3])
-			.events("all")
-			.cursor("pointer")
-			.title("Toggle advanced mode")
-			.height(30)
-			.width(topButtonWidth)
-			.left(topButtonLeft)
-			.top(-31)
-			.lineWidth(1)
-			.event("click", function(){
-				graphCollection.advancedUser = !(graphCollection.advancedUser);
-				showHideAdvancedOptions();
-			})
-			.event("mouseover", function(d){
-				this.strokeStyle("black");
-				this.render();
-			})
-			.event("mouseout", function(d){ 
-				this.strokeStyle(pv.rgb(0,0,0,0));
-				this.render();
-			})
+		// var togUserModePanel = vis.add(pv.Panel)
+		// 	.data([3])
+		// 	.events("all")
+		// 	.cursor("pointer")
+		// 	.title("Toggle advanced mode")
+		// 	.height(30)
+		// 	.width(topButtonWidth)
+		// 	.left(topButtonLeft)
+		// 	.top(-31)
+		// 	.lineWidth(1)
+		// 	.event("click", function(){
+		// 		graphCollection.advancedUser = !(graphCollection.advancedUser);
+		// 		showHideAdvancedOptions();
+		// 	})
+		// 	.event("mouseover", function(d){
+		// 		this.strokeStyle("black");
+		// 		this.render();
+		// 	})
+		// 	.event("mouseout", function(d){ 
+		// 		this.strokeStyle(pv.rgb(0,0,0,0));
+		// 		this.render();
+		// 	})
 			
-		togUserModePanel.add(pv.Image)
-			.url(function(){
-				if (graphCollection.advancedUser)
-					return getRelativeImageURL() + "advModeON.png"
-				else
-					return getRelativeImageURL() + "advModeOFF.png"
-			})
-			.width(30)
-			.height(26)
-			.top(2)
-			.left(0)
-			.cursor("pointer")
-			.title("Toggle basic/advanced mode")
-			.event("click", function(){
-				graphCollection.advancedUser = !(graphCollection.advancedUser);
-				showHideAdvancedOptions();
-			})
-			.visible(function() {
-				if (graphCollection.buttonIcon)
-					return true;
-				else
-					return false;
-			})
-			.anchor("left").add(pv.Label)
-				.left(function(){
-					if (graphCollection.buttonText && !graphCollection.buttonIcon)
-						return 2;
-					else
-					 return 28;
-				})
-				.text(function(){return "Advanced"})
-				.textStyle(function(){
-					if (graphCollection.advancedUser)
-						return "red"
-					else
-						return "grey"
-				})
-				.top(10)
-				.font("bold 12px arial")
-				.visible(function() {
-					if (graphCollection.buttonText)
-						return true;
-					else
-						return false;
-				})
-			.anchor("left").add(pv.Label)
-				.left(function(){
-					if (graphCollection.buttonText && !graphCollection.buttonIcon)
-						return 2;
-					else
-						return 28;
-				})
-				.text(function(){return "Mode"})
-				.textStyle(function(){
-					if (graphCollection.advancedUser)
-						return "red"
-					else
-						return "grey"
-				})
-				.top(22)
-				.font("bold 12px arial")
-				.visible(function() {
-					if (graphCollection.buttonText)
-						return true;
-					else
-						return false;
-				})
+		// togUserModePanel.add(pv.Image)
+		// 	.url(function(){
+		// 		if (graphCollection.advancedUser)
+		// 			return getRelativeImageURL() + "advModeON.png"
+		// 		else
+		// 			return getRelativeImageURL() + "advModeOFF.png"
+		// 	})
+		// 	.width(30)
+		// 	.height(26)
+		// 	.top(2)
+		// 	.left(0)
+		// 	.cursor("pointer")
+		// 	.title("Toggle basic/advanced mode")
+		// 	.event("click", function(){
+		// 		graphCollection.advancedUser = !(graphCollection.advancedUser);
+		// 		showHideAdvancedOptions();
+		// 	})
+		// 	.visible(function() {
+		// 		if (graphCollection.buttonIcon)
+		// 			return true;
+		// 		else
+		// 			return false;
+		// 	})
+		// 	.anchor("left").add(pv.Label)
+		// 		.left(function(){
+		// 			if (graphCollection.buttonText && !graphCollection.buttonIcon)
+		// 				return 2;
+		// 			else
+		// 			 return 28;
+		// 		})
+		// 		.text(function(){return "Advanced"})
+		// 		.textStyle(function(){
+		// 			if (graphCollection.advancedUser)
+		// 				return "red"
+		// 			else
+		// 				return "grey"
+		// 		})
+		// 		.top(10)
+		// 		.font("bold 12px arial")
+		// 		.visible(function() {
+		// 			if (graphCollection.buttonText)
+		// 				return true;
+		// 			else
+		// 				return false;
+		// 		})
+		// 	.anchor("left").add(pv.Label)
+		// 		.left(function(){
+		// 			if (graphCollection.buttonText && !graphCollection.buttonIcon)
+		// 				return 2;
+		// 			else
+		// 				return 28;
+		// 		})
+		// 		.text(function(){return "Mode"})
+		// 		.textStyle(function(){
+		// 			if (graphCollection.advancedUser)
+		// 				return "red"
+		// 			else
+		// 				return "grey"
+		// 		})
+		// 		.top(22)
+		// 		.font("bold 12px arial")
+		// 		.visible(function() {
+		// 			if (graphCollection.buttonText)
+		// 				return true;
+		// 			else
+		// 				return false;
+		// 		})
 				
 			
 		/* Toggle Edit Mode Button */
 		var togEditPanel = vis.add(pv.Panel)
-			.data([4])
+			.data([3])
 			.events("all")
 			.cursor("pointer")
 			.title("Toggle edit mode")
@@ -619,7 +619,7 @@ function constructVis(){
 		
 		//Fit all graphs to scale button
 		var fitScalePanel = vis.add(pv.Panel)
-			.data([5])
+			.data([4])
 			.events("all")
 			.cursor("pointer")
 			.title("Scale all graphs identically")
@@ -712,7 +712,7 @@ function constructVis(){
 				
 		//Add a Resampling Graph
 		var resamplingPanel = vis.add(pv.Panel)
-			.data([6])
+			.data([5])
 			.events("all")
 			.cursor("pointer")
 			.title("Toggle Resampling")
