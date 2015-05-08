@@ -94,9 +94,11 @@ if (!ie){
 	
 	//Push worksheets in localStorage
 	for (var w_title in localStorage){
-		var worksheet = JSON.parse(localStorage[w_title]);
-		worksheet.fromLocalStorage = true;
-		exampleSpreadsheets.push(new Spreadsheet(worksheet));
+		if (!localStorage[w_title] instanceof Function){
+			var worksheet = JSON.parse(localStorage[w_title]);
+			worksheet.fromLocalStorage = true;
+			exampleSpreadsheets.push(new Spreadsheet(worksheet));
+		}
 	}
 	
 } else {
