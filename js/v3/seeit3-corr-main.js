@@ -79,10 +79,11 @@ if (!ie){
 	
 	//Push worksheets in localStorage
 	for (var w_title in localStorage){
-		var worksheet = JSON.parse(localStorage[w_title]);
-		console.log(worksheet);
-		worksheet.fromLocalStorage = true;
-		exampleSpreadsheets.push(new Spreadsheet(worksheet));
+		if (!localStorage[w_title] instanceof Function){  //For firefox
+			var worksheet = JSON.parse(localStorage[w_title]);
+			worksheet.fromLocalStorage = true;
+			exampleSpreadsheets.push(new Spreadsheet(worksheet));
+		}
 	}
 	
 } else {
@@ -768,7 +769,7 @@ function constructDatasetPanel(){
 	})
 	html+="<table><tr onclick=\"openWorksheetMenu()\" style=\"cursor:pointer; font:"+fontString+";\">"+
 							"<td><image src='img/plus.png' width='25' height='25'></td>"+
-							"<td>Add a Worksheet</td></div></tr></table>";
+							"<td>Add a Dataset</td></div></tr></table>";
 	$('#dataTree').html(html);
 	$('#datasets').css('z-index',2)
 }

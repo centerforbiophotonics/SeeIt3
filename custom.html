@@ -40,9 +40,15 @@
 	
 	<script type="text/javascript">
 		function parseSpreadsheetKeyFromURL(URL, i) {
-			var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
-			if (!matches) alert("URL "+(i+1)+" doesn't appear to be a valid URL");
-			else return matches[1];
+			var old_style_matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+			var new_style_matches = /spreadsheets\/d\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+			
+			if (!old_style_matches && !new_style_matches) 
+				alert("URL "+(i+1)+" doesn't appear to be a valid URL");
+			else if (old_style_matches)
+				return old_style_matches[1];
+			else 
+				return new_style_matches[1];
 		}
 		
 		function generateURLs(){

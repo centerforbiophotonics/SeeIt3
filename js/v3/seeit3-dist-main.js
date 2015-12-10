@@ -94,9 +94,11 @@ if (!ie){
 	
 	//Push worksheets in localStorage
 	for (var w_title in localStorage){
-		var worksheet = JSON.parse(localStorage[w_title]);
-		worksheet.fromLocalStorage = true;
-		exampleSpreadsheets.push(new Spreadsheet(worksheet));
+		if (!localStorage[w_title] instanceof Function){
+			var worksheet = JSON.parse(localStorage[w_title]);
+			worksheet.fromLocalStorage = true;
+			exampleSpreadsheets.push(new Spreadsheet(worksheet));
+		}
 	}
 	
 } else {
@@ -932,7 +934,7 @@ function constructDatasetPanel(){
 	})
 	html+="<table><tr onclick=\"openWorksheetMenu(undefined, false)\" style=\"cursor:pointer;  font:"+fontString+";\">"+
 							"<td><image src='img/plus.png' width='25' height='25'></td>"+
-							"<td>Add a Worksheet</td></div></tr></table>";
+							"<td>Add a Dataset</td></div></tr></table>";
 	$('#dataTree').html(html);
 	jscolor.init();
 }
@@ -1890,13 +1892,17 @@ function constructSamplingGraph(graphPanel, graph, index){
 							 !graph.insufDataForTwo;
 			})
 			.text(function(){
-				if (graph.dataVals().length % 2 == 0)
+				if (graph.dataVals().length % 2 == 0){
+					console.log(graph.dataVals().length/2);
 					return graph.dataVals().length/2;
-				else if(this.index != partitionDataInTwo(graph).length-2)
-					return Math.ceil(graph.dataVals().length/2);
-				else
-					return Math.floor(graph.dataVals().length/2);
-				
+
+				} else {
+					console.log(graph.dataVals().length/2);
+					if (this.index == 2)
+						return Math.floor(graph.dataVals().length/2);
+					else
+						return Math.ceil(graph.dataVals().length/2);
+				}	
 			})
 		
 		/*Insufficient Data for Two Warning */	
@@ -1950,8 +1956,13 @@ function constructSamplingGraph(graphPanel, graph, index){
 							!graph.insufDataForFour;
 			})
 			.text(function(d){
-				if (this.index != partitionDataInFour(graph).length-1){
-					return d;
+				var length = graph.dataVals().length
+				if (this.index != 4){
+					var bin_size = Math.floor(length/4);
+					var remainder = length % 4;
+					if (this.index+1 > (4 - remainder))
+						bin_size += 1;
+					return bin_size;
 				} else return 0;
 			})
 			
@@ -2431,7 +2442,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.textAlign("center")
 			.textAngle(0)
 			.textBaseline("bottom")
-			.text(function(){return "n = " + graph.n})
+			.text(function(){return "N = " + graph.n})
 			.font(fontString);
 			
 		/* X-axis ticks */
@@ -2696,13 +2707,17 @@ function constructRegularGraph(graphPanel, graph, index){
 							 !graph.insufDataForTwo;
 			})
 			.text(function(){
-				if (graph.dataVals().length % 2 == 0)
+				if (graph.dataVals().length % 2 == 0){
+					console.log(graph.dataVals().length/2);
 					return graph.dataVals().length/2;
-				else if(this.index != partitionDataInTwo(graph).length-2)
-					return Math.ceil(graph.dataVals().length/2);
-				else
-					return Math.floor(graph.dataVals().length/2);
-				
+
+				} else {
+					console.log(graph.dataVals().length/2);
+					if (this.index == 0)
+						return Math.floor(graph.dataVals().length/2);
+					else
+						return Math.ceil(graph.dataVals().length/2);
+				}	
 			})
 		
 		/*Insufficient Data for Two Warning */	
@@ -2757,8 +2772,13 @@ function constructRegularGraph(graphPanel, graph, index){
 							!graph.insufDataForFour;
 			})
 			.text(function(d){
-				if (this.index != partitionDataInFour(graph).length-1){
-					return d;
+				var length = graph.dataVals().length
+				if (this.index != 4){
+					var bin_size = Math.floor(length/4);
+					var remainder = length % 4;
+					if (this.index+1 > (4 - remainder))
+						bin_size += 1;
+					return bin_size;
 				} else return 0;
 			})
 		
@@ -3548,7 +3568,7 @@ function constructSampleOptionsMenu(graph, index){
 							 "<td nowrap><input type=\"button\" class=\"button\" value=\"CI\""+
 							 "onclick=\"javascript:openCIMenu("+index+")\"></td>"+
 							 
-							 "<td nowrap><label for=\"sampleN"+index+"\">N = </label>"+
+							 "<td nowrap><label for=\"sampleN"+index+"\">n = </label>"+
 							 "<input align=\"right\" type=\"text\" class =\"textbox\" id=\"sampleN"+index+"\""+
 								"size=\"2\""+
 								"onchange=\"javascript:updateSample('sampleN"+index+"',"+index+")\""+

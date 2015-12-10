@@ -97,10 +97,11 @@ if (!ie){
 	
 	//Push worksheets in localStorage
 	for (var w_title in localStorage){
-		var worksheet = JSON.parse(localStorage[w_title]);
-		console.log(worksheet);
-		worksheet.fromLocalStorage = true;
-		exampleSpreadsheets.push(new Spreadsheet(worksheet));
+		if (!localStorage[w_title] instanceof Function){  //For firefox
+			var worksheet = JSON.parse(localStorage[w_title]);
+			worksheet.fromLocalStorage = true;
+			exampleSpreadsheets.push(new Spreadsheet(worksheet));
+		}
 	}
 	
 } else {
@@ -1639,7 +1640,7 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 			.text("Warning! Data points lie outside graph boundaries.")
 			.textStyle("red")
 			.font(fontString)
-			.top(35)
+			.top(50)
 			.left(function(){return graph.w/2})
 			.textAlign("center")
 			.visible(function(){
@@ -1703,7 +1704,7 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 			.data(function() {return graph.secondGraph.getDataDrawObjects()})
 			.visible(function(d) {
 				return $('#checkboxHideData').attr('checked') != "checked"  && 
-					(d.y+graph.secondGraph.baseLine) < graph.secondGraph.h &&
+					(d.y+graph.baseLine) < graph.h &&//d.y+graph.secondGraph.baseLine) < graph.secondGraph.h &&
 					d.x >= 0 &&
 					d.x <= graph.secondGraph.w &&
 					!graphCollection.lineMode;
@@ -1780,7 +1781,7 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 			.text("Warning! Data points lie outside graph boundaries.")
 			.textStyle("red")
 			.font(fontString)
-			.top(35)
+			.top(50)
 			.left(function(){return graph.secondGraphw/2})
 			.textAlign("center")
 			.visible(function(){

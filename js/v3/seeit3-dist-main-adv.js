@@ -20,27 +20,25 @@ var population = [];
 var buttonWidths = [[87, 60, 34], 		//Datasets Toggle
 										[85, 55, 34],			//Display Options
 										[75, 45, 34],			//New Graph
-										[95, 67, 34],			//Advanced Mode
+										//[95, 67, 34],			//Advanced Mode
 										[66, 40, 34],			//Edit Mode
 										[73, 47, 32],			//Fit Scales
 										[103, 78, 32]			//Resampling
 									 ];
 
-var exampleSpreadsheets = [];
-var user = null;
-var preselected_graphs = [];
-
-
-
+var exampleSpreadsheets = [ ];
 
 var ie = $.browser.msie != undefined && $.browser.msie != false;
+var exclusiveLoad = false;
+var preloadedWorksheets = [];
 
 if (!ie){
 	//Extract url params and set flag if default worksheets are not to be loaded
 	var preload = window.location.search;
 	var urlParamsUsed = false;
-	var exclusiveLoad = false;	
+		
 	if (preload.substring(0, 1) == '?') {
+			console.log(preload);
 			urlParamsUsed = true;
 			
 			preload = preload.substring(1);
@@ -54,20 +52,19 @@ if (!ie){
 	
 	//Push default worksheets from google first so that when pushing worksheets from url we can check for duplication
 	if (!exclusiveLoad){
-		//exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
-		//exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
-		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));
-		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'));
-		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'));
-		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'));
-		//exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'));
-		//exampleSpreadsheets.push(new Spreadsheet('0Al5kfBmMhbwmdGJ2b1A1eWtMdUF4bWJxcnhBQ0Fsb3c'));			//Gapminder
-		//exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'));			//Skin Cancer Fig 8
-		//exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'));			//Skin Cancer Fig 4
-		//exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'));			//Skin Cancer Fig 2
-		//exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'));			//Doll and Hill
-		//exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
-		exampleSpreadsheets.push(new Spreadsheet('ohsu-chidr'));
+		exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
+		exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
+		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));
+		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE1YakcyTWNncWtZa1pUcks1S2VtN2c'));
+		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdEU4MmxSUG9NMTBkaEFzRDRXRFliWFE'));
+		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGJ2dGYtWHlrNmFYUURydGYtekV2amc'));
+		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdGdtQ3pWU3Y4X29INEFjYTZyeVRSN0E'));
+		exampleSpreadsheets.push(new Spreadsheet('0Al5kfBmMhbwmdGJ2b1A1eWtMdUF4bWJxcnhBQ0Fsb3c'));			//Gapminder
+		exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdGlCcVdQa184SzFNeTRjM1F4NmNfZlE'));			//Skin Cancer Fig 8
+		exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdHd4SEpzUV9rUlZTNUJhdGlqM2dQQVE'));			//Skin Cancer Fig 4
+		exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'));			//Skin Cancer Fig 2
+		exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'));			//Doll and Hill
+		exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
 	}	
 	
 	//Push worksheets specified by key in url
@@ -86,26 +83,20 @@ if (!ie){
 				
 				if (!exists) {
 					exampleSpreadsheets.push(new Spreadsheet(key));
+					preloadedWorksheets.push(key);
 					//constructVis();
 				}
 				else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
 				
-			}	else if (param[0].indexOf("user=") != -1)
-				user = parseInt(param[1]);
-			else if (param[0].indexOf("graph") != -1){
-				var graph_index = param[0].replace("graph","").replace("=","");
-				preselected_graphs[graph_index] = param[1].trim();
-			}
+			}	
 		});
 	}
 	
 	//Push worksheets in localStorage
 	for (var w_title in localStorage){
-		if (!localStorage[w_title] instanceof Function){  //For firefox
-			var worksheet = JSON.parse(localStorage[w_title]);
-			worksheet.fromLocalStorage = true;
-			exampleSpreadsheets.push(new Spreadsheet(worksheet));
-		}
+		var worksheet = JSON.parse(localStorage[w_title]);
+		worksheet.fromLocalStorage = true;
+		exampleSpreadsheets.push(new Spreadsheet(worksheet));
 	}
 	
 } else {
@@ -119,10 +110,10 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 	if (event.refresh){
 		graphCollection.addWorksheet(event.worksheet);
 	}
-	
+
   numWorksheetsLoaded++;
   $('p#loadingMsg').html("Loading "+(numWorksheetsLoaded/numWorksheets*100).toFixed(0)+"%");
-  if (numWorksheetsLoaded >= numWorksheets){
+  if (numWorksheetsLoaded >= numWorksheets || exclusiveLoad){
 		jQuery('p#loadingMsg').hide();
 		constructVis();
 		showHideAdvancedOptions();
@@ -130,63 +121,6 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
 		positionDisplayMenu();
 		toggleDatasetMenu();
   }
-});
-
-//CHIDR Kickoff Rendering Event
-var numDatasetsLoaded = 0;
-jQuery('body').bind('CHIDRDatasetLoaded', function(event) {
-	if (event.refresh){
-		graphCollection.addWorksheet(event.worksheet);
-	}
-	numDatasetsLoaded++;
-	$('p#loadingMsg').html("Loading "+(numDatasetsLoaded/numDatasets*100).toFixed(0)+"%");
-	if (numDatasetsLoaded >= numDatasets){
-		jQuery('p#loadingMsg').hide();
-		
-		exampleSpreadsheets.forEach(function(s){
-			s.worksheets.forEach(function(w){
-				for (key in w.data){
-					graphCollection.data[key] = w.data[key];
-					graphCollection.categoryColors[key] = graphCollection.colorScale(graphCollection.numberOfCategories++);
-					//graphCollection.categoryColors
-				}
-			});
-		});
-		
-		
-		graphCollection.addGraph();
-		graphCollection.updateMenuOptions();
-		constructVis();
-		
-		if (preselected_graphs.length > 0){
-			console.log("preselect")
-			var num_assigned = 0;
-			preselected_graphs.forEach(function(id){
-				if (id != undefined){
-					if (num_assigned == graphCollection.graphs.length)
-						graphCollection.addGraph();
-						
-					var last_graph_index = graphCollection.graphs.length-1,
-							CHIDR_name = getCHIDRNameFromID(id)
-					
-					graphCollection.graphs[last_graph_index].addCategory(CHIDR_name);	
-					
-					num_assigned++;
-					
-				}
-			});
-			
-		}
-		//if (preselected_x_axis != null){ 
-			//graphCollection.graphs[0].assignX(getCHIDRNameFromID(preselected_x_axis));		
-		//}
-		
-		//if (preselected_y_axis != null){
-			//graphCollection.graphs[0].assignY(getCHIDRNameFromID(preselected_y_axis));	
-		//}
-		showHideAdvancedOptions();
-		toggleDatasetMenu();
-	}
 });
 
 function displayMenuButtonHandler(){
@@ -493,101 +427,101 @@ function constructVis(){
 				})
 				
 		/*Toggle Basic/Advanced User Mode*/
-		var togUserModePanel = vis.add(pv.Panel)
-			.data([3])
-			.events("all")
-			.cursor("pointer")
-			.title("Toggle advanced mode")
-			.height(30)
-			.width(topButtonWidth)
-			.left(topButtonLeft)
-			.top(-31)
-			.lineWidth(1)
-			.event("click", function(){
-				graphCollection.advancedUser = !(graphCollection.advancedUser);
-				showHideAdvancedOptions();
-			})
-			.event("mouseover", function(d){
-				this.strokeStyle("black");
-				this.render();
-			})
-			.event("mouseout", function(d){ 
-				this.strokeStyle(pv.rgb(0,0,0,0));
-				this.render();
-			})
+		// var togUserModePanel = vis.add(pv.Panel)
+		// 	.data([3])
+		// 	.events("all")
+		// 	.cursor("pointer")
+		// 	.title("Toggle advanced mode")
+		// 	.height(30)
+		// 	.width(topButtonWidth)
+		// 	.left(topButtonLeft)
+		// 	.top(-31)
+		// 	.lineWidth(1)
+		// 	.event("click", function(){
+		// 		graphCollection.advancedUser = !(graphCollection.advancedUser);
+		// 		showHideAdvancedOptions();
+		// 	})
+		// 	.event("mouseover", function(d){
+		// 		this.strokeStyle("black");
+		// 		this.render();
+		// 	})
+		// 	.event("mouseout", function(d){ 
+		// 		this.strokeStyle(pv.rgb(0,0,0,0));
+		// 		this.render();
+		// 	})
 			
-		togUserModePanel.add(pv.Image)
-			.url(function(){
-				if (graphCollection.advancedUser)
-					return getRelativeImageURL() + "advModeON.png"
-				else
-					return getRelativeImageURL() + "advModeOFF.png"
-			})
-			.width(30)
-			.height(26)
-			.top(2)
-			.left(0)
-			.cursor("pointer")
-			.title("Toggle basic/advanced mode")
-			.event("click", function(){
-				graphCollection.advancedUser = !(graphCollection.advancedUser);
-				showHideAdvancedOptions();
-			})
-			.visible(function() {
-				if (graphCollection.buttonIcon)
-					return true;
-				else
-					return false;
-			})
-			.anchor("left").add(pv.Label)
-				.left(function(){
-					if (graphCollection.buttonText && !graphCollection.buttonIcon)
-						return 2;
-					else
-					 return 28;
-				})
-				.text(function(){return "Advanced"})
-				.textStyle(function(){
-					if (graphCollection.advancedUser)
-						return "red"
-					else
-						return "grey"
-				})
-				.top(10)
-				.font("bold 12px arial")
-				.visible(function() {
-					if (graphCollection.buttonText)
-						return true;
-					else
-						return false;
-				})
-			.anchor("left").add(pv.Label)
-				.left(function(){
-					if (graphCollection.buttonText && !graphCollection.buttonIcon)
-						return 2;
-					else
-						return 28;
-				})
-				.text(function(){return "Mode"})
-				.textStyle(function(){
-					if (graphCollection.advancedUser)
-						return "red"
-					else
-						return "grey"
-				})
-				.top(22)
-				.font("bold 12px arial")
-				.visible(function() {
-					if (graphCollection.buttonText)
-						return true;
-					else
-						return false;
-				})
+		// togUserModePanel.add(pv.Image)
+		// 	.url(function(){
+		// 		if (graphCollection.advancedUser)
+		// 			return getRelativeImageURL() + "advModeON.png"
+		// 		else
+		// 			return getRelativeImageURL() + "advModeOFF.png"
+		// 	})
+		// 	.width(30)
+		// 	.height(26)
+		// 	.top(2)
+		// 	.left(0)
+		// 	.cursor("pointer")
+		// 	.title("Toggle basic/advanced mode")
+		// 	.event("click", function(){
+		// 		graphCollection.advancedUser = !(graphCollection.advancedUser);
+		// 		showHideAdvancedOptions();
+		// 	})
+		// 	.visible(function() {
+		// 		if (graphCollection.buttonIcon)
+		// 			return true;
+		// 		else
+		// 			return false;
+		// 	})
+		// 	.anchor("left").add(pv.Label)
+		// 		.left(function(){
+		// 			if (graphCollection.buttonText && !graphCollection.buttonIcon)
+		// 				return 2;
+		// 			else
+		// 			 return 28;
+		// 		})
+		// 		.text(function(){return "Advanced"})
+		// 		.textStyle(function(){
+		// 			if (graphCollection.advancedUser)
+		// 				return "red"
+		// 			else
+		// 				return "grey"
+		// 		})
+		// 		.top(10)
+		// 		.font("bold 12px arial")
+		// 		.visible(function() {
+		// 			if (graphCollection.buttonText)
+		// 				return true;
+		// 			else
+		// 				return false;
+		// 		})
+		// 	.anchor("left").add(pv.Label)
+		// 		.left(function(){
+		// 			if (graphCollection.buttonText && !graphCollection.buttonIcon)
+		// 				return 2;
+		// 			else
+		// 				return 28;
+		// 		})
+		// 		.text(function(){return "Mode"})
+		// 		.textStyle(function(){
+		// 			if (graphCollection.advancedUser)
+		// 				return "red"
+		// 			else
+		// 				return "grey"
+		// 		})
+		// 		.top(22)
+		// 		.font("bold 12px arial")
+		// 		.visible(function() {
+		// 			if (graphCollection.buttonText)
+		// 				return true;
+		// 			else
+		// 				return false;
+		// 		})
 				
 			
 		/* Toggle Edit Mode Button */
 		var togEditPanel = vis.add(pv.Panel)
-			.data([4])
+			.data([3])
 			.events("all")
 			.cursor("pointer")
 			.title("Toggle edit mode")
@@ -685,7 +619,7 @@ function constructVis(){
 		
 		//Fit all graphs to scale button
 		var fitScalePanel = vis.add(pv.Panel)
-			.data([5])
+			.data([4])
 			.events("all")
 			.cursor("pointer")
 			.title("Scale all graphs identically")
@@ -778,7 +712,7 @@ function constructVis(){
 				
 		//Add a Resampling Graph
 		var resamplingPanel = vis.add(pv.Panel)
-			.data([6])
+			.data([5])
 			.events("all")
 			.cursor("pointer")
 			.title("Toggle Resampling")
@@ -804,13 +738,18 @@ function constructVis(){
 				
 				//constructVis();
 				
+				
+				var keyString = ""
+				if(preloadedWorksheets.length > 0)
+					keyString = "key="+preloadedWorksheets.join("&key=")+"&";
+				
+				var setString = "";		
 				if (graphCollection.graphs[0].includedCategories.length == 1 &&
-					  graphCollection.graphs[1].includedCategories.length == 1)
-					window.open("resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
-				else
-					window.open("resampling.html");
-					//alert("Please assign only one data set to the first graph and only one dataset to the second graph to open them in the resampling engine");
-
+						graphCollection.graphs[1].includedCategories.length == 1)
+					setString = "set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]
+				
+				window.open("resampling.html?"+(exclusiveLoad ? "!" : "")+keyString+setString);
+				
 			})
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
@@ -940,14 +879,6 @@ function constructDatasetPanel(){
 	var i = 0;
 	var picker = 0;
 	exampleSpreadsheets.forEach(function(s){
-		s.worksheets.sort(function(a,b){
-			if (a.title < b.title)
-				 return -1;
-			if (a.title > b.title)
-				return 1;
-			return 0;		
-		});
-		
 		s.worksheets.forEach(function(w){
 			html += "<table><tr>"+
 							"<td><input type='image' id='subtreeToggle"+i+"'"+ 
@@ -960,7 +891,7 @@ function constructDatasetPanel(){
 								"style='cursor:pointer; font:"+fontString+";'>"+w.title+"</div></td>"+
 							"</table></tr>"+
 							"<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">"+
-							"<input type='image' src='img/edit.png' style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\")' width='25' height='25'>"+
+							"<input type='image' src='img/edit.png' style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\",true)' width='25' height='25'>"+
 							
 							"<input type='image' src='img/question.png' style='margin-left:25px;' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
 							(!w.local && !w.userCreated ? 
@@ -972,26 +903,10 @@ function constructDatasetPanel(){
 								""
 							)+
 							(w.local && w.userCreated && w.storedLocally ?  
-								"<input type='image' src='img/garbage.png' style='margin-left:25px;' onclick='clearFromLocalStorage(\""+w.title+"\")' width='25' height='25'>" :
+								"<input type='image' src='img/garbage.png' style='margin-left:25px;' onclick='clearFromLocalStorage(\""+w.title+"\",false)' width='25' height='25'>" :
 								""
 							);
-							
-			var keys, len, j, key;
-			
-			keys = [];
-			
-			for(key in w.data){
-				if (w.data.hasOwnProperty(key)) {
-						keys.push(key);
-				}
-			}
-			
-			keys.sort();
-			len = keys.length;
-			
-			for (j = 0; j < len; j++)
-			{
-				key = keys[j];				
+			for (key in w.data){		
 				var color = graphCollection.categoryColors[key];
 				html+="<table style='margin-left:25px;'><tr><td>"+
 							"<input id='colorPick"+picker+"' class='color {hash:false}' "+
@@ -1007,7 +922,7 @@ function constructDatasetPanel(){
 							"ontouchmove=\"sideCatTouchMove(event, '"+key+"')\""+
 							"ontouchend=\"sideCatTouchEnd(event, '"+key+"')\""+
 							">"+
-							key+" <br>(n = "+w.data[key].length+")</div></td></tr></table>";
+							key+"</div></td></tr></table>";
 				picker++;
 			}
 							
@@ -1015,9 +930,9 @@ function constructDatasetPanel(){
 			i++;
 		})
 	})
-	html+="<table><tr onclick=\"openWorksheetMenu()\" style=\"cursor:pointer;  font:"+fontString+";\">"+
+	html+="<table><tr onclick=\"openWorksheetMenu(undefined, false)\" style=\"cursor:pointer;  font:"+fontString+";\">"+
 							"<td><image src='img/plus.png' width='25' height='25'></td>"+
-							"<td>Add a Worksheet</td></div></tr></table>";
+							"<td>Add a Dataset</td></div></tr></table>";
 	$('#dataTree').html(html);
 	jscolor.init();
 }
@@ -1975,13 +1890,17 @@ function constructSamplingGraph(graphPanel, graph, index){
 							 !graph.insufDataForTwo;
 			})
 			.text(function(){
-				if (graph.dataVals().length % 2 == 0)
+				if (graph.dataVals().length % 2 == 0){
+					console.log(graph.dataVals().length/2);
 					return graph.dataVals().length/2;
-				else if(this.index != partitionDataInTwo(graph).length-2)
-					return Math.ceil(graph.dataVals().length/2);
-				else
-					return Math.floor(graph.dataVals().length/2);
-				
+
+				} else {
+					console.log(graph.dataVals().length/2);
+					if (this.index == 2)
+						return Math.floor(graph.dataVals().length/2);
+					else
+						return Math.ceil(graph.dataVals().length/2);
+				}	
 			})
 		
 		/*Insufficient Data for Two Warning */	
@@ -2035,8 +1954,13 @@ function constructSamplingGraph(graphPanel, graph, index){
 							!graph.insufDataForFour;
 			})
 			.text(function(d){
-				if (this.index != partitionDataInFour(graph).length-1){
-					return d;
+				var length = graph.dataVals().length
+				if (this.index != 4){
+					var bin_size = Math.floor(length/4);
+					var remainder = length % 4;
+					if (this.index+1 > (4 - remainder))
+						bin_size += 1;
+					return bin_size;
 				} else return 0;
 			})
 			
@@ -2507,8 +2431,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 	} 
 }
 function constructRegularGraph(graphPanel, graph, index){
-	//graph.hideDots = false;
-	
+
 	if (graph.includedCategories.length > 0){
 	/* Number of datapoints N */
 		graphPanel.add(pv.Label)
@@ -2517,7 +2440,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.textAlign("center")
 			.textAngle(0)
 			.textBaseline("bottom")
-			.text(function(){return "n = " + graph.n})
+			.text(function(){return "N = " + graph.n})
 			.font(fontString);
 			
 		/* X-axis ticks */
@@ -2782,13 +2705,17 @@ function constructRegularGraph(graphPanel, graph, index){
 							 !graph.insufDataForTwo;
 			})
 			.text(function(){
-				if (graph.dataVals().length % 2 == 0)
+				if (graph.dataVals().length % 2 == 0){
+					console.log(graph.dataVals().length/2);
 					return graph.dataVals().length/2;
-				else if(this.index != partitionDataInTwo(graph).length-2)
-					return Math.ceil(graph.dataVals().length/2);
-				else
-					return Math.floor(graph.dataVals().length/2);
-				
+
+				} else {
+					console.log(graph.dataVals().length/2);
+					if (this.index == 0)
+						return Math.floor(graph.dataVals().length/2);
+					else
+						return Math.ceil(graph.dataVals().length/2);
+				}	
 			})
 		
 		/*Insufficient Data for Two Warning */	
@@ -2843,8 +2770,13 @@ function constructRegularGraph(graphPanel, graph, index){
 							!graph.insufDataForFour;
 			})
 			.text(function(d){
-				if (this.index != partitionDataInFour(graph).length-1){
-					return d;
+				var length = graph.dataVals().length
+				if (this.index != 4){
+					var bin_size = Math.floor(length/4);
+					var remainder = length % 4;
+					if (this.index+1 > (4 - remainder))
+						bin_size += 1;
+					return bin_size;
 				} else return 0;
 			})
 		
@@ -3336,28 +3268,16 @@ function constructRegularGraph(graphPanel, graph, index){
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
 			.visible(function(d) {
-				if ((d.y+graph.baseLine) >= graph.h 
-							&& graphCollection.bucketDotSize > 2 
-							&& graph.groupingMode != "FixedIntervalGroups" 
-							&& !graph.histogram){
-					graph.groupingMode = "FixedIntervalGroups"
-					graph.histogram = true;
-					
-					graph.hideDots = true;
-					$("#checkboxHideDots").prop('checked', true);
-					graphCollection.advancedUser = true;
-					showHideAdvancedOptions();
-					
-					$('#fixedIntervalWidth').val("2");
-					graph.partitionIntervalWidth = 2;
-					constructVis();
-				}
+				//if ((d.y+graph.baseLine) >= graph.h && graphCollection.bucketDotSize > 2){
+					//$("#dotSizeDec").click()
+					//constructVis();
+				
+				//}
 				return $('#checkboxHideData').attr('checked') != "checked"  && 
 					(d.y+graph.baseLine) < graph.h &&
 					d.x >= 0 &&
 					d.x <= graph.w &&
-					!graphCollection.lineMode &&
-					!graph.hideDots;
+					!graphCollection.lineMode;
 			})
 			.left(function(d) { return d.x })
 			.bottom(function(d) { return d.y + graph.baseLine })
@@ -3395,12 +3315,13 @@ function constructRegularGraph(graphPanel, graph, index){
 																		 "label":d.label,
 																		 "value":graph.x.invert(d.xReal)});
 						graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany++;
-						$("#sampleN"+(index+1)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
-																	 
+						$("#sampleN"+(graph.selectedSampleNumber)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
+						console.log(graph.selectedSampleNumber);											 
 					} else {
+						console.log(graph.selectedSampleNumber);
 						graphCollection.data[graph.selectedSample].splice(sampleIndexOfData(graphCollection.data[graph.selectedSample], d, graph),1);
 						graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany--;
-						$("#sampleN"+(index+1)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
+						$("#sampleN"+(graph.selectedSampleNumber)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
 					}
 					graph.samplingTo[graph.selectedSampleNumber-1].updateInsufDataFlags();
 				}
@@ -3503,7 +3424,7 @@ function constructRegularGraph(graphPanel, graph, index){
 		
 		//Graph Overflow Warning Message
 		graphPanel.add(pv.Label)
-			.text("Showing data as a histogram because the number of points in the dataset is too large.")
+			.text("Warning! Data points lie outside graph boundaries.")
 			.textStyle("red")
 			.font(fontString)
 			.top(35)
@@ -3645,7 +3566,7 @@ function constructSampleOptionsMenu(graph, index){
 							 "<td nowrap><input type=\"button\" class=\"button\" value=\"CI\""+
 							 "onclick=\"javascript:openCIMenu("+index+")\"></td>"+
 							 
-							 "<td nowrap><label for=\"sampleN"+index+"\">N = </label>"+
+							 "<td nowrap><label for=\"sampleN"+index+"\">n = </label>"+
 							 "<input align=\"right\" type=\"text\" class =\"textbox\" id=\"sampleN"+index+"\""+
 								"size=\"2\""+
 								"onchange=\"javascript:updateSample('sampleN"+index+"',"+index+")\""+

@@ -841,12 +841,16 @@ function calcDistance(x1, y1, x2, y2) {
 	return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2))
 }
 
-function parseSpreadsheetKeyFromURL(URL) {
-  var matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
-  if (!matches)
-	alert("That doesn't appear to be a valid URL");
-  else
-	return matches[1];
+function parseSpreadsheetKeyFromURL(URL, i) {
+	var old_style_matches = /key\=([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+	var new_style_matches = /spreadsheets\/d\/([A-Z|a-z|0-9|_|-]+)/.exec(URL);
+	
+	if (!old_style_matches && !new_style_matches) 
+		alert("URL "+(i+1)+" doesn't appear to be a valid URL");
+	else if (old_style_matches)
+		return old_style_matches[1];
+	else 
+		return new_style_matches[1];
 }
 
 function sortByXValues(data) {
