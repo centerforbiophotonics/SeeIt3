@@ -61,8 +61,8 @@ if (!ie){
 		
 		exampleSpreadsheets.push(new Spreadsheet('1q3vOF6rmldCya-tbVVXQKJqbPH96mF3N6Z3iwNVcOHg')); // TextingVsPercentGrade
 
-		//exampleSpreadsheets.push(new Spreadsheet('1bKrr2d3I3yg6NTHVerX7EAFfCBl0LpqRJSM-vcmXlUc')); // YearsEduVsIncome
-		//exampleSpreadsheets.push(new Spreadsheet('1bKrr2d3I3yg6NTHVerX7EAFfCBl0LpqRJSM-vcmXlUc')); // FBHoursVsFriends
+		exampleSpreadsheets.push(new Spreadsheet('1ezXuPZClCMagXu_r90REOHV3SMjWTmvFFAFCAMsw6K4')); // YearsEduVsIncome
+		exampleSpreadsheets.push(new Spreadsheet('1Fca5Y70pEKORxULceSp5PwhDN-E6SJqRYtfbb4764HI')); // FBHoursVsFriends
 	}	
 	
 	//Push worksheets specified by key in url
