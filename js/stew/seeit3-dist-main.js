@@ -49,20 +49,10 @@ if (!ie){
 	
 	//Push default worksheets from google first so that when pushing worksheets from url we can check for duplication
 	if (!exclusiveLoad){
-		exampleSpreadsheets.push(new Spreadsheet('1QFAZnzWYtLa2_XaObKWrTLM0RzgMc7eXiiaA5LWHPYc')); // CoffeVsHeigh
-		exampleSpreadsheets.push(new Spreadsheet('1bKrr2d3I3yg6NTHVerX7EAFfCBl0LpqRJSM-vcmXlUc')); // EatOutVsBMI
-
-		exampleSpreadsheets.push(new Spreadsheet('1VleKMtoL-CVJlSzWWpXZc5xueFGrqZ8qxApLh83c-ZY')); // ExerciseVsBMI
-
-		exampleSpreadsheets.push(new Spreadsheet('1G8wFakhE3H_XvibXKUh1cjU4smLaJnHYyiuX6rCL9XA')); // StudyMinsVsRetention
-		exampleSpreadsheets.push(new Spreadsheet('14gfBaBkGYw5Cv3f2vndRewtGJUwnHKjdCK0uew2hKCA')); // ChildrenVsHouseSize
-
-		exampleSpreadsheets.push(new Spreadsheet('1uFHVQfP1lVFsya-4v_IVQbvFETE3GUusSmnJgTQB7BA')); // TVHoursVsGPA
-		
-		exampleSpreadsheets.push(new Spreadsheet('1q3vOF6rmldCya-tbVVXQKJqbPH96mF3N6Z3iwNVcOHg')); // TextingVsPercentGrade
-
-		exampleSpreadsheets.push(new Spreadsheet('1ezXuPZClCMagXu_r90REOHV3SMjWTmvFFAFCAMsw6K4')); // YearsEduVsIncome
-		exampleSpreadsheets.push(new Spreadsheet('1Fca5Y70pEKORxULceSp5PwhDN-E6SJqRYtfbb4764HI')); // FBHoursVsFriends
+		exampleSpreadsheets.push(new Spreadsheet('0AqCOVVoSSVQVdDBoVlJyRWFJaUJWM3k4dmNLMURBa3c'));  //STEW Data
+		//exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
+		//exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdE1idkxMSFNjbnFJWjRKTnA2Zlc4NXc'));
+		exampleSpreadsheets.push(new Spreadsheet('0AqRJFVxKpZCVdE92TEF1djZDcEVrZlR3clpZSmlxQmc'));
 	}	
 	
 	//Push worksheets specified by key in url
@@ -2742,7 +2732,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.textAlign("center")
 			.textAngle(0)
 			.textBaseline("bottom")
-			.text(function(){return "n = " + graph.n})
+			.text(function(){return "N = " + graph.n})
 			.font(fontString);
 			
 		/* X-axis ticks */
