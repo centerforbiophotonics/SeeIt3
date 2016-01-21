@@ -1071,7 +1071,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
-		.text(function(){return "N = " + graph.getData().length})
+		.text(function(){return "n = " + graph.getData().length})
 		.font("bold 14px sans-serif");
 			
 	//Y-axis Line
@@ -1245,7 +1245,7 @@ function constructCorrGraph(graph, index, graphPanel){
 		.strokeStyle("blue")
 		.fillStyle(pv.rgb(0,0,255,0.05))
 		.add(pv.Label)								
-			.text(function(d) {return "N = "+ d.n;})
+			.text(function(d) {return "n = "+ d.n;})
 			.textAlign("left")
 			.textBaseline("top")
 			.textStyle("blue")
@@ -1802,7 +1802,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
-		.text(function(){return "N = " + graph.data[graph.yData].length})
+		.text(function(){return "n = " + graph.data[graph.yData].length})
 		.font("bold 14px sans-serif");
 	
 	//Mouse position label for drag editing
@@ -2039,7 +2039,7 @@ function constructTwoDistGraph(graph,index, graphPanel){
 		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
-		.text(function(){return "N = " + graph.data[graph.xData].length})
+		.text(function(){return "n = " + graph.data[graph.xData].length})
 		.font("bold 14px sans-serif");
 		
 	/* X-axis ticks */
@@ -2251,7 +2251,7 @@ function constructXDistGraph(graph, index, graphPanel){
 		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
-		.text(function(){return "N = " + graph.data[graph.xData].length})
+		.text(function(){return "n = " + graph.data[graph.xData].length})
 		.font("bold 14px sans-serif");
 
 	/* X-axis ticks */
@@ -2477,7 +2477,7 @@ function constructYDistGraph(graph,index,graphPanel){
 		.bottom(-40)
 		.textAlign("center")
 		.textAngle(0)
-		.text(function(){return "N = " + graph.data[graph.yData].length})
+		.text(function(){return "n = " + graph.data[graph.yData].length})
 		.font("bold 14px sans-serif");
 
 	/* Y-axis ticks */
