@@ -36,20 +36,20 @@ if (!ie){
 	//Extract url params and set flag if default worksheets are not to be loaded
 	var preload = window.location.search;
 	var urlParamsUsed = false;
-		
+
 	if (preload.substring(0, 1) == '?') {
 			console.log(preload);
 			urlParamsUsed = true;
-			
+
 			preload = preload.substring(1);
-			
+
 			if (preload.substring(0, 1) == '!'){
 				exclusiveLoad = true;
 				preload = preload.substring(1);
 			}
-			
+
 	}
-	
+
 	//Push default worksheets from google first so that when pushing worksheets from url we can check for duplication
 	if (!exclusiveLoad){
 		exampleSpreadsheets.push(new Spreadsheet('0AuGPdilGXQlBdEd4SU44cVI5TXJxLXd3a0JqS3lHTUE'));
@@ -65,33 +65,33 @@ if (!ie){
 		exampleSpreadsheets.push(new Spreadsheet('0AmS4TeF7pWtWdFNBRzg1d0U4QjVzcVlOZW1KWUhCUFE'));			//Skin Cancer Fig 2
 		exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdEZBUVV6cFFkM19yZHB4N2YwLVNXSXc'));			//Doll and Hill
 		exampleSpreadsheets.push(new Spreadsheet('0AuGf3AP4DbKAdDNCMFhJTnZpSWtMR1dfZU0zSUtWNXc'));			//Giraffe Data
-	}	
-	
+	}
+
 	//Push worksheets specified by key in url
-	if (urlParamsUsed){		
+	if (urlParamsUsed){
 		preload.split("&").forEach(function(param){
 			param = decodeURIComponent(param);
 			param = param.split("=");
-				
+
 			if (param[0].indexOf('key') != -1){  // Preload Worksheet
 				var key = parseSpreadsheetKeyFromURL(param.join('='));
-		
+
 				var exists = false;
 				exampleSpreadsheets.forEach(function(s){
 					if (s.key == key) exists = true;
 				});
-				
+
 				if (!exists) {
 					exampleSpreadsheets.push(new Spreadsheet(key));
 					preloadedWorksheets.push(key);
 					//constructVis();
 				}
 				else alert("Error: the google spreadsheet you specified in the URL is one of the default spreadsheets already included.");
-				
-			}	
+
+			}
 		});
 	}
-	
+
 	//Push worksheets in localStorage
 	for (var w_title in localStorage){
 		if (!localStorage[w_title] instanceof Function){
@@ -100,11 +100,11 @@ if (!ie){
 			exampleSpreadsheets.push(new Spreadsheet(worksheet));
 		}
 	}
-	
+
 } else {
 	$('p#loadingMsg').hide();
 	$("#ieWarning").show();
-}	
+}
 
 // Populate dataset drop down menu
 var numWorksheetsLoaded = 0;
@@ -125,6 +125,10 @@ jQuery('body').bind('WorksheetLoaded', function(event) {
   }
 });
 
+if (exclusiveLoad){
+  jQuery('body').trigger('WorksheetLoaded')
+}
+
 function displayMenuButtonHandler(){
 	if (displayOptionsShow){
 		$('#displayOptions').slideUp();
@@ -140,11 +144,11 @@ function constructVis(){
 		closeColorPickers();
 		jQuery('span').remove();
 	}
-	
+
 	var topButtonsOffset = -34;
-	
+
 	function topButtonWidth(d){
-		if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+		if (graphCollection.buttonIcon && graphCollection.buttonText){
 			return buttonWidths[d][0];
 		}else if (!graphCollection.buttonIcon){
 			return buttonWidths[d][1];
@@ -152,13 +156,13 @@ function constructVis(){
 			return buttonWidths[d][2];
 		}
 	}
-	
+
 	function topButtonLeft(d){
 			var left = 0;
 			left += topButtonsOffset;
-			
+
 			for(var i=0; i<d; i++){
-				if (graphCollection.buttonIcon && graphCollection.buttonText){ 
+				if (graphCollection.buttonIcon && graphCollection.buttonText){
 					left += buttonWidths[i][0];
 				}else if (!graphCollection.buttonIcon){
 					left += buttonWidths[i][1];
@@ -166,8 +170,8 @@ function constructVis(){
 					left += buttonWidths[i][2];
 				}
 			}
-			
-			return left;			
+
+			return left;
 	}
 
 	vis = new pv.Panel()
@@ -178,7 +182,7 @@ function constructVis(){
 		.right(function(){return graphCollection.padRight})
 		.top(function(){return graphCollection.padTop})
 		.fillStyle("white")
-		
+
 	if(!graphCollection.printMode){
 		/*Divider Between Top Graph and Title*/
 		vis.add(pv.Rule)
@@ -197,8 +201,8 @@ function constructVis(){
 				else
 					return "black"
 			})
-		
-		
+
+
 		//Datasets
 		var dataSetsPanel = vis.add(pv.Panel)
 			.data([0])
@@ -220,13 +224,13 @@ function constructVis(){
 				this.strokeStyle("black");
 				this.render();
 			})
-			.event("mouseout", function(d){ 
+			.event("mouseout", function(d){
 				this.strokeStyle(pv.rgb(0,0,0,0));
 				this.render();
 			})
-		
+
 		dataSetsPanel.add(pv.Image)
-			.url(getRelativeImageURL() + "dataset.png") 
+			.url(getRelativeImageURL() + "dataset.png")
 			.width(25)
 			.height(25)
 			.top(2)
@@ -282,8 +286,8 @@ function constructVis(){
 					else
 						return false;
 				})
-		
-		
+
+
 		/* Display Options Menu Button */
 		var dispOptPanel = vis.add(pv.Panel)
 			.data([1])
@@ -300,13 +304,13 @@ function constructVis(){
 				this.strokeStyle("black");
 				this.render();
 			})
-			.event("mouseout", function(d){ 
+			.event("mouseout", function(d){
 				this.strokeStyle(pv.rgb(0,0,0,0));
 				this.render();
 			})
-		
+
 		dispOptPanel.add(pv.Image)
-			.url(getRelativeImageURL() + "eye.png") 
+			.url(getRelativeImageURL() + "eye.png")
 			.width(30)
 			.height(30)
 			.top(0)
@@ -352,7 +356,7 @@ function constructVis(){
 					else
 						return false;
 				})
-			
+
 		/* Add New Graph Button */
 		var newGrphPanel = vis.add(pv.Panel)
 			.data([2])
@@ -372,13 +376,13 @@ function constructVis(){
 				this.strokeStyle("black");
 				this.render();
 			})
-			.event("mouseout", function(d){ 
+			.event("mouseout", function(d){
 				this.strokeStyle(pv.rgb(0,0,0,0));
 				this.render();
 			})
-			
+
 		newGrphPanel.add(pv.Image)
-			.url(getRelativeImageURL() + "newGraph.png") 
+			.url(getRelativeImageURL() + "newGraph.png")
 			.width(30)
 			.height(30)
 			.top(0)
@@ -427,7 +431,7 @@ function constructVis(){
 					else
 						return false;
 				})
-				
+
 		/*Toggle Basic/Advanced User Mode*/
 		var togUserModePanel = vis.add(pv.Panel)
 			.data([3])
@@ -447,11 +451,11 @@ function constructVis(){
 				this.strokeStyle("black");
 				this.render();
 			})
-			.event("mouseout", function(d){ 
+			.event("mouseout", function(d){
 				this.strokeStyle(pv.rgb(0,0,0,0));
 				this.render();
 			})
-			
+
 		togUserModePanel.add(pv.Image)
 			.url(function(){
 				if (graphCollection.advancedUser)
@@ -519,8 +523,8 @@ function constructVis(){
 					else
 						return false;
 				})
-				
-			
+
+
 		/* Toggle Edit Mode Button */
 		var togEditPanel = vis.add(pv.Panel)
 			.data([4])
@@ -546,11 +550,11 @@ function constructVis(){
 				this.strokeStyle("black");
 				this.render();
 			})
-			.event("mouseout", function(d){ 
+			.event("mouseout", function(d){
 				this.strokeStyle(pv.rgb(0,0,0,0));
 				this.render();
 			})
-			
+
 		togEditPanel.add(pv.Image)
 			.url(function(){
 				if (graphCollection.editModeEnabled)
@@ -618,7 +622,7 @@ function constructVis(){
 					else
 						return false;
 				})
-		
+
 		//Fit all graphs to scale button
 		var fitScalePanel = vis.add(pv.Panel)
 			.data([5])
@@ -648,11 +652,11 @@ function constructVis(){
 				this.strokeStyle("black");
 				this.render();
 			})
-			.event("mouseout", function(d){ 
+			.event("mouseout", function(d){
 				this.strokeStyle(pv.rgb(0,0,0,0));
 				this.render();
 			})
-			
+
 		fitScalePanel.add(pv.Image)
 			.url(function(){
 				return getRelativeImageURL() + "ruler.png"
@@ -711,7 +715,7 @@ function constructVis(){
 					else
 						return false;
 				})
-				
+
 		//Add a Resampling Graph
 		var resamplingPanel = vis.add(pv.Panel)
 			.data([6])
@@ -737,38 +741,38 @@ function constructVis(){
 					//graphCollection.resamplingEnabled = false;
 					//graphCollection.removeGraph(graphCollection.graphs[0]);
 				//}
-				
+
 				//constructVis();
-				
-				
+
+
 				var keyString = ""
 				if(preloadedWorksheets.length > 0)
 					keyString = "key="+preloadedWorksheets.join("&key=")+"&";
-				
-				var setString = "";		
+
+				var setString = "";
 				if (graphCollection.graphs[0].includedCategories.length == 1 &&
 						graphCollection.graphs[1].includedCategories.length == 1)
 					setString = "set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]
-				
+
 				window.open("resampling.html?"+(exclusiveLoad ? "!" : "")+keyString+setString);
-				
+
 			})
 			.event("mouseover", function(d){
 				this.strokeStyle("black");
 				this.render();
 			})
-			.event("mouseout", function(d){ 
+			.event("mouseout", function(d){
 				this.strokeStyle(pv.rgb(0,0,0,0));
 				this.render();
 			})
-			
+
 		resamplingPanel.add(pv.Image)
 			.url(function(){
 				if (graphCollection.resamplingEnabled)
 					return getRelativeImageURL() + "shuffle-ON.png"
 				else
 					return getRelativeImageURL() + "shuffle-OFF.png"
-				
+
 			})
 			.width(30)
 			.height(30)
@@ -784,9 +788,9 @@ function constructVis(){
 					//graphCollection.resamplingEnabled = false;
 					//graphCollection.removeGraph(graphCollection.graphs[0]);
 				//}
-				
+
 				//constructVis();
-				
+
 				if (graphCollection.graphs[0].includedCategories.length == 1 &&
 					  graphCollection.graphs[1].includedCategories.length == 1)
 					window.open("resampling.html?set="+graphCollection.graphs[0].includedCategories[0]+"&set="+graphCollection.graphs[1].includedCategories[0]);
@@ -824,19 +828,19 @@ function constructVis(){
 						return false;
 				})
 	}
-		
+
 	constructDatasetPanel();
-	
+
 	graphCollection.graphs.forEach(function(graph,index,graphs){
 		constructGraphPanel(graph, index);
 	});
 	vis.render();
-	
-	if (graphCollection.datasetsMenuShowing) 
+
+	if (graphCollection.datasetsMenuShowing)
 		$('span').css('position', 'absolute')
 						 .css('left',$('#datasets').width()+29)
 						 .css('z-index', -1);
-						 
+
 	//remove and redraw sample options
 	$('.sampleOptions').remove();
 	$('.resampleOptions').remove();
@@ -857,16 +861,16 @@ function constructVis(){
 			constructResampleControlPanel(graph,i);
 			positionResampleControlPanel(graph,i);
 		}
-		
+
 	})
-	
+
 	//resampling population labels
 	$('.populationLabels').remove();
 	if(graphCollection.resamplingEnabled){
 		constructPopulationLabels();
 		positionPopulationLabels();
 	}
-	
+
 	//remove and redraw legends
 	$('.legend').remove();
 	graphCollection.graphs.forEach(function(graph,i){
@@ -883,7 +887,7 @@ function constructDatasetPanel(){
 	exampleSpreadsheets.forEach(function(s){
 		s.worksheets.forEach(function(w){
 			html += "<table><tr>"+
-							"<td><input type='image' id='subtreeToggle"+i+"'"+ 
+							"<td><input type='image' id='subtreeToggle"+i+"'"+
 								"src='"+(graphCollection.datasetsVisible[w.title]?"img/downTriangle.png":"img/rightTriangle.png")+"'"+
 								"onclick='toggleDataSubtree(\"subtree"+i+"\","+i+",\""+w.title+"\")'"+
 								"width='15' height='15'"+
@@ -894,28 +898,28 @@ function constructDatasetPanel(){
 							"</table></tr>"+
 							"<div id='subtree"+i+"' "+(graphCollection.datasetsVisible[w.title]?"":"hidden")+">"+
 							"<input type='image' src='img/edit.png' style='margin-left:25px;' onclick='openWorksheetMenu(\""+w.title+"\",true)' width='25' height='25'>"+
-							
+
 							"<input type='image' src='img/question.png' style='margin-left:25px;' onclick='showWorksheetDescription(\""+w.title+"\")' width='30' height='30'>"+
-							(!w.local && !w.userCreated ? 
+							(!w.local && !w.userCreated ?
 								"<input type='image' src='img/document.png'  style='margin-left:25px;'onclick='editInGoogleDocs(\""+w.title+"\")' width='25' height='25'>":
 								"<input type='image' id='"+w.title+"-save-local' src='img/"+(w.storedLocally?"pinON.png":"pin.png")+"' style='margin-left:25px;'onclick='saveLocally(\""+w.title+"\")' width='25' height='25'>"
 							)+
-							(!w.local && !w.userCreated ? 
+							(!w.local && !w.userCreated ?
 								"<input type='image' src='img/refresh.png' style='margin-left:25px;' onclick='refreshWorksheet(\""+w.title+"\")' width='25' height='25'>" :
 								""
 							)+
-							(w.local && w.userCreated && w.storedLocally ?  
+							(w.local && w.userCreated && w.storedLocally ?
 								"<input type='image' src='img/garbage.png' style='margin-left:25px;' onclick='clearFromLocalStorage(\""+w.title+"\",false)' width='25' height='25'>" :
 								""
 							);
-			for (key in w.data){		
+			for (key in w.data){
 				var color = graphCollection.categoryColors[key];
 				html+="<table style='margin-left:25px;'><tr><td>"+
 							"<input id='colorPick"+picker+"' class='color {hash:false}' "+
 								"value='"+colorToHex(color.color)+"' "+
 								"onchange=\"updateColor('"+key+"', this.color)\" "+
 								"style='width:20px; height:20px'></td>"+
-							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+ 
+							"<td><div id=\""+convertToID(key)+"\" class='menuItemDef'"+
 							"style=\"color:"+(w.edited[key]?'red':'black')+"; font:"+fontString+";\""+
 							"onmouseover=\"this.className='menuItemOver'\""+
 							"onmouseout=\"this.className='menuItemDef'\""+
@@ -927,7 +931,7 @@ function constructDatasetPanel(){
 							key+"</div></td></tr></table>";
 				picker++;
 			}
-							
+
 			html += "</div>";
 			i++;
 		})
@@ -943,13 +947,13 @@ function constructDatasetPanel(){
 var dragObj;
 function sidePanDragStart(event, category){
 	event.preventDefault();
-	
+
 	//To prevent a touch event from firing an additional drag event
 	if (touch.touch) {
 		touch.touch = false;
 		return;
 	}
-	
+
 	dragObj = new Object();
 	dragObj.category = category;
 	$('#dragFeedback').html(category);
@@ -958,7 +962,7 @@ function sidePanDragStart(event, category){
 								 .css('left',event.pageX)
 								 .css('top',event.pageY)
 								 .css('z-index', 10000);
-	
+
 	document.body.style.cursor="move";
 	document.addEventListener("mousemove", sidePanDragGo,   true);
 	document.addEventListener("mouseup",   sidePanDragStop, true);
@@ -974,15 +978,15 @@ function sidePanDragGo(event){
 
 function sidePanDragStop(event){
 	$('#dragFeedback').hide();
-	
+
 	var curX = event.pageX -
 						 $('span').offset().left -
 						 graphCollection.padLeft + 14;
-							
-	var curY = event.pageY - 
-						 $('span').offset().top - 
+
+	var curY = event.pageY -
+						 $('span').offset().top -
 						 graphCollection.padTop;
-						 
+
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		if (graphCollection.graphs.length > 4){
 			var which = parseInt(curY/graphCollection.defaultGraphHeight);
@@ -995,8 +999,8 @@ function sidePanDragStop(event){
 		}
 		constructVis();
 	}
-	
-	
+
+
 	document.body.style.cursor="default";
 	document.removeEventListener("mousemove", sidePanDragGo,   true);
 	document.removeEventListener("mouseup",   sidePanDragStop, true);
@@ -1007,13 +1011,13 @@ function legPanDragStart(event, category, index, i){
 		touch.touch = false;
 		return;
 	}
-	
+
 	event.preventDefault();
-	
+
 	if (graphCollection.editModeEnabled)
 		$('#legCat'+index+"-"+i).attr('class','menuItemSel');
 	graphCollection.graphs[index].selectedCategory = category;
-	
+
 	dragObj = new Object();
 	dragObj.category = category;
 	dragObj.index = index;
@@ -1023,7 +1027,7 @@ function legPanDragStart(event, category, index, i){
 								 .css('left',event.pageX)
 								 .css('top',event.pageY)
 								 .css('z-index', 10000);
-	
+
 	document.body.style.cursor="move";
 	document.addEventListener("mousemove", legPanDragGo,   true);
 	document.addEventListener("mouseup",   legPanDragStop, true);
@@ -1039,15 +1043,15 @@ function legPanDragGo(event){
 
 function legPanDragStop(event){
 	$('#dragFeedback').hide();
-	
+
 	var curX = event.pageX -
 						 $('span').offset().left -
 						 graphCollection.padLeft + 14;
-							
-	var curY = event.pageY - 
-						 $('span').offset().top - 
+
+	var curY = event.pageY -
+						 $('span').offset().top -
 						 graphCollection.padTop;
-						 
+
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		if (graphCollection.graphs.length > 4){
 			var which = parseInt(curY/graphCollection.defaultGraphHeight);
@@ -1077,7 +1081,7 @@ function legPanDragStop(event){
 			fromGraph.selectedCategory = null;
 	}
 	constructVis();
-	
+
 	document.body.style.cursor="default";
 	document.removeEventListener("mousemove", legPanDragGo,   true);
 	document.removeEventListener("mouseup",   legPanDragStop, true);
@@ -1088,19 +1092,19 @@ function popLabDragStart(event, popNum){
 		touch.touch = false;
 		return;
 	}
-	
+
 	event.preventDefault();
-	
+
 	dragObj = new Object();
 	dragObj.popNum = popNum;
-	
+
 	$('#dragFeedback').html("Sample "+popNum);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
 								 .css('left',event.pageX)
 								 .css('top',event.pageY)
 								 .css('z-index', 10000);
-	
+
 	document.body.style.cursor="move";
 	document.addEventListener("mousemove", popLabDragGo,   true);
 	document.addEventListener("mouseup",   popLabDragStop, true);
@@ -1116,47 +1120,47 @@ function popLabDragGo(event){
 
 function popLabDragStop(event){
 	$('#dragFeedback').hide();
-	
+
 	var curX = event.pageX -
 						 $('span').offset().left -
 						 graphCollection.padLeft + 14;
-							
-	var curY = event.pageY - 
-						 $('span').offset().top - 
+
+	var curY = event.pageY -
+						 $('span').offset().top -
 						 graphCollection.padTop;
-						 
+
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		var which;
 		if (graphCollection.graphs.length > 4)
 			which = parseInt(curY/graphCollection.defaultGraphHeight);
 		else
 			which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-		
-		if (!graphCollection.graphs[which].isIntermedResamplingGraph)	
+
+		if (!graphCollection.graphs[which].isIntermedResamplingGraph)
 			graphCollection.graphs[0]["population"+dragObj.popNum] = graphCollection.graphs[which];
-		
+
 		resetResampling(0);
-	} 
+	}
 	constructVis();
-	
+
 	document.body.style.cursor="default";
 	document.removeEventListener("mousemove", popLabDragGo,   true);
 	document.removeEventListener("mouseup",   popLabDragStop, true);
 }
 
 function popLabTouchStart(event, popNum){
-	
+
 	var curX = event.targetTouches[0].clientX;
 	var curY = event.targetTouches[0].clientY;
-	
+
 	touch.finalX = curX;
 	touch.finalY = curY;
-	
+
 	event.preventDefault();
-	
+
 	dragObj = new Object();
 	dragObj.popNum = popNum;
-	
+
 	$('#dragFeedback').html("Sample "+popNum);
 	$('#dragFeedback').show();
 	$('#dragFeedback').css('position', 'absolute')
@@ -1167,13 +1171,13 @@ function popLabTouchStart(event, popNum){
 
 function popLabTouchMove(event){
 	event.preventDefault();
-	
+
 	var curX = event.targetTouches[0].clientX;
 	var curY = event.targetTouches[0].clientY;
-	
+
 	touch.finalX = curX;
 	touch.finalY = curY;
-	
+
 	$('#dragFeedback').css('position', 'absolute')
 								 .css('left',curX)
 								 .css('top',curY)
@@ -1182,36 +1186,36 @@ function popLabTouchMove(event){
 
 function popLabTouchEnd(event){
 	$('#dragFeedback').hide();
-	
+
 	var curX = touch.finalX -
 							$('span').offset().left -
 							graphCollection.padLeft + 14;
-	
-	var curY = touch.finalY - 
-							$('span').offset().top - 
+
+	var curY = touch.finalY -
+							$('span').offset().top -
 							graphCollection.padTop;
-							
+
 	//console.log(curX+"---"+curY);
-						 
+
 	//touch.finalX = curX;
 	//touch.finalY = curY;
-						 
+
 	if(curX > 0 && curX < graphCollection.w && curY > 0 && curY < graphCollection.h){
 		var which;
 		if (graphCollection.graphs.length > 4)
 			which = parseInt(curY/graphCollection.defaultGraphHeight);
 		else
 			which = parseInt(curY/(graphCollection.h/graphCollection.graphs.length));
-			
+
 		graphCollection.graphs[0]["population"+dragObj.popNum] = graphCollection.graphs[which];
-		
+
 		resetResampling(0);
-		
+
 		//console.log(which);
-	} 
-	
+	}
+
 	touch.touch = true;
-	
+
 	constructVis();
 }
 
@@ -1226,7 +1230,7 @@ function closeColorPickers(){
 				picker++;
 			}
 		}
-	} 
+	}
 }
 
 
@@ -1245,31 +1249,31 @@ function constructGraphPanel(graph, index){
 				graphCollection.selectedGraphIndex = index;
 				graphCollection.selectedLabel = null;
 				graphCollection.updateMenuOptions();
-				
+
 				positionGroupingMenuOverGraph(index, graphCollection);
-						
+
 				hideMenus();
 				if (graphCollection.editModeEnabled){
 					var loc = graphPanel.mouse().x;
 					if (graph.selectedCategory != null){
-						
+
 						var worksheet = "";
 						for (var key in graphCollection.worksheets){
 							if (graphCollection.worksheets[key].data[graph.selectedCategory] != undefined)
 								worksheet = key;
 						}
-						
+
 						graphCollection.worksheets[worksheet].labelMasterList.push(
 							"default"+graphCollection.nextDefaultLabel[graph.selectedCategory]);
-						
+
 						graphCollection.data[graph.selectedCategory].push(
 							{"label": "default"+graphCollection.nextDefaultLabel[graph.selectedCategory]++,
 							 "value": graph.x.invert(loc)}
 						);
-						
-						graphCollection.editData(worksheet, 
-																			graph.selectedCategory, 
-																			graph.selectedCategory, 
+
+						graphCollection.editData(worksheet,
+																			graph.selectedCategory,
+																			graph.selectedCategory,
 																			graphCollection.data[graph.selectedCategory]
 																		);
 					} //else if (graph.includedCategories.length < 4){
@@ -1284,14 +1288,14 @@ function constructGraphPanel(graph, index){
 						//graph.addCategory(newCat);
 					//}
 				}
-			
+
 				constructVis();
 			}
 			dragging = false;
 		});
-		
+
 	graph.panel = graphPanel;
-	
+
 	if (!graphCollection.printMode){
 		//Remove Graph Button
 		graphPanel.add(pv.Panel)
@@ -1320,10 +1324,10 @@ function constructGraphPanel(graph, index){
 				.lineWidth(2)
 				.title("Remove Graph")
 				.strokeStyle("black")
-				
+
 		//Show Grouping Option Menu Button
 		graphPanel.add(pv.Image)
-			.url(getRelativeImageURL() + "wrench.png") 
+			.url(getRelativeImageURL() + "wrench.png")
 			.width(30)
 			.height(30)
 			.top(4)
@@ -1341,8 +1345,8 @@ function constructGraphPanel(graph, index){
 				$('#groupingOptions').slideDown();
 			})
 	}
-		
-				
+
+
 	//Divider Line Between Graphs
 	graphPanel.add(pv.Rule)
 		.bottom(0)
@@ -1357,14 +1361,14 @@ function constructGraphPanel(graph, index){
 		.strokeStyle(function(){
 			if (graphCollection.editModeEnabled)
 				return "red";
-			else if (graph.testMode == "sampling" || 
-							 //graph.testMode == "resampling" || 
+			else if (graph.testMode == "sampling" ||
+							 //graph.testMode == "resampling" ||
 							 (graph.isSamplingGraph && graph.sampleNumber < graph.samplingFrom.samplingToHowMany))
 				return "lightgrey";
 			else
 				return "black";
 		})
-		
+
 	graphPanel.add(pv.Rule)
 		.left(-34)
 		.bottom(0)
@@ -1381,7 +1385,7 @@ function constructGraphPanel(graph, index){
 			else
 				return "black"
 		})
-		
+
 	graphPanel.add(pv.Rule)
 		.right(-25)
 		.bottom(0)
@@ -1398,7 +1402,7 @@ function constructGraphPanel(graph, index){
 			else
 				return "black"
 		})
-	
+
 	if (!graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph){
 		constructRegularGraph(graphPanel,graph,index);
 	} else if (graph.isSamplingGraph){
@@ -1415,8 +1419,8 @@ function constructIntermedResamplingGraph(graphPanel,graph,index){
 }
 
 function constructResamplingGraph(graphPanel, graph, index){
-	
-	if (graphCollection.graphs.indexOf(graph.population1) == 0 || 
+
+	if (graphCollection.graphs.indexOf(graph.population1) == 0 ||
 			graphCollection.graphs.indexOf(graph.population2) == 0){
 		/* Assignment Instructons*/
 		graphPanel.add(pv.Label)
@@ -1448,7 +1452,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 					array = array.concat(pValTicks(graph));
 					return array;
 					//return pValTicks(graph);
-					
+
 				}
 			})
 			.left(function(d) {
@@ -1466,7 +1470,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 				if (graph.resamplingIterations > 10000) return d % 10000 == 0; //&& d != 0;
 				else if (graph.resamplingIterations > 1000) return d % 1000 == 0;// && d != 0;
 				else return true; //&& d != 0;
-				
+
 			})
 			.anchor("bottom").add(pv.Label)
 				.text(function(d) {
@@ -1476,7 +1480,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 						return d.toFixed(0);
 				})
 				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-			
+
 		/* X-axis line */
 		graphPanel.add(pv.Rule)
 			.bottom(function() {return graph.baseLine})
@@ -1489,10 +1493,10 @@ function constructResamplingGraph(graphPanel, graph, index){
 				else return 20;
 			})
 			.strokeStyle("#000")
-		
+
 		/* Y-axis ticks */
 		graphPanel.add(pv.Rule)
-			.data(function() {  
+			.data(function() {
 				var y = pv.Scale.linear(0, graph.resamplingMaxPVal).range(0, graph.h-graph.baseLine-10);
 				if (graph.resamplingMaxPVal == 0) return [0,1];
 				else return y.ticks();
@@ -1506,7 +1510,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.strokeStyle("#aaa")
 			.width(5)
 			.visible(function(){
-				return graph.resampleDisplayMode == "pgraph" && 
+				return graph.resampleDisplayMode == "pgraph" &&
 					this.index % 2 == 0 &&
 					this.index != 0;
 			})
@@ -1515,14 +1519,14 @@ function constructResamplingGraph(graphPanel, graph, index){
 				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
 				.left(15)
 				//.visible(function(){return this.index % 2 == 0})
-		
+
 		/* Y-axis Line */
 		graphPanel.add(pv.Rule)
 		.left(20)
 		.top(10)
 		.bottom(graph.baseLine)
 		.visible(function(){return graph.resampleDisplayMode == "pgraph"})
-		
+
 		/* Y-axis Label */
 		graphPanel.add(pv.Label)
 			.left(-15)
@@ -1533,16 +1537,16 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.text("P Value")
 			.font(fontString)
 			.visible(function(){return graph.resampleDisplayMode == "pgraph"})
-		
+
 		/* P Values */
 		graphPanel.add(pv.Dot)
 			.data(function() { return graph.resamplingPVals })
 			.visible(function(){return graph.resampleDisplayMode == "pgraph"})
-			.left(function(d) { 
+			.left(function(d) {
 				var x = pv.Scale.linear(0, graph.resamplingIterations).range(0, graph.w-20);
 				return x(d.x) + 20;
 			})
-			.bottom(function(d) { 
+			.bottom(function(d) {
 				var y = pv.Scale.linear(0, graph.resamplingMaxPVal).range(0, graph.h-graph.baseLine-10);
 				if (graph.resamplingMaxPVal == 0) return graph.baseLine;
 				else return graph.baseLine + y(d.y);
@@ -1551,7 +1555,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.fillStyle("grey")
 			.strokeStyle("black")
 			.title(function(d) {return "Iterations: "+d.x+", P: "+d.y.toFixed(4)})
-		
+
 		/* Dots */
 		graphPanel.add(pv.Dot)
 			.data(function() {return ( graph.resampleDisplayMode == "dot" ? graph.getDataDrawObjects() : [])})
@@ -1563,7 +1567,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.lineWidth(2)
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
 			.visible(function(){return graph.resampleDisplayMode == "dot"})
-		
+
 		/* Lines */
 		graphPanel.add(pv.Rule)
 			.data(function() {return ( graph.resampleDisplayMode == "line" ? graph.data[graph.resampleSet] : [])})
@@ -1572,7 +1576,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle(function() {return (graphCollection.bwMode ? pv.rgb(100,100,100,0.2): pv.rgb(0,0,255,0.2))})
 			.visible(function(){return graph.resampleDisplayMode == "line"})
-		
+
 		/* Fixed Interval Width Histogram */
 		graphPanel.add(pv.Bar)
 			.data(function(){return (graph.resampleDisplayMode == "histogram" ? fiwHistogram(graph,partitionDataByIntervalWidth(graph)) : []) })
@@ -1585,7 +1589,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.strokeStyle("green")
 			.visible(function(){return graph.resampleDisplayMode == "histogram"})
 			.fillStyle(pv.rgb(0,225,0,0.25));
-		
+
 		/* Source Populations Mean Differences */
 		graphPanel.add(pv.Rule)
 			.data(function() {return [Math.abs(resamplePop1Mean - resamplePop2Mean),
@@ -1597,7 +1601,7 @@ function constructResamplingGraph(graphPanel, graph, index){
 			.strokeStyle(function() {return (graphCollection.bwMode ? "black" : "red")})
 			.lineWidth(2)
 			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
-			
+
 		/* Number of points between lines */
 		graphPanel.add(pv.Label)
 			.data(function(){
@@ -1607,15 +1611,15 @@ function constructResamplingGraph(graphPanel, graph, index){
 							index < graph.resamplingIterations)
 						inside++;
 				});
-					
-				return [inside];	
+
+				return [inside];
 			})
 			.textAlign("center")
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "blue")})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine })
 			.left(function(){return graph.x(0)})
 			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
-			
+
 		/* Number of points to the right */
 		graphPanel.add(pv.Label)
 			.data(function(){
@@ -1625,15 +1629,15 @@ function constructResamplingGraph(graphPanel, graph, index){
 							index < graph.resamplingIterations)
 						right++;
 				});
-					
-				return [right + " ==>"];	
+
+				return [right + " ==>"];
 			})
 			.textAlign("left")
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "red")})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine})
 			.left(function(){return graph.x(Math.abs(resamplePop1Mean - resamplePop2Mean))})
 			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
-		
+
 		/* Number of points to the left*/
 		graphPanel.add(pv.Label)
 			.data(function(){
@@ -1643,15 +1647,15 @@ function constructResamplingGraph(graphPanel, graph, index){
 							index < graph.resamplingIterations)
 						left++;
 				});
-					
-				return ["<== " + left];	
+
+				return ["<== " + left];
 			})
 			.textAlign("right")
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "red")})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.75 + graph.baseLine})
 			.left(function(){return graph.x(-1*Math.abs(resamplePop1Mean - resamplePop2Mean))})
 			.visible(function(){return graph.resampleDisplayMode != "pgraph"})
-	
+
 		/* Percentage outside lines */
 		graphPanel.add(pv.Label)
 			.data(function(){
@@ -1661,13 +1665,13 @@ function constructResamplingGraph(graphPanel, graph, index){
 							index < graph.resamplingIterations)
 						outside++;
 				});
-					
+
 				return [outside+" / "+
 								(Math.min(graph.data[graph.resampleSet].length, graph.resamplingIterations))+
 								" x 100 = "+
 								(graph.data[graph.resampleSet].length*100 != 0 ?
 									(outside/Math.min(graph.data[graph.resampleSet].length, graph.resamplingIterations)*100).toFixed(1) : 0)+
-								"%"];	
+								"%"];
 			})
 			.textAlign("center")
 			.textStyle(function() {return (graphCollection.bwMode ? "black" : "blue")})
@@ -1687,7 +1691,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 		.textBaseline("bottom")
 		.text("Sample from Above Graph")
 		.font(fontString)
-	
+
 	if (graph.samplingFrom.includedCategories.length > 0){
 		/* X-axis ticks */
 		graphPanel.add(pv.Rule)
@@ -1699,13 +1703,13 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.anchor("bottom").add(pv.Label)
 				.text(function(d) {return d.toFixed(1)})
 				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-			
+
 		/* X-axis line */
 		graphPanel.add(pv.Rule)
 			.bottom(graph.baseLine)
 			.strokeStyle("#000")
-			
-		
+
+
 		/* UD Edge of the graph partition lines*/
 		graphPanel.add(pv.Rule)
 			.data([{"x":0,"y":0}])
@@ -1722,7 +1726,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.radius(8)
-				
+
 		/* User Defined Partitions */
 		graphPanel.add(pv.Rule)
 			.data(function(){return graph.samplingFrom.udPartitions})
@@ -1742,15 +1746,15 @@ function constructSamplingGraph(graphPanel, graph, index){
 				})
 				.strokeStyle("green")
 				.radius(8)
-				
+
 		graphPanel.add(pv.Rule)
 			.right(0)
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle("green")
 			.visible(function(){return graph.samplingFrom.groupingMode == "UserDefGroups"})
-			
-			
+
+
 		/* UD Partition Data Count Label */
 		graphPanel.add(pv.Label)
 			.data(function(){return countDataInUserDefPartitions(graph)})
@@ -1768,7 +1772,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 				return this.index != udPartXVals.length-1 &&
 							 graph.samplingFrom.groupingMode == "UserDefGroups";
 			});
-		
+
 		/* Fixed Interval Width Partitions */
 		graphPanel.add(pv.Rule)
 			.data(function(){return partitionDataByIntervalWidth(graph.samplingFrom)})
@@ -1784,7 +1788,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.size(4);
-			
+
 		/*Fixed Interval Width Partitions Size Labels*/
 		graphPanel.add(pv.Label)
 			.data(function(){return countDataInPartitions(graph,partitionDataByIntervalWidth(graph.samplingFrom))})
@@ -1800,14 +1804,14 @@ function constructSamplingGraph(graphPanel, graph, index){
 				return this.index != partitionDataByIntervalWidth(graph.samplingFrom).length-1 &&
 							 graph.samplingFrom.groupingMode == "FixedIntervalGroups";
 			});
-			
+
 		/* Fixed Interval Width Histogram */
 		graphPanel.add(pv.Bar)
 			.data(function(){return fiwHistogram(graph,partitionDataByIntervalWidth(graph.samplingFrom))})
-			.visible(function(d) { 
+			.visible(function(d) {
 				return ( graph.samplingFrom.groupingMode == "FixedIntervalGroups" &&
 								 graph.samplingFrom.histogram
-								) 
+								)
 			})
 			.left(function(d){return d.left})
 			.bottom(graph.baseLine)
@@ -1816,7 +1820,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.lineWidth(0.5)
 			.strokeStyle("green")
 			.fillStyle(pv.rgb(0,225,0,0.25));
-			
+
 		/* Fixed Group Size Partitions */
 		graphPanel.add(pv.Rule)
 			.data(function(){return partitionDataInFixedSizeGroups(graph)})
@@ -1832,7 +1836,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.size(4);
-			
+
 		/*Fixed Group Size Partition Labels*/
 		graphPanel.add(pv.Label)
 			.data(function(){return partitionDataInFixedSizeGroups(graph)})
@@ -1852,7 +1856,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 				if (graph.dataVals().length % graph.partitionGroupSize == 0 ||
 						this.index != partitionDataInFixedSizeGroups(graph).length-2)
 					return graph.samplingFrom.partitionGroupSize;
-				
+
 				else return graph.dataVals().length % graph.samplingFrom.partitionGroupSize;
 			})
 
@@ -1874,7 +1878,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.size(4);
-				
+
 		/*Two Partition Size Labels*/
 		graphPanel.add(pv.Label)
 			.data(function(){return partitionDataInTwo(graph)})
@@ -1902,10 +1906,10 @@ function constructSamplingGraph(graphPanel, graph, index){
 						return Math.floor(graph.dataVals().length/2);
 					else
 						return Math.ceil(graph.dataVals().length/2);
-				}	
+				}
 			})
-		
-		/*Insufficient Data for Two Warning */	
+
+		/*Insufficient Data for Two Warning */
 		graphPanel.add(pv.Label)
 			.text("Insufficient data.")
 			.textStyle("red")
@@ -1917,7 +1921,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.top(35)
 			.left(graph.w/2)
 			.textAlign("center")
-		
+
 		/* Four Equal Partitions */
 		graphPanel.add(pv.Rule)
 			.data(function(){return partitionDataInFour(graph)})
@@ -1935,10 +1939,10 @@ function constructSamplingGraph(graphPanel, graph, index){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.visible(function(){return graph.samplingFrom.groupingMode == "FourEqualGroups" &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 				})
 				.size(4);
-				
+
 		/*Four Partition Size Labels*/
 		graphPanel.add(pv.Label)
 			.data(function(){return countDataInPartitions(graph, partitionDataInFour(graph))})
@@ -1965,7 +1969,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 					return bin_size;
 				} else return 0;
 			})
-			
+
 		//Simple Box Plot Lines
 		graphPanel.add(pv.Line)
 			.data(function(){
@@ -1977,7 +1981,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 !graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -1989,7 +1993,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 !graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2001,7 +2005,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 !graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 		})
 
 		graphPanel.add(pv.Line)
@@ -2013,7 +2017,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 !graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2025,8 +2029,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 !graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
-			})						
+																	 !graph.insufDataForFour;
+			})
 
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
@@ -2037,7 +2041,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 !graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2049,7 +2053,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 !graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2061,7 +2065,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 !graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2073,9 +2077,9 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 !graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-			
+
 		/* Advanced Box Plot Lines */
 		graphPanel.add(pv.Line)
 			.data(function(){
@@ -2088,10 +2092,10 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		graph.samplingFrom.advBoxPlot && 
-																	 !graph.insufDataForFour; 
+																		graph.samplingFrom.advBoxPlot &&
+																	 !graph.insufDataForFour;
 			})
-																	 
+
 		graphPanel.add(pv.Line)
 			.data(function(){
 				var max = removeOutliers(graph)[removeOutliers(graph).length-1];
@@ -2104,9 +2108,9 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																		graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-																	 
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
 						 [getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
@@ -2116,9 +2120,9 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																		graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 		})
-																	 
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
 						 [getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
@@ -2128,9 +2132,9 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																		graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-																	 
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
 						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
@@ -2140,9 +2144,9 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																		graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
-			})						
-																							
+																	 !graph.insufDataForFour;
+			})
+
 		graphPanel.add(pv.Line)
 			.data(function(){
 				var min = removeOutliers(graph)[0];
@@ -2155,9 +2159,9 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																		graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-			
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
 						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
@@ -2167,9 +2171,9 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																		graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-			
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
 						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
@@ -2179,9 +2183,9 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																		graph.samplingFrom.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-			
+
 		graphPanel.add(pv.Line)
 			.data(function(){
 				var max = removeOutliers(graph)[removeOutliers(graph).length-1];
@@ -2194,31 +2198,31 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																 graph.samplingFrom.advBoxPlot &&
-																 !graph.insufDataForFour; 
+																 !graph.insufDataForFour;
 			})
-		
+
 		//Box Plot Mean
 		graphPanel.add(pv.Dot)
 			.data(function(){return [graph.getMeanMedianMode()[0]]})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.shape("cross")
 			.strokeStyle("darkgreen")
-		
+
 		graphPanel.add(pv.Dot)
 			.data(function(){return [graph.getMeanMedianMode()[0]]})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.shape("cross")
 			.angle(Math.PI/4)
 			.strokeStyle("darkgreen")
-			
+
 		//Box Plot SD Line
 		graphPanel.add(pv.Line)
 			.data(function(){return getSDLinePoints(graph)})
@@ -2226,11 +2230,11 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 graph.samplingFrom.sdLine &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.lineWidth(1)
 			.strokeStyle("orange")
-			
+
 		graphPanel.add(pv.Label)
 			.data(function(){return [graph.getMeanMedianMode()[0]]})
 			.left(function(d){return graph.x(d)})
@@ -2238,16 +2242,16 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.text(function(){return "SD = "+getSD(graph.dataVals()).toFixed(1)})
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 graph.samplingFrom.sdLine &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.textAlign("center")
 			.textStyle("orange")
-			
-			
+
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [getSDLinePoints(graph)[0], getSDLinePoints(graph)[0]]})
 			.left(function(d){return graph.x(d)})
-			.bottom(function(){ 
+			.bottom(function(){
 				if (this.index==0)
 					return (graph.h-graph.baseLine) * 0.43 + graph.baseLine;
 				else
@@ -2255,15 +2259,15 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 graph.samplingFrom.sdLine &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.lineWidth(1)
 			.strokeStyle("orange")
-			
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [getSDLinePoints(graph)[1], getSDLinePoints(graph)[1]]})
 			.left(function(d){return graph.x(d)})
-			.bottom(function(){ 
+			.bottom(function(){
 				if (this.index==0)
 					return (graph.h-graph.baseLine) * 0.43 + graph.baseLine;
 				else
@@ -2271,11 +2275,11 @@ function constructSamplingGraph(graphPanel, graph, index){
 			})
 			.visible(function(){return graph.samplingFrom.groupingMode == "BoxPlot" &&
 																	 graph.samplingFrom.sdLine &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.lineWidth(1)
 			.strokeStyle("orange")
-		
+
 		/*Mean Median Mode Lines */
 		graphPanel.add(pv.Rule)
 			.data(function(){
@@ -2351,7 +2355,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 					graph.MMMLabelVis[this.index] = !(graph.MMMLabelVis[this.index]);
 					vis.render();
 				})
-				
+
 		// Mean, Median, Mode Labels
 		graphPanel.add(pv.Label)
 			.data(function(){return graph.getMeanMedianMode()})
@@ -2383,9 +2387,9 @@ function constructSamplingGraph(graphPanel, graph, index){
 					((this.index == 1) ? graph.samplingFrom.showMedian : true) &&
 					((this.index >= 2) ? graph.samplingFrom.showMode : true);
 			})
-		
-		
-		/*Insufficient Data for Four Warning */	
+
+
+		/*Insufficient Data for Four Warning */
 		graphPanel.add(pv.Label)
 			.text("Insufficient data.")
 			.textStyle("red")
@@ -2397,7 +2401,7 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.top(35)
 			.left(graph.w/2)
 			.textAlign("center")
-		
+
 		//Dots
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
@@ -2412,12 +2416,12 @@ function constructSamplingGraph(graphPanel, graph, index){
 				return 2;
 			})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
-			
+
 		//Advanced Box Plot Outlier Marks
 		graphPanel.add(pv.Dot)
 			.data(function(){return getOutlierDrawPositions(graph)})
 			.visible(function(d){return graph.samplingFrom.groupingMode == "BoxPlot" &&
-																		graph.samplingFrom.advBoxPlot && 
+																		graph.samplingFrom.advBoxPlot &&
 																	 !graph.insufDataForFour &&
 																	 (d.y+graph.baseLine) < graph.h &&
 																		d.x >= 0 &&
@@ -2429,8 +2433,8 @@ function constructSamplingGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.size(60)
 			.angle(Math.PI/4)
-			
-	} 
+
+	}
 }
 function constructRegularGraph(graphPanel, graph, index){
 
@@ -2444,7 +2448,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.textBaseline("bottom")
 			.text(function(){return "N = " + graph.n})
 			.font(fontString);
-			
+
 		/* X-axis ticks */
 		graphPanel.add(pv.Rule)
 			.data(function() { return graph.x.ticks() })
@@ -2455,14 +2459,14 @@ function constructRegularGraph(graphPanel, graph, index){
 			.anchor("bottom").add(pv.Label)
 				.text(function(d) {return d.toFixed(1)})
 				.font(function(){return "bold "+graphCollection.tickTextSize+"px sans-serif"})
-			
+
 		/* X-axis line */
 		graphPanel.add(pv.Rule)
 			.bottom(graph.baseLine)
 			.strokeStyle("#000");
-		
-		/* UD Edge of the graph partition lines 
-		 * Where new partitions come from 
+
+		/* UD Edge of the graph partition lines
+		 * Where new partitions come from
 		 */
 		graphPanel.add(pv.Rule)
 			.data([{"x":0,"y":0}])
@@ -2501,14 +2505,14 @@ function constructRegularGraph(graphPanel, graph, index){
 						vis.render();
 					else
 						graphPanel.render();
-				}) 
+				})
 				.event("touchstart", function(event){
 					touch.dragType = "partitionCreate";
 					touch.graphPanel = graphPanel;
 					touch.graphIndex = index;
 					touch.dragging = true;
 				})
-				
+
 		/* User Defined Partitions */
 		graphPanel.add(pv.Rule)
 			.data(function(){return graph.udPartitions})
@@ -2541,16 +2545,16 @@ function constructRegularGraph(graphPanel, graph, index){
 					touch.graphIndex = index;
 					touch.dragging = true;
 				})
-			
-		
+
+
 		graphPanel.add(pv.Rule)
 			.right(0)
 			.bottom(function(){return graph.baseLine})
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.strokeStyle("green")
 			.visible(function(){return graph.groupingMode == "UserDefGroups"})
-			
-			
+
+
 		/* UD Partition Data Count Label */
 		graphPanel.add(pv.Label)
 			.data(function(){return countDataInUserDefPartitions(graph)})
@@ -2581,7 +2585,7 @@ function constructRegularGraph(graphPanel, graph, index){
 				vis.render();
 			}
 		});
-		
+
 		/* Fixed Interval Width Partitions */
 		graphPanel.add(pv.Rule)
 			.data(function(){return partitionDataByIntervalWidth(graph)})
@@ -2597,7 +2601,7 @@ function constructRegularGraph(graphPanel, graph, index){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.size(4);
-			
+
 		/*Fixed Interval Width Partitions Size Labels*/
 		graphPanel.add(pv.Label)
 			.data(function(){return countDataInPartitions(graph,partitionDataByIntervalWidth(graph))})
@@ -2613,14 +2617,14 @@ function constructRegularGraph(graphPanel, graph, index){
 				return this.index != partitionDataByIntervalWidth(graph).length-1 &&
 							 graph.groupingMode == "FixedIntervalGroups";
 			});
-			
+
 		/* Fixed Interval Width Histogram */
 		graphPanel.add(pv.Bar)
 			.data(function(){return fiwHistogram(graph,partitionDataByIntervalWidth(graph))})
-			.visible(function(d) { 
+			.visible(function(d) {
 				return ( graph.groupingMode == "FixedIntervalGroups" &&
 								 graph.histogram
-								) 
+								)
 			})
 			.left(function(d){return d.left})
 			.bottom(graph.baseLine)
@@ -2629,7 +2633,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.lineWidth(0.5)
 			.strokeStyle("green")
 			.fillStyle(pv.rgb(0,225,0,0.25));
-		
+
 		/* Fixed Group Size Partitions */
 		graphPanel.add(pv.Rule)
 			.data(function(){return partitionDataInFixedSizeGroups(graph)})
@@ -2645,7 +2649,7 @@ function constructRegularGraph(graphPanel, graph, index){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.size(4);
-			
+
 		/*Fixed Group Size Partition Labels*/
 		graphPanel.add(pv.Label)
 			.data(function(){return partitionDataInFixedSizeGroups(graph)})
@@ -2665,12 +2669,12 @@ function constructRegularGraph(graphPanel, graph, index){
 				if (graph.dataVals().length % graph.partitionGroupSize == 0 ||
 						this.index != partitionDataInFixedSizeGroups(graph).length-2)
 					return graph.partitionGroupSize;
-				
+
 				else return graph.dataVals().length % graph.partitionGroupSize;
-				
+
 			})
-		
-			
+
+
 		/* Two Equal Partitions */
 		graphPanel.add(pv.Rule)
 			.data(function(){return partitionDataInTwo(graph)})
@@ -2689,7 +2693,7 @@ function constructRegularGraph(graphPanel, graph, index){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.size(4);
-				
+
 		/*Two Partition Size Labels*/
 		graphPanel.add(pv.Label)
 			.data(function(){return partitionDataInTwo(graph)})
@@ -2717,10 +2721,10 @@ function constructRegularGraph(graphPanel, graph, index){
 						return Math.floor(graph.dataVals().length/2);
 					else
 						return Math.ceil(graph.dataVals().length/2);
-				}	
+				}
 			})
-		
-		/*Insufficient Data for Two Warning */	
+
+		/*Insufficient Data for Two Warning */
 		graphPanel.add(pv.Label)
 			.text("Insufficient data.")
 			.textStyle("red")
@@ -2732,8 +2736,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			.top(35)
 			.left(graph.w/2)
 			.textAlign("center")
-			
-		
+
+
 		/* Four Equal Partitions */
 		graphPanel.add(pv.Rule)
 			.data(function(){return partitionDataInFour(graph)})
@@ -2751,10 +2755,10 @@ function constructRegularGraph(graphPanel, graph, index){
 				.fillStyle("green")
 				.strokeStyle("green")
 				.visible(function(){return graph.groupingMode == "FourEqualGroups" &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 				})
 				.size(4);
-				
+
 		/*Four Partition Size Labels*/
 		graphPanel.add(pv.Label)
 			.data(function(){return countDataInPartitions(graph, partitionDataInFour(graph))})
@@ -2781,7 +2785,7 @@ function constructRegularGraph(graphPanel, graph, index){
 					return bin_size;
 				} else return 0;
 			})
-		
+
 		//Simple Box Plot Lines
 		graphPanel.add(pv.Line)
 			.data(function(){
@@ -2793,7 +2797,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2805,7 +2809,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2817,7 +2821,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 		})
 
 		graphPanel.add(pv.Line)
@@ -2829,7 +2833,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2841,8 +2845,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
-			})						
+																	 !graph.insufDataForFour;
+			})
 
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[0], (graph.h-graph.baseLine) * 0.40 + graph.baseLine],
@@ -2853,7 +2857,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2865,7 +2869,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2877,7 +2881,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 
 		graphPanel.add(pv.Line)
@@ -2889,11 +2893,11 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 !graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-		
-		
-			
+
+
+
 		/* Advanced Box Plot Lines */
 		graphPanel.add(pv.Line)
 			.data(function(){
@@ -2906,10 +2910,10 @@ function constructRegularGraph(graphPanel, graph, index){
 			.lineWidth(1)
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
-																		graph.advBoxPlot && 
-																	 !graph.insufDataForFour; 
+																		graph.advBoxPlot &&
+																	 !graph.insufDataForFour;
 			})
-																	 
+
 		graphPanel.add(pv.Line)
 			.data(function(){
 				var max = removeOutliers(graph)[removeOutliers(graph).length-1];
@@ -2922,9 +2926,9 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																		graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-																	 
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
 						 [getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
@@ -2934,9 +2938,9 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																		graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 		})
-																	 
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
 						 [getQuartiles(graph)[2], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
@@ -2946,9 +2950,9 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																		graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-																	 
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
 						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
@@ -2958,9 +2962,9 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																		graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
-			})						
-																	 						
+																	 !graph.insufDataForFour;
+			})
+
 		graphPanel.add(pv.Line)
 			.data(function(){
 				var min = removeOutliers(graph)[0];
@@ -2973,9 +2977,9 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																		graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-			
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.60 + graph.baseLine],
 						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.60 + graph.baseLine]]})
@@ -2985,9 +2989,9 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																		graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-			
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [[getQuartiles(graph)[1], (graph.h-graph.baseLine) * 0.20 + graph.baseLine],
 						 [getQuartiles(graph)[3], (graph.h-graph.baseLine) * 0.20 + graph.baseLine]]})
@@ -2997,9 +3001,9 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																		graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-			
+
 		graphPanel.add(pv.Line)
 			.data(function(){
 				var max = removeOutliers(graph)[removeOutliers(graph).length-1];
@@ -3012,31 +3016,31 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																		graph.advBoxPlot &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
-			
+
 		//Box Plot Mean
 		graphPanel.add(pv.Dot)
 			.data(function(){return [graph.getMeanMedianMode()[0]]})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.shape("cross")
 			.strokeStyle("darkgreen")
-		
+
 		graphPanel.add(pv.Dot)
 			.data(function(){return [graph.getMeanMedianMode()[0]]})
 			.left(function(d){return graph.x(d)})
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.shape("cross")
 			.angle(Math.PI/4)
 			.strokeStyle("darkgreen")
-			
+
 		//Box Plot SD Line
 		graphPanel.add(pv.Line)
 			.data(function(){return getSDLinePoints(graph)})
@@ -3044,11 +3048,11 @@ function constructRegularGraph(graphPanel, graph, index){
 			.bottom(function(){return (graph.h-graph.baseLine) * 0.42 + graph.baseLine})
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 graph.sdLine &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.lineWidth(1)
 			.strokeStyle("orange")
-			
+
 		graphPanel.add(pv.Label)
 			.data(function(){return [graph.getMeanMedianMode()[0]]})
 			.left(function(d){return graph.x(d)})
@@ -3056,16 +3060,16 @@ function constructRegularGraph(graphPanel, graph, index){
 			.text(function(){return "SD = "+getSD(graph.dataVals()).toFixed(1)})
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 graph.sdLine &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.textAlign("center")
 			.textStyle("orange")
-			
-			
+
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [getSDLinePoints(graph)[0], getSDLinePoints(graph)[0]]})
 			.left(function(d){return graph.x(d)})
-			.bottom(function(){ 
+			.bottom(function(){
 				if (this.index==0)
 					return (graph.h-graph.baseLine) * 0.43 + graph.baseLine;
 				else
@@ -3073,15 +3077,15 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 graph.sdLine &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.lineWidth(1)
 			.strokeStyle("orange")
-			
+
 		graphPanel.add(pv.Line)
 			.data(function(){return [getSDLinePoints(graph)[1], getSDLinePoints(graph)[1]]})
 			.left(function(d){return graph.x(d)})
-			.bottom(function(){ 
+			.bottom(function(){
 				if (this.index==0)
 					return (graph.h-graph.baseLine) * 0.43 + graph.baseLine;
 				else
@@ -3089,11 +3093,11 @@ function constructRegularGraph(graphPanel, graph, index){
 			})
 			.visible(function(){return graph.groupingMode == "BoxPlot" &&
 																	 graph.sdLine &&
-																	 !graph.insufDataForFour; 
+																	 !graph.insufDataForFour;
 			})
 			.lineWidth(1)
 			.strokeStyle("orange")
-			
+
 		/*Mean Median Mode Lines */
 		graphPanel.add(pv.Rule)
 			.data(function(){
@@ -3183,7 +3187,7 @@ function constructRegularGraph(graphPanel, graph, index){
 					graph.MMMLabelVis[this.index] = !(graph.MMMLabelVis[this.index]);
 					vis.render();
 				})
-				
+
 		// Mean, Median, Mode Labels
 		graphPanel.add(pv.Label)
 			.data(function(){return graph.getMeanMedianMode()})
@@ -3223,9 +3227,9 @@ function constructRegularGraph(graphPanel, graph, index){
 					((this.index == 1) ? graph.showMedian : true) &&
 					((this.index >= 2) ? graph.showMode : true);
 			})
-		
-		
-		/*Insufficient Data for Four Warning */	
+
+
+		/*Insufficient Data for Four Warning */
 		graphPanel.add(pv.Label)
 			.text("Insufficient data.")
 			.textStyle("red")
@@ -3237,20 +3241,20 @@ function constructRegularGraph(graphPanel, graph, index){
 			.top(35)
 			.left(graph.w/2)
 			.textAlign("center")
-		
-		
+
+
 		//Mouse position label for drag editing
 		var dragLabel = graphPanel.add(pv.Label)
 			.visible(false)
 			.font(fontString)
 			.textAlign("center")
 			.text("0")
-		
+
 		/* Line Mode Lines */
 		graphPanel.add(pv.Rule)
 			.data(function() {return graph.getDataDrawObjects()})
 			.visible(function(d) {
-				return $('#checkboxHideData').attr('checked') != "checked"  && 
+				return $('#checkboxHideData').attr('checked') != "checked"  &&
 					d.x >= 0 &&
 					d.x <= graph.w &&
 					graphCollection.lineMode;
@@ -3260,12 +3264,12 @@ function constructRegularGraph(graphPanel, graph, index){
 			.height(function(){return (graph.h-graph.baseLine) * 0.75})
 			.lineWidth(function(){return graphCollection.bucketDotSize})
 			.strokeStyle(function(d) {
-				var color = pointFillStyle(d.set); 
+				var color = pointFillStyle(d.set);
 				return pv.rgb(color.r, color.g, color.b, 0.3)
 			})
 			.title(function(d) { return d.label+", "+graph.x.invert(d.xReal).toFixed(1) })
-		
-		
+
+
 		/* Dots */
 		graphPanel.add(pv.Dot)
 			.data(function() {return graph.getDataDrawObjects()})
@@ -3273,9 +3277,9 @@ function constructRegularGraph(graphPanel, graph, index){
 				//if ((d.y+graph.baseLine) >= graph.h && graphCollection.bucketDotSize > 2){
 					//$("#dotSizeDec").click()
 					//constructVis();
-				
+
 				//}
-				return $('#checkboxHideData').attr('checked') != "checked"  && 
+				return $('#checkboxHideData').attr('checked') != "checked"  &&
 					(d.y+graph.baseLine) < graph.h &&
 					d.x >= 0 &&
 					d.x <= graph.w &&
@@ -3318,7 +3322,7 @@ function constructRegularGraph(graphPanel, graph, index){
 																		 "value":graph.x.invert(d.xReal)});
 						graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany++;
 						$("#sampleN"+(graph.selectedSampleNumber)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
-						console.log(graph.selectedSampleNumber);											 
+						console.log(graph.selectedSampleNumber);
 					} else {
 						console.log(graph.selectedSampleNumber);
 						graphCollection.data[graph.selectedSample].splice(sampleIndexOfData(graphCollection.data[graph.selectedSample], d, graph),1);
@@ -3330,31 +3334,31 @@ function constructRegularGraph(graphPanel, graph, index){
 				vis.render();
 			})
 			.event("mousedown", pv.Behavior.drag())
-			.event("drag", function(d){  
+			.event("drag", function(d){
 				if (graphCollection.editModeEnabled &&
 						vis.mouse().x >= 0 &&
 						vis.mouse().x <= graph.w - 5){
-							
+
 					var worksheet = "";
 					for (var key in graphCollection.worksheets){
 						if (graphCollection.worksheets[key].data[d.set] != undefined)
 							worksheet = key;
 					}
-					
+
 					graphCollection.editSinglePoint(worksheet, d.set,d.label,graph.x.invert(vis.mouse().x));
 					graph.selectedCategory = d.set;
-					
+
 					dragLabel.text(graph.x.invert(graphPanel.mouse().x).toFixed(1));
 					dragLabel.left(graphPanel.mouse().x)
 					dragLabel.top(graphPanel.mouse().y - 10)
 					dragLabel.visible(true)
-					
+
 					vis.render();
 				} else {
 					dragLabel.text("Delete");
 					vis.render();
 				}
-					
+
 			})
 			.event("dragend",function(d){
 				if (graphCollection.editModeEnabled){
@@ -3366,7 +3370,7 @@ function constructRegularGraph(graphPanel, graph, index){
 					var newData = graphCollection.worksheets[worksheet].data[d.set];
 					var remIndex = null;
 					newData.forEach(function(data, index){
-						if (data.label == d.label && 
+						if (data.label == d.label &&
 						(vis.mouse().x < 0 ||
 						vis.mouse().x > graph.w - 5)){
 							remIndex = index;
@@ -3375,16 +3379,16 @@ function constructRegularGraph(graphPanel, graph, index){
 					if (remIndex != null)
 						newData.splice(remIndex,1);
 					graphCollection.editData(worksheet,d.set,d.set,newData);
-					
-				
+
+
 					if (Math.abs(graphPanel.mouse().x - d.x) <= graphCollection.bucketDotSize &&
 							Math.abs((graph.h - graphPanel.mouse().y) - (d.y + graph.baseLine)) <= graphCollection.bucketDotSize+1)
 					{
 						dragging = true;
 					}
-					
+
 					dragLabel.visible(false);
-					
+
 					if (graph.testMode == "sampling" &&
 							sampleContainsData(graphCollection.data[graph.selectedSample], d, graph)){
 						graphCollection.data[graph.selectedSample]
@@ -3393,8 +3397,8 @@ function constructRegularGraph(graphPanel, graph, index){
 						graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany--;
 						$("#sampleN"+(index+1)).val(graph.samplingTo[graph.selectedSampleNumber-1].samplingHowMany);
 					}
-					
-					
+
+
 					vis.render();
 				}
 			})
@@ -3405,12 +3409,12 @@ function constructRegularGraph(graphPanel, graph, index){
 				touch.dragging = true;
 				touch.dragLabel = dragLabel;
 			})
-			
+
 		//Advanced Box Plot Outlier Marks
 		graphPanel.add(pv.Dot)
 			.data(function(){return getOutlierDrawPositions(graph)})
 			.visible(function(d){return graph.groupingMode == "BoxPlot" &&
-																		graph.advBoxPlot && 
+																		graph.advBoxPlot &&
 																	 !graph.insufDataForFour &&
 																	 (d.y+graph.baseLine) < graph.h &&
 																		d.x >= 0 &&
@@ -3422,8 +3426,8 @@ function constructRegularGraph(graphPanel, graph, index){
 			.strokeStyle("darkgreen")
 			.size(60)
 			.angle(Math.PI/4)
-			
-		
+
+
 		//Graph Overflow Warning Message
 		graphPanel.add(pv.Label)
 			.text("Warning! Data points lie outside graph boundaries.")
@@ -3486,7 +3490,7 @@ function constructRegularGraph(graphPanel, graph, index){
 			.textBaseline("center")
 			.text("Maximum four datasets per graph.")
 			.font(fontString)
-			
+
 		graphPanel.add(pv.Label)
 			.left(30)
 			.top(30)
@@ -3501,7 +3505,7 @@ function constructRegularGraph(graphPanel, graph, index){
 function constructSampleButton(graph, index){
 	//console.log("contructing Sample Button");
 	$('body').prepend("<div class=\"sampleOptions\" id=\"sampleButton"+index+"\"></div>");
-	
+
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
 							 "<td><input type=\"button\" class=\"button\" value=\"Sample\""+
 							 "onmousedown=\"javascript:enterUpdateLoop("+index+")\""+
@@ -3510,9 +3514,9 @@ function constructSampleButton(graph, index){
 							 "></td></tr></table>";//+
 							 //"onmouseup=\"javascript:exitUpdateLoop()\"></td></tr></table>";
 							 //"onclick=\"javascript:updateMultipleSamples("+index+")\">";
-							 
+
 	$('#sampleButton'+index).html(string);
-	
+
 	if (graph.testMode != "sampling" || graph.includedCategories == 0)
 		$('#sampleButton'+index).hide();
 }
@@ -3521,11 +3525,11 @@ function positionSampleButton(graph, index){
 	var top = $('span').offset().top +
 						graphCollection.padTop +
 						graph.h * (index+1) - 34;
-						
+
 	var left = $('span').offset().left +
 						 graphCollection.padLeft +
 						 graph.w - $('#sampleButton'+index).width() - 30;
-	
+
 	$('#sampleButton'+index).css('top', top+"px")
 										.css('left',left+"px")
 										.css('z-index', 1);
@@ -3536,7 +3540,7 @@ function enterUpdateLoop(index){
 		touch.touch = false;
 		return;
 	}
-	
+
 	updateMultipleSamples(index, true);
 	document.addEventListener("mouseup", exitUpdateLoop, true);
 }
@@ -3559,38 +3563,38 @@ function exitUpdateLoop(){
 
 function constructSampleOptionsMenu(graph, index){
 	$('body').prepend("<div class=\"sampleOptions\" id=\"sampleOptions"+index+"\"></div>");
-	
+
 	var string = "<table cellpadding='0' cellspacing='4' width='100%'><tr>"+
-							 
+
 							 "<td><input type=\"button\" class=\"button\" value=\"Show Points\""+
 							 "onclick=\"javascript:setHighLightedSample("+index+")\"></td>"+
-							 
+
 							 "<td nowrap><input type=\"button\" class=\"button\" value=\"CI\""+
 							 "onclick=\"javascript:openCIMenu("+index+")\"></td>"+
-							 
+
 							 "<td nowrap><label for=\"sampleN"+index+"\">n = </label>"+
 							 "<input align=\"right\" type=\"text\" class =\"textbox\" id=\"sampleN"+index+"\""+
 								"size=\"2\""+
 								"onchange=\"javascript:updateSample('sampleN"+index+"',"+index+")\""+
 								"value='"+graph.samplingHowMany+"'></td>"+
-							 
+
 							 "</tr></table>";
-							
-							 
+
+
 	$('#sampleOptions'+index).html(string);
-	
-	
+
+
 }
 
 function positionSampleOptions(graph,index){
 		var top = $('span').offset().top +
 							graphCollection.padTop +
 							graph.h * (index+1) - 34;
-							
+
 		var left = $('span').offset().left +
 							 graphCollection.padLeft +
 							 graph.w - $('#sampleOptions'+index).width() + 15;
-		
+
 		$('#sampleOptions'+index).css('top', top+"px")
 											.css('left',left+"px")
 											.css('z-index', 1);
@@ -3603,7 +3607,7 @@ function updateSample(textbox, index){
 	} else {
 		$('#'+textbox).val(graphCollection.graphs[index].samplingHowMany);
 	}
-	
+
 	vis.render();
 
 }
@@ -3611,13 +3615,13 @@ function updateSample(textbox, index){
 function setHighLightedSample(index){
 	graphCollection.graphs[index].samplingFrom.selectedSample = graphCollection.graphs[index].sampleSet;
 	graphCollection.graphs[index].samplingFrom.selectedSampleNumber = graphCollection.graphs[index].sampleNumber;
-	
+
 	vis.render();
 }
 
 function constructResampleControlPanel(graph, index){
 	$('body').prepend("<div class=\"resampleOptions\" id=\"resampleOptions"+index+"\"></div>");
-	
+
 	var string = "<table cellpadding='0' cellspacing='0' width='100%'><tr>"+
 							 "<td colspan=\"7\" id=\"resampleLabel\" align=\"center\">"+
 							 (graph.resampleDisplayMode != "pgraph" ?
@@ -3647,9 +3651,9 @@ function constructResampleControlPanel(graph, index){
 								"<input type=\"checkbox\" id=\"resamplingReplacement\""+
 									"onchange=\"javascript:toggleResamplingReplacement("+index+")\" "+(graph.resamplingReplacement?"checked":"")+"></td>"+
 								"</tr></table>";
-							 
+
 	$('#resampleOptions'+index).html(string);
-	
+
 	if (graph.population1 == graph ||
 		  graph.population2 == graph)
 		$('#resampleOptions'+index).hide();
@@ -3666,11 +3670,11 @@ function positionResampleControlPanel(graph, index){
 	var top = $('span').offset().top +
 						graphCollection.padTop +
 						graph.h * (index+1) - 40;
-						
+
 	var left = $('span').offset().left +
 						 graphCollection.padLeft +
 						 graph.w/2 - $('#resampleOptions'+index).width()/2;
-	
+
 	$('#resampleOptions'+index).css('max-width',graph.w)
 										.css('top', top+"px")
 										.css('left',left+"px")
@@ -3693,44 +3697,44 @@ function toggleResampling(index){
 
 function resampleAtOnce(index){
 	resetResampling(index);
-	
+
 	var graph = graphCollection.graphs[index];
 	var sample1Size = graph.population1.n;
 	var sample2Size = graph.population2.n;
 	var group1 = [];
 	var ticks = pValTicks(graph);
-	
+
 	resamplePop1Mean = graphCollection.graphs[index].population1.getMeanMedianMode()[0];
 	resamplePop2Mean = graphCollection.graphs[index].population2.getMeanMedianMode()[0];
-	
+
 	if (resampleResetPopulation){
 		population = [];
 		for (var i=0; i<graph.population1.includedCategories.length; i++)
 			population = population.concat(graph.data[graph.population1.includedCategories[i]]);
-			
+
 		for (i=0; i<graph.population2.includedCategories.length; i++)
 			population = population.concat(graph.data[graph.population2.includedCategories[i]]);
 		resampleResetPopulation = false;
 	}
-	
+
 	var group1Sum = 0;
 	var group2Sum = 0;
 	var group1Mean = 0;
 	var group2Mean = 0;
-	
+
 	var r = 0;
-	
+
 	while (graph.data[graph.resampleSet].length < graph.resamplingIterations){
 		group1Sum = 0;
 		group2Sum = 0;
 		group1Mean = 0;
 		group2Mean = 0;
-		
+
 		if (graph.resamplingReplacement){
 			console.log("replacement");
 			group1Counter = sample1Size;
 			group2Counter = sample2Size;
-			
+
 			while (group1Counter > 0){
 				group1Sum += population[rand(0, population.length)].value;
 				group1Counter--;
@@ -3739,16 +3743,16 @@ function resampleAtOnce(index){
 				group2Sum += population[rand(0, population.length)].value;
 				group2Counter--;
 			}
-			
+
 			group1Mean = group1Sum / sample1Size;
 			group2Mean = group2Sum / sample2Size;
-			
+
 		} else {
 			for (i=0; i<population.length; i++)
 				group1[i] = false;
-			
+
 			group1Counter = sample1Size;
-			
+
 			while (group1Counter > 0){
 				r = rand(0, population.length);
 				if (group1[r] == false){
@@ -3756,7 +3760,7 @@ function resampleAtOnce(index){
 					group1Counter--;
 				}
 			}
-			
+
 			group1Sum = 0;
 			group2Sum = 0;
 			for (i=0; i<population.length; i++){
@@ -3765,15 +3769,15 @@ function resampleAtOnce(index){
 				else
 					group2Sum += population[i].value;
 			}
-			
+
 			group1Mean = group1Sum / sample1Size;
 			group2Mean = group2Sum / sample2Size;
-			
+
 		}
-		
+
 		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
 																				"value":group1Mean-group2Mean});
-		
+
 		if (ticks.indexOf(graph.data[graph.resampleSet].length) != -1){
 			var indx = ticks.indexOf(graph.data[graph.resampleSet].length);
 			var outside = 0;
@@ -3782,33 +3786,33 @@ function resampleAtOnce(index){
 						index < graph.resamplingIterations)
 					outside++;
 			});
-			
+
 			var y = (outside+0.0)/(graph.data[graph.resampleSet].length+0.0);
 			graph.resamplingPVals.push({
 				"x":ticks[indx],
 				"y":y
 			})
-			
+
 			if (y > graph.resamplingMaxPVal)
 				graph.resamplingMaxPVal = y;
 		}
 	}
-	
+
 	var min = -1*Math.abs(resamplePop1Mean - resamplePop2Mean) - 1;
 	var max = Math.abs(resamplePop1Mean - resamplePop2Mean) + 1;
 	for (i=0;i<graph.data[graph.resampleSet].length;i++){
 		if(min > graph.data[graph.resampleSet][i].value)
 			min = graph.data[graph.resampleSet][i].value;
-		
+
 		if(max < graph.data[graph.resampleSet][i].value)
 			max = graph.data[graph.resampleSet][i].value;
 	}
-	
+
 	if (graph.scaleMin != min || graph.scaleMax != max)
 		graph.setXScale(min,max);
-	
+
 	graph.partitionIntervalWidth = (max-min)/100;
-	
+
 	resamplingInProgress = false;
 	constructVis();
 }
@@ -3816,10 +3820,10 @@ function resampleAtOnce(index){
 function resample(index, repeat){
 	var graph = graphCollection.graphs[index];
 	var ticks = pValTicks(graph);
-	
+
 	resamplePop1Mean = graph.population1.getMeanMedianMode()[0];
 	resamplePop2Mean = graph.population2.getMeanMedianMode()[0];
-	
+
 	if (graph.data[graph.resampleSet].length >= graph.resamplingIterations){
 		resamplingInProgress = false;
 		$('#resampleToggleButton'+index).val("Start");
@@ -3830,30 +3834,30 @@ function resample(index, repeat){
 		var group1 = []; //boolean
 		var sample1Size = graph.population1.n;
 		var sample2Size = graph.population2.n;
-		
+
 		if (resampleResetPopulation){
 			population = [];
 			for (var i=0; i<graph.population1.includedCategories.length; i++)
 				population = population.concat(graph.data[graph.population1.includedCategories[i]]);
-				
+
 			for (i=0; i<graph.population2.includedCategories.length; i++)
 				population = population.concat(graph.data[graph.population2.includedCategories[i]]);
 			resampleResetPopulation = false;
 		}
-		
-		
+
+
 		graphCollection.data[graphCollection.graphs[1].intermedResampleSet] = [];
 		graphCollection.data[graphCollection.graphs[2].intermedResampleSet] = [];
-		
+
 		var group1Sum = 0;
 		var group2Sum = 0;
 		var group1Mean = 0;
 		var group2Mean = 0;
-		
+
 		if (graph.resamplingReplacement){
 			group1Counter = sample1Size;
 			group2Counter = sample2Size;
-			
+
 			while (group1Counter > 0){
 				var randSelection = population[rand(0, population.length)];
 				group1Sum += randSelection.value;
@@ -3866,16 +3870,16 @@ function resample(index, repeat){
 				graphCollection.data[graphCollection.graphs[2].intermedResampleSet].push(randSelection);
 				group2Counter--;
 			}
-			
+
 			group1Mean = group1Sum / sample1Size;
 			group2Mean = group2Sum / sample2Size;
-			
+
 		} else {
 			for (i=0; i<population.length; i++)
 				group1[i] = false;
-			
+
 			group1Counter = sample1Size;
-			
+
 			while (group1Counter > 0){
 				var r = rand(0, population.length);
 				if (group1[r] == false){
@@ -3883,7 +3887,7 @@ function resample(index, repeat){
 					group1Counter--;
 				}
 			}
-			
+
 			group1Sum = 0;
 			group2Sum = 0;
 			for (i=0; i<population.length; i++){
@@ -3895,13 +3899,13 @@ function resample(index, repeat){
 					graphCollection.data[graphCollection.graphs[2].intermedResampleSet].push(population[i]);
 				}
 			}
-			
+
 			group1Mean = group1Sum / sample1Size;
 			group2Mean = group2Sum / sample2Size;
-			
+
 		}
-		
-		
+
+
 		graph.data[graph.resampleSet].push({"label":"diff-"+graph.data[graph.resampleSet].length,
 																				"value":group1Mean-group2Mean});
 		var min = -1*Math.abs(resamplePop1Mean - resamplePop2Mean) - 1;
@@ -3909,16 +3913,16 @@ function resample(index, repeat){
 		for (i=0;i<graph.data[graph.resampleSet].length;i++){
 			if(min > graph.data[graph.resampleSet][i].value)
 				min = graph.data[graph.resampleSet][i].value;
-			
+
 			if(max < graph.data[graph.resampleSet][i].value)
 				max = graph.data[graph.resampleSet][i].value;
 		}
-		
+
 		if (graph.scaleMin != min || graph.scaleMax != max){
 			graph.setXScale(min,max);
 			graph.partitionIntervalWidth = (max-min)/100;
 		}
-		
+
 		if (ticks.indexOf(graph.data[graph.resampleSet].length) != -1){
 			var indx = ticks.indexOf(graph.data[graph.resampleSet].length);
 			var outside = 0;
@@ -3927,22 +3931,22 @@ function resample(index, repeat){
 						index < graph.resamplingIterations)
 					outside++;
 			});
-			
+
 			var y = (outside+0.0)/(graph.data[graph.resampleSet].length+0.0);
 			graph.resamplingPVals.push({
 				"x":ticks[indx],
 				"y":y
 			})
-			
+
 			if (y > graph.resamplingMaxPVal)
 				graph.resamplingMaxPVal = y;
 		}
-		
+
 		if (graph.data[graph.resampleSet].length == 1)
 			constructVis();
-		
+
 		vis.render();
-		
+
 		if (repeat)
 			resampleTimer = setTimeout("resample("+index+",true)", 50);
 	}
@@ -3950,18 +3954,18 @@ function resample(index, repeat){
 
 function resetResampling(index){
 	var graph = graphCollection.graphs[index];
-	
+
 	graph.data[graph.resampleSet] = [];
 	graph.resamplingPVals = [];
 	graph.resamplingMaxPVal = -1;
 	resampleResetPopulation = true;
-	
+
 	if (resamplingInProgress){
 		resamplingInProgress = false;
 		$('#resampleToggleButton'+index).val("Start");
 		clearTimeout(resampleTimer);
 	}
-	
+
 	vis.render();
 }
 
@@ -3976,27 +3980,27 @@ function changeResampleIterations(textbox, index){
 		//} else {
 			$('#'+textbox).val(graphCollection.graphs[index].resamplingIterations = iterations);
 		//}
-			
-		
+
+
 	} else {
 		$('#'+textbox).val(graphCollection.graphs[index].resamplingIterations);
 	}
-	
+
 	vis.render();
 }
 
 function constructLegendPanel(graph, index){
 	if (!graph.isSamplingGraph && !graph.isResamplingGraph && !graph.isIntermedResamplingGraph){
 		$('body').prepend("<div class=\"legend\" id=\"legend"+index+"\"></div>");
-		
+
 		var selCat = graphCollection.graphs[index].selectedCategory;
-		
+
 		var string = "<center><table cellpadding='0' cellspacing='0' style='table-layout:fixed;' width='100%'><tr>";
 		graph.includedCategories.forEach(function(category, i){
 			if (i == 2)
 				string += "</tr><tr>"
 			var color = pointFillStyle(category);
-			string += "<td align='center'><div class='"+(category==selCat&&graphCollection.editModeEnabled?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+ 
+			string += "<td align='center'><div class='"+(category==selCat&&graphCollection.editModeEnabled?"menuItemSel":"menuItemDef")+"' id='legCat"+index+"-"+i+"' "+
 								"style=\"color:black; background-color:white;\""+
 								"onmouseover=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemOver") +"'\""+
 								"onmouseout=\"javascript:"+ (category==selCat&&graphCollection.editModeEnabled?"this.className='menuItemSel":"this.className='menuItemDef") +"'\""+
@@ -4023,13 +4027,13 @@ function positionAndSizeLegendPanel(graph,index){
 	var top = $('span').offset().top +
 						graphCollection.padTop +
 						graph.h * (index+1) - 34;
-						
+
 	if (graph.includedCategories.length > 2)
 		top -= 35;
-						
+
 	var left = $('span').offset().left +
 						 graphCollection.padLeft;
-	
+
 	$('#legend'+index).css('top', top+"px")
 										.css('left',left+"px")
 										.css('width',graphCollection.w-40 -
@@ -4051,7 +4055,7 @@ function constructPopulationLabels(){
 								"ontouchmove=\"popLabTouchMove(event, 1)\""+
 								"ontouchend=\"popLabTouchEnd(event, 1)\""+
 								">Sample 1</div>"
-		
+
 	var popLab2 = "<div class=\"populationLabels\" id=\"population2\""+
 								"style=\"color:black; background-color:white;\""+
 								"onmouseover=\"javascript: this.className='populationLabelsHilight'\""+
@@ -4061,7 +4065,7 @@ function constructPopulationLabels(){
 								"ontouchmove=\"popLabTouchMove(event, 2)\""+
 								"ontouchend=\"popLabTouchEnd(event, 2)\""+
 								">Sample 2</div>"
-		
+
 	$('body').prepend(popLab1);
 	$('body').prepend(popLab2);
 }
@@ -4073,27 +4077,27 @@ function positionPopulationLabels(){
 						graphCollection.padTop +
 						graph1.h * (graphCollection.graphs.indexOf(graph1)) +
 						10;
-						
+
 	var left1 = $('span').offset().left +
 						 graphCollection.padLeft + 20;
-	
+
 	$('#population1').css('top', top1+"px")
 										.css('left',left1+"px")
 										.css('z-index', 1);
-										
+
 	var graph2 = graphCollection.graphs[0].population2;
 
 	var top2 = $('span').offset().top +
 						graphCollection.padTop +
 						graph2.h * (graphCollection.graphs.indexOf(graph2)) +
 						10;
-						
+
 	var left2 = $('span').offset().left +
 						 graphCollection.padLeft + 20 +
 						 (graphCollection.graphs.indexOf(graph1) == graphCollection.graphs.indexOf(graph2) ?
-								100 : 
+								100 :
 								0);
-	
+
 	$('#population2').css('top', top2+"px")
 										.css('left',left2+"px")
 										.css('z-index', 1);
@@ -4105,7 +4109,7 @@ function toggleDatasetMenu() {
 		graphCollection.datasetsMenuShowing = true;
 		resizeVis();
 		//graphCollection.setW(graphCollection.calcGraphWidth());
-		
+
 		$('span').css('position', 'absolute')
 						 .css('left',$('#datasets').width()+29)
 						 .css('z-index', -1);
@@ -4124,7 +4128,7 @@ function toggleDatasetMenu() {
 		positionDisplayMenu();
 	}
 	//vis.render();
-	
+
 	//for(var i=0; i<graphCollection.graphs.length;i++){
 		//positionAndSizeLegendPanel(graphCollection.graphs[i],i);
 		//positionPopulationLabels();
@@ -4133,5 +4137,3 @@ function toggleDatasetMenu() {
 		//positionResampleControlPanel(graphCollection.graphs[i],i);
 	//}
 }
-
-
